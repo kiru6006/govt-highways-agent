@@ -13,6 +13,7 @@ import { GovernanceRegistryPage } from './pages/GovernanceRegistryPage';
 import { ProgrammeIntelligencePage } from './pages/ProgrammeIntelligencePage';
 import { Project360Page } from './pages/Project360Page';
 import { PlaceholderModule } from './pages/PlaceholderModule';
+import { DemoBanner } from './components/DemoBanner';
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -44,6 +45,9 @@ const AppLayout: React.FC = () => {
           onToggleSidebar={toggleSidebar}
           isSidebarCollapsed={sidebarCollapsed}
         />
+
+        {/* Demo mode alert banner */}
+        <DemoBanner />
 
         {/* Dynamic Route Body */}
         <main className="flex-1 overflow-y-auto pb-16">

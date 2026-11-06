@@ -34,6 +34,7 @@ import {
   Coins,
   Gavel
 } from 'lucide-react';
+import { CorridorMap } from '../components/CorridorMap';
 
 export const ProgrammeIntelligencePage: React.FC = () => {
   const location = useLocation();
@@ -41,6 +42,7 @@ export const ProgrammeIntelligencePage: React.FC = () => {
 
   const [activeProgrammeCode, setActiveProgrammeCode] = useState<string>(initialProg);
   const [activeTab, setActiveTab] = useState<'overview' | 'packages' | 'tenders' | 'land' | 'legal' | 'ai'>('overview');
+  const [mapMode, setMapMode] = useState<'gis' | 'schematic'>('gis');
   const [loading, setLoading] = useState<boolean>(true);
 
   // Data states
@@ -338,12 +340,39 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                             Tamil Nadu Strategic Corridor Alignments (GeoJSON Geometry)
                           </h3>
                         </div>
-                        <span className="text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
-                          {alignments.length} Corridors Plotted
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className="inline-flex rounded-lg bg-slate-900 p-0.5 border border-slate-700 text-xs">
+                            <button
+                              onClick={() => setMapMode('gis')}
+                              className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+                                mapMode === 'gis'
+                                  ? 'bg-sky-600 text-white shadow'
+                                  : 'text-slate-400 hover:text-slate-200'
+                              }`}
+                            >
+                              GIS Map (Leaflet)
+                            </button>
+                            <button
+                              onClick={() => setMapMode('schematic')}
+                              className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+                                mapMode === 'schematic'
+                                  ? 'bg-sky-600 text-white shadow'
+                                  : 'text-slate-400 hover:text-slate-200'
+                              }`}
+                            >
+                              Schematic Outline
+                            </button>
+                          </div>
+                          <span className="text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                            {alignments.length} Corridors Plotted
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Schematic Map Representation */}
+                      {mapMode === 'gis' ? (
+                        <CorridorMap height="340px" />
+                      ) : (
+                      /* Schematic Map Representation */
                       <div className="bg-slate-900/90 rounded-lg p-4 border border-slate-800 h-80 flex flex-col justify-between relative overflow-hidden">
                         <svg className="w-full h-full" viewBox="0 0 600 320" fill="none" xmlns="http://www.w3.org/2000/svg">
                           {/* Tamil Nadu State Outline Schematic */}
@@ -410,6 +439,7 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                           </div>
                         </div>
                       </div>
+                      )}
                     </div>
 
                     {/* Corridor Key Attributes */}

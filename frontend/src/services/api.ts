@@ -59,6 +59,12 @@ export function removeAuthToken() {
 }
 
 // -------------------------------------------------------------
+// Demo Mode Detection (true when backend unreachable → GitHub Pages)
+// -------------------------------------------------------------
+export let isDemoMode: boolean = false;
+export function setDemoMode(val: boolean) { isDemoMode = val; }
+
+// -------------------------------------------------------------
 // Fallback Data Store (for Static Deployments on GitHub Pages)
 // -------------------------------------------------------------
 const fallbackUsers: Record<string, UserInfo> = {
@@ -1783,6 +1789,8 @@ export const api = {
       // static fallback on GitHub Pages
     }
 
+    // Backend unreachable — activate demo mode
+    setDemoMode(true);
     const user = fallbackUsers[username] || fallbackUsers.admin;
     activeUser = user;
     return {

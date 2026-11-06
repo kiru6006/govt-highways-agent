@@ -8,6 +8,7 @@ import {
   RoadType
 } from '../types';
 import { RoadBadge } from '../components/RoadBadge';
+import { EVMTrendChart, ProgressComparisonChart } from '../components/Charts';
 import {
   Layers,
   Search,
@@ -888,6 +889,21 @@ export const Project360Page: React.FC = () => {
               </div>
               <span className="text-xs text-slate-500 font-medium">Historical Measurement Sheets</span>
             </div>
+
+            {/* EVM Trend Chart */}
+            {p.progress_history && p.progress_history.length > 0 && (
+              <div className="p-4 bg-slate-50/70 rounded-xl border border-slate-200">
+                <p className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Earned Value (EV) vs Actual Cost (AC) Trend</p>
+                <EVMTrendChart
+                  data={p.progress_history.map(rec => ({
+                    month: rec.reporting_month,
+                    pv_cr: ((p.project?.sanctioned_cost_cr || (p as any).sanctioned_cost_cr) || 100) * (rec.planned_physical_pct / 100),
+                    ev_cr: rec.earned_value_cr,
+                    ac_cr: rec.cumulative_expenditure_cr
+                  }))}
+                />
+              </div>
+            )}
 
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse text-xs min-w-[760px]">

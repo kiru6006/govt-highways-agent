@@ -69,3 +69,4 @@ flowchart LR
 4. **Offline Resilience:** Graceful local caching if backend services restart.
 5. **Government Grounding:** Sourced from authentic departmental registers or clearly demarcated demo records.
 6. **Automated Test Coverage:** Each promoted module must have at least 2 automated integration tests in `backend/tests/`.
+

@@ -90,3 +90,4 @@ Every data point stored or displayed in the TN-HDOS platform is classified into 
 ## 8. Verification Sign-Off
 
 All items listed as **[OV]** and **[EXT]** have been validated against source files, government notifications, and departmental registers. Demonstrative records **[SD]** are quarantined from executive decision metrics.
+

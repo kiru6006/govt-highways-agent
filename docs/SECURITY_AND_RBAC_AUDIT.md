@@ -79,3 +79,4 @@ Commercial sensitivity demands absolute isolation between competing contractors 
 1. All state-altering administrative operations (Sanctions, Tender Awards, Bill Approvals, High Court Injunction Filings) write immutable records to the `audit_logs` table.
 2. Log schemas capture: `timestamp_utc`, `user_id`, `user_role`, `client_ip`, `action_verb`, `target_entity_type`, `target_entity_id`, and `diff_payload_json`.
 3. Audit records are append-only; database write permissions restrict `UPDATE` and `DELETE` operations on audit tables.
+

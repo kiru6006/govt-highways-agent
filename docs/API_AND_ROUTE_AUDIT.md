@@ -67,3 +67,4 @@ The FastAPI backend exposes modular routers mounted under `/api/v1`.
 2. **Contractor Data Isolation:** Any query issued by a user with role `CONTRACTOR` automatically appends `filter(Project.contractor_id == current_user.contractor_id)` to prevent cross-bidder data leakage.
 3. **Zonal Jurisdiction Scoping:** Superintending Engineers (SE) and Divisional Engineers (DE) queries automatically filter projects by their assigned geographical division.
 4. **Client State Resilience:** If backend API services undergo temporary restart, the frontend gracefully falls back to cached in-memory structures to maintain uninterrupted situational awareness for high-level officials.
+

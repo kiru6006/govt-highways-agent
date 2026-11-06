@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { ZoneComparisonChart, PortfolioDonut, ProgressComparisonChart } from '../components/Charts';
 import {
   ExecutiveKPIs,
   PortfolioStageItem,
@@ -1001,6 +1002,29 @@ export const Dashboard: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Zone comparison bar chart */}
+              {zoneComparisons.length > 0 && (
+                <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <p className="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">Zone Performance — Visual Comparison</p>
+                  <ZoneComparisonChart data={zoneComparisons} />
+                </div>
+              )}
+
+              {/* Physical vs Financial progress per zone */}
+              {zoneComparisons.length > 0 && (
+                <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <p className="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">Physical vs Financial Progress by Zone</p>
+                  <ProgressComparisonChart
+                    data={zoneComparisons.map(z => ({
+                      label: z.zone_name.replace(' Zone', ''),
+                      physical: z.completed_projects_pct,
+                      financial: z.budget_utilisation_pct
+                    }))}
+                    height={zoneComparisons.length * 48 + 40}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -1024,6 +1048,14 @@ export const Dashboard: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Portfolio distribution donut chart */}
+              {portfolioStages.length > 0 && (
+                <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <p className="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">Portfolio Stage Distribution</p>
+                  <PortfolioDonut data={portfolioStages} />
+                </div>
+              )}
             </div>
           )}
 

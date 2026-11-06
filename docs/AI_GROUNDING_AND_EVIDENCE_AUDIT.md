@@ -61,3 +61,4 @@ To protect operational stability and prevent administrative disruption:
 1. **No Autonomous Enforcement:** The AI engine cannot initiate automatic debarment, financial withholdings, or contract cancellations.
 2. **Traceability:** Every finding includes the source record ID, timestamp of detection, and explicit mathematical formula or rule triggered.
 3. **Appeals & Rectification:** Departmental field officers can annotate findings with explanatory justifications (e.g., unseasonal rainfall verified by IMD records, utility delays acknowledged by TANGEDCO), which updates the finding status to "Satisfactorily Explained".
+

@@ -313,3 +313,4 @@ The domain knowledge embedded here is the hardest part. The remaining engineerin
 ---
 
 *Review conducted by Antigravity AI — independent automated analysis of committed codebase. All scores based on direct code inspection, not self-reported documentation. Findings may be appealed by providing evidence of implementation not present in `d9bf004`.*
+

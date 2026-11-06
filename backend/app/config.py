@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     # Environment
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     IS_DEMO_MODE: bool = True
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "https://kiru6006.github.io",
+    ]
 
     class Config:
         env_file = ".env"
