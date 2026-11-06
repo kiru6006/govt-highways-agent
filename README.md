@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
 [![Phase](https://img.shields.io/badge/Phase-2%20Dedicated%20Leadership%20Workspaces-006A4E)](docs/PHASE2.md)
 [![Theme](https://img.shields.io/badge/Highways%20Theme-docs%2FDESIGN.md%20Compliant-FFCC00)](docs/DESIGN.md)
-[![Tests](https://img.shields.io/badge/Pytest-18%20Passed-004B87)](backend/tests/)
+[![Tests](https://img.shields.io/badge/Pytest-28%20Passed-004B87)](backend/tests/)
 [![Docs](https://img.shields.io/badge/Documentation-docs%2F%20Folder-D1197E)](docs/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
 
@@ -20,11 +20,77 @@ It establishes an integrated foundation connecting projects, roads, bridges, eng
 All system architecture, design specifications, and decision records are maintained in [`docs/`](docs/):
 * [**`docs/ORGANISATION_AND_RBAC_VERIFICATION.md`**](docs/ORGANISATION_AND_RBAC_VERIFICATION.md) — Authoritative verification report of departmental leadership, service cadre rules (TN-HES), statutory committees, entrusted National Highways, and TNRSP-II EPC contracts.
 * [**`docs/PHASE2.md`**](docs/PHASE2.md) — Comprehensive Phase 2 specification covering dedicated Minister (`/leadership/minister`) and Secretary (`/leadership/secretary`) workspaces, 16 KPIs, RBAC security, and 18 automated tests.
+* [**`docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md`**](docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md) — Architecture and implementation blueprint for multilateral corridor intelligence (CKICP & TNRSP-II).
 * [**`docs/DESIGN.md`**](docs/DESIGN.md) — Official Tamil Nadu Highways color specification (`SH`, `NH`, `MDR`, `ODR`, `Rural`) and component design tokens.
 * [**`docs/ARCHITECT.md`**](docs/ARCHITECT.md) — Enterprise architecture blueprints, component hierarchies, and state boundaries.
 * [**`docs/ARCHITECTURE.md`**](docs/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite data layers.
 * [**`docs/ADR.md`**](docs/ADR.md) — Architecture Decision Records (HashRouter for GitHub Pages, standalone financial buckets, RBAC isolation).
 * [**`docs/PHASE_0_ASSESSMENT.md`**](docs/PHASE_0_ASSESSMENT.md) — Pre-implementation audit and backward compatibility assessment.
+
+---
+
+## 📊 Implementation Progress & Evidence-Based Verification Audit
+
+### Executive Roadmap Audit (Phases 0 to 16 & CKICP Stages 1 to 8)
+
+To maintain complete architectural integrity and operational transparency, the table below provides a rigorous, code-verified audit of the original 17 implementation phases and the 8 multilateral CKICP/TNRSP-II stages.
+
+* **Completed**: Full backend models, REST endpoints, dedicated frontend interface, live routing, and automated test coverage.
+* **Partially Completed**: Backend models, REST APIs, and embedded intelligence are fully functional (e.g. within the Executive Smartboard `/` or leadership dashboards), while the standalone sub-route is currently mapped to `PlaceholderModule.tsx`.
+* **Pending / Roadmap**: Scheduled for future field or external hardware rollout (e.g. live IFMS webhook, mobile JE app).
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            AUDIT STATUS ACROSS ALL ROADMAP PHASES                           │
+├──────────────────────────┬──────────────────────────┬───────────────────────────────────────┤
+│ Fully Completed Phases   │ 8 Phases                 │ Phase 0, 1, 2, 4, 6, 12, 15, 16       │
+│ Partially Completed      │ 8 Phases                 │ Phase 3, 5, 7, 8, 9, 10, 11, 14       │
+│ Pending Standalone Route │ 1 Phase                  │ Phase 13 (Citizen Portal)             │
+│ CKICP Multilateral Stages│ 8 of 8 Stages (100%)     │ Stages 1 through 8 Fully Completed    │
+│ Automated Pytest Suite   │ 28 of 28 Passed (100%)   │ Auth, RBAC, Scoping, CKICP, Executive │
+└──────────────────────────┴──────────────────────────┴───────────────────────────────────────┘
+```
+
+### 1. TN-HDOS 17-Phase Implementation Audit Matrix
+
+| Phase | Original Scope | Audit Status | Codebase Implementation Evidence & File Citations |
+| :---: | :--- | :---: | :--- |
+| **0** | **Codebase and architecture assessment** | ✅ **Completed** | Full pre-implementation audit completed. Documented in [`docs/PHASE_0_ASSESSMENT.md`](docs/PHASE_0_ASSESSMENT.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), and [`docs/ADR.md`](docs/ADR.md). |
+| **1** | **Foundation and data architecture** | ✅ **Completed** | 30+ relational SQLAlchemy models in [`backend/app/models.py`](backend/app/models.py), Pydantic schemas in [`backend/app/schemas.py`](backend/app/schemas.py), JWT authentication, bcrypt passwords, and RBAC jurisdiction filters in [`backend/app/auth.py`](backend/app/auth.py). Verified via [`backend/tests/test_auth_and_rbac.py`](backend/tests/test_auth_and_rbac.py). |
+| **2** | **Executive Smartboard & Dedicated Workspaces** | ✅ **Completed** | Fully separated dedicated workspaces: Minister (`/leadership/minister` in [`frontend/src/pages/MinisterDashboard.tsx`](frontend/src/pages/MinisterDashboard.tsx)), Secretary (`/leadership/secretary` in [`frontend/src/pages/SecretaryDashboard.tsx`](frontend/src/pages/SecretaryDashboard.tsx)), and central Smartboard (`/` in [`frontend/src/pages/Dashboard.tsx`](frontend/src/pages/Dashboard.tsx)). Strict 4-bucket financial separation and statutory directive dispatchers. Verified via 16 tests in [`backend/tests/test_executive_phase2.py`](backend/tests/test_executive_phase2.py). |
+| **3** | **Project 360° intelligence** | 🟡 **Partially Completed** | Backend models (`Road`, `Bridge`, `WorkPackage`, `Project`) and REST APIs exist. Project metrics are active in dashboard; dedicated standalone unified asset passport route (`/project-360`) currently renders [`frontend/src/pages/PlaceholderModule.tsx`](frontend/src/pages/PlaceholderModule.tsx). |
+| **4** | **Officer and organisation directory** | ✅ **Completed** | Official leadership (Minister, Principal Secretary, DG, CEs), TN-HES service cadre rules (G.O. Ms. No. 172 & 43), substantive vs acting (`A/C`, `FAC`) postings, and statutory monetary ceilings (G.O. Ms. 75 & 163). Implemented in [`frontend/src/pages/DirectoryPage.tsx`](frontend/src/pages/DirectoryPage.tsx) and [`backend/app/routers/officials.py`](backend/app/routers/officials.py). |
+| **5** | **Department and stakeholder connections** | 🟡 **Partially Completed** | Active interdepartmental coordination intelligence embedded in Executive Smartboard Tab 2 tracking Revenue, TANGEDCO, Forest, TWAD, and Railways blockers. Standalone war room route (`/departments`) currently maps to [`frontend/src/pages/PlaceholderModule.tsx`](frontend/src/pages/PlaceholderModule.tsx). |
+| **6** | **Project management** | ✅ **Completed** | Functional project management portfolio with road-type filtering (SH, NH, MDR, ODR, Rural), milestone progress bars, contractor mapping, and RBAC scoping. Implemented in [`frontend/src/pages/ProjectsPage.tsx`](frontend/src/pages/ProjectsPage.tsx) and [`backend/app/routers/projects.py`](backend/app/routers/projects.py). |
+| **7** | **Finance and expenditure intelligence** | 🟡 **Partially Completed** | 4 distinct statutory accounting buckets (Expenditure, Potential Exposure, Verified Recovery, Prevented Expenditure) enforced across leadership dashboards and backend schemas. Standalone treasury/IFMS reconciliation portal (`/finance`) is a placeholder. |
+| **8** | **Engineering and technical monitoring** | 🟡 **Partially Completed** | Quality defect tracking, HRS Guindy cube test failures, concrete core crush testing, and Non-Conformance Reports (NCRs) active on Executive Smartboard Tab 4. Standalone LIMS laboratory portal (`/quality`) is a placeholder. |
+| **9** | **Contractor and tender management** | 🟡 **Partially Completed** | Contractor cohort scoring, LD exposure, and bank guarantee monitoring live on Smartboard Tab 7. Official CKICP Tender Intelligence live on `/ckicp`. Standalone contractor prequalification route (`/contractors`) is a placeholder. |
+| **10** | **Field operations and asset management** | 🟡 **Partially Completed** | RAMS asset data models (`Road`, `Bridge`) with chainage, span, crossing type, and condition scoring seeded in database. Standalone JE mobile inspection console (`/field-ops`, `/assets`) is a placeholder. |
+| **11** | **Digital office and workflow management** | 🟡 **Partially Completed** | Reusable state-machine workflow engine (`backend/app/services/workflow.py`) and immutable audit trails (`backend/app/services/audit.py`) fully implemented and tested. Standalone E-Office file inbox (`/digital-office`) is a placeholder. |
+| **12** | **Legal, compliance and audit (Governance Registry)** | ✅ **Completed** | Comprehensive Governance & Statutory Registry implemented in [`frontend/src/pages/GovernanceRegistryPage.tsx`](frontend/src/pages/GovernanceRegistryPage.tsx) (`/compliance` and `/governance`). Features 4 dedicated consoles: Government Document Registry (Policy Notes, Budget, SSR, G.O.s), 8 Statutory Committees (BOE, TAC, RASC, RASC-LA, COT, SSR, HLDRC, 16(b)), Rule Referrals, and Human Validation of AI Findings. |
+| **13** | **Citizen services and grievance management** | ⚪ **Pending / Placeholder** | Executive grievance resolution metrics surfaced on Minister dashboard (142/154 resolved). Public citizen filing portal (`/citizen-services`) is a placeholder. |
+| **14** | **Leakage and irregularity detection** | 🟡 **Partially Completed** | Bitumen consumption discrepancy detection, duplicate billing analysis, and advance recovery lag monitoring live in Executive Smartboard Tab 3 and [`backend/app/routers/executive.py`](backend/app/routers/executive.py). Standalone vigilance workbench (`/leakage`) is a placeholder. |
+| **15** | **Ask AI and decision-support intelligence** | ✅ **Completed** | Persistent floating Ask AI assistant ([`frontend/src/components/AskAIPanel.tsx`](frontend/src/components/AskAIPanel.tsx)) across all screens. Screen-aware context injection, database grounding, suggested prompts, and statutory safety disclaimers. Tested in [`backend/tests/test_auth_and_rbac.py`](backend/tests/test_auth_and_rbac.py). |
+| **16** | **External integrations and deployment** | ✅ **Completed** | Automated GitHub Actions CI/CD pipeline ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)), live static deployment on GitHub Pages with offline fallback store, and Docker orchestration ([`docker-compose.yml`](docker-compose.yml)). |
+
+---
+
+### 2. CKICP & TNRSP-II Multilateral Integration Audit Matrix
+
+The dedicated **Chennai-Kanyakumari Industrial Corridor Project (CKICP)** and **Tamil Nadu Road Sector Project II (TNRSP-II)** module has been fully implemented, tested, and deployed across all 8 roadmap stages:
+
+| Stage | Scope | Audit Status | Codebase Implementation Evidence & Grounding |
+| :---: | :--- | :---: | :--- |
+| **1** | **Data Foundation** | ✅ **Completed** | Modeled in [`backend/app/models.py`](backend/app/models.py): `Programme`, `CorridorAlignment`, `Tender`, `LandParcel`, `LegalCase`, and `ProjectConsultant`. Relational foreign key `Project.programme_id`. |
+| **2** | **Official Data Extraction** | ✅ **Completed** | Extracted and seeded the 4 official CKICP tender notifications published on **18-02-2026** (`CKICP/KCH/PKG-01` to `03` and `CKICP/TRY/PKG-01 & 02`) with direct links to official PDFs (`fnews_pdf50.pdf` through `fnews_pdf53.pdf`). Seeded via [`backend/app/seed_ckicp_tnrsp.py`](backend/app/seed_ckicp_tnrsp.py). |
+| **3** | **Projects, Contracts and Officers** | ✅ **Completed** | Seeded dedicated corridor projects (`PRJ-CKICP-001/002` and `PRJ-TNRSP-001/002/003`), work packages, and dedicated empanelled contractors (Ramalingam Construction, BSCPL, NCC, Transstroy). Linked to Project Director Thiru D. Baskara Pandian, IAS. |
+| **4** | **Land Acquisition and Legal** | ✅ **Completed** | Cadastral land parcels registered at taluk/village survey level with Section 15(2), 15(1), and 19(1) dates, assessed/paid compensation, and possession status. Grounded in the verified **206.29 Ha (2,062,934 sq.m)** TNRSP-II footprint. Active litigation tracked for WP No. 11420/2024 (stay on S.No 114/2B, ₹12.50 Cr exposure) and WA No. 892/2025. |
+| **5** | **Finance and GIS** | ✅ **Completed** | GeoJSON coordinates and total length (654.8 km CKICP, 577.0 km TNRSP-II) stored in `CorridorAlignment` and rendered via interactive SVG schematic map. Separate tracking of approved outlay vs actual expenditure. |
+| **6** | **AI Intelligence** | ✅ **Completed** | Automated diagnostic synthesis on Walajabad LA award stay bottleneck, TANGEDCO 42 HT pole shifting interdepartmental blocker, and approaching bid submission deadlines with statutory citations. |
+| **7** | **Leadership Dashboards** | ✅ **Completed** | Dedicated Programme Intelligence interface ([`frontend/src/pages/ProgrammeIntelligencePage.tsx`](frontend/src/pages/ProgrammeIntelligencePage.tsx)) accessible at `#/ckicp` and `#/tnrsp`. Includes programme switcher pill, 6 headline KPIs, and 6 deep-dive sub-tabs. |
+| **8** | **Testing and Validation** | ✅ **Completed** | Dedicated integration test suite ([`backend/tests/test_ckicp_tnrsp.py`](backend/tests/test_ckicp_tnrsp.py)) with 6 tests verifying programmes, tenders, land parcels, legal stays, and GeoJSON coordinates. All 28 tests in backend suite passing cleanly. |
+
+---
 
 ---
 
@@ -222,13 +288,41 @@ cd backend
 .venv/bin/pytest -v
 ```
 
-### Verified Test Results:
+### Verified Test Results (28 of 28 Passed):
+
+#### 1. Core Auth & RBAC Security Suite (`test_auth_and_rbac.py` - 6 Tests)
 * `test_health_check` **PASSED** - Health check and Phase 1 disclaimer verification.
 * `test_login_success_and_failure` **PASSED** - JWT token issuance and invalid password rejection.
 * `test_contractor_isolation` **PASSED** - Contractor L&T cannot see or access Contractor PST's projects (**HTTP 403 Forbidden** enforced).
 * `test_chief_engineer_statewide_access` **PASSED** - Verified statewide project visibility for Chief Engineers.
 * `test_workflow_status_transition_and_audit_log` **PASSED** - Validated state-machine transition and immutable `AuditEvent` generation.
 * `test_ask_ai_persistent_endpoint` **PASSED** - Verified Ask AI grounding references and demo disclaimer tags.
+
+#### 2. Phase 2 Executive Command Centre Suite (`test_executive_phase2.py` - 16 Tests)
+* `test_executive_16_kpis_statewide` **PASSED** - Verified all 16 core KPIs calculated from real database entities.
+* `test_executive_kpis_financial_bucket_isolation` **PASSED** - Strict isolation of expenditure, exposure, recovery, and prevention.
+* `test_executive_kpis_contractor_scoping` **PASSED** - Contractors strictly scoped to their assigned contracts.
+* `test_executive_zones_benchmarking` **PASSED** - Regional cohorts for Chennai, Coimbatore, Madurai, Trichy.
+* `test_critical_leadership_issues_traceability` **PASSED** - Root-cause and responsible entity verification.
+* `test_interdepartmental_friction_matrix` **PASSED** - External clearance tracking (Revenue, TANGEDCO, Forest, etc.).
+* `test_financial_leakage_forensic_integrity` **PASSED** - Duplicate bills, bitumen variances, and unadjusted advances.
+* `test_engineering_quality_defect_tracking` **PASSED** - Highways Research Station (HRS) test non-conformances.
+* `test_contractor_performance_scoring` **PASSED** - Cohort delivery scoring, LD exposure, and bank guarantees.
+* `test_legal_matters_and_audit_paras` **PASSED** - High Court writ petitions and AG audit observations.
+* `test_leadership_decision_creation_and_audit` **PASSED** - Executive directive dispatcher with immutable audit trails.
+* `test_statutory_authority_enforcement_on_decisions` **PASSED** - Enforces role-based statutory power boundaries.
+* `test_minister_overview_cabinet_scope` **PASSED** - Dedicated `/leadership/minister` workspace endpoint.
+* `test_secretary_overview_accountability_alerts` **PASSED** - Dedicated `/leadership/secretary` workspace with officer alerts.
+* `test_minister_workspace_access_control` **PASSED** - Unauthorized roles receive **HTTP 403 Forbidden**.
+* `test_secretary_workspace_access_control` **PASSED** - Unauthorized roles receive **HTTP 403 Forbidden**.
+
+#### 3. Multilateral Programme Intelligence Suite (`test_ckicp_tnrsp.py` - 6 Tests)
+* `test_list_programmes` **PASSED** - Verifies CKICP, TNRSP_II, and CRIDP master programmes.
+* `test_ckicp_programme_details_and_kpis` **PASSED** - Verifies ADB funding, ₹6,448 Cr outlay, and progress metrics.
+* `test_ckicp_tenders_extraction_verification` **PASSED** - Verifies 4 official tenders published on 18-02-2026 with PDF references.
+* `test_ckicp_and_tnrsp_land_parcels` **PASSED** - Verifies cadastral survey parcels, Sec 15(2)/15(1)/19(1) dates, and 206.29 Ha footprint.
+* `test_ckicp_legal_cases_and_stays` **PASSED** - Verifies Madras High Court writs and interim stay alerts (WP 11420/2024).
+* `test_corridor_alignments_geojson` **PASSED** - Validates GeoJSON LineString geometry and corridor lengths.
 
 ---
 
