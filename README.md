@@ -1,9 +1,12 @@
 # TN-HDOS: Tamil Nadu Highways Digital Operating System
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
 [![Phase](https://img.shields.io/badge/Phase-0%20%26%201%20Foundation-006A4E)](docs/ARCHITECTURE.md)
 [![Theme](https://img.shields.io/badge/Highways%20Theme-DESIGN.md%20Compliant-FFCC00)](DESIGN.md)
 [![Tests](https://img.shields.io/badge/Pytest-6%20Passed-004B87)](backend/tests/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
+
+> 🌐 **Live Interactive Deployment**: [https://kiru6006.github.io/govt-highways-agent/](https://kiru6006.github.io/govt-highways-agent/)
 
 **TN-HDOS (Tamil Nadu Highways Digital Operating System)** is the official departmental enterprise digital operating platform built for the **Highways and Minor Ports Department, Government of Tamil Nadu**.
 
