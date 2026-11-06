@@ -508,8 +508,8 @@ export const DirectoryPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+              <table className="w-full text-left text-xs min-w-[850px]">
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
                   <tr>
                     <th className="p-3">Rank / Authority Code</th>
@@ -697,8 +697,8 @@ export const DirectoryPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+              <table className="w-full text-left text-xs min-w-[850px]">
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
                   <tr>
                     <th className="p-3">Department / Agency</th>

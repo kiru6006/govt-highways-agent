@@ -344,8 +344,8 @@ export const MinisterDashboard: React.FC = () => {
           <span className="text-xs font-semibold text-slate-500">5 High-Priority Zones Analyzed</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left text-xs border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[10px]">
                 <th className="p-3">District</th>

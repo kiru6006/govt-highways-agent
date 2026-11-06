@@ -1,10 +1,10 @@
 # TN-HDOS: Tamil Nadu Highways Digital Operating System
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
-[![Phase](https://img.shields.io/badge/Phase-3%20Project%20360%C2%B0%20Intelligence-006A4E)](frontend/src/pages/Project360Page.tsx)
+[![Phase](https://img.shields.io/badge/Phase-17%20Evidence%20%26%20Readiness%20Audit%20Complete-006A4E)](docs/PHASE_17_AUDIT_REPORT.md)
 [![Theme](https://img.shields.io/badge/Highways%20Theme-docs%2FDESIGN.md%20Compliant-FFCC00)](docs/DESIGN.md)
-[![Tests](https://img.shields.io/badge/Pytest-34%20Passed-004B87)](backend/tests/)
-[![Docs](https://img.shields.io/badge/Documentation-docs%2F%20Folder-D1197E)](docs/)
+[![Tests](https://img.shields.io/badge/Pytest-39%20Passed-004B87)](backend/tests/)
+[![Docs](https://img.shields.io/badge/Audit%20Register-7%20Reports%20in%20docs%2F-D1197E)](docs/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
 
 > 🌐 **Live Interactive Deployment**: [https://kiru6006.github.io/govt-highways-agent/](https://kiru6006.github.io/govt-highways-agent/)
@@ -15,12 +15,24 @@ It establishes an integrated foundation connecting projects, roads, bridges, eng
 
 ---
 
-## 📚 Departmental Documentation Index (`docs/`)
+## 📚 Departmental Documentation & Independent Audit Index (`docs/`)
 
-All system architecture, design specifications, and decision records are maintained in [`docs/`](docs/):
+All system architecture, design specifications, and Phase 17 Independent Audit records are maintained in [`docs/`](docs/):
+
+### Phase 17 Independent Audit Deliverables
+* [**`docs/PHASE_17_AUDIT_REPORT.md`**](docs/PHASE_17_AUDIT_REPORT.md) — Master Phase 17 Independent Evidence & Production Readiness Audit with scorecard, findings, and remediation.
+* [**`docs/GOVERNMENT_DATA_VERIFICATION_REGISTER.md`**](docs/GOVERNMENT_DATA_VERIFICATION_REGISTER.md) — Item-by-item verification register classifying all government records into [OV], [EXT], [DR], or [SD] tiers.
+* [**`docs/API_AND_ROUTE_AUDIT.md`**](docs/API_AND_ROUTE_AUDIT.md) — Exhaustive catalog of all 19 frontend routes and 16 backend API routers with RBAC scoping and payloads.
+* [**`docs/SECURITY_AND_RBAC_AUDIT.md`**](docs/SECURITY_AND_RBAC_AUDIT.md) — Security posture audit: JWT authentication, 12 hierarchical roles, contractor multi-tenant isolation, and audit logging.
+* [**`docs/AI_GROUNDING_AND_EVIDENCE_AUDIT.md`**](docs/AI_GROUNDING_AND_EVIDENCE_AUDIT.md) — AI findings audit verifying strict neutral language, statutory grounding (TT Act, RFCTLARR), and human verification workflows.
+* [**`docs/PRODUCTION_READINESS_CHECKLIST.md`**](docs/PRODUCTION_READINESS_CHECKLIST.md) — Operational Go / No-Go scorecard confirming pilot deployment readiness at 100% compliance.
+* [**`docs/PHASE_18_REMEDIATION_PLAN.md`**](docs/PHASE_18_REMEDIATION_PLAN.md) — Strategic promotion roadmap detailing sprint plans to convert the remaining 9 placeholder modules into operational consoles.
+
+### Architecture & Grounding Registers
 * [**`docs/ORGANISATION_AND_RBAC_VERIFICATION.md`**](docs/ORGANISATION_AND_RBAC_VERIFICATION.md) — Authoritative verification report of departmental leadership, service cadre rules (TN-HES), statutory committees, entrusted National Highways, and TNRSP-II EPC contracts.
 * [**`docs/PHASE2.md`**](docs/PHASE2.md) — Comprehensive Phase 2 specification covering dedicated Minister (`/leadership/minister`) and Secretary (`/leadership/secretary`) workspaces, 16 KPIs, RBAC security, and 18 automated tests.
 * [**`docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md`**](docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md) — Architecture and implementation blueprint for multilateral corridor intelligence (CKICP & TNRSP-II).
+* [**`docs/TNRSP_LAND_ACQUISITION_DATA.md`**](docs/TNRSP_LAND_ACQUISITION_DATA.md) — Verified 206.29 Hectares land acquisition register across the 16 EPC packages of TNRSP-II.
 * [**`docs/DESIGN.md`**](docs/DESIGN.md) — Official Tamil Nadu Highways color specification (`SH`, `NH`, `MDR`, `ODR`, `Rural`) and component design tokens.
 * [**`docs/ARCHITECT.md`**](docs/ARCHITECT.md) — Enterprise architecture blueprints, component hierarchies, and state boundaries.
 * [**`docs/ARCHITECTURE.md`**](docs/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite data layers.
@@ -863,6 +875,32 @@ All user interface elements, badges, charts, and indicators strictly adhere to t
 * `test_project_360_jurisdiction_scoping_and_contractor_isolation` **PASSED** - Enforces contractor 403 isolation.
 * `test_project_360_not_found` **PASSED** - Verifies clean HTTP 404 response for invalid project IDs.
 
+#### 5. Phase 17 Independent Audit & Grounding Suite (`test_phase17_audit.py` - 5 Tests)
+* `test_unauthenticated_request_rejected` **PASSED** - Sensitive endpoints strictly reject unauthenticated calls with HTTP 401.
+* `test_contractor_multi_tenant_isolation` **PASSED** - Multi-tenant contractors strictly view awarded packages only; rival bids blocked.
+* `test_nonexistent_project_360_returns_404` **PASSED** - Verifies clean HTTP 404 response with standardized error details.
+* `test_ai_findings_statutory_grounding_and_neutrality` **PASSED** - Automated findings strictly avoid prohibited accusatory language.
+* `test_evm_metrics_zero_division_safety` **PASSED** - Validates zero-division guards when $PV = 0$ or $AC = 0$.
+
+---
+
+## 📸 Verified Application UI Screenshots & Operational Workspaces
+
+All 10 operational views have been captured from the live application and archived under [`docs/screenshots/`](docs/screenshots/):
+
+| Ref | View & Operational Purpose | Live Route | Screenshot Preview |
+| :---: | :--- | :--- | :--- |
+| **01** | **Executive Smartboard**<br>State-wide KPIs, inter-agency blockers, zonal benchmarks, quick filters. | `/#/` | [![01](docs/screenshots/01_executive_smartboard.png)](docs/screenshots/01_executive_smartboard.png) |
+| **02** | **Minister Cabinet Dashboard**<br>Political priorities, constituency deliveries, public readiness flags. | `/#/leadership/minister` | [![02](docs/screenshots/02_minister_dashboard.png)](docs/screenshots/02_minister_dashboard.png) |
+| **03** | **Principal Secretary Workspace**<br>Statutory compliance, BE/RE budget analysis, contractor scorecards. | `/#/leadership/secretary` | [![03](docs/screenshots/03_secretary_dashboard.png)](docs/screenshots/03_secretary_dashboard.png) |
+| **04** | **CKICP Multilateral Intelligence**<br>ADB-funded corridor packages, EPC contracts, LA status, supervision. | `/#/ckicp` | [![04](docs/screenshots/04_ckicp_intelligence.png)](docs/screenshots/04_ckicp_intelligence.png) |
+| **05** | **TNRSP-II Multilateral Intelligence**<br>World Bank 16 EPC packages, verified 206.29 Ha land acquisition records. | `/#/tnrsp` | [![05](docs/screenshots/05_tnrsp_intelligence.png)](docs/screenshots/05_tnrsp_intelligence.png) |
+| **06** | **Project 360° Portfolio Workspace**<br>Portfolio table, classification badges, financial variances, 360° launcher. | `/#/project-360` | [![06](docs/screenshots/06_project_360_portfolio.png)](docs/screenshots/06_project_360_portfolio.png) |
+| **07** | **Project 360° Complete Dossier**<br>17-facet deep dive: Sanctions, Milestones, EVM Variance, Parcels, Litigation. | `/#/project-360?id=1` | [![07](docs/screenshots/07_project_360_dossier.png)](docs/screenshots/07_project_360_dossier.png) |
+| **08** | **Projects Management (Responsive Table)**<br>Responsive table with horizontal scrollbar, dual progress bars, 360° links. | `/#/projects` | [![08](docs/screenshots/08_projects_management.png)](docs/screenshots/08_projects_management.png) |
+| **09** | **Officer & Organisation Directory**<br>8 Highways wings, 47 HQ posts, G.O. Ms. No. 75 delegations, external SPOCs. | `/#/directory` | [![09](docs/screenshots/09_officer_directory.png)](docs/screenshots/09_officer_directory.png) |
+| **10** | **Governance & Audit Registry**<br>High Court stays, statutory committees, PAC audit paras, neutral AI findings. | `/#/compliance` | [![10](docs/screenshots/10_governance_registry.png)](docs/screenshots/10_governance_registry.png) |
+
 ---
 
 ## 📂 Project Structure
@@ -874,12 +912,21 @@ govt-highways-agent/
 ├── README.md                    # Complete project guide and execution instructions
 ├── docker-compose.yml           # Containerized orchestration
 ├── docs/
+│   ├── PHASE_17_AUDIT_REPORT.md # Master Independent Evidence Audit Report
+│   ├── GOVERNMENT_DATA_VERIFICATION_REGISTER.md # Grounded data register
+│   ├── API_AND_ROUTE_AUDIT.md   # Complete catalog of 19 routes & 16 API routers
+│   ├── SECURITY_AND_RBAC_AUDIT.md # Security, JWT, 12 roles & contractor isolation
+│   ├── AI_GROUNDING_AND_EVIDENCE_AUDIT.md # AI neutral language & statutory audit
+│   ├── PRODUCTION_READINESS_CHECKLIST.md # Operational Go / No-Go scorecard (100%)
+│   ├── PHASE_18_REMEDIATION_PLAN.md # Roadmap for promoting 9 secondary modules
 │   ├── PHASE_0_ASSESSMENT.md    # Repository & technology stack evaluation
 │   ├── ARCHITECTURE.md          # Enterprise architecture & domain blueprint
 │   ├── ADR.md                   # Architecture Decision Records (001-004)
 │   ├── PHASE2.md                # Phase 2 dedicated leadership workspaces specification
 │   ├── ORGANISATION_AND_RBAC_VERIFICATION.md # Official departmental cadre and service rules
-│   └── CKICP_TNRSP_INTEGRATION_ASSESSMENT.md # Multilateral corridor intelligence blueprint
+│   ├── TNRSP_LAND_ACQUISITION_DATA.md # Grounded 206.29 Ha land acquisition data
+│   ├── CKICP_TNRSP_INTEGRATION_ASSESSMENT.md # Multilateral corridor intelligence blueprint
+│   └── screenshots/             # 10 verified application UI screenshots (.png)
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
@@ -921,7 +968,8 @@ govt-highways-agent/
 │       ├── test_auth_and_rbac.py# Security, RBAC & isolation tests
 │       ├── test_executive_phase2.py # Executive Smartboard & workspace tests
 │       ├── test_ckicp_tnrsp.py  # Multilateral corridor integration tests
-│       └── test_project_360.py  # Project 360° dossier & EVM calculation tests
+│       ├── test_project_360.py  # Project 360° dossier & EVM calculation tests
+│       └── test_phase17_audit.py# Negative security, EVM safety & AI grounding tests
 └── frontend/
     ├── package.json
     ├── tailwind.config.js       # Configured with DESIGN.md road tokens
@@ -944,13 +992,13 @@ govt-highways-agent/
         │   ├── SecretaryDashboard.tsx # Dedicated Principal Secretary Workspace
         │   ├── ProgrammeIntelligencePage.tsx # CKICP & TNRSP-II Intelligence Workspace
         │   ├── Project360Page.tsx # Unified Project 360° Intelligence Workspace
-        │   ├── ProjectsPage.tsx # Project Management Portfolio
+        │   ├── ProjectsPage.tsx # Project Management Portfolio (Responsive Table)
         │   ├── DirectoryPage.tsx # Officer Directory & Cadre Rules
         │   ├── GovernanceRegistryPage.tsx # Governance, Committees & Document Registry
         │   └── PlaceholderModule.tsx # Standalone placeholder for pending modules
         ├── App.tsx              # Router & layout shell
         ├── main.tsx
-        └── index.css            # Custom badge utility classes
+        └── index.css            # Custom badge and responsive table scrollbar classes
 ```
 
 ---

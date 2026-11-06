@@ -711,8 +711,8 @@ export const Project360Page: React.FC = () => {
               <span className="text-xs text-slate-500 font-medium">Statutory Clearances</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse text-xs min-w-[760px]">
                 <thead>
                   <tr className="bg-slate-50 border-y border-slate-200 text-slate-500">
                     <th className="py-2.5 px-3 font-semibold">Approval Type</th>
@@ -889,8 +889,8 @@ export const Project360Page: React.FC = () => {
               <span className="text-xs text-slate-500 font-medium">Historical Measurement Sheets</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse text-xs min-w-[760px]">
                 <thead>
                   <tr className="bg-slate-50 border-y border-slate-200 text-slate-500">
                     <th className="py-2.5 px-3 font-semibold">Month</th>
@@ -1124,8 +1124,8 @@ export const Project360Page: React.FC = () => {
             </div>
 
             {/* Parcels Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse text-xs min-w-[960px]">
                 <thead>
                   <tr className="bg-slate-50 border-y border-slate-200 text-slate-500">
                     <th className="py-2.5 px-3 font-semibold">Parcel Ref</th>
