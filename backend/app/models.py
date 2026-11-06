@@ -602,3 +602,60 @@ class ZonePerformanceSnapshot(Base):
     data_completeness_pct = Column(Float, default=95.0)
     
     zone = relationship("Zone")
+
+# -------------------------------------------------------------
+# OFFICIAL SERVICE CADRE, DESIGNATION & STATUTORY BODIES
+# -------------------------------------------------------------
+
+class ServiceCategory(Base):
+    __tablename__ = "service_categories"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, nullable=False)  # TN_HES, TN_HESS, IAS, POLITICAL, EXTERNAL
+    name = Column(String(150), nullable=False)
+    governing_rules = Column(String(250), nullable=True)  # e.g., G.O.Ms.No.172 dated 03.11.2025
+
+class Designation(Base):
+    __tablename__ = "designations"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, nullable=False)  # MINISTER, PRIN_SEC, DIR_GEN, CHIEF_ENG, SUP_ENG, DIV_ENG, ASST_DIV_ENG, ASST_ENG, JR_ENG
+    title = Column(String(150), nullable=False)
+    service_category_id = Column(Integer, ForeignKey("service_categories.id"), nullable=True)
+    hierarchical_rank = Column(Integer, default=1)  # 1 (Minister), 2 (Secy), 3 (DG), 4 (CE), 5 (SE), 6 (DE), 7 (ADE), 8 (AE/JE)
+    is_gazetted = Column(Boolean, default=True)
+    technical_sanction_limit_cr = Column(Float, default=0.0)  # Statutory monetary ceiling for Technical Sanction
+    tender_acceptance_limit_cr = Column(Float, default=0.0)
+    
+    service_category = relationship("ServiceCategory")
+
+class HistoricalPosting(Base):
+    __tablename__ = "historical_postings"
+    id = Column(Integer, primary_key=True, index=True)
+    official_id = Column(Integer, ForeignKey("officials.id"), nullable=False)
+    designation_title = Column(String(150), nullable=False)
+    posting_unit = Column(String(200), nullable=False)  # e.g. "Tambaram Division, Chengalpattu Circle"
+    posting_type = Column(String(50), default="REGULAR")  # REGULAR, ADDITIONAL_CHARGE (A/C), FULL_ADDITIONAL_CHARGE (FAC), DEPUTATION
+    from_date = Column(DateTime, nullable=False)
+    to_date = Column(DateTime, nullable=True)  # Null if currently holding the post
+    is_current = Column(Boolean, default=True)
+    transfer_go_reference = Column(String(150), nullable=True)  # e.g. "G.O.(Rt) No. 43/HW/2026"
+    
+    official = relationship("Official")
+
+class DelegationOfAuthority(Base):
+    __tablename__ = "delegations_of_authority"
+    id = Column(Integer, primary_key=True, index=True)
+    designation_code = Column(String(50), nullable=False)
+    power_type = Column(String(100), nullable=False)  # TECHNICAL_SANCTION, TENDER_ACCEPTANCE, EXPENDITURE_SANCTION, VARIATION_APPROVAL
+    monetary_limit_cr = Column(Float, nullable=False)
+    tender_excess_pct_limit = Column(Float, default=0.0)
+    statutory_rule_reference = Column(String(200), nullable=False)  # e.g. G.O. Ms. No. 75 / G.O. Ms. No. 163
+    remarks = Column(Text, nullable=True)
+
+class StatutoryCommittee(Base):
+    __tablename__ = "statutory_committees"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, nullable=False)  # BOE, TAC, RASC, RASC_LA, COT, SSR, HLDRC, EXPERT_16B
+    name = Column(String(200), nullable=False)
+    chairperson_title = Column(String(150), nullable=False)
+    mandate_summary = Column(Text, nullable=False)
+    constitution_go = Column(String(150), nullable=False)

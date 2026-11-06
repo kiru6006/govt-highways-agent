@@ -266,4 +266,26 @@ def test_statutory_authority_enforcement_on_decisions(client: TestClient):
     res_disc_ok = client.post("/api/v1/executive/decisions", json=payload_disc, headers={"Authorization": f"Bearer {token_sec}"})
     assert res_disc_ok.status_code == 201
 
+def test_verified_organisation_structure(client: TestClient):
+    """
+    Verifies that the organisation structure endpoint returns the verified
+    Minister, Principal Secretary, HODs, statutory committees, and delegations of authority.
+    """
+    token = get_auth_token(client, "minister")
+    res = client.get("/api/v1/executive/organisation/verified-structure", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["minister"]["name"] == "Thiru Aadhav Arjuna"
+    assert data["minister"]["designation"] == "Minister for Public Works and Sports Development"
+    assert data["principal_secretary"]["name"] == "Thiru Shunchonngam Jatak Chiru, IAS"
+    assert data["principal_secretary"]["email"] == "hwaysec@tn.gov.in"
+    assert "statutory_committees" in data
+    assert any(c["code"] == "BOE" for c in data["statutory_committees"])
+    assert any(c["code"] == "COT" for c in data["statutory_committees"])
+    assert "delegations_of_authority" in data
+    assert "heads_of_department" in data
+    assert "verification_metadata" in data
+
+
 

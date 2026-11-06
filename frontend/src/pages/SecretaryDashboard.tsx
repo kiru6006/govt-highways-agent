@@ -735,3 +735,4 @@ export const SecretaryDashboard: React.FC = () => {
     </div>
   );
 };
+

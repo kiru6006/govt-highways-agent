@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
 [![Phase](https://img.shields.io/badge/Phase-2%20Dedicated%20Leadership%20Workspaces-006A4E)](docs/PHASE2.md)
 [![Theme](https://img.shields.io/badge/Highways%20Theme-docs%2FDESIGN.md%20Compliant-FFCC00)](docs/DESIGN.md)
-[![Tests](https://img.shields.io/badge/Pytest-17%20Passed-004B87)](backend/tests/)
+[![Tests](https://img.shields.io/badge/Pytest-18%20Passed-004B87)](backend/tests/)
 [![Docs](https://img.shields.io/badge/Documentation-docs%2F%20Folder-D1197E)](docs/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
 
@@ -18,7 +18,8 @@ It establishes an integrated foundation connecting projects, roads, bridges, eng
 ## 📚 Departmental Documentation Index (`docs/`)
 
 All system architecture, design specifications, and decision records are maintained in [`docs/`](docs/):
-* [**`docs/PHASE2.md`**](docs/PHASE2.md) — Comprehensive Phase 2 specification covering dedicated Minister (`/leadership/minister`) and Secretary (`/leadership/secretary`) workspaces, 16 KPIs, RBAC security, and 17 automated tests.
+* [**`docs/ORGANISATION_AND_RBAC_VERIFICATION.md`**](docs/ORGANISATION_AND_RBAC_VERIFICATION.md) — Authoritative verification report of departmental leadership, service cadre rules (TN-HES), statutory committees, entrusted National Highways, and TNRSP-II EPC contracts.
+* [**`docs/PHASE2.md`**](docs/PHASE2.md) — Comprehensive Phase 2 specification covering dedicated Minister (`/leadership/minister`) and Secretary (`/leadership/secretary`) workspaces, 16 KPIs, RBAC security, and 18 automated tests.
 * [**`docs/DESIGN.md`**](docs/DESIGN.md) — Official Tamil Nadu Highways color specification (`SH`, `NH`, `MDR`, `ODR`, `Rural`) and component design tokens.
 * [**`docs/ARCHITECT.md`**](docs/ARCHITECT.md) — Enterprise architecture blueprints, component hierarchies, and state boundaries.
 * [**`docs/ARCHITECTURE.md`**](docs/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite data layers.
@@ -66,7 +67,7 @@ Rather than implementing a single generic cockpit for all senior executives, TN-
 * **Target Audience**: Principal Secretary to Government, Secretary (Highways), Chief Engineer (Projects).
 * **Access Control**: Strictly restricted to `PRIN_SEC`, `CHIEF_ENG`, and `ADMIN` roles.
 * **Key Capabilities**:
-  - **Departmental Governance AI Briefing**: Circle variance alerts, financial pre-audit controls, and **Specific Officer Accountability Alerts** (SE Chengalpattu for 45-day LA delay; EE Tambaram for 32-day utility delay).
+  - **Departmental Governance AI Briefing**: Circle variance alerts, financial pre-audit controls, and **Specific Officer Accountability Alerts** (SE Chengalpattu for 45-day LA delay; DE (H) Tambaram for 32-day utility delay).
   - **16 Core Department Performance KPIs**: Full operational metrics with modal drill-downs into verified records.
   - **Zone Benchmarking Cohorts**: Comparative analysis across Chennai, Coimbatore, Madurai, Tiruchirappalli with sample size and completeness metadata.
   - **Secretarial Directive Console**: Authorized administrative actions (`DISCIPLINARY_INQUIRY`, `WITHHOLD_LC`, `ISSUE_LD_NOTICE`, `ORDER_HRS_TECHNICAL_AUDIT`, `VIGILANCE_REFERENCE`, `MANDATE_AG_ATR`).
@@ -75,7 +76,38 @@ Rather than implementing a single generic cockpit for all senior executives, TN-
 * **Statewide Project Portfolio & Stage Distribution** (Planning, Tendering, Execution, Delayed, Requiring Intervention).
 * **9 Deep-Dive Intelligence Panels**: Critical Issues, Interdepartmental Friction, Financial Leakage, Quality Non-Conformances, Zone Benchmarking, Contractor Performance, Legal/AG Paras, and Decisions Tracker.
 
-### 2. Global Application Header & Role Persona Switcher
+### 2. Authoritative Department Leadership, Service Cadres & Statutory Governance
+
+In compliance with official Government of Tamil Nadu directories and statutory service cadre rules:
+
+#### A. Executive & Administrative Leadership
+* **Hon'ble Minister**: **Thiru Aadhav Arjuna**, Minister for Public Works and Sports Development (Public Works - Buildings, Highways and Minor Ports, Sports Development).
+* **Principal Secretary to Government**: **Thiru Shunchonngam Jatak Chiru, IAS**, Highways and Minor Ports Department (`044-25670959`, `hwaysec@tn.gov.in`, Secretariat, Fort St. George, Chennai - 600 009).
+* **Director General (Highways)**: **Er. R. Selvadurai**, Highways Department, Guindy, Chennai (`044-22351099`, `dgchn.hd@tn.gov.in`).
+* **Project Director (TNRSP & CKICP)**: **Thiru D. Baskara Pandian, IAS**, Project Director (A/C TNRSP, FAC CKICP).
+* **Chief Engineers (C&M, NH, PDI, HRS, TANSHA)**:
+  - CE (C&M Chennai Region): **Er. S. Palanivel**
+  - CE (C&M Trichy Region): **Er. S. Jawahar Muthuraj**
+  - CE (C&M Madurai Region): **Er. Ramesh**
+  - CE (C&M Coimbatore Region): **Er. S. Palanivel (A/C)**
+  - CE (National Highways): **Er. K. Vanathi**
+  - CE (Planning Designs & Investigation): **Er. S. Yamini** (also holds TNRSP-II A/C)
+  - Director (Highways Research Station - HRS): **Er. A. Venkatachalam**
+  - CE (CKICP): **Er. R. Vimala (A/C)**
+  - Member Technical (TANSHA): **Er. D. Jebaselwin Gladson**
+
+#### B. Service Cadre Rules (TN-HES)
+* Governed by **Tamil Nadu Highways Engineering Service (TN-HES) Rules** (G.O.Ms.No.172 dated 03.11.2025; G.O.Ms.No.43).
+* Cadre designations strictly employ **Divisional Engineer (H)** (`DE`), never central generic titles. Field hierarchy: Chief Engineer (H) &rarr; Superintending Engineer (H) &rarr; **Divisional Engineer (H)** &rarr; Assistant Divisional Engineer (H) &rarr; Assistant Engineer (H) / Junior Engineer (H).
+* Financial power delegations for Technical Sanction (TS) and Tender Acceptance (TA) strictly follow **G.O. Ms. No. 75** and **G.O. Ms. No. 163**.
+
+#### C. Statutory Committees & Undertakings
+* **8 Statutory Committees**: Board of Engineers (BOE), Technical Audit Committee (TAC), Revised Administrative Sanction Committee (RASC & RASC_LA), Commissionerate of Tenders (COT), Standard Schedule of Rates (SSR) Committee, High Level Dispute Resolution Committee (HLDRC), and Three Member Expert Committee under TNTIT Act 16(b).
+* **Entrusted National Highways**: 11 corridors totaling 797.562 km (NH 181, 648, 179A, 336, 42, 75, 38, 381, 381A, 381B, 532).
+* **Core Road Network TNRSP-II EPC Packages**: EPC01 through EPC10 (427.967 km, ₹1,704.91 Cr) with 7-year maintenance liability.
+* **Autonomous Undertakings**: Tamil Nadu Maritime Board (TNMB), Poompuhar Shipping Corporation, TNRDC, and TNRIDC.
+
+### 3. Global Application Header & Role Persona Switcher
 * Official Tamil Nadu Government branding and dynamic module title.
 * Global search bar querying project codes, road names, and contractors.
 * **Live RBAC Role Switcher**: Click on the user profile to seamlessly evaluate the platform under different roles with server-side jurisdiction enforcement.

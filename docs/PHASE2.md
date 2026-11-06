@@ -132,13 +132,14 @@ Access control is strictly validated server-side and client-side based on the au
 - `GET /api/v1/executive/legal` — Confidential High Court writ petitions, land acquisition disputes, and AG audit paras. Restricted from contractors.
 - `GET /api/v1/executive/decisions` — Registered leadership directives and actions.
 - `POST /api/v1/executive/decisions` — Records a new leadership decision with validation of statutory authority and immutable audit logging.
+- `GET /api/v1/executive/organisation/verified-structure` — Official verified leadership contact directory, statutory committees (BOE, TAC, COT, etc.), and delegation of authority thresholds.
 
 ---
 
 ## 6. Automated Test Suite Verification
 
 Comprehensive integration test coverage in [`backend/tests/test_executive_phase2.py`](../backend/tests/test_executive_phase2.py) and [`backend/tests/test_auth_and_rbac.py`](../backend/tests/test_auth_and_rbac.py):
-- **17 / 17 Tests Passing**:
+- **18 / 18 Tests Passing**:
   1. `test_executive_16_kpis_statewide`: Verifies all 16 KPIs and distinct financial accounting buckets.
   2. `test_executive_kpis_contractor_scoping`: Verifies contractor isolation to awarded projects only.
   3. `test_executive_zones_benchmarking`: Verifies 4 zone cohorts, delay days, and budget utilization.
@@ -150,4 +151,8 @@ Comprehensive integration test coverage in [`backend/tests/test_executive_phase2
   9. `test_secretary_workspace_access_and_security`: Verifies Secretary gets 200, contractors and EE get 403.
   10. `test_confidential_leakage_and_legal_protection`: Verifies vigilance and legal records return 403 to contractors.
   11. `test_statutory_authority_enforcement_on_decisions`: Verifies non-minister cannot issue `CABINET_NOTE`, non-secretary cannot issue `DISCIPLINARY_INQUIRY`, and empowered roles succeed.
-  12-17. Complete Phase 1 authentication and RBAC regression tests.
+  12. `test_verified_organisation_structure`: Verifies verified Minister (Thiru Aadhav Arjuna), Principal Secretary (Thiru Shunchonngam Jatak Chiru, IAS), HODs, statutory committees (BOE, TAC, COT, etc.), and delegation of authority limits.
+  13-18. Complete Phase 1 authentication and RBAC regression tests.
+
+For authoritative citations and verification labels, see [**`docs/ORGANISATION_AND_RBAC_VERIFICATION.md`**](ORGANISATION_AND_RBAC_VERIFICATION.md).
+

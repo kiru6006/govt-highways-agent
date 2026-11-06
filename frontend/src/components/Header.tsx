@@ -14,12 +14,12 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
   const [searchQuery, setSearchQuery] = useState('');
 
   const personas = [
-    { username: 'minister', label: "Hon'ble Minister (Thiru E. V. Velu)", role: 'Minister (Cabinet & Strategic)' },
-    { username: 'secretary', label: 'Principal Secretary (Thiru Pradeep Yadav IAS)', role: 'Principal Secretary (Governance & Operations)' },
-    { username: 'admin', label: 'Admin (Thiru Senthil Kumar IAS)', role: 'System Admin (Statewide)' },
-    { username: 'chief_eng', label: 'Chief Engineer (Er. Balasubramanian)', role: 'CE Projects (Statewide)' },
-    { username: 'se_chengalpattu', label: 'Superintending Engineer (Er. Rajasekaran)', role: 'SE Chengalpattu Circle' },
-    { username: 'ee_tambaram', label: 'Divisional Engineer (Er. Anandhan)', role: 'EE Tambaram Division' },
+    { username: 'minister', label: "Hon'ble Minister (Thiru Aadhav Arjuna)", role: 'Minister for Public Works & Sports Dev' },
+    { username: 'secretary', label: 'Principal Secretary (Thiru Shunchonngam Jatak Chiru, IAS)', role: 'Principal Secretary to Government' },
+    { username: 'admin', label: 'System Admin (Statewide)', role: 'State Administrator' },
+    { username: 'chief_eng', label: 'Chief Engineer (Er. S. Palanivel)', role: 'CE (H) C&M Chennai Region' },
+    { username: 'se_chengalpattu', label: 'Superintending Engineer (Er. M. Rajendran)', role: 'SE (H) Chengalpattu Circle' },
+    { username: 'ee_tambaram', label: 'Divisional Engineer (Er. P. Anandhan)', role: 'DE (H) Tambaram Division' },
     { username: 'contractor_lt', label: 'Contractor L&T (V. Ramakrishnan)', role: 'Contractor (PRJ-TN-2026-001 only)' },
     { username: 'contractor_pst', label: 'Contractor PST (T. Shanmugam)', role: 'Contractor (PRJ-TN-2026-002 only)' },
   ];

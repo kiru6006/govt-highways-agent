@@ -575,3 +575,75 @@ class SecretaryOverviewOut(BaseModel):
     secretarial_actions_pending: List[PendingDirectiveSummary]
     data_freshness: str
     reporting_period: str
+
+# Verified Organisation, Service Cadre & Statutory Bodies Schemas
+class StatutoryCommitteeOut(BaseModel):
+    id: int
+    code: str
+    name: str
+    chairperson_title: str
+    mandate_summary: str
+    constitution_go: str
+
+    class Config:
+        from_attributes = True
+
+class DesignationOut(BaseModel):
+    id: int
+    code: str
+    title: str
+    hierarchical_rank: int
+    is_gazetted: bool
+    technical_sanction_limit_cr: float
+    tender_acceptance_limit_cr: float
+
+    class Config:
+        from_attributes = True
+
+class DelegationOfAuthorityOut(BaseModel):
+    id: int
+    designation_code: str
+    power_type: str
+    monetary_limit_cr: float
+    tender_excess_pct_limit: float
+    statutory_rule_reference: str
+    remarks: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class HistoricalPostingOut(BaseModel):
+    id: int
+    designation_title: str
+    posting_unit: str
+    posting_type: str
+    from_date: datetime.datetime
+    to_date: Optional[datetime.datetime] = None
+    is_current: bool
+    transfer_go_reference: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class VerifiedOfficialOut(BaseModel):
+    id: int
+    name: str
+    designation: str
+    wing: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    office_address: Optional[str] = None
+    charge_status: str
+    verification_status: str
+    tenures: List[HistoricalPostingOut] = []
+
+    class Config:
+        from_attributes = True
+
+class VerifiedOrganisationStructureOut(BaseModel):
+    minister: dict
+    principal_secretary: dict
+    heads_of_department: List[VerifiedOfficialOut]
+    statutory_committees: List[StatutoryCommitteeOut]
+    delegations_of_authority: List[DelegationOfAuthorityOut]
+    verification_metadata: dict

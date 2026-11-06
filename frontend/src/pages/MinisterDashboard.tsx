@@ -119,7 +119,7 @@ export const MinisterDashboard: React.FC = () => {
                 Authorised Executive Personas:
               </div>
               <ul className="list-disc pl-5 space-y-1">
-                <li><strong>Hon'ble Minister for Highways</strong> (<code className="bg-slate-200 px-1 py-0.5 rounded">minister</code>) — Statewide strategic & Cabinet policy intelligence</li>
+                <li><strong>Hon'ble Minister for Public Works and Sports Development</strong> (<code className="bg-slate-200 px-1 py-0.5 rounded">minister</code>) — Statewide strategic & Cabinet policy intelligence</li>
                 <li><strong>System Administrator</strong> (<code className="bg-slate-200 px-1 py-0.5 rounded">admin</code>) — System oversight</li>
               </ul>
             </div>
@@ -576,3 +576,4 @@ export const MinisterDashboard: React.FC = () => {
     </div>
   );
 };
+

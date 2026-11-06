@@ -541,6 +541,13 @@ def seed_database(db_session: Session = None):
     except Exception as e:
         print(f"Phase 2 seed notice: {e}")
 
+    # Seed Official Verification & Statutory Bodies
+    try:
+        from app.seed_official_verification import seed_official_verification
+        seed_official_verification(db_session=db)
+    except Exception as e:
+        print(f"Official verification seed notice: {e}")
+
     if close_on_exit:
         db.close()
 

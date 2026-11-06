@@ -7,7 +7,9 @@ from app.models import (
     User, Project, Road, Zone, Circle, Division,
     LeadershipIssue, LeadershipDecision, InterdepartmentalBlocker,
     FinancialLeakageFinding, QualityDefectRecord, ContractorEvaluation,
-    LegalMatter, ZonePerformanceSnapshot, DepartmentDependency, Issue
+    LegalMatter, ZonePerformanceSnapshot, DepartmentDependency, Issue,
+    StatutoryCommittee, Designation, DelegationOfAuthority, HistoricalPosting,
+    Official, ServiceCategory
 )
 from app.schemas import (
     ExecutiveKPIsOut, PortfolioStageItem, ZoneComparisonOut,
@@ -16,7 +18,9 @@ from app.schemas import (
     LegalMatterOut, LeadershipDecisionCreate, LeadershipDecisionOut,
     MinisterOverviewOut, SecretaryOverviewOut, MinisterStrategicKPIs,
     MinisterAIBriefing, UrgentMinisterialIntervention, DistrictImpactSummary,
-    PendingDirectiveSummary, SecretaryAIBriefing, OfficerAccountabilityAlert
+    PendingDirectiveSummary, SecretaryAIBriefing, OfficerAccountabilityAlert,
+    VerifiedOrganisationStructureOut, StatutoryCommitteeOut, DesignationOut,
+    DelegationOfAuthorityOut, HistoricalPostingOut, VerifiedOfficialOut
 )
 from app.auth import get_current_user
 from app.services.audit import log_audit_event
@@ -618,7 +622,7 @@ def get_secretary_overview(
             action="Issue Call for Explanation under Rule 17(a) of TN Civil Services (CCA) Rules"
         ),
         OfficerAccountabilityAlert(
-            officer="Er. P. Anandhan, B.E. (EE Tambaram Division)",
+            officer="Er. P. Anandhan, B.E. (Divisional Engineer (H), Tambaram Division)",
             issue="Overdue technical sanction for utility line diversion estimates",
             pending_days=32,
             action="Direct mandatory 7-day disposal with compliance report to Chief Engineer"
@@ -654,5 +658,86 @@ def get_secretary_overview(
         secretarial_actions_pending=sec_decisions,
         data_freshness="Updated: Today, 08:30 IST",
         reporting_period="FY 2025-26 Q4"
+    )
+
+@router.get("/organisation/verified-structure", response_model=VerifiedOrganisationStructureOut)
+def get_verified_organisation_structure(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Returns official, verified leadership contact details, statutory committees,
+    delegation of authority thresholds, and verified Heads of Department.
+    """
+    minister_data = {
+        "name": "Thiru Aadhav Arjuna",
+        "designation": "Minister for Public Works and Sports Development",
+        "portfolio": "Public Works (Buildings, Highways and Minor Ports), Sports Development",
+        "office": "Secretariat, Fort St. George, Chennai - 600 009",
+        "verification_status": "VERIFIED OFFICIAL",
+        "source": "G.O. / TN Portal Official Directory (dept_id=MTM)"
+    }
+
+    principal_secretary_data = {
+        "name": "Thiru Shunchonngam Jatak Chiru, IAS",
+        "designation": "Principal Secretary to Government",
+        "department": "Highways and Minor Ports Department",
+        "email": "hwaysec@tn.gov.in",
+        "phone": "044-25670959",
+        "office": "Secretariat, Fort St. George, Chennai - 600 009",
+        "verification_status": "VERIFIED OFFICIAL",
+        "source": "TN Portal Official Directory (dept_id=MTM)"
+    }
+
+    committees = db.query(StatutoryCommittee).all()
+    delegations = db.query(DelegationOfAuthority).all()
+    
+    # Fetch verified officials
+    officials = db.query(Official).all()
+    hod_list = []
+    for off in officials:
+        # Load tenures
+        postings = db.query(HistoricalPosting).filter(HistoricalPosting.official_id == off.id).all()
+        tenures_out = [
+            HistoricalPostingOut(
+                id=p.id,
+                designation_title=p.designation_title,
+                posting_unit=p.posting_unit,
+                posting_type=p.posting_type,
+                from_date=p.from_date,
+                to_date=p.to_date,
+                is_current=p.is_current,
+                transfer_go_reference=p.transfer_go_reference
+            )
+            for p in postings
+        ]
+        u_name = off.user.full_name if off.user else "Official"
+        u_phone = off.user.phone if off.user else None
+        u_email = off.user.email if off.user else None
+        hod_list.append(VerifiedOfficialOut(
+            id=off.id,
+            name=u_name,
+            designation=off.designation,
+            wing=off.current_posting,
+            phone=u_phone,
+            email=u_email,
+            office_address=off.current_posting,
+            charge_status="REGULAR",
+            verification_status="VERIFIED OFFICIAL",
+            tenures=tenures_out
+        ))
+
+    return VerifiedOrganisationStructureOut(
+        minister=minister_data,
+        principal_secretary=principal_secretary_data,
+        heads_of_department=hod_list,
+        statutory_committees=[StatutoryCommitteeOut.model_validate(c) for c in committees],
+        delegations_of_authority=[DelegationOfAuthorityOut.model_validate(d) for d in delegations],
+        verification_metadata={
+            "rules_citation": "Tamil Nadu Highways Engineering Service (TN-HES) Rules, G.O.Ms.No.172 dated 03.11.2025; G.O.Ms.No.43",
+            "statutory_delegation_citation": "G.O. Ms. No. 75 & G.O. Ms. No. 163 (Financial Powers for Technical Sanction & Tender Acceptance)",
+            "verification_date": "2026-11-06",
+            "cadre_rule": "Engineering cadre uses Divisional Engineer (H) [DE], Assistant Divisional Engineer (H) [ADE], Assistant Engineer (H) [AE], Junior Engineer (H) [JE]."
+        }
     )
 

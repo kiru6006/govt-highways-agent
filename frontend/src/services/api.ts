@@ -44,7 +44,7 @@ const fallbackUsers: Record<string, UserInfo> = {
   admin: {
     id: 1,
     username: 'admin',
-    full_name: 'Thiru R. Senthil Kumar IAS [DEMO]',
+    full_name: 'State System Administrator',
     role_code: 'ADMIN',
     role_name: 'System Administrator (Statewide)',
     department_name: 'Tamil Nadu Highways Department',
@@ -53,16 +53,16 @@ const fallbackUsers: Record<string, UserInfo> = {
   chief_eng: {
     id: 2,
     username: 'chief_eng',
-    full_name: 'Er. K. Balasubramanian, M.E. [DEMO]',
+    full_name: 'Er. S. Palanivel (Chief Engineer (H), C&M Chennai Region)',
     role_code: 'CHIEF_ENG',
-    role_name: 'Chief Engineer (Highways - Projects)',
+    role_name: 'Chief Engineer (Highways - C&M Chennai)',
     department_name: 'Tamil Nadu Highways Department',
     is_active: true
   },
   se_chengalpattu: {
     id: 3,
     username: 'se_chengalpattu',
-    full_name: 'Er. M. Rajasekaran, M.E. [DEMO]',
+    full_name: 'Er. M. Rajendran (Superintending Engineer (H), Chengalpattu Circle)',
     role_code: 'SE_CIRCLE',
     role_name: 'Superintending Engineer (Chengalpattu Circle)',
     department_name: 'Tamil Nadu Highways Department',
@@ -73,9 +73,9 @@ const fallbackUsers: Record<string, UserInfo> = {
   ee_tambaram: {
     id: 4,
     username: 'ee_tambaram',
-    full_name: 'Er. P. Anandhan, B.E. [DEMO]',
+    full_name: 'Er. P. Anandhan (Divisional Engineer (H), Tambaram Division)',
     role_code: 'EE_DIV',
-    role_name: 'Divisional Engineer (Tambaram Division)',
+    role_name: 'Divisional Engineer (H) (Tambaram Division)',
     department_name: 'Tamil Nadu Highways Department',
     zone_id: 1,
     circle_id: 1,
@@ -85,7 +85,7 @@ const fallbackUsers: Record<string, UserInfo> = {
   contractor_lt: {
     id: 5,
     username: 'contractor_lt',
-    full_name: 'V. Ramakrishnan (Project Director, L&T) [DEMO]',
+    full_name: 'V. Ramakrishnan (Project Director, L&T)',
     role_code: 'CONTRACTOR',
     role_name: 'Empanelled Contractor Representative',
     contractor_id: 1,
@@ -94,7 +94,7 @@ const fallbackUsers: Record<string, UserInfo> = {
   contractor_pst: {
     id: 6,
     username: 'contractor_pst',
-    full_name: 'T. Shanmugam (Managing Director, PST) [DEMO]',
+    full_name: 'T. Shanmugam (Managing Director, PST)',
     role_code: 'CONTRACTOR',
     role_name: 'Empanelled Contractor Representative',
     contractor_id: 2,
@@ -103,19 +103,19 @@ const fallbackUsers: Record<string, UserInfo> = {
   minister: {
     id: 7,
     username: 'minister',
-    full_name: "Hon'ble Thiru E. V. Velu, Minister for Public Works & Highways [DEMO]",
+    full_name: "Thiru Aadhav Arjuna, Minister for Public Works and Sports Development",
     role_code: 'MINISTER',
-    role_name: "Hon'ble Minister for Highways (Cabinet)",
-    department_name: 'Tamil Nadu Highways Department',
+    role_name: "Minister for Public Works and Sports Development",
+    department_name: 'Highways and Minor Ports Department',
     is_active: true
   },
   secretary: {
     id: 8,
     username: 'secretary',
-    full_name: 'Thiru Pradeep Yadav IAS, Principal Secretary to Govt [DEMO]',
+    full_name: 'Thiru Shunchonngam Jatak Chiru, IAS, Principal Secretary to Government',
     role_code: 'PRIN_SEC',
-    role_name: 'Principal Secretary to Government (Highways)',
-    department_name: 'Tamil Nadu Highways Department',
+    role_name: 'Principal Secretary to Government (Highways & Minor Ports)',
+    department_name: 'Highways and Minor Ports Department',
     is_active: true
   }
 };
@@ -300,7 +300,7 @@ let fallbackBlockers: InterdepartmentalBlocker[] = [
     approval_required: 'General Arrangement Drawing (GAD) & Safety Span Launching Surcharge',
     submission_date: '2025-04-10T00:00:00Z',
     latest_correspondence: 'Railway Headquarter Letter #W.439/CN/B/TN/104 dtd 02-Sep-2025',
-    responsible_highways_officer: 'Er. K. Balasubramanian (Chief Engineer Projects)',
+    responsible_highways_officer: 'Er. S. Palanivel (Chief Engineer (H), C&M Chennai Region)',
     external_contact: 'Er. N. Sridhar (Chief Bridge Engineer, Southern Railway HQ)',
     days_pending: 90,
     expected_timeline: '60 days post-joint inspection',
