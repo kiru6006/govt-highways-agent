@@ -68,3 +68,4 @@ In strict accordance with Tamil Nadu service jurisprudence:
   - **Category 4**: Assistant Divisional Engineer (H)
   - **Category 5**: Assistant Engineer (H) (Direct recruit degree engineers under TN-HESS)
 - Subordinate and ministerial posts (Junior Engineer [Diploma], Draughting Officers, Chief Accounts Officers, Administrative Officers) belong to **TN-HESS** and the **Tamil Nadu General Service** respectively.
+

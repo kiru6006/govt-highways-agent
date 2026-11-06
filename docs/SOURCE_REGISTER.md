@@ -31,3 +31,4 @@
 | 18 | **SRC-MORTH-NH** | Entrusted National Highways Notification under Section 5 NH Act 1956 | MoRTH Gazette of India / State PWD NH Wing | Central Gazette S.O. | 2024 | 06.11.2026 | `VERIFIED OFFICIAL` | 100% (MoRTH) |
 | 19 | **SRC-TNTIT-ACT** | Tamil Nadu Transparency in Tenders Act, 1998 & Rules 2000 | Law Department, Government of Tamil Nadu | TN Act 43 of 1998 | 1998 (As amended) | 06.11.2026 | `VERIFIED RULE` | 100% (Statute) |
 | 20 | **SRC-TNHA-ACT** | Tamil Nadu Highways Act, 2001 (Land Acquisition & Encroachment Removal) | Law Department, Government of Tamil Nadu | TN Act 34 of 2002 | 2002 (As amended) | 06.11.2026 | `VERIFIED RULE` | 100% (Statute) |
+

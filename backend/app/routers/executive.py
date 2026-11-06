@@ -9,7 +9,8 @@ from app.models import (
     FinancialLeakageFinding, QualityDefectRecord, ContractorEvaluation,
     LegalMatter, ZonePerformanceSnapshot, DepartmentDependency, Issue,
     StatutoryCommittee, Designation, DelegationOfAuthority, HistoricalPosting,
-    Official, ServiceCategory
+    Official, ServiceCategory, GovernmentDocumentRegistry, CommitteeMeeting,
+    CommitteeDecision, StatutoryReferral, AIIntelligenceFinding
 )
 from app.schemas import (
     ExecutiveKPIsOut, PortfolioStageItem, ZoneComparisonOut,
@@ -20,7 +21,10 @@ from app.schemas import (
     MinisterAIBriefing, UrgentMinisterialIntervention, DistrictImpactSummary,
     PendingDirectiveSummary, SecretaryAIBriefing, OfficerAccountabilityAlert,
     VerifiedOrganisationStructureOut, StatutoryCommitteeOut, DesignationOut,
-    DelegationOfAuthorityOut, HistoricalPostingOut, VerifiedOfficialOut
+    DelegationOfAuthorityOut, HistoricalPostingOut, VerifiedOfficialOut,
+    GovernmentDocumentOut, CommitteeMeetingOut, CommitteeDecisionOut,
+    StatutoryReferralOut, AIIntelligenceFindingOut, FindingValidationUpdate,
+    StatutoryCommitteeDetailOut
 )
 from app.auth import get_current_user
 from app.services.audit import log_audit_event
@@ -775,4 +779,118 @@ def get_verified_organisation_structure(
             "cadre_rule": "Engineering cadre uses Divisional Engineer (H) [DE], Assistant Divisional Engineer (H) [ADE], Assistant Engineer (H) [AE], Junior Engineer (H) [JE]."
         }
     )
+
+# -------------------------------------------------------------
+# GOVERNMENT DOCUMENT & GOVERNANCE REGISTRY ENDPOINTS
+# -------------------------------------------------------------
+
+@router.get("/documents/registry", response_model=List[GovernmentDocumentOut])
+def get_government_documents(
+    category: Optional[str] = Query(None, description="Policy Note, Government Order, Schedule of Rates, etc."),
+    verification_status: Optional[str] = Query(None, description="Verified, Pending Verification, Historical, etc."),
+    query: Optional[str] = Query(None, description="Search term for title or reference"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns official government document registry with verification statuses and source citations."""
+    q = db.query(GovernmentDocumentRegistry)
+    if category and category != "ALL":
+        q = q.filter(GovernmentDocumentRegistry.category == category)
+    if verification_status and verification_status != "ALL":
+        q = q.filter(GovernmentDocumentRegistry.verification_status == verification_status)
+    if query:
+        search_filter = f"%{query}%"
+        q = q.filter(
+            (GovernmentDocumentRegistry.title.ilike(search_filter)) |
+            (GovernmentDocumentRegistry.document_reference.ilike(search_filter)) |
+            (GovernmentDocumentRegistry.go_number.ilike(search_filter))
+        )
+    return q.order_by(GovernmentDocumentRegistry.order_date.desc()).all()
+
+@router.get("/governance/committees", response_model=List[StatutoryCommitteeDetailOut])
+def get_governance_committees(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns statutory committees including BOE, TAC, COT, RASC, 16(b), and TNRIDC boards with meetings and decisions."""
+    committees = db.query(StatutoryCommittee).all()
+    results = []
+    for c in committees:
+        meetings = db.query(CommitteeMeeting).filter(CommitteeMeeting.committee_id == c.id).order_by(CommitteeMeeting.meeting_date.desc()).all()
+        decisions = db.query(CommitteeDecision).filter(CommitteeDecision.committee_id == c.id).order_by(CommitteeDecision.effective_date.desc()).all()
+        results.append(StatutoryCommitteeDetailOut(
+            id=c.id,
+            code=c.code,
+            name=c.name,
+            chairperson_title=c.chairperson_title,
+            mandate_summary=c.mandate_summary,
+            constitution_go=c.constitution_go,
+            meetings=[CommitteeMeetingOut.model_validate(m) for m in meetings],
+            decisions=[CommitteeDecisionOut.model_validate(d) for d in decisions]
+        ))
+    return results
+
+@router.get("/governance/referrals", response_model=List[StatutoryReferralOut])
+def get_statutory_referrals(
+    committee_code: Optional[str] = Query(None, description="COT, TAC, EXPERT_16B, etc."),
+    status: Optional[str] = Query(None, description="PENDING_SCRUTINY, SCRUTINIZED, SANCTIONED, RETURNED"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns statutory referrals triggered by rule thresholds (tender excess, waterway length, quantity variation)."""
+    q = db.query(StatutoryReferral)
+    if committee_code and committee_code != "ALL":
+        q = q.filter(StatutoryReferral.committee_code == committee_code)
+    if status and status != "ALL":
+        q = q.filter(StatutoryReferral.status == status)
+    return q.order_by(StatutoryReferral.referral_date.desc()).all()
+
+@router.get("/ai/findings", response_model=List[AIIntelligenceFindingOut])
+def get_ai_intelligence_findings(
+    finding_type: Optional[str] = Query(None, description="TENDER_ANOMALY, QUANTITY_VARIATION_EXCESS, etc."),
+    validation_status: Optional[str] = Query(None, description="PENDING_HUMAN_REVIEW, CONFIRMED_VALID, DISMISSED_FALSE_POSITIVE"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Returns AI intelligence findings with evidence, explanations, and human validation tracking."""
+    q = db.query(AIIntelligenceFinding)
+    if finding_type and finding_type != "ALL":
+        q = q.filter(AIIntelligenceFinding.finding_type == finding_type)
+    if validation_status and validation_status != "ALL":
+        q = q.filter(AIIntelligenceFinding.human_validation_status == validation_status)
+    return q.order_by(AIIntelligenceFinding.created_at.desc()).all()
+
+@router.post("/ai/findings/{finding_id}/validate", response_model=AIIntelligenceFindingOut)
+def validate_ai_intelligence_finding(
+    finding_id: int,
+    payload: FindingValidationUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Authorised human officer validates or dismisses an AI intelligence finding."""
+    finding = db.query(AIIntelligenceFinding).filter(AIIntelligenceFinding.id == finding_id).first()
+    if not finding:
+        raise HTTPException(status_code=404, detail="AI finding not found")
+
+    finding.human_validation_status = payload.validation_status
+    if payload.officer_remarks:
+        finding.recommended_action += f" [Officer Remark by {current_user.full_name}: {payload.officer_remarks}]"
+    
+    db.commit()
+    db.refresh(finding)
+
+    log_audit_event(
+        db=db,
+        action="VALIDATE_AI_FINDING",
+        entity_type="AIIntelligenceFinding",
+        entity_id=finding.id,
+        entity_reference=finding.headline[:50],
+        user=current_user,
+        changes={
+            "status": payload.validation_status,
+            "remarks": payload.officer_remarks
+        }
+    )
+
+    return finding
 

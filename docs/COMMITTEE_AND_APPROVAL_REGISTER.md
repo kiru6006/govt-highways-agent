@@ -89,3 +89,4 @@ TNRIDC is an autonomous government company executing designated mega industrial 
 ### Standing Governance Committees in TNRIDC:
 1. **Audit Committee**: Deputy Secretary (Finance), Director General (Highways), Chief Engineer (NABARD), Executive Director (TNRIDC).
 2. **Technical Sanction Committee**: Director General (Highways), Chief Engineer (PDI), Director (HRS), Executive Director (TNRIDC).
+

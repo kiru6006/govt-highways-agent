@@ -21,7 +21,13 @@ import {
   ExecutiveFilters,
   MinisterOverview,
   SecretaryOverview,
-  VerifiedOrganisationStructure
+  VerifiedOrganisationStructure,
+  GovernmentDocumentItem,
+  CommitteeMeetingItem,
+  CommitteeDecisionItem,
+  StatutoryCommitteeDetailItem,
+  StatutoryReferralItem,
+  AIIntelligenceFindingItem
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -497,6 +503,30 @@ const fallbackOrganisationStructure: VerifiedOrganisationStructure = {
       chairperson_title: "Joint Director, Office of the Director General (H)",
       mandate_summary: "Evaluation and approval for entrustment of additional quantities exceeding 25% of agreement quantities to original contractor.",
       constitution_go: "G.O. Ms. No. 05, Highways and Minor Ports (HN2), dated 13.01.2026"
+    },
+    {
+      id: 9,
+      code: "TNRIDC_BOARD",
+      name: "TNRIDC - Board of Directors",
+      chairperson_title: "Principal Secretary to Government, Highways and Minor Ports Department",
+      mandate_summary: "Supreme corporate governance, capital investments, policy approvals, and project financing for industrial corridors, ring roads, and port connectivity infrastructure.",
+      constitution_go: "G.O. Ms. No. 162, Highways (HN2) Dept, dated 24.06.2005"
+    },
+    {
+      id: 10,
+      code: "TNRIDC_AUDIT",
+      name: "TNRIDC Audit Committee",
+      chairperson_title: "Deputy Secretary to Government, Finance Department",
+      mandate_summary: "Statutory financial scrutiny, internal audit reviews, vigilance compliance, and corporate risk governance under Section 177 of Companies Act, 2013.",
+      constitution_go: "Companies Act, 2013 / TNRIDC Board Resolution No. 4"
+    },
+    {
+      id: 11,
+      code: "TNRIDC_TECH",
+      name: "TNRIDC Technical Sanction Committee",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Specialized technical scrutiny, detailed project report clearance, and structural sanction for high-speed expressways and major ring roads executed through TNRIDC.",
+      constitution_go: "TNRIDC Board Resolution No. 12 / G.O. Ms. No. 162"
     }
   ],
   delegations_of_authority: [
@@ -1535,4 +1565,511 @@ export const api = {
       return fallbackOrganisationStructure;
     }
   },
+
+  getGovernmentDocuments: async (params?: { category?: string; verification_status?: string; query?: string }): Promise<GovernmentDocumentItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.category && params.category !== 'ALL') q.append('category', params.category);
+      if (params?.verification_status && params.verification_status !== 'ALL') q.append('verification_status', params.verification_status);
+      if (params?.query) q.append('query', params.query);
+      const url = `/executive/documents/registry${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<GovernmentDocumentItem[]>(url);
+    } catch {
+      let docs = [...fallbackGovernmentDocuments];
+      if (params?.category && params.category !== 'ALL') {
+        docs = docs.filter(d => d.category === params.category);
+      }
+      if (params?.verification_status && params.verification_status !== 'ALL') {
+        docs = docs.filter(d => d.verification_status === params.verification_status);
+      }
+      if (params?.query) {
+        const needle = params.query.toLowerCase();
+        docs = docs.filter(d =>
+          d.title.toLowerCase().includes(needle) ||
+          d.document_reference.toLowerCase().includes(needle) ||
+          (d.go_number && d.go_number.toLowerCase().includes(needle))
+        );
+      }
+      return docs;
+    }
+  },
+
+  getGovernanceCommittees: async (): Promise<StatutoryCommitteeDetailItem[]> => {
+    try {
+      return await request<StatutoryCommitteeDetailItem[]>('/executive/governance/committees');
+    } catch {
+      return fallbackGovernanceCommittees;
+    }
+  },
+
+  getStatutoryReferrals: async (params?: { committee_code?: string; status?: string }): Promise<StatutoryReferralItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.committee_code && params.committee_code !== 'ALL') q.append('committee_code', params.committee_code);
+      if (params?.status && params.status !== 'ALL') q.append('status', params.status);
+      const url = `/executive/governance/referrals${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<StatutoryReferralItem[]>(url);
+    } catch {
+      let refs = [...fallbackStatutoryReferrals];
+      if (params?.committee_code && params.committee_code !== 'ALL') {
+        refs = refs.filter(r => r.committee_code === params.committee_code);
+      }
+      if (params?.status && params.status !== 'ALL') {
+        refs = refs.filter(r => r.status === params.status);
+      }
+      return refs;
+    }
+  },
+
+  getAIIntelligenceFindings: async (params?: { finding_type?: string; validation_status?: string }): Promise<AIIntelligenceFindingItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.finding_type && params.finding_type !== 'ALL') q.append('finding_type', params.finding_type);
+      if (params?.validation_status && params.validation_status !== 'ALL') q.append('validation_status', params.validation_status);
+      const url = `/executive/ai/findings${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<AIIntelligenceFindingItem[]>(url);
+    } catch {
+      let findings = [...fallbackAIIntelligenceFindings];
+      if (params?.finding_type && params.finding_type !== 'ALL') {
+        findings = findings.filter(f => f.finding_type === params.finding_type);
+      }
+      if (params?.validation_status && params.validation_status !== 'ALL') {
+        findings = findings.filter(f => f.human_validation_status === params.validation_status);
+      }
+      return findings;
+    }
+  },
+
+  validateAIFinding: async (findingId: number, validationStatus: string, remarks?: string): Promise<AIIntelligenceFindingItem> => {
+    try {
+      return await request<AIIntelligenceFindingItem>(`/executive/ai/findings/${findingId}/validate`, {
+        method: 'POST',
+        body: JSON.stringify({ validation_status: validationStatus, officer_remarks: remarks })
+      });
+    } catch {
+      const target = fallbackAIIntelligenceFindings.find(f => f.id === findingId);
+      if (target) {
+        target.human_validation_status = validationStatus;
+        if (remarks) {
+          target.recommended_action += ` [Officer Remark: ${remarks}]`;
+        }
+        return { ...target };
+      }
+      throw new Error("Finding not found");
+    }
+  }
 };
+
+export const fallbackGovernmentDocuments: GovernmentDocumentItem[] = [
+  {
+    id: 1,
+    document_reference: "DOC-PN-2026-27",
+    title: "Highways and Minor Ports Department Policy Note 2026-2027",
+    category: "Policy Note",
+    issuing_department: "Highways and Minor Ports Department",
+    go_number: "Demand No. 21 / 2026-2027",
+    order_date: "2026-03-20T00:00:00Z",
+    effective_date: "2026-04-01T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/policy_notes",
+    summary_abstract: "Legislative presentation by Minister for Public Works detailing strategic statewide road infrastructure priorities, CRIDP allocations, World Bank TNRSP-II closeout, CKICP status, and the 2026 departmental re-organization into 4 regional zones.",
+    is_confidential: false
+  },
+  {
+    id: 2,
+    document_reference: "DOC-PN-2025-26",
+    title: "Highways and Minor Ports Department Policy Note 2025-2026",
+    category: "Policy Note",
+    issuing_department: "Highways and Minor Ports Department",
+    go_number: "Demand No. 21 / 2025-2026",
+    order_date: "2025-03-15T00:00:00Z",
+    effective_date: "2025-04-01T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/policy_notes",
+    summary_abstract: "Legislative policy overview outlining budget provisions, NABARD rural connectivity, bypass initiatives, and flood restoration across 19 circles and 87 divisions.",
+    is_confidential: false
+  },
+  {
+    id: 3,
+    document_reference: "DOC-GO-MS-172",
+    title: "Special Rules for the Tamil Nadu Highways Engineering Service (TN-HES)",
+    category: "Government Order",
+    issuing_department: "Highways and Minor Ports (HK1) Department",
+    go_number: "G.O.Ms.No.172",
+    order_date: "2025-11-03T00:00:00Z",
+    effective_date: "2025-11-03T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/gos",
+    summary_abstract: "Statutory revision of Service Rules for TN-HES defining 5 officer categories (Director General, Chief Engineer, Superintending Engineer, Divisional Engineer, Assistant Divisional Engineer), recruitment criteria, qualification standards, and technical duties.",
+    is_confidential: false
+  },
+  {
+    id: 4,
+    document_reference: "DOC-GO-MS-43",
+    title: "Reorganization and Restructuring of Highways Department into 4 Regional Zonal Cadres",
+    category: "Government Order",
+    issuing_department: "Highways and Minor Ports Department",
+    go_number: "G.O.Ms.No.43",
+    order_date: "2026-01-28T00:00:00Z",
+    effective_date: "2026-02-01T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/gos",
+    summary_abstract: "Decentralization and rationalization of the department into 4 Zonal Commands (Chennai, Coimbatore, Madurai, Trichy), creating Regional Chief Engineers with unified administrative control over 19 circles, 87 divisions, and 353 subdivisions.",
+    is_confidential: false
+  },
+  {
+    id: 5,
+    document_reference: "DOC-GO-MS-75",
+    title: "Revision of Financial Delegation of Powers for Technical Sanction and Tender Acceptance",
+    category: "Government Order",
+    issuing_department: "Highways and Minor Ports (HN1) Department",
+    go_number: "G.O.Ms.No.75",
+    order_date: "2026-09-02T00:00:00Z",
+    effective_date: "2026-09-02T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/gos",
+    summary_abstract: "Revised monetary ceilings and tender excess thresholds for DE, SE, CE and Commissionerate of Tenders (COT). Sets mandatory COT acceptance for individual works > Rs 6.00 Cr and packages > Rs 7.50 Cr, and excess > 6% for works up to Rs 1.00 Cr.",
+    is_confidential: false
+  },
+  {
+    id: 6,
+    document_reference: "DOC-GO-MS-163",
+    title: "Financial Delegation for Land Acquisition Sanctions and Enhanced Solatium Compensation",
+    category: "Government Order",
+    issuing_department: "Highways and Minor Ports (HN1) Department",
+    go_number: "G.O.Ms.No.163",
+    order_date: "2023-12-13T00:00:00Z",
+    effective_date: "2023-12-13T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/gos",
+    summary_abstract: "Empowerment of Revised Administrative Sanction Committee for Land Acquisition (RASC-LA) under Commissioner of Land Acquisition for enhanced compensation and court-awarded solatium revisions.",
+    is_confidential: false
+  },
+  {
+    id: 7,
+    document_reference: "DOC-GO-MS-05",
+    title: "Constitution of Three-Member Expert Committee under Section 16(b) of Tamil Nadu Transparency in Tenders Act",
+    category: "Government Order",
+    issuing_department: "Highways and Minor Ports (HN2) Department",
+    go_number: "G.O.Ms.No.05",
+    order_date: "2026-01-13T00:00:00Z",
+    effective_date: "2026-01-13T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/gos",
+    summary_abstract: "Statutory constitution of 3-Member Expert Committee chaired by Joint Director (O/o DG) for scrutinizing additional quantity variations exceeding 25% of agreement quantities before execution.",
+    is_confidential: false
+  },
+  {
+    id: 8,
+    document_reference: "DOC-SSR-2026-27",
+    title: "Tamil Nadu Highways Department Standard Schedule of Rates (SSR) 2026-2027",
+    category: "Schedule of Rates",
+    issuing_department: "Highways Research Station & SSR Committee",
+    go_number: "SSR-TN-2026-27",
+    order_date: "2026-04-01T00:00:00Z",
+    effective_date: "2026-04-01T00:00:00Z",
+    last_verified_date: "2026-11-06T00:00:00Z",
+    verification_status: "Verified",
+    source_url: "https://www.tnhighways.tn.gov.in/schedule_rates",
+    summary_abstract: "Standardized departmental schedule of basic rates for labour, raw materials (bitumen, cement, steel, aggregates), lead charts, and machinery operational rates for road and bridge works.",
+    is_confidential: false
+  }
+];
+
+export const fallbackGovernanceCommittees: StatutoryCommitteeDetailItem[] = [
+  {
+    id: 1,
+    code: "BOE",
+    name: "Board of Engineers (BOE) - Highest Technical Authority",
+    chairperson_title: "Director General (H), Highways Department",
+    mandate_summary: "Highest Technical Authority deciding standard specifications, manual revisions, and technical policies.",
+    constitution_go: "G.O. Ms. No. 359 (12.08.1997) & G.O. Ms. No. 1 (07.01.2011)",
+    meetings: [],
+    decisions: []
+  },
+  {
+    id: 2,
+    code: "TAC",
+    name: "Technical Audit Committee (TAC)",
+    chairperson_title: "Director General (H), Highways Department",
+    mandate_summary: "Mandatory technical audit for bridge works with linear waterway > 150m and complex bypasses before according Technical Sanction.",
+    constitution_go: "Circular Memo No. 13555/Contracts-1/2009 dated 02.05.2009",
+    meetings: [
+      {
+        id: 1,
+        meeting_reference: "TAC-MTG-2026-104",
+        committee_id: 2,
+        meeting_date: "2026-03-28T14:30:00Z",
+        venue: "HRS Auditorium, Guindy, Chennai",
+        chairperson_name: "Er. R. Selvadurai, Director General (H)",
+        agenda_summary: "Technical Audit for major bridge reconstruction with linear waterway exceeding 150m across coastal backwaters.",
+        minutes_summary: "TAC evaluated 2D hydrodynamic HEC-RAS model, scour depth simulations, and prestressed girder design. Cleared structural design with mandatory pile integrity tests.",
+        verification_status: "Verified",
+        decisions: [
+          {
+            id: 1,
+            decision_reference: "TAC-DEC-2026-018",
+            committee_id: 2,
+            subject: "Technical Sanction Clearance for 185m Linear Waterway Bridge",
+            decision_type: "APPROVED",
+            decision_text: "Technical Audit Committee clears hydraulic and structural design for bridge reconstruction on ODR-045. Pier foundation depth approved at 24.5m below bed level.",
+            statutory_condition: "Cross-hole sonic logging mandatory on 100% of cast-in-situ bored piles.",
+            government_order_ref: "Circular Memo No. 13555/Contracts-1/2009",
+            effective_date: "2026-03-28T15:30:00Z",
+            verification_status: "Verified"
+          }
+        ]
+      }
+    ],
+    decisions: [
+      {
+        id: 1,
+        decision_reference: "TAC-DEC-2026-018",
+        committee_id: 2,
+        subject: "Technical Sanction Clearance for 185m Linear Waterway Bridge",
+        decision_type: "APPROVED",
+        decision_text: "Technical Audit Committee clears hydraulic and structural design for bridge reconstruction on ODR-045. Pier foundation depth approved at 24.5m below bed level.",
+        statutory_condition: "Cross-hole sonic logging mandatory on 100% of cast-in-situ bored piles.",
+        government_order_ref: "Circular Memo No. 13555/Contracts-1/2009",
+        effective_date: "2026-03-28T15:30:00Z",
+        verification_status: "Verified"
+      }
+    ]
+  },
+  {
+    id: 3,
+    code: "COT",
+    name: "Commissionerate of Tenders (COT)",
+    chairperson_title: "Secretary to Government, Finance / Director General (H)",
+    mandate_summary: "Statutory scrutiny of tenders with excess above 10% (up to 50L), above 6% (up to 1Cr), all works > 6Cr, and packages > 7.50Cr.",
+    constitution_go: "G.O. Ms. No. 75 (02.09.2026) & G.O. Ms. No. 29 (03.03.2022)",
+    meetings: [
+      {
+        id: 2,
+        meeting_reference: "COT-MTG-2026-004",
+        committee_id: 3,
+        meeting_date: "2026-04-12T11:00:00Z",
+        venue: "Committee Room, 3rd Floor, Main Secretariat, Chennai",
+        chairperson_name: "Thiru Shunchonngam Jatak Chiru, IAS",
+        agenda_summary: "Scrutiny of tender excess exceeding delegated Chief Engineer limits for ECR corridor works and CRN Package EPC03.",
+        minutes_summary: "Committee reviewed rate analysis submitted by CE (H) Chennai. Excess justified on account of increased bitumen hauling lead and night-time urban traffic constraints.",
+        verification_status: "Verified",
+        decisions: [
+          {
+            id: 2,
+            decision_reference: "COT-DEC-2026-042",
+            committee_id: 3,
+            subject: "Acceptance of Tender with +8.40% Excess on SH-49 ECR Widening",
+            decision_type: "APPROVED_WITH_CONDITIONS",
+            decision_text: "Commissionerate of Tenders accepts lowest tender of M/s Consolidated Construction Consortium at +8.40% above estimated cost subject to contractor furnishing additional 2.5% performance bank guarantee for timely progress.",
+            statutory_condition: "Additional 2.5% PBG to be deposited before Agreement execution.",
+            government_order_ref: "G.O. Ms. No. 75 / COT Resolution No. 42",
+            effective_date: "2026-04-12T12:00:00Z",
+            verification_status: "Verified"
+          }
+        ]
+      }
+    ],
+    decisions: [
+      {
+        id: 2,
+        decision_reference: "COT-DEC-2026-042",
+        committee_id: 3,
+        subject: "Acceptance of Tender with +8.40% Excess on SH-49 ECR Widening",
+        decision_type: "APPROVED_WITH_CONDITIONS",
+        decision_text: "Commissionerate of Tenders accepts lowest tender of M/s Consolidated Construction Consortium at +8.40% above estimated cost subject to contractor furnishing additional 2.5% performance bank guarantee for timely progress.",
+        statutory_condition: "Additional 2.5% PBG to be deposited before Agreement execution.",
+        government_order_ref: "G.O. Ms. No. 75 / COT Resolution No. 42",
+        effective_date: "2026-04-12T12:00:00Z",
+        verification_status: "Verified"
+      }
+    ]
+  },
+  {
+    id: 4,
+    code: "EXPERT_16B",
+    name: "Three Member Expert Committee (Section 16(b) TNTIT Act)",
+    chairperson_title: "Joint Director, Office of the Director General (H)",
+    mandate_summary: "Evaluation and approval for entrustment of additional quantities exceeding 25% of agreement quantities to original contractor.",
+    constitution_go: "G.O. Ms. No. 05, Highways and Minor Ports (HN2), dated 13.01.2026",
+    meetings: [
+      {
+        id: 3,
+        meeting_reference: "EXP16B-MTG-2026-012",
+        committee_id: 4,
+        meeting_date: "2026-04-18T15:00:00Z",
+        venue: "Chamber of Joint Director, Directorate of Highways, Chennai",
+        chairperson_name: "Joint Director (O/o DG Highways)",
+        agenda_summary: "Statutory evaluation of quantity variation exceeding 25% for structural steel and bituminous concrete in Tambaram Elevated Corridor.",
+        minutes_summary: "Committee verified field measurements against geotechnical redesign necessitated by Railway boundary clearances. Variation found unavoidable and technically justified.",
+        verification_status: "Verified",
+        decisions: [
+          {
+            id: 3,
+            decision_reference: "EXP16B-DEC-2026-009",
+            committee_id: 4,
+            subject: "Recommendation for Entrustment of 28.38% Additional Steel Quantities",
+            decision_type: "RECOMMENDED",
+            decision_text: "Section 16(b) Expert Committee recommends entrustment of +28.38% structural steel to the working contractor at agreed schedule rates without fresh tender call under G.O. Ms. No. 05.",
+            statutory_condition: "Supplemental Agreement to be executed within 14 days with updated completion milestone.",
+            government_order_ref: "G.O. Ms. No. 05 / Section 16(b) TNTIT Act",
+            effective_date: "2026-04-18T16:00:00Z",
+            verification_status: "Verified"
+          }
+        ]
+      }
+    ],
+    decisions: [
+      {
+        id: 3,
+        decision_reference: "EXP16B-DEC-2026-009",
+        committee_id: 4,
+        subject: "Recommendation for Entrustment of 28.38% Additional Steel Quantities",
+        decision_type: "RECOMMENDED",
+        decision_text: "Section 16(b) Expert Committee recommends entrustment of +28.38% structural steel to the working contractor at agreed schedule rates without fresh tender call under G.O. Ms. No. 05.",
+        statutory_condition: "Supplemental Agreement to be executed within 14 days with updated completion milestone.",
+        government_order_ref: "G.O. Ms. No. 05 / Section 16(b) TNTIT Act",
+        effective_date: "2026-04-18T16:00:00Z",
+        verification_status: "Verified"
+      }
+    ]
+  },
+  {
+    id: 5,
+    code: "TNRIDC_BOARD",
+    name: "TNRIDC - Board of Directors",
+    chairperson_title: "Principal Secretary to Government, Highways and Minor Ports Department",
+    mandate_summary: "Supreme corporate governance, capital investments, policy approvals, and project financing for industrial corridors, ring roads, and port connectivity infrastructure.",
+    constitution_go: "G.O. Ms. No. 162, Highways (HN2) Dept, dated 24.06.2005",
+    meetings: [],
+    decisions: []
+  },
+  {
+    id: 6,
+    code: "TNRIDC_AUDIT",
+    name: "TNRIDC Audit Committee",
+    chairperson_title: "Deputy Secretary to Government, Finance Department",
+    mandate_summary: "Statutory financial scrutiny, internal audit reviews, vigilance compliance, and corporate risk governance under Section 177 of Companies Act, 2013.",
+    constitution_go: "Companies Act, 2013 / TNRIDC Board Resolution No. 4",
+    meetings: [],
+    decisions: []
+  },
+  {
+    id: 7,
+    code: "TNRIDC_TECH",
+    name: "TNRIDC Technical Sanction Committee",
+    chairperson_title: "Director General (H), Highways Department",
+    mandate_summary: "Specialized technical scrutiny, detailed project report clearance, and structural sanction for high-speed expressways and major ring roads executed through TNRIDC.",
+    constitution_go: "TNRIDC Board Resolution No. 12 / G.O. Ms. No. 162",
+    meetings: [],
+    decisions: []
+  }
+];
+
+export const fallbackStatutoryReferrals: StatutoryReferralItem[] = [
+  {
+    id: 1,
+    project_id: 1,
+    committee_code: "COT",
+    referral_type: "TENDER_EXCESS",
+    trigger_value: 8.40,
+    threshold_limit: 6.00,
+    referral_reason: "Lowest bid received has +8.40% excess over estimated rate, exceeding Chief Engineer delegated acceptance threshold of 6.00% under G.O. Ms. No. 75.",
+    statutory_rule_citation: "G.O. Ms. No. 75, Highways & Minor Ports, dated 02.09.2026",
+    status: "SCRUTINIZED",
+    referral_date: "2026-04-10T10:00:00Z",
+    responsible_officer: "Er. S. Palanivel, CE (H) C&M Chennai"
+  },
+  {
+    id: 2,
+    project_id: 3,
+    committee_code: "TAC",
+    referral_type: "WATERWAY_LINEAR_LENGTH",
+    trigger_value: 185.0,
+    threshold_limit: 150.0,
+    referral_reason: "Bridge linear waterway measures 185.0 meters, exceeding 150m threshold mandated for independent TAC structural audit before according Technical Sanction.",
+    statutory_rule_citation: "Circular Memo No. 13555/Contracts-1/2009 dated 02.05.2009",
+    status: "SANCTIONED",
+    referral_date: "2026-03-24T11:30:00Z",
+    responsible_officer: "Er. S. Yamini, CE (H) Planning Designs & Investigation"
+  },
+  {
+    id: 3,
+    project_id: 2,
+    committee_code: "EXPERT_16B",
+    referral_type: "QUANTITY_VARIATION_25PCT",
+    trigger_value: 28.38,
+    threshold_limit: 25.0,
+    referral_reason: "Structural steel girder reinforcement quantity increased by 28.38% over agreement schedule due to redesigned railway span footing, requiring statutory Expert Committee clearance under Section 16(b) TNTIT Act.",
+    statutory_rule_citation: "G.O. Ms. No. 05 dated 13.01.2026 / Section 16(b) TNTIT Act",
+    status: "PENDING_SCRUTINY",
+    referral_date: "2026-04-15T14:00:00Z",
+    responsible_officer: "Er. M. Rajendran, SE (H) Chengalpattu Circle"
+  }
+];
+
+export const fallbackAIIntelligenceFindings: AIIntelligenceFindingItem[] = [
+  {
+    id: 1,
+    finding_type: "TENDER_ANOMALY",
+    entity_type: "PROJECT",
+    entity_id: 1,
+    headline: "Tender Bid Excess (+8.40%) without Prior COT Sanction on SH-49 ECR Widening",
+    evidence_summary: "Financial bid tabulation shows L1 bidder at ₹124.80 Cr against Sanctioned Estimate of ₹115.12 Cr (+8.40% excess). Rule threshold for CE acceptance is 6.00% under G.O. Ms. No. 75.",
+    explanation: "Under G.O. Ms. No. 75, any excess exceeding 6% on works up to ₹1.00 Cr and all excess above 0% on works > ₹6.00 Cr cannot be accepted by the Chief Engineer and must be referred to the Commissionerate of Tenders.",
+    confidence: "HIGH",
+    human_validation_status: "CONFIRMED_VALID",
+    recommended_action: "Submit formal tender scrutiny memorandum to Commissionerate of Tenders (COT) with justified SSR lead differential before issuing Letter of Acceptance.",
+    statutory_rule_citation: "G.O. Ms. No. 75, Highways & Minor Ports, dated 02.09.2026",
+    created_at: "2026-04-08T09:30:00Z"
+  },
+  {
+    id: 2,
+    finding_type: "QUANTITY_VARIATION_EXCESS",
+    entity_type: "PROJECT",
+    entity_id: 2,
+    headline: "Quantity Overrun (28.38%) on Tambaram Elevated Corridor Exceeds 25% Section 16(b) Limit",
+    evidence_summary: "Running Account Bill No. 14 records 3,420 MT structural steel against agreement quantity of 2,664 MT (+28.38% increase). Cost variance is ₹6.82 Cr.",
+    explanation: "Under Section 16(b) of the Tamil Nadu Transparency in Tenders Act, variations exceeding 25% of agreement quantities cannot be entrusted to the original contractor without statutory clearance by the 3-Member Expert Committee constituted under G.O. Ms. No. 05.",
+    confidence: "HIGH",
+    human_validation_status: "PENDING_HUMAN_REVIEW",
+    recommended_action: "Halt payment on excess quantities beyond 125% and refer revised BOQ to the Section 16(b) Expert Committee chaired by Joint Director, O/o DG Highways.",
+    statutory_rule_citation: "G.O. Ms. No. 05 dated 13.01.2026 / Section 16(b) TNTIT Act",
+    created_at: "2026-04-14T11:15:00Z"
+  },
+  {
+    id: 3,
+    finding_type: "COMMITTEE_REFERRAL_REQUIRED",
+    entity_type: "PROJECT",
+    entity_id: 3,
+    headline: "Linear Waterway (185m) Exceeds 150m Mandatory Technical Audit Committee (TAC) Threshold",
+    evidence_summary: "Hydraulic design report submitted by PDI wing shows total effective waterway opening of 185.0 meters across Thiruporur Hub backwaters. Technical Sanction was accorded without TAC reference number.",
+    explanation: "Departmental circular instructions strictly prohibit according Technical Sanction for bridges with linear waterway exceeding 150m without prior technical audit and clearance by TAC.",
+    confidence: "HIGH",
+    human_validation_status: "CONFIRMED_VALID",
+    recommended_action: "Place bridge structural and hydraulic model before next TAC state-level sitting for ex-post facto ratification and foundation scour safety validation.",
+    statutory_rule_citation: "Circular Memo No. 13555/Contracts-1/2009 dated 02.05.2009",
+    created_at: "2026-03-22T16:00:00Z"
+  },
+  {
+    id: 4,
+    finding_type: "REVISED_ESTIMATE_RISK",
+    entity_type: "PROJECT",
+    entity_id: 1,
+    headline: "Land Acquisition Solatium Escalation Triggers RASC-LA Jurisdiction",
+    evidence_summary: "Enhanced compensation award by Special DRO (LA) under RFCTLARR Act 2013 totals ₹18.40 Cr against initial AS provision of ₹11.20 Cr (+64.2% increase).",
+    explanation: "Revisions exceeding 10% of sanctioned LA provisions require formal examination and recommendation by the Revised Administrative Sanction Committee for Land Acquisition (RASC-LA).",
+    confidence: "HIGH",
+    human_validation_status: "PENDING_HUMAN_REVIEW",
+    recommended_action: "Prepare detailed comparison statement of guideline value vs court award and submit to Commissioner of Land Acquisition / RASC-LA.",
+    statutory_rule_citation: "G.O. Ms. No. 163, Highways and Minor Ports (HN1), dated 13.12.2023",
+    created_at: "2026-04-05T10:45:00Z"
+  }
+];

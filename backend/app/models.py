@@ -654,8 +654,98 @@ class DelegationOfAuthority(Base):
 class StatutoryCommittee(Base):
     __tablename__ = "statutory_committees"
     id = Column(Integer, primary_key=True, index=True)
-    code = Column(String(50), unique=True, nullable=False)  # BOE, TAC, RASC, RASC_LA, COT, SSR, HLDRC, EXPERT_16B
+    code = Column(String(50), unique=True, nullable=False)  # BOE, TAC, RASC, RASC_LA, COT, SSR, HLDRC, EXPERT_16B, TNRIDC_BOARD, TNRIDC_AUDIT, TNRIDC_TECH
     name = Column(String(200), nullable=False)
     chairperson_title = Column(String(150), nullable=False)
     mandate_summary = Column(Text, nullable=False)
     constitution_go = Column(String(150), nullable=False)
+
+    meetings = relationship("CommitteeMeeting", back_populates="committee")
+    decisions = relationship("CommitteeDecision", back_populates="committee")
+
+# -------------------------------------------------------------
+# GOVERNMENT DOCUMENT REGISTRY & OFFICIAL INGESTION
+# -------------------------------------------------------------
+
+class GovernmentDocumentRegistry(Base):
+    __tablename__ = "government_document_registry"
+    id = Column(Integer, primary_key=True, index=True)
+    document_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., GO-MS-172-2025
+    title = Column(String(250), nullable=False)
+    category = Column(String(100), nullable=False)  # Policy Note, State Budget, Schedule of Rates, Government Order, Tender Notification, Quality Control, Committee Proceeding, Appointment/Posting
+    issuing_department = Column(String(150), default="Highways and Minor Ports Department")
+    go_number = Column(String(100), nullable=True)  # e.g., G.O.Ms.No.172
+    order_date = Column(DateTime, nullable=True)
+    effective_date = Column(DateTime, nullable=True)
+    last_verified_date = Column(DateTime, default=datetime.datetime.utcnow)
+    verification_status = Column(String(50), default="Verified")  # Verified, Pending Verification, Historical, Superseded, Conflicting Source
+    source_url = Column(String(300), nullable=True)
+    summary_abstract = Column(Text, nullable=False)
+    is_confidential = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class CommitteeMeeting(Base):
+    __tablename__ = "committee_meetings"
+    id = Column(Integer, primary_key=True, index=True)
+    committee_id = Column(Integer, ForeignKey("statutory_committees.id"), nullable=False)
+    meeting_reference = Column(String(100), unique=True, index=True, nullable=False)
+    meeting_date = Column(DateTime, nullable=False)
+    venue = Column(String(200), default="Integrated Chief Engineers Complex, Guindy, Chennai")
+    chairperson_name = Column(String(150), nullable=False)
+    agenda_summary = Column(Text, nullable=False)
+    minutes_summary = Column(Text, nullable=False)
+    attendees_json = Column(Text, nullable=True)
+    verification_status = Column(String(50), default="Verified")
+
+    committee = relationship("StatutoryCommittee", back_populates="meetings")
+    decisions = relationship("CommitteeDecision", back_populates="meeting")
+
+class CommitteeDecision(Base):
+    __tablename__ = "committee_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    meeting_id = Column(Integer, ForeignKey("committee_meetings.id"), nullable=True)
+    committee_id = Column(Integer, ForeignKey("statutory_committees.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    decision_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., COT-DEC-2026-042
+    subject = Column(String(250), nullable=False)
+    decision_type = Column(String(50), default="APPROVED")  # APPROVED, APPROVED_WITH_CONDITIONS, RETURNED_FOR_REVISION, REJECTED, REFERRED_TO_GOVERNMENT
+    decision_text = Column(Text, nullable=False)
+    statutory_condition = Column(Text, nullable=True)
+    government_order_ref = Column(String(150), nullable=True)
+    effective_date = Column(DateTime, default=datetime.datetime.utcnow)
+    verification_status = Column(String(50), default="Verified")
+
+    committee = relationship("StatutoryCommittee", back_populates="decisions")
+    meeting = relationship("CommitteeMeeting", back_populates="decisions")
+    project = relationship("Project")
+
+class StatutoryReferral(Base):
+    __tablename__ = "statutory_referrals"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    committee_code = Column(String(50), nullable=False)  # COT, TAC, RASC, RASC_LA, EXPERT_16B
+    referral_type = Column(String(100), nullable=False)  # TENDER_EXCESS, WATERWAY_LINEAR_LENGTH, COST_OVERRUN, QUANTITY_VARIATION_25PCT
+    trigger_value = Column(Float, nullable=False)
+    threshold_limit = Column(Float, nullable=False)
+    referral_reason = Column(Text, nullable=False)
+    statutory_rule_citation = Column(String(200), nullable=False)  # e.g., G.O. Ms. No. 75 / G.O. Ms. No. 05
+    status = Column(String(50), default="PENDING_SCRUTINY")  # PENDING_SCRUTINY, SCRUTINIZED, SANCTIONED, RETURNED
+    referral_date = Column(DateTime, default=datetime.datetime.utcnow)
+    responsible_officer = Column(String(150), nullable=False)
+
+    project = relationship("Project")
+
+class AIIntelligenceFinding(Base):
+    __tablename__ = "ai_intelligence_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_type = Column(String(100), nullable=False)  # TENDER_ANOMALY, REVISED_ESTIMATE_RISK, QUANTITY_VARIATION_EXCESS, COMMITTEE_REFERRAL_REQUIRED, SCHEDULE_DELAY, QUALITY_FAILURE
+    entity_type = Column(String(50), default="PROJECT")  # PROJECT, CONTRACT, ROAD, TENDER
+    entity_id = Column(Integer, nullable=True)
+    headline = Column(String(250), nullable=False)
+    evidence_summary = Column(Text, nullable=False)
+    explanation = Column(Text, nullable=False)
+    confidence = Column(String(20), default="HIGH")  # HIGH, MEDIUM, LOW
+    human_validation_status = Column(String(50), default="PENDING_HUMAN_REVIEW")  # PENDING_HUMAN_REVIEW, CONFIRMED_VALID, DISMISSED_FALSE_POSITIVE
+    recommended_action = Column(Text, nullable=False)
+    statutory_rule_citation = Column(String(200), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)

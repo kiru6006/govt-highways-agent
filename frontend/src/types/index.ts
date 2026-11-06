@@ -497,3 +497,86 @@ export interface VerifiedOrganisationStructure {
     cadre_rule: string;
   };
 }
+
+export interface GovernmentDocumentItem {
+  id: number;
+  document_reference: string;
+  title: string;
+  category: string;
+  issuing_department: string;
+  go_number?: string;
+  order_date?: string;
+  effective_date?: string;
+  last_verified_date?: string;
+  verification_status: string;
+  source_url?: string;
+  summary_abstract: string;
+  is_confidential: boolean;
+}
+
+export interface CommitteeDecisionItem {
+  id: number;
+  decision_reference: string;
+  committee_id: number;
+  subject: string;
+  decision_type: string;
+  decision_text: string;
+  statutory_condition?: string;
+  government_order_ref?: string;
+  effective_date: string;
+  verification_status: string;
+}
+
+export interface CommitteeMeetingItem {
+  id: number;
+  meeting_reference: string;
+  committee_id: number;
+  meeting_date: string;
+  venue: string;
+  chairperson_name: string;
+  agenda_summary: string;
+  minutes_summary: string;
+  verification_status: string;
+  decisions: CommitteeDecisionItem[];
+}
+
+export interface StatutoryCommitteeDetailItem {
+  id: number;
+  code: string;
+  name: string;
+  chairperson_title: string;
+  mandate_summary: string;
+  constitution_go: string;
+  meetings: CommitteeMeetingItem[];
+  decisions: CommitteeDecisionItem[];
+}
+
+export interface StatutoryReferralItem {
+  id: number;
+  project_id: number;
+  committee_code: string;
+  referral_type: string;
+  trigger_value: number;
+  threshold_limit: number;
+  referral_reason: string;
+  statutory_rule_citation: string;
+  status: string;
+  referral_date: string;
+  responsible_officer: string;
+}
+
+export interface AIIntelligenceFindingItem {
+  id: number;
+  finding_type: string;
+  entity_type: string;
+  entity_id?: number;
+  headline: string;
+  evidence_summary: string;
+  explanation: string;
+  confidence: string;
+  human_validation_status: string;
+  recommended_action: string;
+  statutory_rule_citation: string;
+  created_at: string;
+}
+

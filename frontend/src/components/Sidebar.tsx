@@ -69,7 +69,7 @@ export const navigationItems: NavItem[] = [
 
   // Group 5: Governance & Administration
   { id: '12', name: '12. Digital Office', path: '/digital-office', icon: FileText, groupId: 'governance' },
-  { id: '14', name: '14. Legal, Audit & Compliance', path: '/compliance', icon: Scale, groupId: 'governance' },
+  { id: '14', name: '14. Governance & Legal Registry', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
   { id: '15', name: '15. Citizen Services', path: '/citizen-services', icon: HeartHandshake, groupId: 'governance' },
   { id: '17', name: '17. Administration', path: '/admin', icon: Settings, groupId: 'governance' },
 ];

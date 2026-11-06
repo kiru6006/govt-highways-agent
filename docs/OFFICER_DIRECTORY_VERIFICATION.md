@@ -36,3 +36,4 @@ In accordance with Fundamental Rules (FR 49) of the Tamil Nadu Government:
    - *Example*: Er. S. Yamini (CE PDI) holding Additional Charge of CE TNRSP-II.
 3. **Full Additional Charge (`FAC`)**: An administrative arrangement under FR 49 where an officer discharges all functions and statutory sign-offs of a vacant post until a regular incumbent joins.
    - *Example*: Thiru D. Baskara Pandian, IAS holding Full Additional Charge (`FAC`) of Project Director, CKICP.
+

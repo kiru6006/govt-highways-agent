@@ -140,7 +140,7 @@ export const DirectoryPage: React.FC = () => {
           }`}
         >
           <Landmark className="w-4 h-4" />
-          8 Statutory Committees
+          Statutory Committees ({data?.statutory_committees.length || 11})
         </button>
 
         <button
@@ -548,9 +548,23 @@ export const DirectoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: 8 STATUTORY COMMITTEES */}
+      {/* TAB 4: STATUTORY COMMITTEES */}
       {activeTab === 'committees' && (
         <div className="space-y-6">
+          <div className="bg-sky-950 text-white p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-sky-800">
+            <div>
+              <h3 className="font-bold text-sm">Full Governance, Meeting Proceedings &amp; Statutory Referrals</h3>
+              <p className="text-xs text-sky-200 mt-0.5">
+                Explore detailed meeting minutes, sanctioned decisions, tender excess referrals, and AI integrity findings.
+              </p>
+            </div>
+            <a
+              href="#/compliance"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow flex items-center gap-1.5 self-start md:self-auto"
+            >
+              Open Governance Registry &rarr;
+            </a>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {data?.statutory_committees.map((com) => (
               <div

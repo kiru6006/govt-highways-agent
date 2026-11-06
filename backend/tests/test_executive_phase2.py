@@ -287,5 +287,102 @@ def test_verified_organisation_structure(client: TestClient):
     assert "heads_of_department" in data
     assert "verification_metadata" in data
 
+def test_government_documents_registry(client: TestClient):
+    """
+    Verifies that official government documents (Policy Notes, GOs, SSR) are listed and searchable.
+    """
+    token = get_auth_token(client, "secretary")
+    h = {"Authorization": f"Bearer {token}"}
+    
+    # 1. Get all documents
+    res = client.get("/api/v1/executive/documents/registry", headers=h)
+    assert res.status_code == 200
+    docs = res.json()
+    assert len(docs) >= 5
+    assert any("Policy Note" in d["title"] for d in docs)
+    assert any(d["document_reference"] == "DOC-GO-MS-172" for d in docs)
+    assert any(d["document_reference"] == "DOC-SSR-2026-27" for d in docs)
+
+    # 2. Filter by category
+    res_go = client.get("/api/v1/executive/documents/registry?category=Government Order", headers=h)
+    assert res_go.status_code == 200
+    go_docs = res_go.json()
+    assert all(d["category"] == "Government Order" for d in go_docs)
+
+    # 3. Search query
+    res_search = client.get("/api/v1/executive/documents/registry?query=172", headers=h)
+    assert res_search.status_code == 200
+    search_docs = res_search.json()
+    assert len(search_docs) >= 1
+    assert "172" in search_docs[0]["document_reference"]
+
+def test_governance_committees_and_decisions(client: TestClient):
+    """
+    Verifies that statutory committees include BOE, TAC, COT, 16(b), TNRIDC, and their meetings/decisions.
+    """
+    token = get_auth_token(client, "minister")
+    h = {"Authorization": f"Bearer {token}"}
+
+    res = client.get("/api/v1/executive/governance/committees", headers=h)
+    assert res.status_code == 200
+    committees = res.json()
+    committee_codes = [c["code"] for c in committees]
+    assert "BOE" in committee_codes
+    assert "COT" in committee_codes
+    assert "TAC" in committee_codes
+    assert "EXPERT_16B" in committee_codes
+    assert "TNRIDC_BOARD" in committee_codes
+    assert "TNRIDC_AUDIT" in committee_codes
+    assert "TNRIDC_TECH" in committee_codes
+
+    # Verify COT has meetings and decisions
+    cot = next(c for c in committees if c["code"] == "COT")
+    assert len(cot["meetings"]) >= 1
+    assert len(cot["decisions"]) >= 1
+    assert "COT-DEC-2026-042" in [d["decision_reference"] for d in cot["decisions"]]
+
+def test_statutory_referrals(client: TestClient):
+    """
+    Verifies statutory referrals triggered by rule thresholds.
+    """
+    token = get_auth_token(client, "secretary")
+    h = {"Authorization": f"Bearer {token}"}
+
+    res = client.get("/api/v1/executive/governance/referrals", headers=h)
+    assert res.status_code == 200
+    referrals = res.json()
+    assert len(referrals) >= 3
+    ref_types = [r["referral_type"] for r in referrals]
+    assert "TENDER_EXCESS" in ref_types
+    assert "WATERWAY_LINEAR_LENGTH" in ref_types
+    assert "QUANTITY_VARIATION_25PCT" in ref_types
+
+def test_ai_intelligence_findings_and_human_validation(client: TestClient):
+    """
+    Verifies AI intelligence findings listing and authorized officer confirmation/dismissal workflow.
+    """
+    token = get_auth_token(client, "secretary")
+    h = {"Authorization": f"Bearer {token}"}
+
+    # 1. Fetch AI findings
+    res = client.get("/api/v1/executive/ai/findings", headers=h)
+    assert res.status_code == 200
+    findings = res.json()
+    assert len(findings) >= 3
+    target_finding = findings[0]
+    finding_id = target_finding["id"]
+
+    # 2. Officer validates the finding
+    payload = {
+        "validation_status": "CONFIRMED_VALID",
+        "officer_remarks": "Reviewed against field measurement book and verified correct."
+    }
+    res_val = client.post(f"/api/v1/executive/ai/findings/{finding_id}/validate", json=payload, headers=h)
+    assert res_val.status_code == 200
+    updated = res_val.json()
+    assert updated["human_validation_status"] == "CONFIRMED_VALID"
+    assert "Reviewed against field measurement book" in updated["recommended_action"]
+
+
 
 

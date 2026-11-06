@@ -41,3 +41,4 @@ Under formal entrustment orders issued by MoRTH under Section 5 of the National 
 ### Anomaly 2: Multi-Division Jurisdiction Over Single Corridors
 - Stretches such as **NH-181 (171.400 km)** cross both the plain industrial corridor in Coimbatore district and severe Western Ghats topography in Nilgiris district (Mettupalayam, Coonoor, Ooty, Gudalur up to Kakkanallah Karnataka border).
 - **System Rule**: Stretches cannot be assigned to a single Division ID. Each corridor is split into sub-stretches linked to the respective field Division (e.g. Coimbatore NH Division: km 0/0 to km 36/0; Nilgiris NH Division: km 36/0 to km 171/4).
+

@@ -61,3 +61,4 @@ The platform supports 13 discrete actions evaluated independently:
 | **CHIEF_ENG** | **Approve TS** | Approve RA Bills | Review, Direct Fix | Scoped to Region | Scoped to Region | Scoped to Region | Comply |
 | **DIV_ENG (H)**| **Approve TA (&lt;50L)**| Check & Disburse | Field Rectification | Scoped to Division | Scoped to Division | Scoped to Division | Comply |
 | **CONTRACTOR**| Submit Milestones | View Own RA Bills | Submit QC Certs | ❌ **FORBIDDEN (403)** | ❌ **FORBIDDEN (403)** | ❌ **FORBIDDEN (403)**| ❌ **FORBIDDEN (403)** |
+

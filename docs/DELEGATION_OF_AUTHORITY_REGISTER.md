@@ -30,3 +30,4 @@ The Tamil Nadu Financial Code and Highways Manual strictly partition authority a
 
 1. **No Designation-Only Inferences**: A user cannot approve a ₹10.00 Cr tender simply because their designation is "Chief Engineer". If the tender contains a 4% excess, the system blocks direct acceptance and generates a statutory referral dossier to the **Commissionerate of Tenders (COT)**.
 2. **Additional Charge Restrictions**: An officer holding Additional Charge (`A/C`) of a circle or division cannot sanction non-routine budget re-appropriations without concurrence from the regular substantive supervisory officer or Director General (H).
+

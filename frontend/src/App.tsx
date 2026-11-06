@@ -9,6 +9,7 @@ import { MinisterDashboard } from './pages/MinisterDashboard';
 import { SecretaryDashboard } from './pages/SecretaryDashboard';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { DirectoryPage } from './pages/DirectoryPage';
+import { GovernanceRegistryPage } from './pages/GovernanceRegistryPage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 
 const AppLayout: React.FC = () => {
@@ -60,7 +61,8 @@ const AppLayout: React.FC = () => {
             <Route path="/assets" element={<PlaceholderModule />} />
             <Route path="/digital-office" element={<PlaceholderModule />} />
             <Route path="/land-utility" element={<PlaceholderModule />} />
-            <Route path="/compliance" element={<PlaceholderModule />} />
+            <Route path="/compliance" element={<GovernanceRegistryPage />} />
+            <Route path="/governance" element={<GovernanceRegistryPage />} />
             <Route path="/citizen-services" element={<PlaceholderModule />} />
             <Route path="/reports" element={<PlaceholderModule />} />
             <Route path="/admin" element={<PlaceholderModule />} />

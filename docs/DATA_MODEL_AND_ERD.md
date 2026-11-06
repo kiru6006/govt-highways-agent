@@ -78,3 +78,4 @@ erDiagram
    - `monetary_limit_cr`: Float
    - `tender_excess_pct_limit`: Float
    - `statutory_rule_reference`: String(200)
+

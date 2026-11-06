@@ -29,3 +29,4 @@ Contractors and consultants are external entities participating under binding co
 - **Account Boundary Enforcement**:
   - Scoped strictly to awarded contract packages.
   - Zero access to internal departmental disciplinary inquiries, vigilance flags, or peer contractor evaluations.
+

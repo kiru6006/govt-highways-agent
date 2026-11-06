@@ -650,3 +650,102 @@ class VerifiedOrganisationStructureOut(BaseModel):
     external_stakeholders: List[dict] = []
     zones_hierarchy: List[dict] = []
     verification_metadata: dict
+
+# Master Data & Document Registry Schemas
+class GovernmentDocumentOut(BaseModel):
+    id: int
+    document_reference: str
+    title: str
+    category: str
+    issuing_department: str
+    go_number: Optional[str] = None
+    order_date: Optional[datetime.datetime] = None
+    effective_date: Optional[datetime.datetime] = None
+    last_verified_date: Optional[datetime.datetime] = None
+    verification_status: str
+    source_url: Optional[str] = None
+    summary_abstract: str
+    is_confidential: bool
+
+    class Config:
+        from_attributes = True
+
+class CommitteeDecisionOut(BaseModel):
+    id: int
+    decision_reference: str
+    committee_id: int
+    subject: str
+    decision_type: str
+    decision_text: str
+    statutory_condition: Optional[str] = None
+    government_order_ref: Optional[str] = None
+    effective_date: datetime.datetime
+    verification_status: str
+
+    class Config:
+        from_attributes = True
+
+class CommitteeMeetingOut(BaseModel):
+    id: int
+    meeting_reference: str
+    committee_id: int
+    meeting_date: datetime.datetime
+    venue: str
+    chairperson_name: str
+    agenda_summary: str
+    minutes_summary: str
+    verification_status: str
+    decisions: List[CommitteeDecisionOut] = []
+
+    class Config:
+        from_attributes = True
+
+class StatutoryReferralOut(BaseModel):
+    id: int
+    project_id: int
+    committee_code: str
+    referral_type: str
+    trigger_value: float
+    threshold_limit: float
+    referral_reason: str
+    statutory_rule_citation: str
+    status: str
+    referral_date: datetime.datetime
+    responsible_officer: str
+
+    class Config:
+        from_attributes = True
+
+class AIIntelligenceFindingOut(BaseModel):
+    id: int
+    finding_type: str
+    entity_type: str
+    entity_id: Optional[int] = None
+    headline: str
+    evidence_summary: str
+    explanation: str
+    confidence: str
+    human_validation_status: str
+    recommended_action: str
+    statutory_rule_citation: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class FindingValidationUpdate(BaseModel):
+    validation_status: str  # CONFIRMED_VALID, DISMISSED_FALSE_POSITIVE, PENDING_HUMAN_REVIEW
+    officer_remarks: Optional[str] = None
+
+class StatutoryCommitteeDetailOut(BaseModel):
+    id: int
+    code: str
+    name: str
+    chairperson_title: str
+    mandate_summary: str
+    constitution_go: str
+    meetings: List[CommitteeMeetingOut] = []
+    decisions: List[CommitteeDecisionOut] = []
+
+    class Config:
+        from_attributes = True

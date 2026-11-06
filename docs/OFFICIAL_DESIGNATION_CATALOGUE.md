@@ -42,3 +42,4 @@
 | **Administrative Officer (AO)** | Tamil Nadu General Service | Office establishment in Chief Engineer and Circle offices | Ministerial promotion cadre | `[VERIFIED RULE]` |
 | **Chief Accounts Officer (CAO)** | Tamil Nadu Treasuries & Accounts Service | Financial advice, IFMS LC reconciliation, pre-audit scrutiny in DG (H) office | Deputation from Treasuries & Accounts | `[VERIFIED RULE]` |
 | **Accounts Officer (AO)** | Tamil Nadu Treasuries & Accounts Service | Bill scrutiny, contractor payment advice in Circle / Division offices | Deputation from Treasuries & Accounts | `[VERIFIED RULE]` |
+
