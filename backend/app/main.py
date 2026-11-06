@@ -9,7 +9,7 @@ from app.models import Project, Issue, DepartmentDependency, WorkflowTask, Road
 from app.routers import (
     auth, users, roles, departments, organisations, projects,
     officials, contractors, dependencies, issues, workflows,
-    documents, audit, ai, executive
+    documents, audit, ai, executive, programmes
 )
 
 # Initialize schema tables
@@ -54,6 +54,7 @@ app.include_router(documents.router, prefix=settings.API_V1_STR)
 app.include_router(audit.router, prefix=settings.API_V1_STR)
 app.include_router(ai.router, prefix=settings.API_V1_STR)
 app.include_router(executive.router, prefix=settings.API_V1_STR)
+app.include_router(programmes.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

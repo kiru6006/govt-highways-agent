@@ -24,7 +24,8 @@ import {
   PanelLeftOpen,
   ChevronsUpDown,
   Landmark,
-  Building2
+  Building2,
+  Globe
 } from 'lucide-react';
 
 export interface NavItem {
@@ -52,6 +53,8 @@ export const navigationItems: NavItem[] = [
   { id: '16', name: '16. Reports and Analytics', path: '/reports', icon: BarChart3, groupId: 'executive' },
 
   // Group 2: Projects & Engineering
+  { id: 'ckicp', name: 'CKICP Intelligence', path: '/ckicp', icon: Globe, badge: 'ADB', badgeColor: 'bg-sky-900/60 text-sky-200 border border-sky-700/50', groupId: 'projects' },
+  { id: 'tnrsp', name: 'TNRSP-II Intelligence', path: '/tnrsp', icon: Milestone, badge: 'World Bank', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'projects' },
   { id: '3', name: '3. Project Management', path: '/projects', icon: FolderGit2, groupId: 'projects' },
   { id: '4', name: '4. Project 360°', path: '/project-360', icon: View, groupId: 'projects' },
   { id: '7', name: '7. Engineering Quality', path: '/quality', icon: Award, groupId: 'projects' },

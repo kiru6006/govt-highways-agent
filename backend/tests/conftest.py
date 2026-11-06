@@ -6,6 +6,8 @@ from app.main import app
 from app.database import Base, get_db
 from app.config import settings
 from app.seed import seed_database
+from app.seed_official_verification import seed_official_verification
+from app.seed_ckicp_tnrsp import seed_ckicp_tnrsp
 
 # Use in-memory or dedicated test database
 TEST_DATABASE_URL = "sqlite:///./test_tn_hdos.db"
@@ -18,6 +20,8 @@ def setup_test_db():
     Base.metadata.create_all(bind=test_engine)
     db = TestingSessionLocal()
     seed_database(db_session=db)
+    seed_official_verification(db_session=db)
+    seed_ckicp_tnrsp(db_session=db)
     db.close()
     yield
     Base.metadata.drop_all(bind=test_engine)

@@ -580,3 +580,123 @@ export interface AIIntelligenceFindingItem {
   created_at: string;
 }
 
+export interface CorridorAlignmentItem {
+  id: number;
+  programme_id: number;
+  corridor_code: string;
+  name: string;
+  start_location: string;
+  end_location: string;
+  districts: string[];
+  total_length_km: number;
+  coordinates_geojson: string;
+  status: string;
+}
+
+export interface TenderItem {
+  id: number;
+  tender_notice_number: string;
+  package_number: string;
+  title: string;
+  programme_id: number;
+  programme_code?: string;
+  project_id?: number;
+  project_title?: string;
+  estimated_cost_cr: number;
+  earnest_money_deposit_lakhs?: number;
+  funding_source: string;
+  bid_validity_days: number;
+  procurement_type: string;
+  publication_date: string;
+  pre_bid_meeting_date?: string;
+  bid_submission_deadline: string;
+  technical_opening_date?: string;
+  financial_opening_date?: string;
+  status: string;
+  successful_bidder_name?: string;
+  contract_awarded_value_cr?: number;
+  official_source_url?: string;
+  pdf_filename?: string;
+}
+
+export interface LandParcelItem {
+  id: number;
+  parcel_reference: string;
+  programme_id: number;
+  project_id?: number;
+  package_number?: string;
+  district: string;
+  taluk: string;
+  village: string;
+  survey_numbers_json: string;
+  land_category: string;
+  extent_sq_meters: number;
+  extent_hectares: number;
+  sec15_2_gazette_date?: string;
+  sec15_1_declaration_date?: string;
+  sec19_1_award_date?: string;
+  total_compensation_assessed_cr: number;
+  compensation_disbursed_cr: number;
+  possession_status: string;
+  has_litigation: boolean;
+  court_case_reference?: string;
+}
+
+export interface LegalCaseItem {
+  id: number;
+  case_number: string;
+  court_name: string;
+  case_type: string;
+  programme_id: number;
+  project_id?: number;
+  package_number?: string;
+  petitioner: string;
+  respondent: string;
+  subject_matter: string;
+  prayer_summary: string;
+  interim_stay_granted: boolean;
+  stay_order_date?: string;
+  potential_financial_exposure_cr: number;
+  delay_impact_months: number;
+  next_hearing_date?: string;
+  standing_counsel_name?: string;
+  status: string;
+}
+
+export interface ProgrammeItem {
+  id: number;
+  code: string;
+  name: string;
+  parent_corridor?: string;
+  funding_agency: string;
+  approved_cost_cr: number;
+  revised_cost_cr: number;
+  total_corridor_length_km: number;
+  website_url?: string;
+  status: string;
+  alignments?: CorridorAlignmentItem[];
+  tenders?: TenderItem[];
+}
+
+export interface ProgrammeOverviewKPIs {
+  programme_code: string;
+  programme_name: string;
+  funding_agency: string;
+  total_approved_outlay_cr: number;
+  total_expenditure_cr: number;
+  financial_progress_pct: number;
+  physical_progress_pct: number;
+  total_corridor_length_km: number;
+  total_projects: number;
+  total_work_packages: number;
+  active_tenders_count: number;
+  tenders_value_cr: number;
+  land_acquisition_total_sq_m: number;
+  land_possession_pct: number;
+  compensation_disbursed_cr: number;
+  active_litigations_count: number;
+  active_stays_count: number;
+  litigation_financial_exposure_cr: number;
+}
+
+

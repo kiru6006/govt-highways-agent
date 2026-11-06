@@ -191,9 +191,28 @@ class Bridge(Base):
     
     road = relationship("Road", back_populates="bridges")
 
+class Programme(Base):
+    __tablename__ = "programmes"
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, index=True, nullable=False)  # e.g., CKICP, TNRSP_II, CRIDP, TNRIDC, TNMB
+    name = Column(String(250), nullable=False)
+    parent_corridor = Column(String(150), nullable=True)  # e.g., East Coast Economic Corridor (ECEC)
+    funding_agency = Column(String(150), nullable=False)  # Asian Development Bank (ADB), World Bank, State GoTN
+    approved_cost_cr = Column(Float, default=0.0)
+    revised_cost_cr = Column(Float, default=0.0)
+    total_corridor_length_km = Column(Float, default=0.0)
+    website_url = Column(String(250), nullable=True)
+    status = Column(String(50), default="ACTIVE")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    projects = relationship("Project", back_populates="programme")
+    alignments = relationship("CorridorAlignment", back_populates="programme")
+    tenders = relationship("Tender", back_populates="programme")
+
 class Project(Base):
     __tablename__ = "projects"
     id = Column(Integer, primary_key=True, index=True)
+    programme_id = Column(Integer, ForeignKey("programmes.id"), nullable=True)
     project_code = Column(String(50), unique=True, index=True, nullable=False)
     title = Column(String(250), nullable=False)
     description = Column(Text, nullable=True)
@@ -240,6 +259,11 @@ class Project(Base):
     approvals = relationship("Approval", back_populates="project")
     issues = relationship("Issue", back_populates="project")
     documents = relationship("Document", back_populates="project")
+    programme = relationship("Programme", back_populates="projects")
+    tenders = relationship("Tender", back_populates="project")
+    land_parcels = relationship("LandParcel", back_populates="project")
+    legal_cases = relationship("LegalCase", back_populates="project")
+    consultants = relationship("ProjectConsultant", back_populates="project")
 
 class WorkPackage(Base):
     __tablename__ = "work_packages"
@@ -255,6 +279,9 @@ class WorkPackage(Base):
     
     project = relationship("Project", back_populates="work_packages")
     contracts = relationship("Contract", back_populates="work_package")
+    tenders = relationship("Tender", back_populates="work_package")
+    land_parcels = relationship("LandParcel", back_populates="work_package")
+    legal_cases = relationship("LegalCase", back_populates="work_package")
 
 class Contract(Base):
     __tablename__ = "contracts"
@@ -749,3 +776,117 @@ class AIIntelligenceFinding(Base):
     recommended_action = Column(Text, nullable=False)
     statutory_rule_citation = Column(String(200), nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+# -------------------------------------------------------------
+# PROGRAMMES, CORRIDORS, TENDERS, LAND PARCELS & LITIGATION (CKICP / TNRSP-II)
+# -------------------------------------------------------------
+
+class CorridorAlignment(Base):
+    __tablename__ = "corridor_alignments"
+    id = Column(Integer, primary_key=True, index=True)
+    programme_id = Column(Integer, ForeignKey("programmes.id"), nullable=False)
+    corridor_code = Column(String(50), index=True, nullable=False)  # e.g., CKICP-C1, TNRSP-CRN-01
+    name = Column(String(200), nullable=False)
+    start_location = Column(String(100), nullable=False)
+    end_location = Column(String(100), nullable=False)
+    districts_json = Column(Text, nullable=False)  # JSON array of district names
+    total_length_km = Column(Float, default=0.0)
+    coordinates_geojson = Column(Text, nullable=True)  # LineString GeoJSON coordinates
+    status = Column(String(50), default="ACTIVE")
+
+    programme = relationship("Programme", back_populates="alignments")
+
+class Tender(Base):
+    __tablename__ = "tenders"
+    id = Column(Integer, primary_key=True, index=True)
+    programme_id = Column(Integer, ForeignKey("programmes.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    tender_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., CKICP-KANCHI-PKG-01-2026
+    package_number = Column(String(50), nullable=False)
+    title = Column(String(250), nullable=False)
+    work_description = Column(Text, nullable=False)
+    location_district = Column(String(100), nullable=False)
+    estimated_cost_cr = Column(Float, default=0.0)
+    funding_source = Column(String(100), default="State GoTN")  # Asian Development Bank (ADB), World Bank, State GoTN
+    bid_eligibility = Column(String(100), default="Class I Highways Contractors")
+    publication_date = Column(DateTime, nullable=False)
+    submission_deadline = Column(DateTime, nullable=False)
+    tech_opening_date = Column(DateTime, nullable=True)
+    fin_opening_date = Column(DateTime, nullable=True)
+    successful_bidder_name = Column(String(200), nullable=True)
+    letter_of_acceptance_ref = Column(String(100), nullable=True)
+    agreement_number = Column(String(100), nullable=True)
+    contract_value_cr = Column(Float, nullable=True)
+    work_commencement_date = Column(DateTime, nullable=True)
+    completion_deadline = Column(DateTime, nullable=True)
+    status = Column(String(50), default="PUBLISHED")  # PUBLISHED, TECH_EVALUATION, FIN_EVALUATION, AWARDED, CANCELLED
+    source_url = Column(String(300), nullable=True)
+    verification_status = Column(String(50), default="Verified")
+
+    programme = relationship("Programme", back_populates="tenders")
+    project = relationship("Project", back_populates="tenders")
+    work_package = relationship("WorkPackage", back_populates="tenders")
+
+class LandParcel(Base):
+    __tablename__ = "land_parcels"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    parcel_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., LA-CKICP-KCH-001
+    district = Column(String(100), nullable=False)
+    taluk = Column(String(100), nullable=False)
+    village = Column(String(100), nullable=False)
+    survey_number = Column(String(100), nullable=False)
+    land_classification = Column(String(50), default="Dry / Wet Private")
+    private_land_sqm = Column(Float, default=0.0)
+    govt_land_sqm = Column(Float, default=0.0)
+    total_land_sqm = Column(Float, default=0.0)
+    notification_15_2_date = Column(DateTime, nullable=True)
+    gazette_15_1_date = Column(DateTime, nullable=True)
+    award_19_1_date = Column(DateTime, nullable=True)
+    compensation_assessed_cr = Column(Float, default=0.0)
+    compensation_paid_cr = Column(Float, default=0.0)
+    possession_status = Column(String(50), default="PENDING_POSSESSION")  # PENDING_POSSESSION, POSSESSION_HANDED_OVER, PARTIAL_DISPUTED
+    has_litigation = Column(Boolean, default=False)
+    responsible_revenue_officer = Column(String(150), nullable=False)
+
+    project = relationship("Project", back_populates="land_parcels")
+    work_package = relationship("WorkPackage", back_populates="land_parcels")
+    legal_cases = relationship("LegalCase", back_populates="land_parcel")
+
+class LegalCase(Base):
+    __tablename__ = "legal_cases"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    land_parcel_id = Column(Integer, ForeignKey("land_parcels.id"), nullable=True)
+    case_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., WP(MD)/2026/8941
+    court_name = Column(String(150), nullable=False)  # High Court of Madras, Supreme Court, Arbitration Tribunal
+    case_type = Column(String(100), nullable=False)  # Land Acquisition Enhancement, Tender Writ Petition, Contractor Arbitration
+    petitioner = Column(String(200), nullable=False)
+    respondent = Column(String(200), nullable=False)
+    summary = Column(Text, nullable=False)
+    interim_stay_in_force = Column(Boolean, default=False)
+    financial_exposure_cr = Column(Float, default=0.0)
+    next_hearing_date = Column(DateTime, nullable=True)
+    responsible_legal_officer = Column(String(150), nullable=False)
+    current_status = Column(String(50), default="PENDING_HEARING")  # PENDING_HEARING, STAY_VACATED, DISPOSED_IN_FAVOUR, DISPOSED_AGAINST
+
+    project = relationship("Project", back_populates="legal_cases")
+    work_package = relationship("WorkPackage", back_populates="legal_cases")
+    land_parcel = relationship("LandParcel", back_populates="legal_cases")
+
+class ProjectConsultant(Base):
+    __tablename__ = "project_consultants"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    consultant_id = Column(Integer, ForeignKey("consultants.id"), nullable=False)
+    assignment_title = Column(String(200), nullable=False)  # DPR Preparation, Authority Engineer, Project Management Consultant (PMC)
+    contract_value_cr = Column(Float, default=0.0)
+    start_date = Column(DateTime, nullable=True)
+    end_date = Column(DateTime, nullable=True)
+    status = Column(String(50), default="ACTIVE")
+
+    project = relationship("Project", back_populates="consultants")
+    consultant = relationship("Consultant")

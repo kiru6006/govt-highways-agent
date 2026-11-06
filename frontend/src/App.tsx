@@ -10,6 +10,7 @@ import { SecretaryDashboard } from './pages/SecretaryDashboard';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { DirectoryPage } from './pages/DirectoryPage';
 import { GovernanceRegistryPage } from './pages/GovernanceRegistryPage';
+import { ProgrammeIntelligencePage } from './pages/ProgrammeIntelligencePage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 
 const AppLayout: React.FC = () => {
@@ -49,6 +50,8 @@ const AppLayout: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/leadership/minister" element={<MinisterDashboard />} />
             <Route path="/leadership/secretary" element={<SecretaryDashboard />} />
+            <Route path="/ckicp" element={<ProgrammeIntelligencePage />} />
+            <Route path="/tnrsp" element={<ProgrammeIntelligencePage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/leakage" element={<PlaceholderModule />} />
             <Route path="/project-360" element={<PlaceholderModule />} />

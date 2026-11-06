@@ -27,7 +27,13 @@ import {
   CommitteeDecisionItem,
   StatutoryCommitteeDetailItem,
   StatutoryReferralItem,
-  AIIntelligenceFindingItem
+  AIIntelligenceFindingItem,
+  ProgrammeItem,
+  CorridorAlignmentItem,
+  TenderItem,
+  LandParcelItem,
+  LegalCaseItem,
+  ProgrammeOverviewKPIs
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -1657,6 +1663,73 @@ export const api = {
       }
       throw new Error("Finding not found");
     }
+  },
+
+  // Multilateral Programmes & Corridors (CKICP / TNRSP-II / CRIDP)
+  getProgrammes: async (): Promise<ProgrammeItem[]> => {
+    try {
+      return await request<ProgrammeItem[]>('/programmes');
+    } catch {
+      return fallbackProgrammes;
+    }
+  },
+
+  getProgrammeByCode: async (code: string): Promise<ProgrammeItem> => {
+    try {
+      return await request<ProgrammeItem>(`/programmes/${code}`);
+    } catch {
+      const p = fallbackProgrammes.find(item => item.code.toUpperCase() === code.toUpperCase());
+      if (!p) throw new Error(`Programme ${code} not found`);
+      return p;
+    }
+  },
+
+  getProgrammeKPIs: async (code: string): Promise<ProgrammeOverviewKPIs> => {
+    try {
+      return await request<ProgrammeOverviewKPIs>(`/programmes/${code}/kpis`);
+    } catch {
+      return fallbackProgrammeKPIs[code.toUpperCase()] || fallbackProgrammeKPIs['CKICP'];
+    }
+  },
+
+  getProgrammeProjects: async (code: string): Promise<ProjectItem[]> => {
+    try {
+      return await request<ProjectItem[]>(`/programmes/${code}/projects`);
+    } catch {
+      return fallbackProgrammeProjects[code.toUpperCase()] || [];
+    }
+  },
+
+  getProgrammeTenders: async (code: string): Promise<TenderItem[]> => {
+    try {
+      return await request<TenderItem[]>(`/programmes/${code}/tenders`);
+    } catch {
+      return fallbackProgrammeTenders[code.toUpperCase()] || [];
+    }
+  },
+
+  getProgrammeLandParcels: async (code: string): Promise<LandParcelItem[]> => {
+    try {
+      return await request<LandParcelItem[]>(`/programmes/${code}/land-parcels`);
+    } catch {
+      return fallbackProgrammeLandParcels[code.toUpperCase()] || [];
+    }
+  },
+
+  getProgrammeLegalCases: async (code: string): Promise<LegalCaseItem[]> => {
+    try {
+      return await request<LegalCaseItem[]>(`/programmes/${code}/legal-cases`);
+    } catch {
+      return fallbackProgrammeLegalCases[code.toUpperCase()] || [];
+    }
+  },
+
+  getProgrammeAlignments: async (code: string): Promise<CorridorAlignmentItem[]> => {
+    try {
+      return await request<CorridorAlignmentItem[]>(`/programmes/${code}/alignments`);
+    } catch {
+      return fallbackProgrammeAlignments[code.toUpperCase()] || [];
+    }
   }
 };
 
@@ -2073,3 +2146,555 @@ export const fallbackAIIntelligenceFindings: AIIntelligenceFindingItem[] = [
     created_at: "2026-04-05T10:45:00Z"
   }
 ];
+
+export const fallbackProgrammes: ProgrammeItem[] = [
+  {
+    id: 1,
+    code: "CKICP",
+    name: "Chennai-Kanyakumari Industrial Corridor Project",
+    parent_corridor: "East Coast Economic Corridor (ECEC)",
+    funding_agency: "Asian Development Bank (ADB)",
+    approved_cost_cr: 6448.00,
+    revised_cost_cr: 6448.00,
+    total_corridor_length_km: 654.8,
+    website_url: "https://www.ckicp.tn.gov.in/",
+    status: "ACTIVE"
+  },
+  {
+    id: 2,
+    code: "TNRSP_II",
+    name: "Tamil Nadu Road Sector Project II",
+    parent_corridor: "Core Road Network Upgradation",
+    funding_agency: "World Bank (IBRD)",
+    approved_cost_cr: 5171.00,
+    revised_cost_cr: 5171.00,
+    total_corridor_length_km: 577.0,
+    website_url: "https://www.tnrsp.tn.gov.in/",
+    status: "ACTIVE"
+  },
+  {
+    id: 3,
+    code: "CRIDP",
+    name: "Comprehensive Road Infrastructure Development Programme",
+    parent_corridor: "Statewide Strategic Network",
+    funding_agency: "State Government of Tamil Nadu (GoTN)",
+    approved_cost_cr: 8000.00,
+    revised_cost_cr: 8000.00,
+    total_corridor_length_km: 3200.0,
+    website_url: "https://www.tnhighways.tn.gov.in/",
+    status: "ACTIVE"
+  }
+];
+
+export const fallbackProgrammeKPIs: Record<string, ProgrammeOverviewKPIs> = {
+  CKICP: {
+    programme_code: "CKICP",
+    programme_name: "Chennai-Kanyakumari Industrial Corridor Project",
+    funding_agency: "Asian Development Bank (ADB)",
+    total_approved_outlay_cr: 6448.00,
+    total_expenditure_cr: 3185.50,
+    financial_progress_pct: 49.4,
+    physical_progress_pct: 54.2,
+    total_corridor_length_km: 654.8,
+    total_projects: 2,
+    total_work_packages: 4,
+    active_tenders_count: 4,
+    tenders_value_cr: 575.10,
+    land_acquisition_total_sq_m: 1480000,
+    land_possession_pct: 86.4,
+    compensation_disbursed_cr: 412.30,
+    active_litigations_count: 2,
+    active_stays_count: 1,
+    litigation_financial_exposure_cr: 14.80
+  },
+  TNRSP_II: {
+    programme_code: "TNRSP_II",
+    programme_name: "Tamil Nadu Road Sector Project II",
+    funding_agency: "World Bank (IBRD)",
+    total_approved_outlay_cr: 5171.00,
+    total_expenditure_cr: 4980.20,
+    financial_progress_pct: 96.3,
+    physical_progress_pct: 98.8,
+    total_corridor_length_km: 577.0,
+    total_projects: 3,
+    total_work_packages: 3,
+    active_tenders_count: 0,
+    tenders_value_cr: 0.0,
+    land_acquisition_total_sq_m: 2062934,
+    land_possession_pct: 99.8,
+    compensation_disbursed_cr: 388.45,
+    active_litigations_count: 1,
+    active_stays_count: 0,
+    litigation_financial_exposure_cr: 5.60
+  }
+};
+
+export const fallbackProgrammeTenders: Record<string, TenderItem[]> = {
+  CKICP: [
+    {
+      id: 1,
+      tender_notice_number: "CKICP/2026/TN-01",
+      package_number: "CKICP/KCH/PKG-01",
+      title: "Widening to 4 lanes of SH-116 Kancheepuram to Vandavasi (km 12/0 - 24/0)",
+      programme_id: 1,
+      programme_code: "CKICP",
+      project_id: 1,
+      project_title: "CKICP Kancheepuram Corridor: Widening & Strengthening of SH-116/SH-58",
+      estimated_cost_cr: 142.50,
+      earnest_money_deposit_lakhs: 142.50,
+      funding_source: "Asian Development Bank (ADB)",
+      bid_validity_days: 120,
+      procurement_type: "International Competitive Bidding (ICB)",
+      publication_date: "2026-02-18",
+      pre_bid_meeting_date: "2026-03-05",
+      bid_submission_deadline: "2026-03-24",
+      technical_opening_date: "2026-03-25",
+      status: "PUBLISHED",
+      successful_bidder_name: undefined,
+      official_source_url: "https://www.ckicp.tn.gov.in/tenders/fnews_pdf50.pdf",
+      pdf_filename: "fnews_pdf50.pdf"
+    },
+    {
+      id: 2,
+      tender_notice_number: "CKICP/2026/TN-02",
+      package_number: "CKICP/KCH/PKG-02",
+      title: "Upgrading of SH-58 Chengalpattu - Thiruporur (km 24/0 - 34/5) with 2-lane paved shoulders",
+      programme_id: 1,
+      programme_code: "CKICP",
+      project_id: 1,
+      project_title: "CKICP Kancheepuram Corridor: Widening & Strengthening of SH-116/SH-58",
+      estimated_cost_cr: 118.20,
+      earnest_money_deposit_lakhs: 118.20,
+      funding_source: "Asian Development Bank (ADB)",
+      bid_validity_days: 120,
+      procurement_type: "National Competitive Bidding (NCB)",
+      publication_date: "2026-02-18",
+      pre_bid_meeting_date: "2026-03-06",
+      bid_submission_deadline: "2026-03-25",
+      technical_opening_date: "2026-03-26",
+      status: "PUBLISHED",
+      successful_bidder_name: undefined,
+      official_source_url: "https://www.ckicp.tn.gov.in/tenders/fnews_pdf51.pdf",
+      pdf_filename: "fnews_pdf51.pdf"
+    },
+    {
+      id: 3,
+      tender_notice_number: "CKICP/2026/TN-03",
+      package_number: "CKICP/KCH/PKG-03",
+      title: "Construction of Major Grade Separator and ROB at Walajabad Junction (SH-116)",
+      programme_id: 1,
+      programme_code: "CKICP",
+      project_id: 1,
+      project_title: "CKICP Kancheepuram Corridor: Widening & Strengthening of SH-116/SH-58",
+      estimated_cost_cr: 96.40,
+      earnest_money_deposit_lakhs: 96.40,
+      funding_source: "Asian Development Bank (ADB)",
+      bid_validity_days: 120,
+      procurement_type: "National Competitive Bidding (NCB)",
+      publication_date: "2026-02-18",
+      pre_bid_meeting_date: "2026-03-08",
+      bid_submission_deadline: "2026-03-26",
+      technical_opening_date: "2026-03-27",
+      status: "PUBLISHED",
+      successful_bidder_name: undefined,
+      official_source_url: "https://www.ckicp.tn.gov.in/tenders/fnews_pdf52.pdf",
+      pdf_filename: "fnews_pdf52.pdf"
+    },
+    {
+      id: 4,
+      tender_notice_number: "CKICP/2026/TN-04",
+      package_number: "CKICP/TRY/PKG-01 & 02",
+      title: "Two-lanning with paved shoulders and grade separators on Trichy Semi-Ring & Regional Link (76.8 km)",
+      programme_id: 1,
+      programme_code: "CKICP",
+      project_id: 2,
+      project_title: "CKICP Tiruchirappalli Industrial Link Upgradation",
+      estimated_cost_cr: 218.00,
+      earnest_money_deposit_lakhs: 218.00,
+      funding_source: "Asian Development Bank (ADB)",
+      bid_validity_days: 150,
+      procurement_type: "International Competitive Bidding (ICB)",
+      publication_date: "2026-02-18",
+      pre_bid_meeting_date: "2026-03-10",
+      bid_submission_deadline: "2026-03-28",
+      technical_opening_date: "2026-03-29",
+      status: "PUBLISHED",
+      successful_bidder_name: undefined,
+      official_source_url: "https://www.ckicp.tn.gov.in/tenders/fnews_pdf53.pdf",
+      pdf_filename: "fnews_pdf53.pdf"
+    }
+  ],
+  TNRSP_II: []
+};
+
+export const fallbackProgrammeLandParcels: Record<string, LandParcelItem[]> = {
+  CKICP: [
+    {
+      id: 1,
+      parcel_reference: "LP-CKICP-KCH-001",
+      programme_id: 1,
+      package_number: "CKICP/KCH/PKG-01",
+      district: "Kancheepuram",
+      taluk: "Walajabad",
+      village: "Uthiramerur",
+      survey_numbers_json: "[\"112/1A\", \"114/2B\", \"118/3\", \"122/1\"]",
+      land_category: "PRIVATE_PATTA",
+      extent_sq_meters: 48200,
+      extent_hectares: 4.82,
+      sec15_2_gazette_date: "2023-04-12",
+      sec15_1_declaration_date: "2023-11-20",
+      sec19_1_award_date: "2024-06-15",
+      total_compensation_assessed_cr: 14.20,
+      compensation_disbursed_cr: 12.80,
+      possession_status: "PARTIAL_POSSESSION",
+      has_litigation: true,
+      court_case_reference: "WP No. 11420 of 2024 (Madras High Court)"
+    },
+    {
+      id: 2,
+      parcel_reference: "LP-CKICP-TRY-002",
+      programme_id: 1,
+      package_number: "CKICP/TRY/PKG-01",
+      district: "Tiruchirappalli",
+      taluk: "Srirangam",
+      village: "Navalpattu",
+      survey_numbers_json: "[\"45/1\", \"46/2A\", \"48/1B\"]",
+      land_category: "GOVERNMENT_PORAMBOKE",
+      extent_sq_meters: 35400,
+      extent_hectares: 3.54,
+      sec15_2_gazette_date: "2023-06-10",
+      sec15_1_declaration_date: "2024-01-15",
+      sec19_1_award_date: "2024-08-20",
+      total_compensation_assessed_cr: 8.90,
+      compensation_disbursed_cr: 8.90,
+      possession_status: "FULL_POSSESSION",
+      has_litigation: false
+    }
+  ],
+  TNRSP_II: [
+    {
+      id: 3,
+      parcel_reference: "LP-TNRSP-EPC01-01",
+      programme_id: 2,
+      package_number: "TNRSP-II/EPC-01",
+      district: "Kancheepuram",
+      taluk: "Kancheepuram",
+      village: "Sevilimedu",
+      survey_numbers_json: "[\"SH-116 km 12/0 - 24/0\"]",
+      land_category: "PRIVATE_PATTA",
+      extent_sq_meters: 14812,
+      extent_hectares: 1.48,
+      sec15_2_gazette_date: "2016-03-15",
+      sec15_1_declaration_date: "2016-10-10",
+      sec19_1_award_date: "2017-05-18",
+      total_compensation_assessed_cr: 6.45,
+      compensation_disbursed_cr: 6.45,
+      possession_status: "FULL_POSSESSION",
+      has_litigation: false
+    },
+    {
+      id: 4,
+      parcel_reference: "LP-TNRSP-EPC01-02",
+      programme_id: 2,
+      package_number: "TNRSP-II/EPC-01",
+      district: "Chengalpattu",
+      taluk: "Thiruporur",
+      village: "Kalavakkam",
+      survey_numbers_json: "[\"SH-58 km 24/0 - 34/5\"]",
+      land_category: "PRIVATE_PATTA",
+      extent_sq_meters: 40874,
+      extent_hectares: 4.09,
+      sec15_2_gazette_date: "2016-04-20",
+      sec15_1_declaration_date: "2016-11-12",
+      sec19_1_award_date: "2017-06-30",
+      total_compensation_assessed_cr: 18.60,
+      compensation_disbursed_cr: 18.60,
+      possession_status: "FULL_POSSESSION",
+      has_litigation: false
+    },
+    {
+      id: 5,
+      parcel_reference: "LP-TNRSP-EPC02-01",
+      programme_id: 2,
+      package_number: "TNRSP-II/EPC-02",
+      district: "Ranipet",
+      taluk: "Arcot",
+      village: "Timiri",
+      survey_numbers_json: "[\"SH-04 km 0/0 - 45/0\"]",
+      land_category: "PRIVATE_PATTA",
+      extent_sq_meters: 112400,
+      extent_hectares: 11.24,
+      sec15_2_gazette_date: "2016-02-10",
+      sec15_1_declaration_date: "2016-09-05",
+      sec19_1_award_date: "2017-04-12",
+      total_compensation_assessed_cr: 42.30,
+      compensation_disbursed_cr: 42.30,
+      possession_status: "FULL_POSSESSION",
+      has_litigation: false
+    }
+  ]
+};
+
+export const fallbackProgrammeLegalCases: Record<string, LegalCaseItem[]> = {
+  CKICP: [
+    {
+      id: 1,
+      case_number: "WP No. 11420 of 2024",
+      court_name: "High Court of Judicature at Madras (Principal Seat)",
+      case_type: "Writ Petition (Civil)",
+      programme_id: 1,
+      package_number: "CKICP/KCH/PKG-01",
+      petitioner: "M. Kothandaraman & 14 Others (Landowners of Uthiramerur)",
+      respondent: "State of Tamil Nadu rep. by Principal Secretary (Highways) & Special DRO (LA) CKICP",
+      subject_matter: "Challenge to land acquisition valuation and prayer for realignment at km 16/200 SH-116",
+      prayer_summary: "Quash Section 15(1) notification or direct payment of enhanced market value as per 2013 RFCTLARR Act.",
+      interim_stay_granted: true,
+      stay_order_date: "2024-07-12",
+      potential_financial_exposure_cr: 12.50,
+      delay_impact_months: 7,
+      next_hearing_date: "2026-04-28",
+      standing_counsel_name: "Additional Advocate General-IV / Special Government Pleader (Highways)",
+      status: "INTERIM_STAY_ACTIVE"
+    },
+    {
+      id: 2,
+      case_number: "WA No. 892 of 2025",
+      court_name: "High Court of Judicature at Madras (Madurai Bench)",
+      case_type: "Writ Appeal",
+      programme_id: 1,
+      package_number: "CKICP/TRY/PKG-01",
+      petitioner: "Project Director, CKICP",
+      respondent: "S. Murugesan & Co (Contractor)",
+      subject_matter: "Challenge to single bench order directing price variation index calculation using wholesale price index instead of RBI highway index.",
+      prayer_summary: "Stay operation of judgment in WP(MD) No. 4512/2024 pending disposal of appeal.",
+      interim_stay_granted: false,
+      potential_financial_exposure_cr: 2.30,
+      delay_impact_months: 2,
+      next_hearing_date: "2026-05-14",
+      standing_counsel_name: "Special Government Pleader (Madurai Bench)",
+      status: "HEARING_SCHEDULED"
+    }
+  ],
+  TNRSP_II: [
+    {
+      id: 3,
+      case_number: "ARB Case No. 04 of 2023",
+      court_name: "High Level Dispute Resolution / Arbitration Tribunal",
+      case_type: "Arbitration Matter",
+      programme_id: 2,
+      package_number: "TNRSP-II/EPC-01",
+      petitioner: "BSCPL Infrastructure Ltd",
+      respondent: "Project Director, TNRSP-II",
+      subject_matter: "Claims regarding Prolongation and Overhead Compensation due to utility shifting delay by TANGEDCO.",
+      prayer_summary: "Award of ₹5.60 Cr plus interest under FIDIC Red Book Sub-clause 20.1.",
+      interim_stay_granted: false,
+      potential_financial_exposure_cr: 5.60,
+      delay_impact_months: 0,
+      next_hearing_date: "2026-06-10",
+      standing_counsel_name: "Departmental Arbitrator / Law Officer (Highways)",
+      status: "EVIDENCE_STAGE"
+    }
+  ]
+};
+
+export const fallbackProgrammeAlignments: Record<string, CorridorAlignmentItem[]> = {
+  CKICP: [
+    {
+      id: 1,
+      programme_id: 1,
+      corridor_code: "CKICP-C1",
+      name: "Northern Industrial Link Corridor (Kancheepuram - Chengalpattu - Cuddalore)",
+      start_location: "Walajabad Junction (SH-116)",
+      end_location: "Cuddalore Port Connectivity (SH-58 / SH-68)",
+      districts: ["Kancheepuram", "Chengalpattu", "Villupuram", "Cuddalore"],
+      total_length_km: 182.4,
+      coordinates_geojson: JSON.stringify({
+        type: "LineString",
+        coordinates: [
+          [79.8167, 12.8000], [79.9800, 12.6900], [79.5200, 12.3500], [79.6500, 11.9500], [79.7667, 11.7500]
+        ]
+      }),
+      status: "ACTIVE"
+    },
+    {
+      id: 2,
+      programme_id: 1,
+      corridor_code: "CKICP-C2",
+      name: "Central-Southern Link Corridor (Trichy - Ramanathapuram - Tuticorin)",
+      start_location: "Tiruchirappalli Junction",
+      end_location: "VOC Port, Tuticorin",
+      districts: ["Tiruchirappalli", "Pudukkottai", "Sivaganga", "Ramanathapuram", "Thoothukudi"],
+      total_length_km: 248.0,
+      coordinates_geojson: JSON.stringify({
+        type: "LineString",
+        coordinates: [
+          [78.6856, 10.7905], [78.8200, 10.3800], [78.5000, 9.8500], [78.8300, 9.3700], [78.1348, 8.7642]
+        ]
+      }),
+      status: "ACTIVE"
+    }
+  ],
+  TNRSP_II: [
+    {
+      id: 3,
+      programme_id: 2,
+      corridor_code: "TNRSP-CRN-01",
+      name: "Northern Core Road Network (Arcot - Villupuram - Vridhachalam)",
+      start_location: "Arcot (SH-04)",
+      end_location: "Vridhachalam (SH-70)",
+      districts: ["Ranipet", "Tiruvannamalai", "Villupuram", "Cuddalore"],
+      total_length_km: 147.3,
+      coordinates_geojson: JSON.stringify({
+        type: "LineString",
+        coordinates: [
+          [79.3300, 12.9000], [79.2000, 12.4500], [79.4800, 11.9400], [79.3200, 11.5200]
+        ]
+      }),
+      status: "ACTIVE"
+    },
+    {
+      id: 4,
+      programme_id: 2,
+      corridor_code: "TNRSP-CRN-02",
+      name: "Western Textile Corridor (Omalur - Sankari - Erode - Tiruppur)",
+      start_location: "Omalur (SH-86)",
+      end_location: "Tiruppur (SH-37)",
+      districts: ["Salem", "Namakkal", "Erode", "Tiruppur"],
+      total_length_km: 164.8,
+      coordinates_geojson: JSON.stringify({
+        type: "LineString",
+        coordinates: [
+          [78.0400, 11.7400], [77.8700, 11.4800], [77.7200, 11.3400], [77.3411, 11.1085]
+        ]
+      }),
+      status: "ACTIVE"
+    },
+    {
+      id: 5,
+      programme_id: 2,
+      corridor_code: "TNRSP-CRN-03",
+      name: "Southern Core Network (Rajapalayam - Sankarankoil - Tirunelveli - Ovari)",
+      start_location: "Rajapalayam (SH-41)",
+      end_location: "Ovari Coast (SH-89)",
+      districts: ["Virudhunagar", "Tenkasi", "Tirunelveli"],
+      total_length_km: 142.1,
+      coordinates_geojson: JSON.stringify({
+        type: "LineString",
+        coordinates: [
+          [77.5500, 9.4500], [77.5300, 9.1700], [77.7300, 8.7300], [77.8800, 8.2800]
+        ]
+      }),
+      status: "ACTIVE"
+    }
+  ]
+};
+
+export const fallbackProgrammeProjects: Record<string, ProjectItem[]> = {
+  CKICP: [
+    {
+      id: 4,
+      project_code: "PRJ-CKICP-001",
+      title: "CKICP Kancheepuram Corridor: Widening & Strengthening of SH-116/SH-58 km 12/0 to 34/5",
+      description: "Strategic corridor implementation under CKICP with ADB multilateral financing.",
+      road_type: "SH",
+      estimated_cost_cr: 260.70,
+      sanctioned_cost_cr: 260.70,
+      expenditure_to_date_cr: 63.09,
+      physical_progress_pct: 28.5,
+      financial_progress_pct: 24.2,
+      status: "IN_PROGRESS",
+      priority: "HIGH",
+      zone_id: 1,
+      circle_id: 1,
+      division_id: 1,
+      contractor_id: 4,
+      contractor_name: "Ramalingam Construction Company Pvt Ltd",
+      road_name: "SH-116 & SH-58 Kancheepuram Corridor",
+      created_at: "2023-01-15T00:00:00Z"
+    },
+    {
+      id: 5,
+      project_code: "PRJ-CKICP-002",
+      title: "CKICP Tiruchirappalli Industrial Link: Upgradation of Regional Corridors & Grade Separators",
+      description: "Strategic corridor implementation under CKICP with ADB multilateral financing.",
+      road_type: "SH",
+      estimated_cost_cr: 218.00,
+      sanctioned_cost_cr: 218.00,
+      expenditure_to_date_cr: 18.53,
+      physical_progress_pct: 12.0,
+      financial_progress_pct: 8.5,
+      status: "TENDERED",
+      priority: "HIGH",
+      zone_id: 1,
+      circle_id: 1,
+      division_id: 1,
+      road_name: "Trichy Semi-Ring Road & Regional Corridors",
+      created_at: "2023-03-20T00:00:00Z"
+    }
+  ],
+  TNRSP_II: [
+    {
+      id: 6,
+      project_code: "PRJ-TNRSP-001",
+      title: "TNRSP-II Core Road Network EPC01: Kancheepuram - Vandavasi (SH-116) and SH-58 (48.482 km)",
+      description: "Strategic corridor implementation under TNRSP-II with World Bank financing.",
+      road_type: "SH",
+      estimated_cost_cr: 184.98,
+      sanctioned_cost_cr: 184.98,
+      expenditure_to_date_cr: 182.20,
+      physical_progress_pct: 100.0,
+      financial_progress_pct: 98.5,
+      status: "COMPLETED",
+      priority: "HIGH",
+      zone_id: 1,
+      circle_id: 1,
+      division_id: 1,
+      contractor_id: 5,
+      contractor_name: "BSCPL Infrastructure Ltd",
+      road_name: "SH-116 & SH-58",
+      created_at: "2016-04-10T00:00:00Z"
+    },
+    {
+      id: 7,
+      project_code: "PRJ-TNRSP-002",
+      title: "TNRSP-II Core Road Network EPC02: Arcot - Villupuram (SH-04) (83.075 km)",
+      description: "Strategic corridor implementation under TNRSP-II with World Bank financing.",
+      road_type: "SH",
+      estimated_cost_cr: 320.02,
+      sanctioned_cost_cr: 320.02,
+      expenditure_to_date_cr: 320.02,
+      physical_progress_pct: 100.0,
+      financial_progress_pct: 100.0,
+      status: "COMPLETED",
+      priority: "HIGH",
+      zone_id: 1,
+      circle_id: 1,
+      division_id: 1,
+      contractor_id: 6,
+      contractor_name: "NCC Limited",
+      road_name: "SH-04 Arcot - Villupuram",
+      created_at: "2016-06-15T00:00:00Z"
+    },
+    {
+      id: 8,
+      project_code: "PRJ-TNRSP-003",
+      title: "TNRSP-II Modified DBFOT Concession PPP02: Oddanchatram - Dharapuram - Tiruppur (SH-37) (70.2 km)",
+      description: "Modified DBFOT Concession under TNRSP-II with 8-year maintenance period.",
+      road_type: "SH",
+      estimated_cost_cr: 716.33,
+      sanctioned_cost_cr: 716.33,
+      expenditure_to_date_cr: 673.35,
+      physical_progress_pct: 100.0,
+      financial_progress_pct: 94.0,
+      status: "COMPLETED",
+      priority: "HIGH",
+      zone_id: 1,
+      circle_id: 1,
+      division_id: 1,
+      contractor_id: 7,
+      contractor_name: "Transstroy Infrastructure Ltd",
+      road_name: "SH-37 Oddanchatram - Tiruppur",
+      created_at: "2016-08-01T00:00:00Z"
+    }
+  ]
+};

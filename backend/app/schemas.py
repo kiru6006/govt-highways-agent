@@ -749,3 +749,134 @@ class StatutoryCommitteeDetailOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+# -------------------------------------------------------------
+# PROGRAMME & INFRASTRUCTURE INTELLIGENCE SCHEMAS (CKICP / TNRSP-II)
+# -------------------------------------------------------------
+
+class CorridorAlignmentOut(BaseModel):
+    id: int
+    programme_id: int
+    corridor_code: str
+    name: str
+    start_location: str
+    end_location: str
+    districts_json: str
+    total_length_km: float
+    coordinates_geojson: Optional[str] = None
+    status: str
+
+    class Config:
+        from_attributes = True
+
+class TenderOut(BaseModel):
+    id: int
+    programme_id: Optional[int] = None
+    project_id: Optional[int] = None
+    work_package_id: Optional[int] = None
+    tender_reference: str
+    package_number: str
+    title: str
+    work_description: str
+    location_district: str
+    estimated_cost_cr: float
+    funding_source: str
+    bid_eligibility: str
+    publication_date: datetime.datetime
+    submission_deadline: datetime.datetime
+    tech_opening_date: Optional[datetime.datetime] = None
+    fin_opening_date: Optional[datetime.datetime] = None
+    successful_bidder_name: Optional[str] = None
+    letter_of_acceptance_ref: Optional[str] = None
+    agreement_number: Optional[str] = None
+    contract_value_cr: Optional[float] = None
+    work_commencement_date: Optional[datetime.datetime] = None
+    completion_deadline: Optional[datetime.datetime] = None
+    status: str
+    source_url: Optional[str] = None
+    verification_status: str
+
+    class Config:
+        from_attributes = True
+
+class LandParcelOut(BaseModel):
+    id: int
+    project_id: int
+    work_package_id: Optional[int] = None
+    parcel_reference: str
+    district: str
+    taluk: str
+    village: str
+    survey_number: str
+    land_classification: str
+    private_land_sqm: float
+    govt_land_sqm: float
+    total_land_sqm: float
+    notification_15_2_date: Optional[datetime.datetime] = None
+    gazette_15_1_date: Optional[datetime.datetime] = None
+    award_19_1_date: Optional[datetime.datetime] = None
+    compensation_assessed_cr: float
+    compensation_paid_cr: float
+    possession_status: str
+    has_litigation: bool
+    responsible_revenue_officer: str
+
+    class Config:
+        from_attributes = True
+
+class LegalCaseOut(BaseModel):
+    id: int
+    project_id: int
+    work_package_id: Optional[int] = None
+    land_parcel_id: Optional[int] = None
+    case_reference: str
+    court_name: str
+    case_type: str
+    petitioner: str
+    respondent: str
+    summary: str
+    interim_stay_in_force: bool
+    financial_exposure_cr: float
+    next_hearing_date: Optional[datetime.datetime] = None
+    responsible_legal_officer: str
+    current_status: str
+
+    class Config:
+        from_attributes = True
+
+class ProgrammeOut(BaseModel):
+    id: int
+    code: str
+    name: str
+    parent_corridor: Optional[str] = None
+    funding_agency: str
+    approved_cost_cr: float
+    revised_cost_cr: float
+    total_corridor_length_km: float
+    website_url: Optional[str] = None
+    status: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class ProgrammeOverviewKPIs(BaseModel):
+    programme: ProgrammeOut
+    total_projects: int
+    total_packages: int
+    total_sanctioned_cost_cr: float
+    total_expenditure_cr: float
+    overall_physical_progress_pct: float
+    overall_financial_progress_pct: float
+    total_tenders: int
+    awarded_tenders: int
+    active_tenders: int
+    total_land_required_sqm: float
+    total_land_acquired_sqm: float
+    land_acquisition_pct: float
+    total_compensation_paid_cr: float
+    active_litigations_count: int
+    stay_orders_count: int
+    financial_exposure_cr: float
+    critical_risk_count: int
+    leadership: dict
