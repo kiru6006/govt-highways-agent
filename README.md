@@ -1,9 +1,9 @@
 # TN-HDOS: Tamil Nadu Highways Digital Operating System
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
-[![Phase](https://img.shields.io/badge/Phase-0%20%26%201%20Foundation-006A4E)](docs/ARCHITECTURE.md)
+[![Phase](https://img.shields.io/badge/Phase-2%20Executive%20Command%20Centre-006A4E)](docs/ARCHITECTURE.md)
 [![Theme](https://img.shields.io/badge/Highways%20Theme-DESIGN.md%20Compliant-FFCC00)](DESIGN.md)
-[![Tests](https://img.shields.io/badge/Pytest-6%20Passed-004B87)](backend/tests/)
+[![Tests](https://img.shields.io/badge/Pytest-13%20Passed-004B87)](backend/tests/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
 
 > 🌐 **Live Interactive Deployment**: [https://kiru6006.github.io/govt-highways-agent/](https://kiru6006.github.io/govt-highways-agent/)
@@ -37,7 +37,26 @@ All user interface elements, badges, charts, and indicators strictly adhere to t
 
 ## 🏛️ Platform Architecture & Features Implemented
 
-### 1. Global Application Header & Role Persona Switcher
+### 1. Executive Command Centre Smartboard (Phase 2 Upgrade)
+* **Global Filters & Data Freshness**: Financial year, zone, circle, division, road classification (SH, NH, MDR, ODR, Rural), risk status, and project stage with live freshness indicators.
+* **16 Department Performance KPIs with Drill-Down**:
+  - Active Projects, Approved Project Value (₹ Cr), Actual Expenditure (₹ Cr), Physical Progress (%)
+  - Delayed Projects, High-Risk Projects, Pending Approvals, Pending Land Acquisition (Ha)
+  - Pending Utility Shifting, Open Quality Defects, Contractor Obligations, Open Legal Cases
+  - Unresolved Audit Observations, Potential Financial Exposure (₹ Cr), Verified Recovery (₹ Cr), Prevented Expenditure (₹ Cr)
+  - *Strict financial distinction*: Actual expenditure, potential exposure, verified recovery, and prevented expenditure are strictly isolated and never combined into misleading total savings numbers.
+* **9 Statewide Intelligence Deep-Dive Sections**:
+  1. **CRITICAL ISSUES REQUIRING LEADERSHIP INTERVENTION**: Unresolved bottlenecks with root-cause tracing, accountable officers, external departments, contractor impacts, and direct action triggers.
+  2. **Interdepartmental Coordination Intelligence**: Tracking dependencies blocked by TANGEDCO, Forest, Revenue/LA, TWAD, and Southern Railways with correspondence logs.
+  3. **Financial & Leakage Intelligence**: Duplicate bills, bitumen consumption discrepancies, rate deviations, and unadjusted advances with confidence levels and validation statuses.
+  4. **Engineering & Asset Quality**: Highways Research Station (HRS) test failures, concrete core crush tests, bridge cracks, roughness indices, and NCR tracking.
+  5. **Zone & Division Performance**: Standardized cohort benchmarking across Chennai, Coimbatore, Madurai, and Tiruchirappalli zones with data completeness and sample size disclosure.
+  6. **Statewide Project Portfolio**: Stage distribution (Planning, Tendering, Execution, Delayed, Requiring Intervention) and risk-tier breakdowns.
+  7. **Contractor Performance Summary**: Cohort-based delivery scoring, LD exposure, Mobilisation Bank Guarantee expiry alerts, and pending obligations.
+  8. **Legal & Compliance Register**: High Court writ petitions, Section 15(2) land disputes, arbitration notices, and AG audit paras.
+  9. **DECISIONS AND ACTIONS REQUIRED**: Interactive directive dispatcher enabling leadership to record decisions, assign review teams, or forward inter-departmental notices with immutable audit trails.
+
+### 2. Global Application Header & Role Persona Switcher
 * Official Tamil Nadu Government branding and dynamic module title.
 * Global search bar querying project codes, road names, and contractors.
 * **Live RBAC Role Switcher**: Click on the user profile to seamlessly evaluate the platform under different roles with server-side jurisdiction enforcement.

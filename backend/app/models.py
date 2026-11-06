@@ -438,3 +438,167 @@ class AuditEvent(Base):
     
     actor = relationship("User")
 
+# Phase 2 Executive Command Centre Entities
+
+class LeadershipIssue(Base):
+    __tablename__ = "leadership_issues"
+    id = Column(Integer, primary_key=True, index=True)
+    issue_id = Column(Integer, ForeignKey("issues.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    issue_reference = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    district = Column(String(100), nullable=False)
+    category = Column(String(100), nullable=False)
+    problem_description = Column(Text, nullable=False)
+    root_cause = Column(Text, nullable=False)
+    responsible_officer = Column(String(150), nullable=False)
+    responsible_external_dept = Column(String(150), nullable=True)
+    contractor_name = Column(String(150), nullable=True)
+    days_pending = Column(Integer, default=0)
+    schedule_impact_days = Column(Integer, default=0)
+    financial_exposure_cr = Column(Float, default=0.0)
+    evidence_available = Column(String(200), nullable=True)
+    recommended_action = Column(Text, nullable=False)
+    escalation_level = Column(String(50), default="SECRETARIAT_ESCALATED")  # ZONE_ESCALATED, SECRETARIAT_ESCALATED, MINISTERIAL_ESCALATED
+    priority = Column(String(20), default="CRITICAL")
+    status = Column(String(50), default="Action in Progress")
+    date_raised = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    project = relationship("Project")
+
+class LeadershipDecision(Base):
+    __tablename__ = "leadership_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    decision_reference = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    leadership_issue_id = Column(Integer, ForeignKey("leadership_issues.id"), nullable=True)
+    required_decision = Column(String(250), nullable=False)
+    assigned_authority = Column(String(150), nullable=False)
+    supporting_evidence = Column(Text, nullable=True)
+    due_date = Column(DateTime, nullable=True)
+    status = Column(String(50), default="PENDING")  # PENDING, ASSIGNED_FOR_REVIEW, COORDINATION_FORWARDED, INVESTIGATION_RECOMMENDED, DECIDED, CLOSED
+    action_type = Column(String(100), nullable=False)  # REVIEW, REQUEST_EVIDENCE, FORWARD_COORDINATION, INVESTIGATION, ESCALATE, RECORD_DECISION
+    escalation_history = Column(Text, nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    
+    project = relationship("Project")
+    created_by_user = relationship("User")
+
+class InterdepartmentalBlocker(Base):
+    __tablename__ = "interdepartmental_blockers"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    department_category = Column(String(100), nullable=False)  # Forest, Revenue (LA), Police/Traffic, TANGEDCO, TWAD, Telecom, Corporation, Panchayat, Environmental, Legal
+    approval_required = Column(String(250), nullable=False)
+    submission_date = Column(DateTime, nullable=True)
+    latest_correspondence = Column(String(250), nullable=True)
+    responsible_highways_officer = Column(String(150), nullable=False)
+    external_contact = Column(String(200), nullable=True)
+    days_pending = Column(Integer, default=0)
+    expected_timeline = Column(String(100), nullable=True)
+    reason_for_delay = Column(Text, nullable=False)
+    supporting_documents = Column(String(250), nullable=True)
+    recommended_action = Column(Text, nullable=False)
+    status = Column(String(50), default="BLOCKED")  # BLOCKED, ADVANCED_STAGE, CLEARED
+    
+    project = relationship("Project")
+
+class FinancialLeakageFinding(Base):
+    __tablename__ = "financial_leakage_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    category = Column(String(100), nullable=False)  # Measurement and Bill Mismatch, Duplicate Bill Indicator, Rate Deviation, Unreconciled Advance, Budget Utilisation Anomaly, Unjustified Variation, Retention/Security Defect, Repeated Maintenance Expenditure, Procurement Irregularity
+    title = Column(String(250), nullable=False)
+    potential_exposure_cr = Column(Float, default=0.0)
+    verified_loss_cr = Column(Float, default=0.0)
+    verified_recovery_cr = Column(Float, default=0.0)
+    prevented_expenditure_cr = Column(Float, default=0.0)
+    evidence_summary = Column(Text, nullable=False)
+    calculation_details = Column(Text, nullable=False)
+    confidence = Column(String(20), default="HIGH")  # HIGH, MEDIUM, LOW
+    validation_status = Column(String(50), default="INVESTIGATION_INDICATOR")  # INVESTIGATION_INDICATOR, VERIFIED, INFERRED, TO_VALIDATE
+    responsible_officer = Column(String(150), nullable=False)
+    recommended_investigation = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    project = relationship("Project")
+
+class QualityDefectRecord(Base):
+    __tablename__ = "quality_defect_records"
+    id = Column(Integer, primary_key=True, index=True)
+    defect_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    road_id = Column(Integer, ForeignKey("roads.id"), nullable=True)
+    bridge_id = Column(Integer, ForeignKey("bridges.id"), nullable=True)
+    defect_type = Column(String(100), nullable=False)  # Open NCR, Critical Road Defect, Bridge Inspection Observation, Repeated Pothole Repair, Material Testing Failure, Overdue Inspection
+    chainage_km = Column(Float, nullable=True)
+    severity = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM
+    observation_notes = Column(Text, nullable=False)
+    lab_report_ref = Column(String(100), nullable=True)  # e.g., HRS Guindy Report #HRS-2026-441
+    corrective_action_status = Column(String(50), default="PENDING_RECTIFICATION")  # PENDING_RECTIFICATION, RE-INSPECTED, RECTIFIED_CLOSED
+    responsible_engineer = Column(String(150), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    project = relationship("Project")
+    road = relationship("Road")
+    bridge = relationship("Bridge")
+
+class ContractorEvaluation(Base):
+    __tablename__ = "contractor_evaluations"
+    id = Column(Integer, primary_key=True, index=True)
+    contractor_id = Column(Integer, ForeignKey("contractors.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    performance_score = Column(Float, default=85.0)  # 0 to 100
+    behind_schedule_days = Column(Integer, default=0)
+    repeated_defects_count = Column(Integer, default=0)
+    delayed_submissions_count = Column(Integer, default=0)
+    time_extension_requests = Column(Integer, default=0)
+    performance_security_expiry = Column(DateTime, nullable=True)
+    claims_disputes_cr = Column(Float, default=0.0)
+    performance_tier = Column(String(20), default="SATISFACTORY")  # EXCELLENT, SATISFACTORY, UNDER_SCRUTINY, CRITICAL_NOTICE
+    assessment_notes = Column(Text, nullable=True)
+    
+    contractor = relationship("Contractor")
+    project = relationship("Project")
+
+class LegalMatter(Base):
+    __tablename__ = "legal_matters"
+    id = Column(Integer, primary_key=True, index=True)
+    case_reference = Column(String(100), unique=True, index=True, nullable=False)  # e.g., W.P. No. 24891/2025 Madras High Court
+    court_forum = Column(String(100), nullable=False)  # High Court of Madras, National Green Tribunal (SZ), District Court, Sole Arbitrator
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    matter_type = Column(String(100), nullable=False)  # Land Acquisition Compensation, Environmental Clearance Challenge, Contract Dispute, Arbitration, Injunction
+    plaintiff_petitioner = Column(String(200), nullable=False)
+    respondent = Column(String(200), nullable=False)
+    case_summary = Column(Text, nullable=False)
+    interim_stay_in_force = Column(Boolean, default=False)
+    next_hearing_date = Column(DateTime, nullable=True)
+    statutory_deadline = Column(DateTime, nullable=True)
+    ag_audit_para_ref = Column(String(100), nullable=True)  # Linked Accountant General audit para
+    is_confidential = Column(Boolean, default=False)
+    responsible_legal_officer = Column(String(150), nullable=False)
+    status = Column(String(50), default="PENDING_COUNTER")  # PENDING_COUNTER, ARGUMENTS_STAGE, RESERVED_FOR_ORDERS, DISPOSED
+    
+    project = relationship("Project")
+
+class ZonePerformanceSnapshot(Base):
+    __tablename__ = "zone_performance_snapshots"
+    id = Column(Integer, primary_key=True, index=True)
+    zone_id = Column(Integer, ForeignKey("zones.id"), nullable=False)
+    reporting_period = Column(String(50), default="FY 2025-26")
+    completed_projects_pct = Column(Float, default=0.0)
+    average_project_delay_days = Column(Integer, default=0)
+    budget_utilisation_pct = Column(Float, default=0.0)
+    quality_defects_count = Column(Integer, default=0)
+    pending_approvals_count = Column(Integer, default=0)
+    land_acquisition_pending_ha = Column(Float, default=0.0)
+    contractor_performance_score = Column(Float, default=80.0)
+    issue_resolution_avg_days = Column(Integer, default=30)
+    cohort_sample_size = Column(Integer, default=10)
+    data_completeness_pct = Column(Float, default=95.0)
+    
+    zone = relationship("Zone")

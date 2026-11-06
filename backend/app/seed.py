@@ -513,6 +513,14 @@ def seed_database(db_session: Session = None):
     db.commit()
 
     print("TN-HDOS database successfully seeded with complete Phase 1 foundation.")
+    
+    # Also seed Phase 2 records
+    try:
+        from app.seed_phase2 import seed_phase2_data
+        seed_phase2_data(db_session=db)
+    except Exception as e:
+        print(f"Phase 2 seed notice: {e}")
+
     if close_on_exit:
         db.close()
 

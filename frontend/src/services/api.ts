@@ -7,7 +7,18 @@ import {
   AuditEventItem,
   DashboardStats,
   AskAIResult,
-  RoadType
+  RoadType,
+  ExecutiveKPIs,
+  PortfolioStageItem,
+  ZoneComparisonItem,
+  CriticalLeadershipIssue,
+  InterdepartmentalBlocker,
+  FinancialLeakageFinding,
+  QualityDefectRecord,
+  ContractorEvaluation,
+  LegalMatter,
+  LeadershipDecision,
+  ExecutiveFilters
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -24,14 +35,16 @@ export function removeAuthToken() {
   localStorage.removeItem('tn_hdos_token');
 }
 
-// In-Memory Fallback Store for Static Deployments (GitHub Pages)
+// -------------------------------------------------------------
+// Fallback Data Store (for Static Deployments on GitHub Pages)
+// -------------------------------------------------------------
 const fallbackUsers: Record<string, UserInfo> = {
   admin: {
     id: 1,
     username: 'admin',
     full_name: 'Thiru R. Senthil Kumar IAS [DEMO]',
     role_code: 'ADMIN',
-    role_name: 'System Administrator',
+    role_name: 'System Administrator (Statewide)',
     department_name: 'Tamil Nadu Highways Department',
     is_active: true
   },
@@ -49,7 +62,7 @@ const fallbackUsers: Record<string, UserInfo> = {
     username: 'se_chengalpattu',
     full_name: 'Er. M. Rajasekaran, M.E. [DEMO]',
     role_code: 'SE_CIRCLE',
-    role_name: 'Superintending Engineer',
+    role_name: 'Superintending Engineer (Chengalpattu Circle)',
     department_name: 'Tamil Nadu Highways Department',
     zone_id: 1,
     circle_id: 1,
@@ -60,7 +73,7 @@ const fallbackUsers: Record<string, UserInfo> = {
     username: 'ee_tambaram',
     full_name: 'Er. P. Anandhan, B.E. [DEMO]',
     role_code: 'EE_DIV',
-    role_name: 'Divisional Engineer',
+    role_name: 'Divisional Engineer (Tambaram Division)',
     department_name: 'Tamil Nadu Highways Department',
     zone_id: 1,
     circle_id: 1,
@@ -155,92 +168,383 @@ let fallbackProjects: ProjectItem[] = [
   }
 ];
 
-let fallbackDependencies: DepartmentDependencyItem[] = [
+let fallbackCriticalIssues: CriticalLeadershipIssue[] = [
+  {
+    id: 1,
+    issue_reference: 'LDR-2026-001',
+    project_id: 1,
+    project_title: 'Widening to 4 Lanes with Paved Shoulders of SH-49 (ECR) [DEMO DATA]',
+    district: 'Chengalpattu',
+    category: 'Land Acquisition & Revenue',
+    problem_description: '4.2 Hectares of private land acquisition stalled due to landowner title disputes, halting widening to 4 lanes at km 28+400.',
+    root_cause: 'Sub-Collector Tambaram award enquiry delayed under TN Highways Act 2001 Section 15(2); interim compensation dispute.',
+    responsible_officer: 'Er. M. Rajasekaran, M.E. (Superintending Engineer)',
+    responsible_external_dept: 'Revenue and Disaster Management (Tahsildar Tambaram)',
+    contractor_name: 'L&T Infrastructure Engineering Ltd',
+    days_pending: 65,
+    schedule_impact_days: 65,
+    financial_exposure_cr: 14.50,
+    evidence_available: 'Gazette Notification No. II(2)/HMP/482/2024 & Sub-Collector Notice',
+    recommended_action: 'Convene Joint Secretariat Bilateral Taskforce with Principal Secretary (Revenue) to fast-track compensation deposit.',
+    escalation_level: 'SECRETARIAT_ESCALATED',
+    priority: 'CRITICAL',
+    status: 'Action in Progress',
+    date_raised: '2025-09-01T00:00:00Z'
+  },
+  {
+    id: 2,
+    issue_reference: 'LDR-2026-002',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102 [DEMO DATA]',
+    district: 'Chengalpattu',
+    category: 'Railway Coordination (ROB)',
+    problem_description: 'Pier cap erection suspended within 30m railway corridor pending approved General Arrangement Drawing (GAD).',
+    root_cause: 'Chief Bridge Engineer (CBE) Southern Railway raised structural clearance query regarding overhead electrification (OHE) wire height.',
+    responsible_officer: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    responsible_external_dept: 'Southern Railway (Zone 7, Ministry of Railways)',
+    contractor_name: 'PST Engineering Constructions',
+    days_pending: 90,
+    schedule_impact_days: 90,
+    financial_exposure_cr: 8.80,
+    evidence_available: 'Joint Inspection Memo with Railway Divisional Engineer dtd 14-Aug-2025',
+    recommended_action: 'Hon\'ble Minister / Principal Secretary to hold bilateral conference with General Manager, Southern Railway.',
+    escalation_level: 'MINISTERIAL_ESCALATED',
+    priority: 'CRITICAL',
+    status: 'Action in Progress',
+    date_raised: '2025-08-10T00:00:00Z'
+  },
+  {
+    id: 3,
+    issue_reference: 'LDR-2026-003',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102 [DEMO DATA]',
+    district: 'Chengalpattu',
+    category: 'Contractor Default & Quality',
+    problem_description: 'Core density at Chainage 31+200 fell below MoRTH standards (88% vs 95% required). Contractor demobilised shuttering staging.',
+    root_cause: 'Contractor financial distress and material procurement delays.',
+    responsible_officer: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    responsible_external_dept: 'Highways Research Station (HRS) Quality Audit',
+    contractor_name: 'PST Engineering Constructions',
+    days_pending: 42,
+    schedule_impact_days: 30,
+    financial_exposure_cr: 3.20,
+    evidence_available: 'HRS Guindy Core Test Certificate #HRS-2026-441',
+    recommended_action: 'Issue 14-day statutory cure notice under Clause 46 of General Conditions of Contract (GCC); withhold interim running bill.',
+    escalation_level: 'ZONE_ESCALATED',
+    priority: 'HIGH',
+    status: 'Under Review',
+    date_raised: '2025-09-25T00:00:00Z'
+  }
+];
+
+let fallbackBlockers: InterdepartmentalBlocker[] = [
   {
     id: 1,
     project_id: 1,
     project_title: 'Widening to 4 Lanes of SH-49 (ECR)',
-    requesting_dept_name: 'Tamil Nadu Highways Department',
-    target_dept_name: 'Revenue & Disaster Management (Tahsildar Tambaram)',
-    dependency_type: 'Land Acquisition (4.2 Hectares)',
-    description: 'Award enquiry under TN Highways Act 2001 Section 15(2) pending hearing.',
-    impact_days: 65,
-    status: 'ESCALATED',
-    target_clearance_date: '2026-12-15'
+    department_category: 'Revenue & Land Acquisition',
+    approval_required: 'Section 15(2) Valuation Award & Possession Handover (4.2 Ha)',
+    submission_date: '2025-03-15T00:00:00Z',
+    latest_correspondence: 'D.O. Letter No. HW/CGL/LA/2025-412 to District Collector Chengalpattu',
+    responsible_highways_officer: 'Er. M. Rajasekaran, M.E. (Superintending Engineer)',
+    external_contact: 'Thiru G. Venkatesan (Special DRO, Land Acquisition)',
+    days_pending: 65,
+    expected_timeline: 'Within 30 days post-hearing',
+    reason_for_delay: 'Dispute over market valuation vs guideline value raised by pattadars in Muttukadu village.',
+    supporting_documents: 'DRO Meeting Minutes dtd 18-Oct-2025',
+    recommended_action: 'Remit provisional compensation to High Court Registrar to secure immediate possession.',
+    status: 'BLOCKED'
   },
   {
     id: 2,
     project_id: 1,
     project_title: 'Widening to 4 Lanes of SH-49 (ECR)',
-    requesting_dept_name: 'Tamil Nadu Highways Department',
-    target_dept_name: 'TANGEDCO (Electricity Board Kanchipuram)',
-    dependency_type: 'Utility Shifting (42 HT Electric Poles)',
-    description: 'Working estimate prepared; statutory deposit of Rs 1.82 Cr remitted.',
-    impact_days: 40,
-    status: 'IN_PROGRESS',
-    target_clearance_date: '2026-11-30'
+    department_category: 'Electricity & TANGEDCO',
+    approval_required: 'Relocation of 42 High-Tension (33kV) Transmission Poles',
+    submission_date: '2025-05-20T00:00:00Z',
+    latest_correspondence: 'TANGEDCO Working Estimate #SE/CGL/EDC/TECH/2025-889',
+    responsible_highways_officer: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    external_contact: 'Er. S. Murugesan (Superintending Engineer, TANGEDCO Kanchipuram)',
+    days_pending: 40,
+    expected_timeline: '45 days from shutdown sanction',
+    reason_for_delay: 'Scheduled line shutdown awaiting State Load Despatch Centre (SLDC) window approval.',
+    supporting_documents: 'Demand Draft of Rs 1.82 Cr remitted by Highways on 10-Aug-2025',
+    recommended_action: 'Request Energy Secretary to sanction weekend shutdown window for Akkarai corridor.',
+    status: 'BLOCKED'
   },
   {
     id: 3,
     project_id: 2,
     project_title: 'Tambaram Elevated Corridor on MDR-102',
-    requesting_dept_name: 'Tamil Nadu Highways Department',
-    target_dept_name: 'Southern Railway (Zone 7)',
-    dependency_type: 'Railway General Arrangement Drawing (GAD) Clearance',
-    description: 'GAD clearance for Pier P-4 and P-5 within railway boundary corridor pending CBE approval.',
-    impact_days: 90,
-    status: 'PENDING',
-    target_clearance_date: '2027-01-31'
+    department_category: 'Southern Railway',
+    approval_required: 'General Arrangement Drawing (GAD) & Safety Span Launching Surcharge',
+    submission_date: '2025-04-10T00:00:00Z',
+    latest_correspondence: 'Railway Headquarter Letter #W.439/CN/B/TN/104 dtd 02-Sep-2025',
+    responsible_highways_officer: 'Er. K. Balasubramanian (Chief Engineer Projects)',
+    external_contact: 'Er. N. Sridhar (Chief Bridge Engineer, Southern Railway HQ)',
+    days_pending: 90,
+    expected_timeline: '60 days post-joint inspection',
+    reason_for_delay: 'Clearance requirement for future 3rd & 4th mainline tracks between Tambaram and Chengalpattu.',
+    supporting_documents: 'Revised GAD Plan Drawing No. TN/HW/ROB/2025-R3',
+    recommended_action: 'Submit revised span layout providing 7.2m vertical clearance to expedite final approval.',
+    status: 'BLOCKED'
   }
 ];
 
-let fallbackTasks: WorkflowTaskItem[] = [
+let fallbackLeakage: FinancialLeakageFinding[] = [
   {
     id: 1,
-    task_reference: 'TSK-2026-0001',
+    finding_code: 'LKG-2026-001',
     project_id: 1,
-    project_title: 'Widening to 4 Lanes of SH-49 (ECR)',
-    title: 'Conduct Joint Ground Verification with TANGEDCO Executive Engineer [DEMO DATA]',
-    description: 'Inspect Akkarai junction utility trenching to finalize alignment avoiding 33kV corridor.',
-    priority: 'HIGH',
-    status: 'Assigned',
-    assigned_to_name: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    project_title: 'SH-49 East Coast Road (ECR)',
+    category: 'Measurement and Bill Mismatch',
+    title: 'Bituminous Concrete Thickness & Density Discrepancy at km 24/0 to 28/0 [DEMO DATA]',
+    potential_exposure_cr: 1.45,
+    verified_loss_cr: 0.0,
+    verified_recovery_cr: 0.60,
+    prevented_expenditure_cr: 0.85,
+    evidence_summary: 'Electronic weighbridge refinery gate pass tons do not match MB Book 412 recorded volume by 12.8%.',
+    calculation_details: 'Calculated theoretical tonnage: 14,200 MT; Refinery dispatched: 12,380 MT; Invoiced: 14,190 MT (Difference: 1,810 MT @ Rs 8,011/MT).',
+    confidence: 'HIGH',
+    validation_status: 'INVESTIGATION_INDICATOR',
+    responsible_officer: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    recommended_investigation: 'Highways Research Station (HRS) to conduct independent radar core testing and cross-verify with CPCL Manali refinery gate telemetry.',
     created_at: new Date().toISOString()
   },
   {
     id: 2,
-    task_reference: 'TSK-2026-0002',
+    finding_code: 'LKG-2026-002',
     project_id: 2,
     project_title: 'Tambaram Elevated Corridor on MDR-102',
-    title: 'Inspect Staging Rigidity & Safety Netting at Pier P-4 [DEMO DATA]',
-    description: 'Verify scaffolding certified by Structural Chartered Engineer before load test.',
-    priority: 'CRITICAL',
-    status: 'In Progress',
-    assigned_to_name: 'Er. P. Anandhan, B.E. (Divisional Engineer)',
+    category: 'Unreconciled Advances',
+    title: 'Mobilisation Advance Recovery Lag Past 30% Physical Milestone [DEMO DATA]',
+    potential_exposure_cr: 2.20,
+    verified_loss_cr: 0.0,
+    verified_recovery_cr: 1.20,
+    prevented_expenditure_cr: 1.00,
+    evidence_summary: 'Running Account Bill #4 omitted mandated 15% pro-rata recovery of mobilization advance.',
+    calculation_details: '10% initial mobilization advance of Rs 8.50 Cr was sanctioned; current recovered Rs 1.45 Cr vs mandated Rs 3.65 Cr.',
+    confidence: 'HIGH',
+    validation_status: 'VERIFIED',
+    responsible_officer: 'Accounts Officer & Divisional Engineer Tambaram',
+    recommended_investigation: 'Order automatic adjustment of Rs 2.20 Cr from pending RA Bill #5 and verify validity of bank guarantee.',
     created_at: new Date().toISOString()
   }
 ];
 
-let fallbackAuditEvents: AuditEventItem[] = [
+let fallbackQuality: QualityDefectRecord[] = [
   {
     id: 1,
-    actor_name: 'Thiru R. Senthil Kumar IAS',
-    actor_role: 'System Administrator',
-    action: 'PLATFORM_INITIALIZATION',
-    entity_type: 'SYSTEM',
-    entity_reference: 'SYS-TNHDOS-001',
-    changes_json: '{"status": "INITIALIZED", "version": "1.0.0-phase1"}',
-    created_at: new Date(Date.now() - 3600000).toISOString()
+    defect_code: 'DEF-2026-001',
+    project_id: 1,
+    project_title: 'Widening of SH-49 ECR',
+    road_code: 'SH-49',
+    defect_type: 'Material Testing Failure (HRS Guindy)',
+    chainage_km: 28.4,
+    severity: 'CRITICAL',
+    observation_notes: 'M-40 grade concrete 28-day characteristic compressive strength achieved 33.2 MPa (Fail vs 40.0 MPa target).',
+    lab_report_ref: 'HRS/GUINDY/LAB/2026/0412',
+    corrective_action_status: 'PENDING_RECTIFICATION',
+    responsible_engineer: 'Er. P. Anandhan (Divisional Engineer)',
+    created_at: new Date().toISOString()
   },
   {
     id: 2,
-    actor_name: 'Er. K. Balasubramanian, M.E.',
-    actor_role: 'Chief Engineer (Projects)',
-    action: 'SANCTION_APPROVE',
-    entity_type: 'PROJECT',
-    entity_reference: 'PRJ-TN-2026-001',
-    changes_json: '{"sanctioned_cost_cr": 142.20, "programme": "CMRDP"}',
+    defect_code: 'DEF-2026-002',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102',
+    road_code: 'MDR-102',
+    defect_type: 'Structural Inspection Observation',
+    chainage_km: 2.4,
+    severity: 'HIGH',
+    observation_notes: 'Surface micro-cracking observed on Pier Cap P-3 staging during pre-stressing cable tensioning.',
+    lab_report_ref: 'HRS/FIELD/NDT/2026/0088',
+    corrective_action_status: 'PENDING_RECTIFICATION',
+    responsible_engineer: 'Er. S. Kannan (Quality Control ADE)',
     created_at: new Date().toISOString()
+  }
+];
+
+let fallbackContractors: ContractorEvaluation[] = [
+  {
+    id: 1,
+    contractor_id: 1,
+    contractor_name: 'L&T Infrastructure Engineering Ltd',
+    project_id: 1,
+    project_title: 'Widening of SH-49 ECR',
+    performance_score: 86.5,
+    behind_schedule_days: 15,
+    repeated_defects_count: 0,
+    delayed_submissions_count: 1,
+    time_extension_requests: 1,
+    claims_disputes_cr: 0.0,
+    performance_tier: 'SATISFACTORY',
+    assessment_notes: 'Mobilisation is adequate. Schedule slip is primarily attributable to external 33kV pole shifting.'
+  },
+  {
+    id: 2,
+    contractor_id: 2,
+    contractor_name: 'PST Engineering Constructions',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102',
+    performance_score: 68.0,
+    behind_schedule_days: 65,
+    repeated_defects_count: 3,
+    delayed_submissions_count: 4,
+    time_extension_requests: 2,
+    claims_disputes_cr: 2.40,
+    performance_tier: 'UNDER_SCRUTINY',
+    assessment_notes: 'Severe staging equipment bottleneck and poor lab test adherence. Performance security expires in 90 days.'
+  }
+];
+
+let fallbackLegal: LegalMatter[] = [
+  {
+    id: 1,
+    case_reference: 'W.P. No. 24891/2025 Madras High Court',
+    court_forum: 'High Court of Madras (Principal Seat)',
+    project_id: 1,
+    project_title: 'Widening to 4 Lanes of SH-49 (ECR)',
+    matter_type: 'Environmental & Tree Felling PIL',
+    plaintiff_petitioner: 'Coastal Greenery Foundation',
+    case_summary: 'PIL challenging felling of avenue trees between Akkarai and Muttukadu on SH-49 ECR.',
+    interim_stay_in_force: false,
+    next_hearing_date: '2026-11-24T00:00:00Z',
+    statutory_deadline: '2026-11-18T00:00:00Z',
+    responsible_legal_officer: 'Thiru K. M. D. Muhilan (Special Government Pleader)',
+    status: 'ARGUMENTS_STAGE'
+  },
+  {
+    id: 2,
+    case_reference: 'AG Audit Para No. 2024-25/14',
+    court_forum: 'Accountant General (Audit-II) Tamil Nadu',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102',
+    matter_type: 'Audit Paras - Unadjusted Material Advances',
+    plaintiff_petitioner: 'Principal Accountant General (Audit)',
+    case_summary: 'Audit observation on unrecovered steel and bitumen mobilization advances amounting to Rs 2.20 Cr.',
+    interim_stay_in_force: false,
+    ag_audit_para_ref: 'AG-TN-HW-2024-PARA-14',
+    responsible_legal_officer: 'Financial Advisor & Chief Accounts Officer',
+    status: 'PENDING_COUNTER'
+  }
+];
+
+let fallbackDecisions: LeadershipDecision[] = [
+  {
+    id: 1,
+    decision_reference: 'DEC-2026-001',
+    project_id: 1,
+    project_title: 'Widening of SH-49 ECR',
+    leadership_issue_id: 1,
+    required_decision: 'Convene Joint Secretariat Bilateral Taskforce with Revenue Secretary on Land Acquisition Awards [DEMO]',
+    assigned_authority: 'Principal Secretary to Government (Highways)',
+    action_type: 'FORWARD_COORDINATION',
+    supporting_evidence: 'Gazette Notification No. II(2)/HMP/482/2024 & Tahsildar Award Enquiry Report',
+    due_date: '2026-11-28T00:00:00Z',
+    status: 'ASSIGNED_FOR_REVIEW',
+    resolution_notes: 'Meeting note drafted for Chief Secretary coordination agenda.',
+    created_by_name: 'Thiru R. Senthil Kumar IAS',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: 2,
+    decision_reference: 'DEC-2026-002',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102',
+    leadership_issue_id: 2,
+    required_decision: 'Bilateral Summit with General Manager Southern Railway for Tambaram ROB GAD Approval [DEMO]',
+    assigned_authority: 'Hon\'ble Minister for Highways & Minor Ports',
+    action_type: 'ESCALATE',
+    supporting_evidence: 'Revised GAD Drawing No. TN/HW/ROB/2025-R3',
+    due_date: '2026-11-22T00:00:00Z',
+    status: 'PENDING',
+    resolution_notes: 'Ministerial briefing note prepared.',
+    created_by_name: 'Thiru R. Senthil Kumar IAS',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: 3,
+    decision_reference: 'DEC-2026-003',
+    project_id: 2,
+    project_title: 'Tambaram Elevated Corridor on MDR-102',
+    leadership_issue_id: 3,
+    required_decision: 'Sanction Issuance of 14-Day Statutory Cure Notice to Contractor PST Engineering [DEMO]',
+    assigned_authority: 'Chief Engineer (Highways - Projects)',
+    action_type: 'INVESTIGATION',
+    supporting_evidence: 'HRS Guindy Compressive Strength Lab Certificate #HRS-2026-441',
+    due_date: '2026-11-15T00:00:00Z',
+    status: 'DECIDED',
+    resolution_notes: 'Cure notice issued on 04-Nov-2026 under Clause 46 GCC.',
+    created_by_name: 'Thiru R. Senthil Kumar IAS',
+    created_at: new Date().toISOString()
+  }
+];
+
+let fallbackZones: ZoneComparisonItem[] = [
+  {
+    zone_id: 1,
+    zone_code: 'ZN-CHE',
+    zone_name: 'Chennai Zone',
+    headquarters: 'Chennai',
+    active_projects_count: 18,
+    completed_projects_pct: 68.5,
+    average_project_delay_days: 42,
+    budget_utilisation_pct: 88.2,
+    quality_defects_count: 3,
+    pending_approvals_count: 4,
+    land_acquisition_pending_ha: 12.4,
+    contractor_performance_score: 84.0,
+    cohort_sample_size: 18,
+    data_completeness_pct: 98.0
+  },
+  {
+    zone_id: 2,
+    zone_code: 'ZN-CBE',
+    zone_name: 'Coimbatore Zone',
+    headquarters: 'Coimbatore',
+    active_projects_count: 14,
+    completed_projects_pct: 76.2,
+    average_project_delay_days: 28,
+    budget_utilisation_pct: 92.5,
+    quality_defects_count: 1,
+    pending_approvals_count: 2,
+    land_acquisition_pending_ha: 6.2,
+    contractor_performance_score: 89.5,
+    cohort_sample_size: 14,
+    data_completeness_pct: 96.5
+  },
+  {
+    zone_id: 3,
+    zone_code: 'ZN-MDU',
+    zone_name: 'Madurai Zone',
+    headquarters: 'Madurai',
+    active_projects_count: 16,
+    completed_projects_pct: 62.0,
+    average_project_delay_days: 55,
+    budget_utilisation_pct: 79.4,
+    quality_defects_count: 4,
+    pending_approvals_count: 5,
+    land_acquisition_pending_ha: 18.0,
+    contractor_performance_score: 78.0,
+    cohort_sample_size: 16,
+    data_completeness_pct: 94.0
+  },
+  {
+    zone_id: 4,
+    zone_code: 'ZN-TRY',
+    zone_name: 'Tiruchirappalli Zone',
+    headquarters: 'Tiruchirappalli',
+    active_projects_count: 12,
+    completed_projects_pct: 71.4,
+    average_project_delay_days: 34,
+    budget_utilisation_pct: 86.0,
+    quality_defects_count: 2,
+    pending_approvals_count: 3,
+    land_acquisition_pending_ha: 8.5,
+    contractor_performance_score: 86.0,
+    cohort_sample_size: 12,
+    data_completeness_pct: 97.0
   }
 ];
 
@@ -290,7 +594,6 @@ export const api = {
       // static fallback on GitHub Pages
     }
 
-    // Fallback authentication
     const user = fallbackUsers[username] || fallbackUsers.admin;
     activeUser = user;
     return {
@@ -308,49 +611,211 @@ export const api = {
     }
   },
 
-  // Stats
-  getDashboardStats: async () => {
+  // -----------------------------------------------------------
+  // Phase 2 Executive Command Centre Endpoints
+  // -----------------------------------------------------------
+
+  getExecutiveKPIs: async (filters?: Partial<ExecutiveFilters>) => {
     try {
-      return await request<DashboardStats>('/stats');
+      const params = new URLSearchParams();
+      if (filters?.financial_year) params.append('financial_year', filters.financial_year);
+      if (filters?.zone_id) params.append('zone_id', String(filters.zone_id));
+      if (filters?.circle_id) params.append('circle_id', String(filters.circle_id));
+      if (filters?.division_id) params.append('division_id', String(filters.division_id));
+      if (filters?.road_type) params.append('road_type', filters.road_type);
+      if (filters?.risk_status) params.append('risk_status', filters.risk_status);
+      if (filters?.stage) params.append('stage', filters.stage);
+
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return await request<ExecutiveKPIs>(`/executive/kpis${query}`);
     } catch {
+      // Scoped fallback for contractor
+      if (activeUser.role_code === 'CONTRACTOR') {
+        return {
+          total_active_projects: 1,
+          total_approved_project_value_cr: 142.20,
+          total_expenditure_cr: 64.80,
+          total_physical_progress_pct: 52.5,
+          projects_delayed: 0,
+          projects_high_risk: 1,
+          pending_approvals: 1,
+          pending_land_acquisition_ha: 4.2,
+          pending_utility_shifting_count: 1,
+          open_quality_defects: 1,
+          pending_contractor_obligations: 0,
+          open_legal_cases: 1,
+          unresolved_audit_observations: 0,
+          potential_financial_exposure_cr: 1.45,
+          verified_financial_recovery_cr: 0.60,
+          verified_prevented_expenditure_cr: 0.85,
+          reporting_period: filters?.financial_year || 'FY 2025-26',
+          data_freshness: 'Live Operational Telemetry',
+          cohort_sample_size: 1,
+          is_demo: true
+        };
+      }
+
       return {
-        total_projects: fallbackProjects.length,
-        active_projects: fallbackProjects.filter(p => p.status !== 'COMPLETED').length,
-        delayed_projects: fallbackProjects.filter(p => p.status === 'DELAYED').length,
-        total_sanctioned_cr: 245.30,
+        total_active_projects: fallbackProjects.length,
+        total_approved_project_value_cr: 245.30,
         total_expenditure_cr: 103.40,
-        pending_bottlenecks: fallbackDependencies.length,
-        critical_issues: 2,
-        active_tasks: fallbackTasks.filter(t => t.status !== 'Completed').length,
-        road_network_counts: {
-          SH: 1,
-          NH: 1,
-          MDR: 1,
-          ODR: 1,
-          RURAL: 1
-        },
+        total_physical_progress_pct: 56.5,
+        projects_delayed: 1,
+        projects_high_risk: 2,
+        pending_approvals: 3,
+        pending_land_acquisition_ha: 12.4,
+        pending_utility_shifting_count: 2,
+        open_quality_defects: fallbackQuality.length,
+        pending_contractor_obligations: 1,
+        open_legal_cases: fallbackLegal.length,
+        unresolved_audit_observations: 1,
+        potential_financial_exposure_cr: 3.65,
+        verified_financial_recovery_cr: 1.80,
+        verified_prevented_expenditure_cr: 1.85,
+        reporting_period: filters?.financial_year || 'FY 2025-26',
+        data_freshness: 'Live Operational Telemetry',
+        cohort_sample_size: fallbackProjects.length,
         is_demo: true
       };
     }
   },
 
-  // Projects (respecting RBAC Contractor Isolation)
+  getPortfolioStages: async () => {
+    try {
+      return await request<PortfolioStageItem[]>('/executive/portfolio');
+    } catch {
+      return [
+        { stage: 'PLANNING', count: 2, cost_cr: 65.00, avg_progress_pct: 0.0 },
+        { stage: 'TENDERING', count: 1, cost_cr: 42.50, avg_progress_pct: 0.0 },
+        { stage: 'IN_PROGRESS', count: 2, cost_cr: 160.30, avg_progress_pct: 70.8 },
+        { stage: 'DELAYED', count: 1, cost_cr: 85.00, avg_progress_pct: 28.0 },
+        { stage: 'INTERVENTION_REQUIRED', count: 1, cost_cr: 142.20, avg_progress_pct: 52.5 },
+        { stage: 'COMPLETED', count: 1, cost_cr: 34.00, avg_progress_pct: 100.0 }
+      ];
+    }
+  },
+
+  getZoneComparison: async () => {
+    try {
+      return await request<ZoneComparisonItem[]>('/executive/zones');
+    } catch {
+      return fallbackZones;
+    }
+  },
+
+  getCriticalIssues: async (category?: string, priority?: string) => {
+    try {
+      const params = new URLSearchParams();
+      if (category) params.append('category', category);
+      if (priority) params.append('priority', priority);
+      const q = params.toString() ? `?${params.toString()}` : '';
+      return await request<CriticalLeadershipIssue[]>(`/executive/critical-issues${q}`);
+    } catch {
+      let issues = [...fallbackCriticalIssues];
+      if (category) issues = issues.filter(i => i.category.toLowerCase().includes(category.toLowerCase()));
+      if (priority) issues = issues.filter(i => i.priority === priority);
+      return issues;
+    }
+  },
+
+  getInterdepartmentalBlockers: async (departmentCategory?: string) => {
+    try {
+      const q = departmentCategory ? `?department_category=${encodeURIComponent(departmentCategory)}` : '';
+      return await request<InterdepartmentalBlocker[]>(`/executive/interdepartmental${q}`);
+    } catch {
+      let blockers = [...fallbackBlockers];
+      if (departmentCategory) {
+        blockers = blockers.filter(b => b.department_category.toLowerCase().includes(departmentCategory.toLowerCase()));
+      }
+      return blockers;
+    }
+  },
+
+  getFinancialLeakageFindings: async () => {
+    try {
+      return await request<FinancialLeakageFinding[]>('/executive/leakage');
+    } catch {
+      return fallbackLeakage;
+    }
+  },
+
+  getQualityDefects: async () => {
+    try {
+      return await request<QualityDefectRecord[]>('/executive/quality');
+    } catch {
+      return fallbackQuality;
+    }
+  },
+
+  getContractorEvaluations: async () => {
+    try {
+      return await request<ContractorEvaluation[]>('/executive/contractors');
+    } catch {
+      return fallbackContractors;
+    }
+  },
+
+  getLegalMatters: async () => {
+    try {
+      return await request<LegalMatter[]>('/executive/legal');
+    } catch {
+      return fallbackLegal;
+    }
+  },
+
+  getLeadershipDecisions: async () => {
+    try {
+      return await request<LeadershipDecision[]>('/executive/decisions');
+    } catch {
+      return fallbackDecisions;
+    }
+  },
+
+  recordLeadershipDecision: async (payload: {
+    required_decision: string;
+    assigned_authority: string;
+    action_type: string;
+    project_id?: number;
+    leadership_issue_id?: number;
+    supporting_evidence?: string;
+    resolution_notes?: string;
+  }) => {
+    try {
+      return await request<LeadershipDecision>('/executive/decisions', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      const newDec: LeadershipDecision = {
+        id: Date.now(),
+        decision_reference: `DEC-2026-${String(fallbackDecisions.length + 1).padStart(3, '0')}`,
+        required_decision: payload.required_decision,
+        assigned_authority: payload.assigned_authority,
+        action_type: payload.action_type,
+        supporting_evidence: payload.supporting_evidence,
+        status: 'ASSIGNED_FOR_REVIEW',
+        resolution_notes: payload.resolution_notes,
+        created_by_name: activeUser.full_name,
+        created_at: new Date().toISOString()
+      };
+      fallbackDecisions.unshift(newDec);
+      return newDec;
+    }
+  },
+
+  // Projects
   getProjects: async (roadType?: RoadType) => {
     try {
       const query = roadType ? `?road_type=${roadType}` : '';
       return await request<ProjectItem[]>(`/projects${query}`);
     } catch {
       let filtered = [...fallbackProjects];
-
-      // Contractor isolation in fallback demo mode
       if (activeUser.role_code === 'CONTRACTOR') {
         filtered = filtered.filter(p => p.contractor_id === activeUser.contractor_id);
       }
-
       if (roadType) {
         filtered = filtered.filter(p => p.road_type === roadType);
       }
-
       return filtered;
     }
   },
@@ -370,7 +835,7 @@ export const api = {
     try {
       return await request<DepartmentDependencyItem[]>('/dependencies');
     } catch {
-      return fallbackDependencies;
+      return [];
     }
   },
 
@@ -383,23 +848,12 @@ export const api = {
     }
   },
 
-  updateIssueStatus: async (id: number, status: string, notes?: string) => {
-    try {
-      return await request<IssueItem>(`/issues/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status, resolution_notes: notes }),
-      });
-    } catch {
-      return {} as IssueItem;
-    }
-  },
-
   // Workflows
   getWorkflowTasks: async (myTasksOnly = false) => {
     try {
       return await request<WorkflowTaskItem[]>(`/workflows?my_tasks_only=${myTasksOnly}`);
     } catch {
-      return fallbackTasks;
+      return [];
     }
   },
 
@@ -409,22 +863,7 @@ export const api = {
         method: 'PATCH',
       });
     } catch {
-      fallbackTasks = fallbackTasks.map(t =>
-        t.id === id ? { ...t, status: 'Completed' } : t
-      );
-      const target = fallbackTasks.find(t => t.id === id);
-      if (target) {
-        fallbackAuditEvents.unshift({
-          id: Date.now(),
-          actor_name: activeUser.full_name,
-          actor_role: activeUser.role_name,
-          action: 'COMPLETE',
-          entity_type: 'WORKFLOW_TASK',
-          entity_reference: target.task_reference,
-          created_at: new Date().toISOString()
-        });
-      }
-      return target || ({} as WorkflowTaskItem);
+      return {} as WorkflowTaskItem;
     }
   },
 
@@ -433,7 +872,7 @@ export const api = {
     try {
       return await request<AuditEventItem[]>(`/audit?limit=${limit}`);
     } catch {
-      return fallbackAuditEvents.slice(0, limit);
+      return [];
     }
   },
 
@@ -446,31 +885,27 @@ export const api = {
       });
     } catch {
       const q = query.toLowerCase();
-      let answer = `[DEMO AI ASSISTANT]: Contextual analysis for ${screenContext}. Query received: "${query}". Real-time data synthesis indicates normal road maintenance operations.`;
-      let actions = ['List High-Risk Interdepartmental Issues', 'Show Pending Approvals in Circle', 'Check Contractor Rating'];
+      let answer = `[DEMO AI EXECUTIVE ANALYSIS for ${screenContext}]: Processing query: "${query}". Based on live state records, schedule slips are concentrated in Chengalpattu circle due to statutory revenue land awards.`;
+      let actions = ['Convene Joint Revenue Taskforce', 'Inspect TANGEDCO Pole Relocation Sites', 'Review Contractor PST Notice'];
       let groundings = [
         {
-          type: 'Project Record',
-          reference: 'PRJ-TN-2026-001',
-          detail: 'SH-49 East Coast Road (Sanctioned: ₹142.20 Cr, Physical: 52.5%)'
+          type: 'Leadership Issue',
+          reference: 'LDR-2026-001',
+          detail: '4.2 Ha Land Acquisition stalled at Akkarai Section (SH-49 ECR)'
+        },
+        {
+          type: 'Interdepartmental Blocker',
+          reference: 'DEP-2',
+          detail: 'Relocation of 42 HT Poles pending with TANGEDCO Kanchipuram'
         }
       ];
 
-      if (q.includes('delay') || q.includes('bottleneck') || q.includes('tangedco') || q.includes('sh-49')) {
-        answer = `[DEMO AI ANALYSIS for ${screenContext}]: Identified active statutory bottleneck on SH-49 (ECR). 42 HT Electric Poles shifting is pending with TANGEDCO Kanchipuram (+40 days schedule impact). Recommended escalation: Convene Joint District Review Meeting.`;
-        actions = ['Convene Joint Revenue-TANGEDCO Taskforce', 'Generate G.O. Escalation Draft', 'Review Milestone Critical Path'];
-        groundings = [
-          {
-            type: 'Department Dependency',
-            reference: 'DEP-2',
-            detail: 'Utility Shifting (42 HT Poles) with TANGEDCO (Impact: +40 days)'
-          },
-          {
-            type: 'Land Acquisition',
-            reference: 'DEP-1',
-            detail: 'Section 15(2) award enquiry pending Tahsildar Tambaram (+65 days)'
-          }
-        ];
+      if (q.includes('intervention') || q.includes('immediate')) {
+        answer = `[DEMO AI EXECUTIVE ALERT]: 3 projects require leadership intervention. Priority #1 is SH-49 ECR land acquisition (+65 days slip). Priority #2 is Tambaram Elevated Corridor Railway GAD clearance (+90 days slip).`;
+        actions = ['Schedule Secretariat Bilateral Conference', 'Issue Clause 46 GCC Notice to Contractor', 'Review Financial Exposure'];
+      } else if (q.includes('exposure') || q.includes('leakage') || q.includes('financial')) {
+        answer = `[DEMO AI FINANCIAL INTELLIGENCE]: Total potential financial exposure is ₹3.65 Cr across measurement discrepancies and advance recovery lags. ₹1.80 Cr verified recovery is already initiated, and ₹1.85 Cr prevented expenditure verified. Note: These are distinct statutory accounting buckets.`;
+        actions = ['Review Bituminous Concrete Weighbridge Logs', 'Enforce RA Bill #5 Advance Deductions', 'Request HRS Forensic Audit'];
       }
 
       return {
@@ -478,7 +913,7 @@ export const api = {
         suggested_actions: actions,
         grounding_references: groundings,
         is_demo: true,
-        disclaimer: 'DEMO DATA ONLY: This AI response is generated for architectural demonstration purposes. Official decisions require formal statutory Government Orders (G.O.).'
+        disclaimer: 'DEMO DATA ONLY: Generated for executive smartboard demonstration. Official executive actions require formal statutory Government Orders (G.O.).'
       };
     }
   },

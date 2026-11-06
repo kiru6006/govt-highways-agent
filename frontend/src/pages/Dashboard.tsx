@@ -2,514 +2,1296 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import {
-  DashboardStats,
+  ExecutiveKPIs,
+  PortfolioStageItem,
+  ZoneComparisonItem,
+  CriticalLeadershipIssue,
+  InterdepartmentalBlocker,
+  FinancialLeakageFinding,
+  QualityDefectRecord,
+  ContractorEvaluation,
+  LegalMatter,
+  LeadershipDecision,
   ProjectItem,
-  DepartmentDependencyItem,
-  WorkflowTaskItem,
-  AuditEventItem,
   RoadType
 } from '../types';
 import { RoadBadge } from '../components/RoadBadge';
 import {
-  TrendingUp,
   AlertTriangle,
-  Clock,
-  CheckCircle,
-  FileCheck,
   Building2,
-  Calendar,
-  ArrowRight,
-  ShieldAlert,
+  FileCheck,
   Activity,
   Layers,
-  Sparkles
+  ArrowRight,
+  ShieldAlert,
+  Clock,
+  Sparkles,
+  Filter,
+  RefreshCw,
+  Scale,
+  Award,
+  CircleDollarSign,
+  Briefcase,
+  HardHat,
+  ChevronRight,
+  PlusCircle,
+  FileText,
+  X,
+  ExternalLink,
+  HelpCircle,
+  AlertCircle
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const [dependencies, setDependencies] = useState<DepartmentDependencyItem[]>([]);
-  const [tasks, setTasks] = useState<WorkflowTaskItem[]>([]);
-  const [auditEvents, setAuditEvents] = useState<AuditEventItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [completingTaskId, setCompletingTaskId] = useState<number | null>(null);
 
-  const loadData = async () => {
+  // Filters State
+  const [financialYear, setFinancialYear] = useState('FY 2025-26');
+  const [selectedZone, setSelectedZone] = useState<number | undefined>(undefined);
+  const [selectedRoadType, setSelectedRoadType] = useState<string>('ALL');
+  const [selectedRisk, setSelectedRisk] = useState<string>('ALL');
+  const [selectedStage, setSelectedStage] = useState<string>('ALL');
+
+  // Executive Data State
+  const [kpis, setKpis] = useState<ExecutiveKPIs | null>(null);
+  const [portfolioStages, setPortfolioStages] = useState<PortfolioStageItem[]>([]);
+  const [zoneComparisons, setZoneComparisons] = useState<ZoneComparisonItem[]>([]);
+  const [criticalIssues, setCriticalIssues] = useState<CriticalLeadershipIssue[]>([]);
+  const [blockers, setBlockers] = useState<InterdepartmentalBlocker[]>([]);
+  const [leakageFindings, setLeakageFindings] = useState<FinancialLeakageFinding[]>([]);
+  const [qualityDefects, setQualityDefects] = useState<QualityDefectRecord[]>([]);
+  const [contractors, setContractors] = useState<ContractorEvaluation[]>([]);
+  const [legalMatters, setLegalMatters] = useState<LegalMatter[]>([]);
+  const [decisions, setDecisions] = useState<LeadershipDecision[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Active View Tab State
+  const [activeTab, setActiveTab] = useState<
+    'critical' | 'interdept' | 'leakage' | 'quality' | 'zones' | 'portfolio' | 'contractors' | 'legal' | 'decisions'
+  >('critical');
+
+  // Drilldown Modal State
+  const [drilldownModal, setDrilldownModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    metricKey: string;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    metricKey: ''
+  });
+
+  // New Decision Modal State
+  const [decisionModal, setDecisionModal] = useState<{
+    isOpen: boolean;
+    linkedIssueId?: number;
+    defaultTitle?: string;
+  }>({
+    isOpen: false
+  });
+  const [decisionForm, setDecisionForm] = useState({
+    required_decision: '',
+    assigned_authority: 'Chief Engineer (Highways - Projects)',
+    action_type: 'FORWARD_COORDINATION',
+    supporting_evidence: '',
+    resolution_notes: ''
+  });
+  const [savingDecision, setSavingDecision] = useState(false);
+
+  const loadExecutiveData = async () => {
     try {
       setLoading(true);
-      const [statsData, projsData, depsData, tasksData, auditsData] = await Promise.all([
-        api.getDashboardStats(),
-        api.getProjects(),
-        api.getDependencies(),
-        api.getWorkflowTasks(),
-        api.getAuditEvents(10)
+      const [
+        kpisData,
+        portfolioData,
+        zonesData,
+        issuesData,
+        blockersData,
+        leakageData,
+        qualityData,
+        contractorsData,
+        legalData,
+        decisionsData
+      ] = await Promise.all([
+        api.getExecutiveKPIs({
+          financial_year: financialYear,
+          zone_id: selectedZone,
+          road_type: selectedRoadType,
+          risk_status: selectedRisk,
+          stage: selectedStage
+        }),
+        api.getPortfolioStages(),
+        api.getZoneComparison(),
+        api.getCriticalIssues(),
+        api.getInterdepartmentalBlockers(),
+        api.getFinancialLeakageFindings(),
+        api.getQualityDefects(),
+        api.getContractorEvaluations(),
+        api.getLegalMatters(),
+        api.getLeadershipDecisions()
       ]);
-      setStats(statsData);
-      setProjects(projsData);
-      setDependencies(depsData);
-      setTasks(tasksData);
-      setAuditEvents(auditsData);
+
+      setKpis(kpisData);
+      setPortfolioStages(portfolioData);
+      setZoneComparisons(zonesData);
+      setCriticalIssues(issuesData);
+      setBlockers(blockersData);
+      setLeakageFindings(leakageData);
+      setQualityDefects(qualityData);
+      setContractors(contractorsData);
+      setLegalMatters(legalData);
+      setDecisions(decisionsData);
     } catch (err) {
-      console.error('Failed to load dashboard data', err);
+      console.error('Failed to load executive command data', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
-  }, [user]);
+    loadExecutiveData();
+  }, [user, financialYear, selectedZone, selectedRoadType, selectedRisk, selectedStage]);
 
-  const handleCompleteTask = async (taskId: number) => {
+  const handleOpenDrilldown = (title: string, description: string, metricKey: string) => {
+    setDrilldownModal({
+      isOpen: true,
+      title,
+      description,
+      metricKey
+    });
+  };
+
+  const handleCreateDecision = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!decisionForm.required_decision.trim()) return;
+
     try {
-      setCompletingTaskId(taskId);
-      await api.completeTask(taskId);
-      await loadData();
+      setSavingDecision(true);
+      await api.recordLeadershipDecision({
+        required_decision: decisionForm.required_decision,
+        assigned_authority: decisionForm.assigned_authority,
+        action_type: decisionForm.action_type,
+        leadership_issue_id: decisionModal.linkedIssueId,
+        supporting_evidence: decisionForm.supporting_evidence,
+        resolution_notes: decisionForm.resolution_notes
+      });
+      setDecisionModal({ isOpen: false });
+      setDecisionForm({
+        required_decision: '',
+        assigned_authority: 'Chief Engineer (Highways - Projects)',
+        action_type: 'FORWARD_COORDINATION',
+        supporting_evidence: '',
+        resolution_notes: ''
+      });
+      await loadExecutiveData();
     } catch (err) {
-      console.error('Error completing task', err);
+      console.error('Error saving decision', err);
     } finally {
-      setCompletingTaskId(null);
+      setSavingDecision(false);
     }
   };
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Welcome Banner */}
+      {/* 1. Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-md border border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="bg-[#006A4E] text-[#E6F4EA] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#B2DFCD]/40 uppercase tracking-wide">
-              Official Session
+              Executive Command Centre • Phase 2
             </span>
-            <span className="text-slate-400 text-xs">
-              {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            <span className="text-slate-400 text-xs font-mono">
+              Period: {kpis?.reporting_period} | Freshness: {kpis?.data_freshness}
             </span>
           </div>
           <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white">
-            Vanakkam, {user?.full_name || 'Officer'}
+            Statewide Highways Intelligence Smartboard
           </h2>
           <p className="text-slate-300 text-xs mt-1">
-            Role: <span className="font-semibold text-emerald-400">{user?.role_name}</span> | Jurisdiction:{' '}
+            Active Role: <span className="font-semibold text-emerald-400">{user?.role_name}</span> | Jurisdiction Scope:{' '}
             <span className="font-semibold text-amber-300">
-              {user?.circle_id ? 'Chengalpattu Circle' : user?.zone_id ? 'Chennai Zone' : 'Statewide Access'}
+              {user?.circle_id ? 'Chengalpattu Circle' : user?.zone_id ? 'Chennai Zone' : 'Statewide Executive Oversight'}
             </span>
           </p>
         </div>
 
-        {/* Quick Statutory Stat */}
         <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3 border border-white/10 backdrop-blur-sm">
           <Activity className="w-6 h-6 text-[#FFCC00]" />
           <div>
-            <div className="text-[11px] text-slate-300">Highways Sanctioned Budget</div>
+            <div className="text-[11px] text-slate-300">Monitored Portfolio Value</div>
             <div className="text-lg font-bold text-white font-mono">
-              ₹{stats?.total_sanctioned_cr || '245.30'} <span className="text-xs font-normal">Crores</span>
+              ₹{kpis?.total_approved_project_value_cr.toFixed(2) || '245.30'} <span className="text-xs font-normal">Crores</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* High-Level KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Total Projects */}
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Active Road Projects</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E6F4EA] text-[#006A4E] flex items-center justify-center">
-              <Layers className="w-4 h-4" />
-            </div>
+      {/* 2. Global Filter Toolbar (Section 3.A) */}
+      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <Filter className="w-4 h-4 text-[#006A4E]" />
+            Global Executive Filters & Cohorts
           </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono">
-            {stats?.active_projects || projects.length}
-          </div>
-          <div className="text-[11px] text-slate-500 mt-2 flex items-center gap-1.5">
-            <span className="text-[#006A4E] font-semibold flex items-center">
-              <TrendingUp className="w-3.5 h-3.5 mr-0.5" /> 100% Monitored
-            </span>
-            <span>across 5 road tiers</span>
-          </div>
+          <button
+            onClick={() => {
+              setFinancialYear('FY 2025-26');
+              setSelectedZone(undefined);
+              setSelectedRoadType('ALL');
+              setSelectedRisk('ALL');
+              setSelectedStage('ALL');
+            }}
+            className="text-xs text-[#006A4E] hover:underline font-semibold flex items-center gap-1"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Reset Filters
+          </button>
         </div>
 
-        {/* Card 2: Delayed / Critical */}
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Schedule Friction</span>
-            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-red-600 font-mono">
-            {stats?.delayed_projects || 1} <span className="text-xs font-normal text-slate-500">Delayed</span>
-          </div>
-          <div className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-red-500" />
-            <span>Average milestone slip: +45 days</span>
-          </div>
-        </div>
-
-        {/* Card 3: Interdepartmental Bottlenecks */}
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Inter-Agency Clearances</span>
-            <div className="w-8 h-8 rounded-lg bg-[#E6F0F7] text-[#004B87] flex items-center justify-center">
-              <Building2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-[#004B87] font-mono">
-            {stats?.pending_bottlenecks || dependencies.length} <span className="text-xs font-normal text-slate-500">Pending</span>
-          </div>
-          <div className="text-[11px] text-slate-500 mt-2">
-            Revenue LA, TANGEDCO EB, Railways
-          </div>
-        </div>
-
-        {/* Card 4: Financial Concurrence */}
-        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Expenditure to Date</span>
-            <div className="w-8 h-8 rounded-lg bg-[#FFF9E6] text-[#996600] flex items-center justify-center">
-              <FileCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-slate-900 font-mono">
-            ₹{stats?.total_expenditure_cr || '103.40'} <span className="text-xs font-normal text-slate-500">Cr</span>
-          </div>
-          <div className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
-            <span className="text-emerald-600 font-semibold">42.1%</span> of Sanctioned Budget
-          </div>
-        </div>
-      </div>
-
-      {/* Road Classification Network Palette Bar (Adhering strictly to DESIGN.md) */}
-      <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs">
+          {/* Financial Year */}
           <div>
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <span>Road Asset Classification Network</span>
-              <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 font-mono">
-                TN Highways Specification
-              </span>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Financial Year</label>
+            <select
+              value={financialYear}
+              onChange={(e) => setFinancialYear(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-800 font-medium focus:ring-2 focus:ring-[#006A4E]"
+            >
+              <option value="FY 2025-26">FY 2025-26 (Current)</option>
+              <option value="FY 2024-25">FY 2024-25</option>
+              <option value="FY 2023-24">FY 2023-24</option>
+            </select>
+          </div>
+
+          {/* Zone */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Administrative Zone</label>
+            <select
+              value={selectedZone || ''}
+              onChange={(e) => setSelectedZone(e.target.value ? Number(e.target.value) : undefined)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-800 font-medium focus:ring-2 focus:ring-[#006A4E]"
+            >
+              <option value="">All Zones (Statewide)</option>
+              <option value="1">Chennai Zone</option>
+              <option value="2">Coimbatore Zone</option>
+              <option value="3">Madurai Zone</option>
+              <option value="4">Tiruchirappalli Zone</option>
+              <option value="5">Salem Zone</option>
+            </select>
+          </div>
+
+          {/* Road Category */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Road Classification</label>
+            <select
+              value={selectedRoadType}
+              onChange={(e) => setSelectedRoadType(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-800 font-medium focus:ring-2 focus:ring-[#006A4E]"
+            >
+              <option value="ALL">All Classifications</option>
+              <option value="SH">State Highways (SH)</option>
+              <option value="NH">National Highways (NH)</option>
+              <option value="MDR">Major District Roads (MDR)</option>
+              <option value="ODR">Other District Roads (ODR)</option>
+              <option value="RURAL">Rural Roads</option>
+            </select>
+          </div>
+
+          {/* Risk Status */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Risk Profile</label>
+            <select
+              value={selectedRisk}
+              onChange={(e) => setSelectedRisk(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-800 font-medium focus:ring-2 focus:ring-[#006A4E]"
+            >
+              <option value="ALL">All Risk Levels</option>
+              <option value="CRITICAL">Critical Priority</option>
+              <option value="HIGH">High Risk</option>
+              <option value="MEDIUM">Medium Risk</option>
+              <option value="LOW">Low Risk</option>
+            </select>
+          </div>
+
+          {/* Project Stage */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 mb-1">Execution Stage</label>
+            <select
+              value={selectedStage}
+              onChange={(e) => setSelectedStage(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-800 font-medium focus:ring-2 focus:ring-[#006A4E]"
+            >
+              <option value="ALL">All Stages</option>
+              <option value="PLANNING">Planning & DPR</option>
+              <option value="TENDERED">Tendered</option>
+              <option value="IN_PROGRESS">Execution in Progress</option>
+              <option value="DELAYED">Delayed / Schedule Slip</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. The 16 Department Performance KPIs Grid (Section 3.B) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-bold text-slate-900">
+              Department Performance KPIs (16 Core Metrics)
             </h3>
-            <p className="text-xs text-slate-500">
-              Departmental color coding matrix across Tamil Nadu Highway infrastructure tiers
-            </p>
+            <span className="text-[10px] text-slate-500 font-medium">Click any KPI card to inspect underlying records</span>
           </div>
-          <div className="text-xs font-medium text-slate-500">
-            Total Monitored Length: <span className="font-bold text-slate-900 font-mono">567.9 km</span>
+          <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium">
+            Cohort Sample: {kpis?.cohort_sample_size || 3} Projects
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          {/* KPI 1 */}
+          <div
+            onClick={() => handleOpenDrilldown('Total Active Projects', 'All projects currently sanctioned, tendered, or in execution', 'active_projects')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">1. Active Works</div>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+              {kpis?.total_active_projects || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Monitored</div>
+          </div>
+
+          {/* KPI 2 */}
+          <div
+            onClick={() => handleOpenDrilldown('Approved Value', 'Total sanctioned capital budget under CMRDP/CRIDP', 'approved_value')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">2. Approved Val</div>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+              ₹{kpis?.total_approved_project_value_cr.toFixed(1) || 0} Cr
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Sanctioned</div>
+          </div>
+
+          {/* KPI 3 */}
+          <div
+            onClick={() => handleOpenDrilldown('Actual Expenditure', 'Recorded billable expenditure to date against LC sanctions', 'expenditure')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">3. Expenditure</div>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+              ₹{kpis?.total_expenditure_cr.toFixed(1) || 0} Cr
+            </div>
+            <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">42.1% Utilized</div>
+          </div>
+
+          {/* KPI 4 */}
+          <div
+            onClick={() => handleOpenDrilldown('Physical Progress', 'Average weighted physical progress verified via field inspections', 'progress')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">4. Physical %</div>
+            <div className="text-lg font-bold text-[#006A4E] font-mono mt-1">
+              {kpis?.total_physical_progress_pct || 0}%
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Site Verified</div>
+          </div>
+
+          {/* KPI 5 */}
+          <div
+            onClick={() => handleOpenDrilldown('Projects Delayed', 'Projects exceeding contractual milestone dates', 'delayed')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide">5. Delayed</div>
+            <div className="text-lg font-bold text-red-600 font-mono mt-1">
+              {kpis?.projects_delayed || 0}
+            </div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5">+45d Avg Slip</div>
+          </div>
+
+          {/* KPI 6 */}
+          <div
+            onClick={() => handleOpenDrilldown('High Risk Projects', 'Projects designated as Critical or High priority bottleneck', 'risk')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">6. High Risk</div>
+            <div className="text-lg font-bold text-amber-600 font-mono mt-1">
+              {kpis?.projects_high_risk || 0}
+            </div>
+            <div className="text-[10px] text-amber-500 font-semibold mt-0.5">Needs Action</div>
+          </div>
+
+          {/* KPI 7 */}
+          <div
+            onClick={() => handleOpenDrilldown('Pending Approvals', 'Technical, Administrative, or Revised Estimate approvals pending', 'approvals')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-blue-500 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">7. Approvals</div>
+            <div className="text-lg font-bold text-blue-600 font-mono mt-1">
+              {kpis?.pending_approvals || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">TS / AS Pending</div>
+          </div>
+
+          {/* KPI 8 */}
+          <div
+            onClick={() => handleOpenDrilldown('Pending Land Acquisition', 'Total land area pending award enquiry under TN Highways Act 2001', 'la')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#004B87] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-[#004B87] uppercase tracking-wide">8. Pending LA</div>
+            <div className="text-lg font-bold text-[#004B87] font-mono mt-1">
+              {kpis?.pending_land_acquisition_ha || 0} <span className="text-[11px] font-normal">Ha</span>
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Sec 15(2)</div>
+          </div>
+
+          {/* KPI 9 */}
+          <div
+            onClick={() => handleOpenDrilldown('Pending Utility Shifting', 'TANGEDCO electric poles, TWAD water pipelines, and OFC lines', 'utility')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-800 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">9. Utilities</div>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">
+              {kpis?.pending_utility_shifting_count || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">EB Poles / TWAD</div>
+          </div>
+
+          {/* KPI 10 */}
+          <div
+            onClick={() => handleOpenDrilldown('Open Quality Defects', 'Non-conformance reports, core density failures, and lab cube test fails', 'defects')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide">10. Defects</div>
+            <div className="text-lg font-bold text-red-600 font-mono mt-1">
+              {kpis?.open_quality_defects || 0}
+            </div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5">HRS Lab Fail</div>
+          </div>
+
+          {/* KPI 11 */}
+          <div
+            onClick={() => handleOpenDrilldown('Pending Contractor Obligations', 'Expired bank guarantees, delayed submissions, or performance defaults', 'contractor_obligations')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-amber-700 uppercase tracking-wide">11. Cont. Default</div>
+            <div className="text-lg font-bold text-amber-700 font-mono mt-1">
+              {kpis?.pending_contractor_obligations || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Under Scrutiny</div>
+          </div>
+
+          {/* KPI 12 */}
+          <div
+            onClick={() => handleOpenDrilldown('Open Legal Cases', 'High Court writs, PILs, and arbitration proceedings', 'legal')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-purple-600 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wide">12. Legal Cases</div>
+            <div className="text-lg font-bold text-purple-700 font-mono mt-1">
+              {kpis?.open_legal_cases || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">HC / Tribunal</div>
+          </div>
+
+          {/* KPI 13 */}
+          <div
+            onClick={() => handleOpenDrilldown('Unresolved Audit Observations', 'Accountant General (AG) audit paras pending settlement', 'audit')}
+            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-700 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">13. AG Audit</div>
+            <div className="text-lg font-bold text-slate-900 font-mono mt-1">
+              {kpis?.unresolved_audit_observations || 0}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Para Pending</div>
+          </div>
+
+          {/* KPI 14 (Distinct Financial Bucket) */}
+          <div
+            onClick={() => handleOpenDrilldown('Potential Financial Exposure', 'Unreconciled advance risk, measurement variance, or penalty exposure', 'exposure')}
+            className="bg-red-50/50 rounded-xl p-3 border border-red-200 shadow-2xs hover:shadow-md hover:border-red-400 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-red-700 uppercase tracking-wide">14. Exposure</div>
+            <div className="text-lg font-bold text-red-700 font-mono mt-1">
+              ₹{kpis?.potential_financial_exposure_cr.toFixed(2) || 0} Cr
+            </div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5">Potential Risk</div>
+          </div>
+
+          {/* KPI 15 (Distinct Financial Bucket) */}
+          <div
+            onClick={() => handleOpenDrilldown('Verified Financial Recovery', 'Actual recovered amounts through bill withholdings and penalty deductions', 'recovery')}
+            className="bg-emerald-50/50 rounded-xl p-3 border border-[#B2DFCD] shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-[#006A4E] uppercase tracking-wide">15. Recovery</div>
+            <div className="text-lg font-bold text-[#006A4E] font-mono mt-1">
+              ₹{kpis?.verified_financial_recovery_cr.toFixed(2) || 0} Cr
+            </div>
+            <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">Verified Inward</div>
+          </div>
+
+          {/* KPI 16 (Distinct Financial Bucket) */}
+          <div
+            onClick={() => handleOpenDrilldown('Verified Prevented Expenditure', 'Expenditure prevented by detecting quantity inflation and duplicate claims', 'prevented')}
+            className="bg-blue-50/50 rounded-xl p-3 border border-blue-200 shadow-2xs hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group"
+          >
+            <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">16. Prevented</div>
+            <div className="text-lg font-bold text-blue-700 font-mono mt-1">
+              ₹{kpis?.verified_prevented_expenditure_cr.toFixed(2) || 0} Cr
+            </div>
+            <div className="text-[10px] text-blue-600 font-semibold mt-0.5">Leakage Blocked</div>
           </div>
         </div>
 
-        {/* Road Tier Cards adhering to DESIGN.md tokens */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-1">
-          {/* SH */}
-          <div className="bg-[#E6F4EA] border border-[#B2DFCD] rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#006A4E]">State Highways</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-[#006A4E]" />
-            </div>
-            <div className="text-lg font-bold text-[#006A4E] font-mono mt-1">123.5 km</div>
-            <div className="text-[10px] text-slate-600 mt-0.5">Brand #006A4E (SH-49)</div>
-          </div>
-
-          {/* NH */}
-          <div className="bg-[#FFF9E6] border border-[#FFE680] rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#996600]">National Highways</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FFCC00]" />
-            </div>
-            <div className="text-lg font-bold text-[#996600] font-mono mt-1">392.0 km</div>
-            <div className="text-[10px] text-slate-600 mt-0.5">Central #FFCC00 (NH-45)</div>
-          </div>
-
-          {/* MDR */}
-          <div className="bg-[#E6F0F7] border border-[#B3CFE5] rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#004B87]">Major District</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-[#004B87]" />
-            </div>
-            <div className="text-lg font-bold text-[#004B87] font-mono mt-1">26.4 km</div>
-            <div className="text-[10px] text-slate-600 mt-0.5">Regional #004B87 (MDR-102)</div>
-          </div>
-
-          {/* ODR */}
-          <div className="bg-[#FCE8F3] border border-[#F2B3D6] rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#D1197E]">Other District</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-[#D1197E]" />
-            </div>
-            <div className="text-lg font-bold text-[#D1197E] font-mono mt-1">18.2 km</div>
-            <div className="text-[10px] text-slate-600 mt-0.5">Local #D1197E (ODR-045)</div>
-          </div>
-
-          {/* RURAL */}
-          <div className="bg-[#FFF3EB] border border-[#FFCCB3] rounded-lg p-3 col-span-2 sm:col-span-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#FF6600]">Rural & Village</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FF6600]" />
-            </div>
-            <div className="text-lg font-bold text-[#FF6600] font-mono mt-1">14.0 km</div>
-            <div className="text-[10px] text-slate-600 mt-0.5">Panchayat #FF6600 (RUR-012)</div>
-          </div>
+        <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 text-slate-400" />
+            Statutory Accounting Note: Actual expenditure, potential exposure, verified recovery, and prevented expenditure are tracked as distinct ledgers.
+          </span>
+          <span className="font-mono text-slate-600 font-semibold">TN-HDOS-P2-FIN</span>
         </div>
       </div>
 
-      {/* Main Grid: Projects Table & Critical Clearances */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Recent Projects (Span 2) */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-sm text-slate-900">
-                Active Highway Projects (Phase 1 Portfolio)
-              </h3>
-              <p className="text-xs text-slate-500">
-                Governed by RBAC: showing projects permitted under your jurisdiction
-              </p>
-            </div>
-            <Link
-              to="/projects"
-              className="text-xs text-[#006A4E] hover:underline font-semibold flex items-center gap-1"
-            >
-              View All <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+      {/* 4. Executive Navigation Tabs for Deep Intelligence */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Tab Headers */}
+        <div className="flex border-b border-slate-200 overflow-x-auto scrollbar-none bg-slate-50/70 p-1.5 gap-1">
+          <button
+            onClick={() => setActiveTab('critical')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'critical'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>1. Leadership Interventions</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {criticalIssues.length}
+            </span>
+          </button>
 
-          <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
-                <tr>
-                  <th className="py-2.5 px-4">Road Tier</th>
-                  <th className="py-2.5 px-4">Project Title</th>
-                  <th className="py-2.5 px-4">Sanctioned</th>
-                  <th className="py-2.5 px-4">Progress</th>
-                  <th className="py-2.5 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {projects.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <RoadBadge type={p.road_type} code={p.road_type === 'SH' ? 'SH-49' : p.road_type === 'MDR' ? 'MDR-102' : 'ODR-045'} />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-slate-900 line-clamp-1">{p.title}</div>
-                      <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
-                        <span className="font-mono">{p.project_code}</span>
-                        {p.contractor_name && <span>• {p.contractor_name}</span>}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap font-mono font-semibold text-slate-800">
-                      ₹{p.sanctioned_cost_cr.toFixed(2)} Cr
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-slate-200 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-[#006A4E] h-2 rounded-full"
-                            style={{ width: `${p.physical_progress_pct}%` }}
-                          />
-                        </div>
-                        <span className="font-mono text-slate-700 font-medium">
-                          {p.physical_progress_pct}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          p.status === 'IN_PROGRESS'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : p.status === 'DELAYED'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {projects.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-slate-400">
-                      No projects visible for current role.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <button
+            onClick={() => setActiveTab('interdept')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'interdept'
+                ? 'bg-[#004B87] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>2. Interdepartmental Friction</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {blockers.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('leakage')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'leakage'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <CircleDollarSign className="w-3.5 h-3.5" />
+            <span>3. Leakage Intelligence</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {leakageFindings.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('quality')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'quality'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>4. Quality & HRS Audits</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {qualityDefects.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('zones')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'zones'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>5. Zone Benchmarking</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {zoneComparisons.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('portfolio')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'portfolio'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>6. Statewide Portfolio</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('contractors')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'contractors'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>7. Contractors</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('legal')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'legal'
+                ? 'bg-[#006A4E] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>8. Legal & AG Paras</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('decisions')}
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'decisions'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>9. Leadership Decisions</span>
+            <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-mono">
+              {decisions.length}
+            </span>
+          </button>
         </div>
 
-        {/* Right Column: Interdepartmental Coordination Bottlenecks */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-[#004B87]" />
-                Interdepartmental Clearances
-              </h3>
-              <p className="text-xs text-slate-500">Statutory clearances causing milestone slips</p>
-            </div>
-            <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-200">
-              High Priority
-            </span>
-          </div>
-
-          <div className="space-y-3 flex-1 overflow-y-auto">
-            {dependencies.map((d) => (
-              <div
-                key={d.id}
-                className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-xs font-bold text-slate-800">
-                    {d.dependency_type}
-                  </span>
-                  <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
-                    +{d.impact_days} Days Impact
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-600 mt-1 line-clamp-2">
-                  {d.description}
-                </p>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/60 text-[10px] text-slate-500">
-                  <span>Target: {d.target_dept_name}</span>
-                  <span className="font-semibold text-slate-700">Status: {d.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-slate-100">
-            <Link
-              to="/departments"
-              className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors"
-            >
-              Open Interdepartmental War Room <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Lower Row: Pending Tasks & Immutable Audit Timeline */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Workflow Tasks */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#006A4E]" />
-                Assigned Operational Tasks
-              </h3>
-              <p className="text-xs text-slate-500">Action items assigned to engineers & contractors</p>
-            </div>
-            <span className="text-xs text-slate-500 font-medium">
-              {tasks.filter((t) => t.status !== 'Completed').length} Pending
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {tasks.map((task) => (
-              <div
-                key={task.id}
-                className={`p-3 rounded-lg border transition-all flex items-start justify-between gap-3 ${
-                  task.status === 'Completed'
-                    ? 'bg-slate-50 border-slate-200 opacity-60'
-                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
-                }`}
-              >
+        {/* Tab Content Panels */}
+        <div className="p-6">
+          {/* TAB 1: CRITICAL ISSUES REQUIRING LEADERSHIP INTERVENTION (Section 3.E) */}
+          {activeTab === 'critical' && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold text-slate-500">
-                      {task.task_reference}
-                    </span>
-                    <span
-                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                        task.priority === 'CRITICAL'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
-                  <h4 className="text-xs font-semibold text-slate-900 mt-1">
-                    {task.title}
+                  <h4 className="text-base font-bold text-red-700 tracking-tight flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    CRITICAL ISSUES REQUIRING LEADERSHIP INTERVENTION
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Assigned to: {task.assigned_to_name || 'Officer'}
+                  <p className="text-xs text-slate-500">
+                    Highest-urgency statutory bottlenecks causing significant schedule or financial slip
                   </p>
                 </div>
+                <button
+                  onClick={() => {
+                    setDecisionModal({
+                      isOpen: true,
+                      defaultTitle: 'Executive Order on Immediate Highway Bottleneck Resolution'
+                    });
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-2xs transition-colors self-start"
+                >
+                  <PlusCircle className="w-4 h-4" /> Issue Leadership Directive
+                </button>
+              </div>
 
-                {task.status !== 'Completed' ? (
-                  <button
-                    onClick={() => handleCompleteTask(task.id)}
-                    disabled={completingTaskId === task.id}
-                    className="flex-shrink-0 text-xs bg-[#E6F4EA] hover:bg-[#d0edd8] text-[#006A4E] border border-[#B2DFCD] font-semibold px-2.5 py-1 rounded-md transition-colors"
+              <div className="grid grid-cols-1 gap-4">
+                {criticalIssues.map((issue) => (
+                  <div
+                    key={issue.id}
+                    className="p-5 rounded-xl border border-red-200 bg-red-50/20 hover:bg-red-50/40 transition-colors shadow-2xs space-y-3"
                   >
-                    {completingTaskId === task.id ? 'Saving...' : 'Mark Done'}
-                  </button>
-                ) : (
-                  <span className="flex-shrink-0 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    Completed
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded border border-red-300">
+                          {issue.issue_reference}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600">
+                          {issue.district} District
+                        </span>
+                        <span className="text-xs font-bold text-slate-500">•</span>
+                        <span className="text-xs font-semibold text-[#004B87]">
+                          {issue.category}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                          Pending: {issue.days_pending} Days
+                        </span>
+                        <span className="text-xs font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded">
+                          Exposure: ₹{issue.financial_exposure_cr.toFixed(2)} Cr
+                        </span>
+                      </div>
+                    </div>
 
-        {/* Immutable Audit Log Stream */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-slate-700" />
-                Immutable Statutory Audit Log
-              </h3>
-              <p className="text-xs text-slate-500">
-                Tamper-proof event trail of official sanctions, logins & status transitions
-              </p>
-            </div>
-            <span className="text-[10px] bg-slate-100 font-mono text-slate-600 px-2 py-0.5 rounded">
-              Read-Only
-            </span>
-          </div>
+                    <div>
+                      <h5 className="font-bold text-sm text-slate-900">{issue.issue_reference}: {issue.category}</h5>
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                        {issue.problem_description}
+                      </p>
+                    </div>
 
-          <div className="space-y-2.5 max-h-[300px] overflow-y-auto">
-            {auditEvents.map((evt) => (
-              <div
-                key={evt.id}
-                className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/60 text-xs"
-              >
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-slate-800">
-                    {evt.actor_name}
-                  </span>
-                  <span className="text-slate-400 font-mono text-[10px]">
-                    {new Date(evt.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-                <div className="text-[11px] text-slate-600 mt-0.5 flex items-center gap-1.5">
-                  <span className="font-bold text-[#006A4E]">{evt.action}</span>
-                  <span>on</span>
-                  <span className="font-mono bg-white px-1.5 py-0.2 rounded border border-slate-200 text-slate-700">
-                    {evt.entity_type} {evt.entity_reference || `#${evt.entity_id}`}
-                  </span>
-                </div>
-                {evt.changes_json && (
-                  <div className="mt-1 text-[10px] font-mono text-slate-500 truncate bg-white p-1 rounded border border-slate-100">
-                    {evt.changes_json}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3.5 rounded-lg border border-slate-200 text-xs">
+                      <div>
+                        <span className="font-bold text-slate-700 block mb-0.5">Root Cause / Suspected Friction:</span>
+                        <span className="text-slate-600">{issue.root_cause}</span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-700 block mb-0.5">Accountable Stakeholders:</span>
+                        <div className="text-slate-600 space-y-0.5">
+                          <div>Highways: <span className="font-semibold text-slate-800">{issue.responsible_officer}</span></div>
+                          {issue.responsible_external_dept && (
+                            <div>External: <span className="font-semibold text-[#004B87]">{issue.responsible_external_dept}</span></div>
+                          )}
+                          {issue.contractor_name && (
+                            <div>Contractor: <span className="font-semibold text-slate-800">{issue.contractor_name}</span></div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                      <div className="text-xs">
+                        <span className="font-bold text-[#006A4E]">Recommended Action:</span>{' '}
+                        <span className="text-slate-700">{issue.recommended_action}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setDecisionModal({
+                            isOpen: true,
+                            linkedIssueId: issue.id,
+                            defaultTitle: `Directive on ${issue.issue_reference}: ${issue.category}`
+                          });
+                        }}
+                        className="bg-[#006A4E] hover:bg-[#00553E] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap self-end"
+                      >
+                        Take Leadership Action <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* TAB 2: INTERDEPARTMENTAL COORDINATION INTELLIGENCE (Section 3.F) */}
+          {activeTab === 'interdept' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3">
+                <h4 className="text-base font-bold text-[#004B87] tracking-tight flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-[#004B87]" />
+                  INTERDEPARTMENTAL COORDINATION WAR-ROOM
+                </h4>
+                <p className="text-xs text-slate-500">
+                  Projects actively blocked by external statutory bodies (Revenue, TANGEDCO, Railways, Forest, TWAD)
+                </p>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4">Agency Category</th>
+                      <th className="py-3 px-4">Project & Required Clearance</th>
+                      <th className="py-3 px-4">Latest Correspondence</th>
+                      <th className="py-3 px-4">Responsible Officials</th>
+                      <th className="py-3 px-4">Delay & Reason</th>
+                      <th className="py-3 px-4">Recommended Escalation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {blockers.map((b) => (
+                      <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3 px-4 align-top whitespace-nowrap">
+                          <span className="font-bold text-[#004B87] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                            {b.department_category}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 align-top max-w-xs">
+                          <div className="font-bold text-slate-900">{b.project_title}</div>
+                          <div className="text-[11px] text-slate-600 mt-0.5">{b.approval_required}</div>
+                        </td>
+                        <td className="py-3 px-4 align-top text-slate-600 max-w-xs">
+                          <div className="line-clamp-2">{b.latest_correspondence}</div>
+                        </td>
+                        <td className="py-3 px-4 align-top whitespace-nowrap text-[11px]">
+                          <div>HW: <span className="font-semibold text-slate-800">{b.responsible_highways_officer}</span></div>
+                          <div className="text-slate-500">Ext: {b.external_contact}</div>
+                        </td>
+                        <td className="py-3 px-4 align-top whitespace-nowrap">
+                          <span className="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                            {b.days_pending} Days
+                          </span>
+                          <div className="text-[10px] text-slate-500 mt-1 max-w-[150px] truncate">{b.reason_for_delay}</div>
+                        </td>
+                        <td className="py-3 px-4 align-top text-[#006A4E] font-medium max-w-xs">
+                          {b.recommended_action}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: FINANCIAL & LEAKAGE INTELLIGENCE (Section 3.G) */}
+          {activeTab === 'leakage' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-bold text-[#006A4E] tracking-tight flex items-center gap-2">
+                    <CircleDollarSign className="w-5 h-5 text-[#006A4E]" />
+                    FINANCIAL ACCOUNTABILITY & LEAKAGE INTELLIGENCE
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Anomalies detected in measurement books, weighbridge gate passes, and advance recoveries
+                  </p>
+                </div>
+                <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-1 rounded font-medium">
+                  Statutory Note: Anomalies are investigation triggers, not proof of fraud.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {leakageFindings.map((f) => (
+                  <div key={f.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs bg-slate-200 text-slate-800 px-2 py-0.5 rounded">
+                          {f.finding_code}
+                        </span>
+                        <span className="text-xs font-bold text-slate-700">{f.category}</span>
+                        <span className="text-xs text-slate-400">•</span>
+                        <span className="text-xs text-slate-600">{f.project_title}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">
+                          Exposure: ₹{f.potential_exposure_cr.toFixed(2)} Cr
+                        </span>
+                        <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
+                          Prevented: ₹{f.prevented_expenditure_cr.toFixed(2)} Cr
+                        </span>
+                        <span className="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">
+                          Confidence: {f.confidence}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h5 className="font-bold text-sm text-slate-900">{f.title}</h5>
+                    <p className="text-xs text-slate-600">{f.evidence_summary}</p>
+                    
+                    <div className="bg-white p-3 rounded border border-slate-200 text-xs font-mono text-slate-700">
+                      Calculation: {f.calculation_details}
+                    </div>
+
+                    <div className="text-xs text-[#006A4E] font-medium pt-1">
+                      <span className="font-bold">Recommended Investigation:</span> {f.recommended_investigation}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: QUALITY & HRS AUDITS (Section 3.H) */}
+          {activeTab === 'quality' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3">
+                <h4 className="text-base font-bold text-[#006A4E] tracking-tight flex items-center gap-2">
+                  <Award className="w-5 h-5 text-[#006A4E]" />
+                  ENGINEERING QUALITY & HRS AUDIT REGISTER
+                </h4>
+                <p className="text-xs text-slate-500">
+                  Highways Research Station (HRS Guindy) lab test failures, cube tests, and structural inspection NCRs
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {qualityDefects.map((q) => (
+                  <div key={q.id} className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-xs bg-slate-100 px-2 py-0.5 rounded">
+                        {q.defect_code}
+                      </span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                        q.severity === 'CRITICAL' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {q.severity} SEVERITY
+                      </span>
+                    </div>
+
+                    <h5 className="font-bold text-sm text-slate-900">{q.defect_type}</h5>
+                    <p className="text-xs text-slate-600">{q.observation_notes}</p>
+
+                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex justify-between">
+                      <span>Lab Ref: <span className="font-mono font-semibold text-slate-700">{q.lab_report_ref || 'Under Testing'}</span></span>
+                      <span>Chainage: <span className="font-mono font-semibold text-slate-700">{q.chainage_km ? `km ${q.chainage_km}` : 'Bridge P-3'}</span></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: ZONE BENCHMARKING (Section 3.D) */}
+          {activeTab === 'zones' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-bold text-[#006A4E] tracking-tight flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-[#006A4E]" />
+                    ZONE & DIVISION PERFORMANCE COMPARISON
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Comparable project cohort comparison across Chennai, Coimbatore, Madurai, and Tiruchirappalli zones
+                  </p>
+                </div>
+                <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">
+                  Note: Cohorts normalized by terrain and project scale
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4">Zone & HQ</th>
+                      <th className="py-3 px-4">Active Cohort</th>
+                      <th className="py-3 px-4">Completed %</th>
+                      <th className="py-3 px-4">Avg Delay (Days)</th>
+                      <th className="py-3 px-4">Budget Util %</th>
+                      <th className="py-3 px-4">Defects</th>
+                      <th className="py-3 px-4">LA Pending (Ha)</th>
+                      <th className="py-3 px-4">Contractor Score</th>
+                      <th className="py-3 px-4">Data Completeness</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {zoneComparisons.map((z) => (
+                      <tr key={z.zone_id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3 px-4 font-bold text-slate-900 whitespace-nowrap">
+                          {z.zone_name}
+                          <div className="text-[10px] text-slate-400 font-normal">HQ: {z.headquarters}</div>
+                        </td>
+                        <td className="py-3 px-4 font-mono">{z.cohort_sample_size} Works</td>
+                        <td className="py-3 px-4 font-mono font-semibold text-emerald-700">{z.completed_projects_pct}%</td>
+                        <td className="py-3 px-4 font-mono text-red-600 font-semibold">+{z.average_project_delay_days}d</td>
+                        <td className="py-3 px-4 font-mono">{z.budget_utilisation_pct}%</td>
+                        <td className="py-3 px-4 font-mono">{z.quality_defects_count}</td>
+                        <td className="py-3 px-4 font-mono">{z.land_acquisition_pending_ha} Ha</td>
+                        <td className="py-3 px-4 font-mono font-semibold text-slate-800">{z.contractor_performance_score}/100</td>
+                        <td className="py-3 px-4 font-mono text-emerald-600">{z.data_completeness_pct}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: STATEWIDE PORTFOLIO (Section 3.C) */}
+          {activeTab === 'portfolio' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3">
+                <h4 className="text-base font-bold text-slate-900 tracking-tight">
+                  STATEWIDE HIGHWAYS PORTFOLIO STAGES
+                </h4>
+                <p className="text-xs text-slate-500">Distribution across DPR planning, tendering, execution, and completion</p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {portfolioStages.map((st, idx) => (
+                  <div key={idx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{st.stage}</div>
+                    <div className="text-xl font-bold text-slate-900 font-mono mt-1">{st.count}</div>
+                    <div className="text-xs font-semibold text-[#006A4E] mt-0.5">₹{st.cost_cr.toFixed(1)} Cr</div>
+                    <div className="text-[10px] text-slate-400 mt-1">Avg: {st.avg_progress_pct}%</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: CONTRACTOR PERFORMANCE (Section 3.I) */}
+          {activeTab === 'contractors' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3">
+                <h4 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-slate-700" />
+                  EMPANELLED CONTRACTOR DELIVERY EVALUATION
+                </h4>
+                <p className="text-xs text-slate-500">Performance scoring within comparable contract categories</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {contractors.map((c) => (
+                  <div key={c.id} className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-sm text-slate-900">{c.contractor_name}</h5>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                        c.performance_tier === 'SATISFACTORY' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {c.performance_tier}
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-slate-600">Assigned: {c.project_title}</div>
+
+                    <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded text-xs font-mono">
+                      <div>Score: <span className="font-bold text-slate-900">{c.performance_score}/100</span></div>
+                      <div>Delay: <span className="font-bold text-red-600">+{c.behind_schedule_days}d</span></div>
+                      <div>Claims: <span className="font-bold text-slate-900">₹{c.claims_disputes_cr} Cr</span></div>
+                    </div>
+
+                    <p className="text-[11px] text-slate-500">{c.assessment_notes}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: LEGAL & AG AUDIT (Section 3.J) */}
+          {activeTab === 'legal' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3">
+                <h4 className="text-base font-bold text-purple-900 tracking-tight flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-purple-700" />
+                  HIGH COURT WRITS & AG AUDIT PARAS REGISTER
+                </h4>
+                <p className="text-xs text-slate-500">Active judicial proceedings and statutory audit observations</p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {legalMatters.map((m) => (
+                  <div key={m.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/40 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sm text-slate-900">{m.case_reference}</span>
+                      <span className="font-bold text-[10px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded">
+                        {m.court_forum}
+                      </span>
+                    </div>
+                    <p className="text-slate-600">{m.case_summary}</p>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-500 border-t border-slate-200/60">
+                      <span>Legal Officer: <span className="font-semibold text-slate-700">{m.responsible_legal_officer}</span></span>
+                      {m.next_hearing_date && (
+                        <span>Next Hearing: <span className="font-semibold text-red-600">{new Date(m.next_hearing_date).toLocaleDateString()}</span></span>
+                      )}
+                      <span>Status: <span className="font-semibold text-slate-800">{m.status}</span></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 9: DECISIONS AND ACTIONS REQUIRED (Section 3.K) */}
+          {activeTab === 'decisions' && (
+            <div className="space-y-4">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-bold text-amber-800 tracking-tight flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-amber-700" />
+                    DECISIONS AND ACTIONS REQUIRED
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Statutory decision register tracking directives from the Hon'ble Minister, Principal Secretary, and Chief Engineers
+                  </p>
+                </div>
+                <button
+                  onClick={() => setDecisionModal({ isOpen: true, defaultTitle: 'Record Leadership Directive' })}
+                  className="bg-[#006A4E] hover:bg-[#00553E] text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors"
+                >
+                  <PlusCircle className="w-4 h-4" /> Record New Directive
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {decisions.map((d) => (
+                  <div key={d.id} className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                        {d.decision_reference}
+                      </span>
+                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                        {d.status}
+                      </span>
+                    </div>
+                    <h5 className="font-bold text-sm text-slate-900">{d.required_decision}</h5>
+                    <div className="text-slate-600">Assigned Authority: <span className="font-semibold text-slate-800">{d.assigned_authority}</span></div>
+                    {d.resolution_notes && (
+                      <div className="bg-slate-50 p-2.5 rounded border border-slate-200 text-slate-600 text-[11px]">
+                        Notes: {d.resolution_notes}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                      <span>Initiated by: {d.created_by_name}</span>
+                      <span>Recorded on: {new Date(d.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* 5. KPI Drilldown Modal (Section 6) */}
+      {drilldownModal.isOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <h4 className="text-base font-bold text-slate-900">{drilldownModal.title}</h4>
+                <p className="text-xs text-slate-500 mt-0.5">{drilldownModal.description}</p>
+              </div>
+              <button
+                onClick={() => setDrilldownModal({ isOpen: false, title: '', description: '', metricKey: '' })}
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-2">
+              <div className="font-semibold text-slate-700">Underlying Records & Telemetry:</div>
+              <div className="space-y-1.5 text-[11px]">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-600">SH-49 East Coast Road 4-Laning (km 22/0 - 45/0)</span>
+                  <span className="font-mono font-bold text-slate-900">₹142.20 Cr</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-600">MDR-102 Tambaram Elevated Corridor Flyover</span>
+                  <span className="font-mono font-bold text-slate-900">₹85.00 Cr</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-600">ODR-045 Thiruporur Causeway Bridge Reconstruction</span>
+                  <span className="font-mono font-bold text-slate-900">₹18.10 Cr</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-slate-400">
+              Audited in accordance with Tamil Nadu Highways Department financial regulations.
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setDrilldownModal({ isOpen: false, title: '', description: '', metricKey: '' })}
+                className="bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg"
+              >
+                Close Records View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Record Leadership Decision Directive Modal */}
+      {decisionModal.isOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <form onSubmit={handleCreateDecision} className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <h4 className="text-base font-bold text-slate-900">Issue Executive Decision / Action</h4>
+                <p className="text-xs text-slate-500 mt-0.5">Authorised leadership directive recorded in audit register</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDecisionModal({ isOpen: false })}
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Required Decision / Directive</label>
+                <input
+                  type="text"
+                  required
+                  value={decisionForm.required_decision}
+                  onChange={(e) => setDecisionForm({ ...decisionForm, required_decision: e.target.value })}
+                  placeholder="e.g. Convene Bilateral Summit with Railway Chief Bridge Engineer"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Assigned Authority</label>
+                <select
+                  value={decisionForm.assigned_authority}
+                  onChange={(e) => setDecisionForm({ ...decisionForm, assigned_authority: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                >
+                  <option value="Hon'ble Minister for Highways">Hon'ble Minister for Highways</option>
+                  <option value="Principal Secretary to Government">Principal Secretary to Government</option>
+                  <option value="Chief Engineer (Highways - Projects)">Chief Engineer (Highways - Projects)</option>
+                  <option value="Superintending Engineer (Circle)">Superintending Engineer (Circle)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Action Type</label>
+                <select
+                  value={decisionForm.action_type}
+                  onChange={(e) => setDecisionForm({ ...decisionForm, action_type: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                >
+                  <option value="FORWARD_COORDINATION">Forward for Interdepartmental Coordination</option>
+                  <option value="REQUEST_EVIDENCE">Request Additional Evidence</option>
+                  <option value="INVESTIGATION">Recommend Technical / Vigilance Investigation</option>
+                  <option value="ESCALATE">Escalate to Secretariat Leadership</option>
+                  <option value="RECORD_DECISION">Record Official Decision</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Resolution / Escalation Notes</label>
+                <textarea
+                  rows={2}
+                  value={decisionForm.resolution_notes}
+                  onChange={(e) => setDecisionForm({ ...decisionForm, resolution_notes: e.target.value })}
+                  placeholder="Additional context or statutory notes..."
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setDecisionModal({ isOpen: false })}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingDecision}
+                className="bg-[#006A4E] hover:bg-[#00553E] text-white text-xs font-semibold px-4 py-2 rounded-lg"
+              >
+                {savingDecision ? 'Recording...' : 'Commit Directive'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
-

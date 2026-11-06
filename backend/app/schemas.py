@@ -331,3 +331,182 @@ class AskAIResponse(BaseModel):
     is_demo: bool = True
     disclaimer: str
 
+
+# Phase 2 Executive Command Centre Schemas
+
+class ExecutiveKPIsOut(BaseModel):
+    # 16 Mandated KPIs
+    total_active_projects: int
+    total_approved_project_value_cr: float
+    total_expenditure_cr: float
+    total_physical_progress_pct: float
+    projects_delayed: int
+    projects_high_risk: int
+    pending_approvals: int
+    pending_land_acquisition_ha: float
+    pending_utility_shifting_count: int
+    open_quality_defects: int
+    pending_contractor_obligations: int
+    open_legal_cases: int
+    unresolved_audit_observations: int
+    potential_financial_exposure_cr: float
+    verified_financial_recovery_cr: float
+    verified_prevented_expenditure_cr: float
+
+    # Reporting context
+    reporting_period: str = "FY 2025-26"
+    data_freshness: str = "Live Operational Telemetry"
+    cohort_sample_size: int = 14
+    is_demo: bool = True
+
+class PortfolioStageItem(BaseModel):
+    stage: str
+    count: int
+    cost_cr: float
+    avg_progress_pct: float
+
+class ZoneComparisonOut(BaseModel):
+    zone_id: int
+    zone_code: str
+    zone_name: str
+    headquarters: str
+    active_projects_count: int
+    completed_projects_pct: float
+    average_project_delay_days: int
+    budget_utilisation_pct: float
+    quality_defects_count: int
+    pending_approvals_count: int
+    land_acquisition_pending_ha: float
+    contractor_performance_score: float
+    cohort_sample_size: int
+    data_completeness_pct: float
+
+class CriticalLeadershipIssueOut(BaseModel):
+    id: int
+    issue_reference: str
+    project_id: int
+    project_title: str
+    district: str
+    category: str
+    problem_description: str
+    root_cause: str
+    responsible_officer: str
+    responsible_external_dept: Optional[str] = None
+    contractor_name: Optional[str] = None
+    days_pending: int
+    schedule_impact_days: int
+    financial_exposure_cr: float
+    evidence_available: Optional[str] = None
+    recommended_action: str
+    escalation_level: str
+    priority: str
+    status: str
+    date_raised: datetime.datetime
+
+class InterdepartmentalBlockerOut(BaseModel):
+    id: int
+    project_id: int
+    project_title: str
+    department_category: str
+    approval_required: str
+    submission_date: Optional[datetime.datetime] = None
+    latest_correspondence: Optional[str] = None
+    responsible_highways_officer: str
+    external_contact: Optional[str] = None
+    days_pending: int
+    expected_timeline: Optional[str] = None
+    reason_for_delay: str
+    supporting_documents: Optional[str] = None
+    recommended_action: str
+    status: str
+
+class FinancialLeakageOut(BaseModel):
+    id: int
+    finding_code: str
+    project_id: int
+    project_title: str
+    category: str
+    title: str
+    potential_exposure_cr: float
+    verified_loss_cr: float
+    verified_recovery_cr: float
+    prevented_expenditure_cr: float
+    evidence_summary: str
+    calculation_details: str
+    confidence: str
+    validation_status: str
+    responsible_officer: str
+    recommended_investigation: str
+    created_at: datetime.datetime
+
+class QualityDefectOut(BaseModel):
+    id: int
+    defect_code: str
+    project_id: int
+    project_title: str
+    road_code: Optional[str] = None
+    defect_type: str
+    chainage_km: Optional[float] = None
+    severity: str
+    observation_notes: str
+    lab_report_ref: Optional[str] = None
+    corrective_action_status: str
+    responsible_engineer: str
+    created_at: datetime.datetime
+
+class ContractorEvaluationOut(BaseModel):
+    id: int
+    contractor_id: int
+    contractor_name: str
+    project_id: int
+    project_title: str
+    performance_score: float
+    behind_schedule_days: int
+    repeated_defects_count: int
+    delayed_submissions_count: int
+    time_extension_requests: int
+    claims_disputes_cr: float
+    performance_tier: str
+    assessment_notes: Optional[str] = None
+
+class LegalMatterOut(BaseModel):
+    id: int
+    case_reference: str
+    court_forum: str
+    project_id: int
+    project_title: str
+    matter_type: str
+    plaintiff_petitioner: str
+    case_summary: str
+    interim_stay_in_force: bool
+    next_hearing_date: Optional[datetime.datetime] = None
+    statutory_deadline: Optional[datetime.datetime] = None
+    ag_audit_para_ref: Optional[str] = None
+    responsible_legal_officer: str
+    status: str
+
+class LeadershipDecisionCreate(BaseModel):
+    project_id: Optional[int] = None
+    leadership_issue_id: Optional[int] = None
+    required_decision: str
+    assigned_authority: str
+    action_type: str  # REVIEW, REQUEST_EVIDENCE, FORWARD_COORDINATION, INVESTIGATION, ESCALATE, RECORD_DECISION
+    supporting_evidence: Optional[str] = None
+    due_date: Optional[datetime.datetime] = None
+    resolution_notes: Optional[str] = None
+
+class LeadershipDecisionOut(BaseModel):
+    id: int
+    decision_reference: str
+    project_id: Optional[int] = None
+    project_title: Optional[str] = None
+    leadership_issue_id: Optional[int] = None
+    required_decision: str
+    assigned_authority: str
+    action_type: str
+    supporting_evidence: Optional[str] = None
+    due_date: Optional[datetime.datetime] = None
+    status: str
+    resolution_notes: Optional[str] = None
+    created_by_name: str
+    created_at: datetime.datetime
