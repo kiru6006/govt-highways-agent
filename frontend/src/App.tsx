@@ -12,6 +12,7 @@ import { DirectoryPage } from './pages/DirectoryPage';
 import { GovernanceRegistryPage } from './pages/GovernanceRegistryPage';
 import { ProgrammeIntelligencePage } from './pages/ProgrammeIntelligencePage';
 import { Project360Page } from './pages/Project360Page';
+import { LeakageIntelligencePage } from './pages/LeakageIntelligencePage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 import { DemoBanner } from './components/DemoBanner';
 
@@ -58,7 +59,7 @@ const AppLayout: React.FC = () => {
             <Route path="/ckicp" element={<ProgrammeIntelligencePage />} />
             <Route path="/tnrsp" element={<ProgrammeIntelligencePage />} />
             <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/leakage" element={<PlaceholderModule />} />
+            <Route path="/leakage" element={<LeakageIntelligencePage />} />
             <Route path="/project-360" element={<Project360Page />} />
             <Route path="/directory" element={<DirectoryPage />} />
             <Route path="/departments" element={<PlaceholderModule />} />

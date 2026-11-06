@@ -127,3 +127,4 @@ export const CorridorMap: React.FC<CorridorMapProps> = ({ height = '360px' }) =>
     </div>
   );
 };
+

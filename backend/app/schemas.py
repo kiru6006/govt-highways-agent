@@ -1036,3 +1036,140 @@ class Project360DetailOut(BaseModel):
     risks_and_issues: dict
     ai_findings: List[AIIntelligenceFindingOut]
     audit_history: List[AuditEventOut]
+
+# -------------------------------------------------------------
+# Anomaly & Leakage Intelligence Schemas (Prompt 01)
+# -------------------------------------------------------------
+
+class AnomalyActionHistoryOut(BaseModel):
+    id: int
+    finding_id: int
+    action_type: str
+    actor_name: str
+    actor_role: str
+    old_status: Optional[str] = None
+    new_status: Optional[str] = None
+    remarks: Optional[str] = None
+    action_details: Optional[str] = None
+    due_date: Optional[str] = None
+    created_at: datetime.datetime
+
+class AnomalyFindingListItem(BaseModel):
+    id: int
+    finding_code: str
+    project_id: int
+    project_title: str
+    project_code: Optional[str] = None
+    package_id: Optional[int] = None
+    package_name: Optional[str] = None
+    contractor_id: Optional[int] = None
+    contractor_name: Optional[str] = None
+    category: str
+    title: str
+    severity: str
+    ai_confidence: str
+    potential_exposure_cr: float
+    transaction_value_cr: float
+    verified_impact_cr: float
+    amount_under_review_cr: float
+    evidence_status: str
+    responsible_department: str
+    responsible_officer: str
+    review_status: str
+    assigned_to: Optional[str] = None
+    scenario_id: Optional[str] = None
+    data_mode: str = "mock"
+    data_status: str = "Seeded Demo"
+    created_at: datetime.datetime
+
+class AnomalyFindingDetailOut(AnomalyFindingListItem):
+    description: str
+    what_detected: str
+    why_flagged: str
+    detection_rule: str
+    calculation_formula: str
+    review_remarks: Optional[str] = None
+    suggested_verification: Optional[str] = None
+    recommended_action: Optional[str] = None
+    corrective_action: Optional[str] = None
+    action_due_date: Optional[str] = None
+    escalated_to_secretary: bool = False
+    evidence_records_json: Optional[str] = None
+    actions: List[AnomalyActionHistoryOut] = []
+
+class AnomalyReviewRequest(BaseModel):
+    review_status: Optional[str] = None
+    assigned_to: Optional[str] = None
+    review_remarks: Optional[str] = None
+    request_evidence_details: Optional[str] = None
+    corrective_action: Optional[str] = None
+    action_due_date: Optional[str] = None
+    escalate_to_secretary: Optional[bool] = None
+
+class LeakageKPIsOut(BaseModel):
+    total_findings: int
+    critical_findings: int
+    high_risk_findings: int
+    potential_financial_exposure_cr: float
+    findings_awaiting_verification: int
+    corrective_actions_pending: int
+    data_mode: str = "mock"
+    reporting_period: str
+    last_analysis_timestamp: str
+
+class CategorySummaryOut(BaseModel):
+    category: str
+    count: int
+    total_exposure_cr: float
+    critical_count: int
+
+class ExposureAnalysisOut(BaseModel):
+    by_project: List[dict]
+    by_category: List[dict]
+    by_contractor: List[dict]
+    by_programme: List[dict]
+    month_trend: List[dict]
+    total_transaction_value_cr: float
+    total_potential_exposure_cr: float
+    total_verified_impact_cr: float
+    total_under_review_cr: float
+
+class ProjectRiskScoreOut(BaseModel):
+    project_id: int
+    project_code: str
+    project_title: str
+    programme: str
+    financial_risk_score: float
+    schedule_risk_score: float
+    procurement_risk_score: float
+    quality_risk_score: float
+    land_utility_risk_score: float
+    compliance_risk_score: float
+    overall_composite_risk: float
+    active_anomalies_count: int
+
+class ExecutiveAssessmentOut(BaseModel):
+    summary_narrative: str
+    overall_risk_assessment: str
+    critical_observations: List[str]
+    financial_exposure_estimate_cr: float
+    projects_requiring_immediate_attention: List[dict]
+    recommended_executive_actions: List[dict]
+    observed_facts: List[str]
+    calculated_indicators: List[str]
+    ai_interpretations: List[str]
+
+class DecisionRequiredOut(BaseModel):
+    id: int
+    finding_code: str
+    project_id: int
+    project_title: str
+    issue: str
+    impact: str
+    financial_exposure_cr: float
+    responsible_department: str
+    current_status: str
+    recommended_decision: str
+    escalation_level: str  # MINISTER, SECRETARY, CHIEF_ENGINEER
+    due_date: Optional[str] = None
+

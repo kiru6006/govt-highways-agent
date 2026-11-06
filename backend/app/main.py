@@ -6,11 +6,12 @@ from sqlalchemy import func
 from app.config import settings
 from app.database import engine, Base, get_db
 from app.seed import seed_database
+from app.seed_synthetic_foundation import seed_synthetic_foundation_data
 from app.models import Project, Issue, DepartmentDependency, WorkflowTask, Road
 from app.routers import (
     auth, users, roles, departments, organisations, projects,
     officials, contractors, dependencies, issues, workflows,
-    documents, audit, ai, executive, programmes
+    documents, audit, ai, executive, programmes, leakage
 )
 
 # Initialize schema tables
@@ -40,6 +41,7 @@ app.add_middleware(
 def on_startup():
     # Automatically seed the database if fresh
     seed_database()
+    seed_synthetic_foundation_data()
 
 # Include versioned API routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -58,6 +60,7 @@ app.include_router(audit.router, prefix=settings.API_V1_STR)
 app.include_router(ai.router, prefix=settings.API_V1_STR)
 app.include_router(executive.router, prefix=settings.API_V1_STR)
 app.include_router(programmes.router, prefix=settings.API_V1_STR)
+app.include_router(leakage.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

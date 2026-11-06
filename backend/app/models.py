@@ -969,3 +969,68 @@ class ProjectProgressRecord(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     project = relationship("Project", back_populates="progress_records")
+
+# -------------------------------------------------------------
+# AI Leakage & Irregularity Intelligence Models (Prompt 01)
+# -------------------------------------------------------------
+
+class AnomalyFinding(Base):
+    __tablename__ = "anomaly_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    contractor_id = Column(Integer, ForeignKey("contractors.id"), nullable=True)
+    category = Column(String(100), nullable=False)
+    title = Column(String(250), nullable=False)
+    description = Column(Text, nullable=False)
+    what_detected = Column(Text, nullable=False)
+    why_flagged = Column(Text, nullable=False)
+    detection_rule = Column(Text, nullable=False)
+    calculation_formula = Column(Text, nullable=False)
+    potential_exposure_cr = Column(Float, default=0.0)
+    transaction_value_cr = Column(Float, default=0.0)
+    verified_impact_cr = Column(Float, default=0.0)
+    amount_under_review_cr = Column(Float, default=0.0)
+    severity = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    ai_confidence = Column(String(20), default="HIGH")  # HIGH, MEDIUM, LOW
+    evidence_status = Column(String(50), default="SUPPORTED_BY_RECORDS")
+    responsible_department = Column(String(100), default="Highways Accounts & Audit")
+    responsible_officer = Column(String(150), nullable=False)
+    review_status = Column(String(50), default="NEW")  # NEW, UNDER_REVIEW, EVIDENCE_REQUESTED, VERIFIED, NOT_SUBSTANTIATED, ACTION_REQUIRED, RESOLVED, CLOSED
+    assigned_to = Column(String(150), nullable=True)
+    review_remarks = Column(Text, nullable=True)
+    suggested_verification = Column(Text, nullable=True)
+    recommended_action = Column(Text, nullable=True)
+    corrective_action = Column(Text, nullable=True)
+    action_due_date = Column(String(50), nullable=True)
+    escalated_to_secretary = Column(Boolean, default=False)
+    evidence_records_json = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+    contractor = relationship("Contractor")
+    actions = relationship("AnomalyActionHistory", back_populates="finding", cascade="all, delete-orphan")
+
+class AnomalyActionHistory(Base):
+    __tablename__ = "anomaly_action_history"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_id = Column(Integer, ForeignKey("anomaly_findings.id"), nullable=False)
+    action_type = Column(String(50), nullable=False)
+    actor_name = Column(String(150), nullable=False)
+    actor_role = Column(String(100), nullable=False)
+    old_status = Column(String(50), nullable=True)
+    new_status = Column(String(50), nullable=True)
+    remarks = Column(Text, nullable=True)
+    action_details = Column(Text, nullable=True)
+    due_date = Column(String(50), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    finding = relationship("AnomalyFinding", back_populates="actions")
+

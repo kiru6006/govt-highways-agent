@@ -41,8 +41,26 @@ import {
   EVMVarianceMetrics,
   WorkPackageItem,
   ApprovalItem,
-  ProjectStakeholderItem
+  ProjectStakeholderItem,
+  AnomalyFindingItem,
+  AnomalyActionHistoryItem,
+  LeakageKPIs,
+  CategorySummaryItem,
+  ExposureAnalysisData,
+  ProjectRiskScoreItem,
+  ExecutiveAssessmentData,
+  DecisionRequiredItem
 } from '../types';
+import {
+  SYNTHETIC_ANOMALIES,
+  SYNTHETIC_PROJECTS,
+  getSyntheticKPIs,
+  getSyntheticCategorySummary,
+  getSyntheticExposureAnalysis,
+  getSyntheticProjectRiskMatrix,
+  getSyntheticExecutiveAssessment,
+  getSyntheticDecisionsRequiringAttention
+} from '../data/syntheticHighwaysData';
 
 const API_BASE = '/api/v1';
 
@@ -2367,6 +2385,159 @@ export const api = {
       return await request<CorridorAlignmentItem[]>(`/programmes/${code}/alignments`);
     } catch {
       return fallbackProgrammeAlignments[code.toUpperCase()] || [];
+    }
+  },
+
+  // -------------------------------------------------------------
+  // AI Leakage & Irregularity Intelligence (Prompt 01)
+  // -------------------------------------------------------------
+  getLeakageKPIs: async (): Promise<LeakageKPIs> => {
+    try {
+      return await request<LeakageKPIs>('/leakage/kpis');
+    } catch {
+      return getSyntheticKPIs();
+    }
+  },
+
+  getAnomalyFindings: async (filters?: {
+    category?: string;
+    severity?: string;
+    review_status?: string;
+    project_id?: number;
+    programme?: string;
+    district?: string;
+  }): Promise<AnomalyFindingItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (filters?.category && filters.category !== 'ALL') q.append('category', filters.category);
+      if (filters?.severity && filters.severity !== 'ALL') q.append('severity', filters.severity);
+      if (filters?.review_status && filters.review_status !== 'ALL') q.append('review_status', filters.review_status);
+      if (filters?.project_id) q.append('project_id', String(filters.project_id));
+      if (filters?.programme && filters.programme !== 'ALL') q.append('programme', filters.programme);
+      if (filters?.district && filters.district !== 'ALL') q.append('district', filters.district);
+      const url = `/leakage/findings${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<AnomalyFindingItem[]>(url);
+    } catch {
+      let list = [...SYNTHETIC_ANOMALIES];
+      if (filters?.category && filters.category !== 'ALL') {
+        list = list.filter(a => a.category === filters.category);
+      }
+      if (filters?.severity && filters.severity !== 'ALL') {
+        list = list.filter(a => a.severity === filters.severity);
+      }
+      if (filters?.review_status && filters.review_status !== 'ALL') {
+        list = list.filter(a => a.review_status === filters.review_status);
+      }
+      if (filters?.project_id) {
+        list = list.filter(a => a.project_id === filters.project_id);
+      }
+      if (filters?.programme && filters.programme !== 'ALL') {
+        const matchingProjs = SYNTHETIC_PROJECTS.filter(p => p.programme === filters.programme).map(p => p.id);
+        list = list.filter(a => matchingProjs.includes(a.project_id));
+      }
+      if (filters?.district && filters.district !== 'ALL') {
+        const matchingProjs = SYNTHETIC_PROJECTS.filter(p => p.district === filters.district).map(p => p.id);
+        list = list.filter(a => matchingProjs.includes(a.project_id));
+      }
+      return list as unknown as AnomalyFindingItem[];
+    }
+  },
+
+  getAnomalyFindingDetail: async (id: number): Promise<AnomalyFindingItem> => {
+    try {
+      return await request<AnomalyFindingItem>(`/leakage/findings/${id}`);
+    } catch {
+      const target = SYNTHETIC_ANOMALIES.find(a => a.id === id) || SYNTHETIC_ANOMALIES[0];
+      return {
+        ...target,
+        project_title: SYNTHETIC_PROJECTS.find(p => p.id === target.project_id)?.title || `Project ${target.project_id}`,
+        actions: [
+          {
+            id: 1,
+            finding_id: target.id,
+            action_type: 'SYSTEM_DETECTION',
+            actor_name: 'TN-HDOS AI Anomaly Engine',
+            actor_role: 'AUTOMATED_AUDIT_SYSTEM',
+            old_status: undefined,
+            new_status: target.review_status,
+            remarks: `Anomaly detected by rule engine (${target.detection_rule})`,
+            action_details: target.corrective_action || 'Initial detection logged for departmental investigation.',
+            created_at: target.created_at
+          }
+        ]
+      } as unknown as AnomalyFindingItem;
+    }
+  },
+
+  getAnomalyCategories: async (): Promise<CategorySummaryItem[]> => {
+    try {
+      return await request<CategorySummaryItem[]>('/leakage/categories');
+    } catch {
+      return getSyntheticCategorySummary();
+    }
+  },
+
+  getExposureAnalysis: async (): Promise<ExposureAnalysisData> => {
+    try {
+      return await request<ExposureAnalysisData>('/leakage/exposure-analysis');
+    } catch {
+      return getSyntheticExposureAnalysis();
+    }
+  },
+
+  getProjectRiskMatrix: async (): Promise<ProjectRiskScoreItem[]> => {
+    try {
+      return await request<ProjectRiskScoreItem[]>('/leakage/project-risk-matrix');
+    } catch {
+      return getSyntheticProjectRiskMatrix();
+    }
+  },
+
+  getExecutiveAssessment: async (): Promise<ExecutiveAssessmentData> => {
+    try {
+      return await request<ExecutiveAssessmentData>('/leakage/executive-assessment');
+    } catch {
+      return getSyntheticExecutiveAssessment();
+    }
+  },
+
+  getDecisionsRequiringAttention: async (): Promise<DecisionRequiredItem[]> => {
+    try {
+      return await request<DecisionRequiredItem[]>('/leakage/decisions-requiring-attention');
+    } catch {
+      return getSyntheticDecisionsRequiringAttention();
+    }
+  },
+
+  updateAnomalyReview: async (
+    id: number,
+    payload: {
+      review_status?: string;
+      assigned_to?: string;
+      review_remarks?: string;
+      request_evidence_details?: string;
+      corrective_action?: string;
+      action_due_date?: string;
+      escalate_to_secretary?: boolean;
+    }
+  ): Promise<AnomalyFindingItem> => {
+    try {
+      return await request<AnomalyFindingItem>(`/leakage/findings/${id}/review`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const target = SYNTHETIC_ANOMALIES.find(a => a.id === id);
+      if (target) {
+        if (payload.review_status) target.review_status = payload.review_status as any;
+        if (payload.assigned_to) target.assigned_to = payload.assigned_to;
+        if (payload.review_remarks) target.review_remarks = payload.review_remarks;
+        if (payload.corrective_action) target.corrective_action = payload.corrective_action;
+        if (payload.action_due_date) target.action_due_date = payload.action_due_date;
+        if (payload.escalate_to_secretary !== undefined) target.escalated_to_secretary = payload.escalate_to_secretary;
+        return { ...target } as unknown as AnomalyFindingItem;
+      }
+      throw new Error("Finding not found");
     }
   }
 };

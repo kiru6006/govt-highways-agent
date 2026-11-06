@@ -995,5 +995,149 @@ export interface Project360Detail {
   audit_history: AuditEventItem[];
 }
 
+// -------------------------------------------------------------
+// AI Leakage & Anomaly Intelligence Types (Prompt 01)
+// -------------------------------------------------------------
+
+export interface AnomalyActionHistoryItem {
+  id: number;
+  finding_id: number;
+  action_type: string;
+  actor_name: string;
+  actor_role: string;
+  old_status?: string;
+  new_status?: string;
+  remarks?: string;
+  action_details?: string;
+  due_date?: string;
+  created_at: string;
+}
+
+export interface AnomalyFindingItem {
+  id: number;
+  finding_code: string;
+  project_id: number;
+  project_title: string;
+  project_code?: string;
+  package_id?: number;
+  package_name?: string;
+  contractor_id?: number;
+  contractor_name?: string;
+  category: string;
+  title: string;
+  description?: string;
+  what_detected?: string;
+  why_flagged?: string;
+  detection_rule?: string;
+  calculation_formula?: string;
+  potential_exposure_cr: number;
+  transaction_value_cr: number;
+  verified_impact_cr: number;
+  amount_under_review_cr: number;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  ai_confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  evidence_status: string;
+  responsible_department: string;
+  responsible_officer: string;
+  review_status: 'NEW' | 'UNDER_REVIEW' | 'EVIDENCE_REQUESTED' | 'VERIFIED' | 'NOT_SUBSTANTIATED' | 'ACTION_REQUIRED' | 'RESOLVED' | 'CLOSED';
+  assigned_to?: string;
+  review_remarks?: string;
+  suggested_verification?: string;
+  recommended_action?: string;
+  corrective_action?: string;
+  action_due_date?: string;
+  escalated_to_secretary?: boolean;
+  evidence_records_json?: string;
+  scenario_id?: string;
+  data_mode?: string;
+  data_status?: string;
+  created_at: string;
+  actions?: AnomalyActionHistoryItem[];
+}
+
+export interface LeakageKPIs {
+  total_findings: number;
+  critical_findings: number;
+  high_risk_findings: number;
+  potential_financial_exposure_cr: number;
+  findings_awaiting_verification: number;
+  corrective_actions_pending: number;
+  data_mode: string;
+  reporting_period: string;
+  last_analysis_timestamp: string;
+}
+
+export interface CategorySummaryItem {
+  category: string;
+  count: number;
+  total_exposure_cr: number;
+  critical_count: number;
+}
+
+export interface ExposureAnalysisData {
+  by_project: Array<{ project_id: number; project_code: string; title: string; exposure_cr: number }>;
+  by_category: Array<{ category: string; exposure_cr: number }>;
+  by_contractor: Array<{ contractor_id: number; name: string; exposure_cr: number }>;
+  by_programme: Array<{ programme: string; exposure_cr: number }>;
+  month_trend: Array<{ month: string; exposure_cr: number; count: number }>;
+  total_transaction_value_cr: number;
+  total_potential_exposure_cr: number;
+  total_verified_impact_cr: number;
+  total_under_review_cr: number;
+}
+
+export interface ProjectRiskScoreItem {
+  project_id: number;
+  project_code: string;
+  project_title: string;
+  programme: string;
+  financial_risk_score: number;
+  schedule_risk_score: number;
+  procurement_risk_score: number;
+  quality_risk_score: number;
+  land_utility_risk_score: number;
+  compliance_risk_score: number;
+  overall_composite_risk: number;
+  active_anomalies_count: number;
+}
+
+export interface ExecutiveAssessmentData {
+  summary_narrative: string;
+  overall_risk_assessment: string;
+  critical_observations: string[];
+  financial_exposure_estimate_cr: number;
+  projects_requiring_immediate_attention: Array<{
+    project_id: number;
+    code: string;
+    title: string;
+    issue: string;
+    exposure_cr: number;
+  }>;
+  recommended_executive_actions: Array<{
+    action: string;
+    authority: string;
+    urgency: string;
+  }>;
+  observed_facts: string[];
+  calculated_indicators: string[];
+  ai_interpretations: string[];
+}
+
+export interface DecisionRequiredItem {
+  id: number;
+  finding_code: string;
+  project_id: number;
+  project_title: string;
+  issue: string;
+  impact: string;
+  financial_exposure_cr: number;
+  responsible_department: string;
+  current_status: string;
+  recommended_decision: string;
+  escalation_level: string;
+  due_date?: string;
+}
+
+
 
 
