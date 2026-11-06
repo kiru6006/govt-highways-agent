@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+  }
+}
+
+/* Highway Road Type Badge Classes adhering to DESIGN.md */
+.badge-sh {
+  @apply bg-[#E6F4EA] text-[#006A4E] border border-[#B2DFCD] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+}
+
+.badge-nh {
+  @apply bg-[#FFF9E6] text-[#996600] border border-[#FFE680] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+}
+
+.badge-mdr {
+  @apply bg-[#E6F0F7] text-[#004B87] border border-[#B3CFE5] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+}
+
+.badge-odr {
+  @apply bg-[#FCE8F3] text-[#D1197E] border border-[#F2B3D6] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+}
+
+.badge-rural {
+  @apply bg-[#FFF3EB] text-[#FF6600] border border-[#FFCCB3] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+}
+
