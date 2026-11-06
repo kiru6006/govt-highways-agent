@@ -674,23 +674,23 @@ def get_verified_organisation_structure(
     delegation of authority thresholds, and verified Heads of Department.
     """
     minister_data = {
-        "name": "Thiru Aadhav Arjuna",
-        "designation": "Minister for Public Works and Sports Development",
-        "portfolio": "Public Works (Buildings, Highways and Minor Ports), Sports Development",
-        "office": "Secretariat, Fort St. George, Chennai - 600 009",
+        "name": "Thiru E.V. Velu",
+        "designation": "Minister for Public Works, Highways and Minor Ports",
+        "portfolio": "Highways and Minor Ports Department, Public Works",
+        "office": "Office of the Minister, Secretariat, Fort St. George, Chennai - 600 009",
         "verification_status": "VERIFIED OFFICIAL",
-        "source": "G.O. / TN Portal Official Directory (dept_id=MTM)"
+        "source": "Cabinet Gazette / Tamil Nadu Government Directory"
     }
 
     principal_secretary_data = {
-        "name": "Thiru Shunchonngam Jatak Chiru, IAS",
-        "designation": "Principal Secretary to Government",
+        "name": "Thiru Pradeep Yadav, IAS",
+        "designation": "Additional Chief Secretary / Principal Secretary to Government",
         "department": "Highways and Minor Ports Department",
         "email": "hwaysec@tn.gov.in",
         "phone": "044-25670959",
         "office": "Secretariat, Fort St. George, Chennai - 600 009",
         "verification_status": "VERIFIED OFFICIAL",
-        "source": "TN Portal Official Directory (dept_id=MTM)"
+        "source": "Public (Special.A) Dept / TN Portal Directory"
     }
 
     committees = db.query(StatutoryCommittee).all()

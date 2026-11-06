@@ -128,7 +128,7 @@ export const Project360Page: React.FC = () => {
       setValidationSuccess(`Finding #${findingId} verified and forwarded to Executive Committee.`);
       setTimeout(() => setValidationSuccess(null), 4000);
       if (selectedProject) {
-        loadProject360(selectedProject.id);
+        loadProject360(selectedProject.id || selectedProject.project?.id || 1);
       }
     } catch (e) {
       console.error(e);
@@ -460,7 +460,7 @@ export const Project360Page: React.FC = () => {
           </div>
 
           <div className="flex flex-row lg:flex-col items-center lg:items-end gap-2 shrink-0">
-            {getStatusBadge(p.status)}
+            {getStatusBadge(p.status || p.project?.status || 'SANCTIONED')}
             {getEVMStatusBadge(evm.status_assessment)}
           </div>
         </div>
@@ -959,7 +959,7 @@ export const Project360Page: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Sanction Amount</span>
-                      <span className="font-semibold text-slate-800">₹{pkg.sanctioned_amount_cr.toFixed(2)} Cr</span>
+                      <span className="font-semibold text-slate-800">₹{((pkg.sanctioned_amount_cr ?? pkg.cost_cr) ?? 0).toFixed(2)} Cr</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Physical Progress</span>
@@ -1447,7 +1447,7 @@ export const Project360Page: React.FC = () => {
                     <p className="text-[11px] text-slate-600">{ev.details}</p>
                   </div>
                   <span className="text-[10px] font-mono text-slate-400 shrink-0">
-                    {new Date(ev.timestamp).toLocaleString()}
+                    {new Date(ev.timestamp || ev.created_at || '').toLocaleString()}
                   </span>
                 </div>
               ))}

@@ -124,16 +124,16 @@ const fallbackUsers: Record<string, UserInfo> = {
   minister: {
     id: 7,
     username: 'minister',
-    full_name: "Thiru Aadhav Arjuna, Minister for Public Works and Sports Development",
+    full_name: "Thiru E.V. Velu, Minister for Public Works, Highways & Minor Ports",
     role_code: 'MINISTER',
-    role_name: "Minister for Public Works and Sports Development",
+    role_name: "Minister for Public Works, Highways and Minor Ports",
     department_name: 'Highways and Minor Ports Department',
     is_active: true
   },
   secretary: {
     id: 8,
     username: 'secretary',
-    full_name: 'Thiru Shunchonngam Jatak Chiru, IAS, Principal Secretary to Government',
+    full_name: 'Thiru Pradeep Yadav, IAS, Additional Chief Secretary to Government',
     role_code: 'PRIN_SEC',
     role_name: 'Principal Secretary to Government (Highways & Minor Ports)',
     department_name: 'Highways and Minor Ports Department',
@@ -143,22 +143,22 @@ const fallbackUsers: Record<string, UserInfo> = {
 
 const fallbackOrganisationStructure: VerifiedOrganisationStructure = {
   minister: {
-    name: "Thiru Aadhav Arjuna",
-    designation: "Minister for Public Works and Sports Development",
-    portfolio: "Public Works (Buildings, Highways and Minor Ports), Sports Development",
+    name: "Thiru E.V. Velu",
+    designation: "Minister for Public Works, Highways and Minor Ports",
+    portfolio: "Highways and Minor Ports Department, Public Works",
     office: "Office of the Minister, Secretariat, Fort St. George, Chennai - 600 009",
     verification_status: "VERIFIED OFFICIAL",
-    source: "G.O. / TN Portal Directory (dept_id=MTM)"
+    source: "Cabinet Gazette / Tamil Nadu Government Directory"
   },
   principal_secretary: {
-    name: "Thiru Shunchonngam Jatak Chiru, IAS",
-    designation: "Principal Secretary to Government",
+    name: "Thiru Pradeep Yadav, IAS",
+    designation: "Additional Chief Secretary / Principal Secretary to Government",
     department: "Highways and Minor Ports Department",
     email: "hwaysec@tn.gov.in",
     phone: "044-25670959",
     office: "Secretariat, Fort St. George, Chennai - 600 009",
     verification_status: "VERIFIED OFFICIAL",
-    source: "TN Portal Directory (dept_id=MTM)"
+    source: "Public (Special.A) Dept / TN Portal Directory"
   },
   heads_of_department: [
     {
@@ -1238,6 +1238,7 @@ function fallbackProject360(id: number): Project360Detail {
   const delayDays = isECR ? 65 : isTambaram ? 90 : 0;
 
   return {
+    project: p,
     id: p.id,
     project_code: p.project_code,
     title: p.title,
@@ -2559,7 +2560,7 @@ export const fallbackGovernanceCommittees: StatutoryCommitteeDetailItem[] = [
         committee_id: 3,
         meeting_date: "2026-04-12T11:00:00Z",
         venue: "Committee Room, 3rd Floor, Main Secretariat, Chennai",
-        chairperson_name: "Thiru Shunchonngam Jatak Chiru, IAS",
+        chairperson_name: "Thiru Pradeep Yadav, IAS",
         agenda_summary: "Scrutiny of tender excess exceeding delegated Chief Engineer limits for ECR corridor works and CRN Package EPC03.",
         minutes_summary: "Committee reviewed rate analysis submitted by CE (H) Chennai. Excess justified on account of increased bitumen hauling lead and night-time urban traffic constraints.",
         verification_status: "Verified",

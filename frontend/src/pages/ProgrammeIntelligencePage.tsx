@@ -804,7 +804,7 @@ export const ProgrammeIntelligencePage: React.FC = () => {
 
                             <div className="text-right">
                               <div className="text-xs text-slate-500">Financial Exposure</div>
-                              <div className="text-base font-bold text-red-700">₹{c.potential_financial_exposure_cr.toFixed(2)} Cr</div>
+                              <div className="text-base font-bold text-red-700">₹{(c.potential_financial_exposure_cr ?? c.financial_exposure_cr ?? 0).toFixed(2)} Cr</div>
                             </div>
                           </div>
 

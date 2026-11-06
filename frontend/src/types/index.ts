@@ -62,11 +62,17 @@ export interface DepartmentDependencyItem {
   id: number;
   project_id: number;
   project_title?: string;
-  requesting_dept_name: string;
-  target_dept_name: string;
+  requesting_dept_name?: string;
+  target_dept_name?: string;
+  department_name?: string;
+  days_pending?: number;
+  schedule_delay_days?: number;
+  action_required?: string;
+  contact_officer?: string;
+  impact_cost_cr?: number;
   dependency_type: string;
-  description: string;
-  impact_days: number;
+  description?: string;
+  impact_days?: number;
   status: string;
   target_clearance_date?: string;
 }
@@ -105,15 +111,19 @@ export interface WorkflowTaskItem {
 
 export interface AuditEventItem {
   id: number;
-  actor_name: string;
-  actor_role: string;
+  actor_name?: string;
+  actor_role?: string;
+  user_name?: string;
   action: string;
-  entity_type: string;
+  entity_type?: string;
   entity_id?: number;
   entity_reference?: string;
+  entity_name?: string;
+  details?: string;
   changes_json?: string;
   ip_address?: string;
-  created_at: string;
+  created_at?: string;
+  timestamp?: string;
 }
 
 export interface DashboardStats {
@@ -589,17 +599,24 @@ export interface StatutoryReferralItem {
 
 export interface AIIntelligenceFindingItem {
   id: number;
+  project_id?: number;
+  project_title?: string;
   finding_type: string;
-  entity_type: string;
+  entity_type?: string;
   entity_id?: number;
-  headline: string;
-  evidence_summary: string;
-  explanation: string;
-  confidence: string;
+  headline?: string;
+  issue_summary?: string;
+  evidence_summary?: string;
+  evidence_chain?: string;
+  explanation?: string;
+  confidence?: string;
+  severity?: string;
+  root_cause_category?: string;
+  is_verified_by_model?: boolean;
   human_validation_status: string;
   recommended_action: string;
   statutory_rule_citation: string;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface CorridorAlignmentItem {
@@ -668,21 +685,28 @@ export interface LegalCaseItem {
   id: number;
   case_number: string;
   court_name: string;
-  case_type: string;
-  programme_id: number;
+  case_type?: string;
+  category?: string;
+  programme_id?: number;
   project_id?: number;
   package_number?: string;
   petitioner: string;
-  respondent: string;
-  subject_matter: string;
-  prayer_summary: string;
-  interim_stay_granted: boolean;
+  respondent?: string;
+  subject_matter?: string;
+  prayer_summary?: string;
+  interim_stay_granted?: boolean;
+  stay_order_active?: boolean;
+  stay_details?: string;
   stay_order_date?: string;
-  potential_financial_exposure_cr: number;
-  delay_impact_months: number;
+  potential_financial_exposure_cr?: number;
+  financial_exposure_cr?: number;
+  delay_impact_months?: number;
+  schedule_delay_days?: number;
   next_hearing_date?: string;
+  standing_counsel?: string;
   standing_counsel_name?: string;
-  status: string;
+  status?: string;
+  case_status?: string;
 }
 
 export interface ProgrammeItem {
@@ -728,12 +752,20 @@ export interface ProgrammeOverviewKPIs {
 export interface WorkPackageItem {
   id: number;
   project_id: number;
-  package_number: string;
+  contractor_id?: number;
+  contractor_name?: string;
+  package_number?: string;
+  package_code?: string;
   title: string;
   scope_description?: string;
-  cost_cr: number;
-  start_km: number;
-  end_km: number;
+  cost_cr?: number;
+  sanctioned_amount_cr?: number;
+  start_km?: number;
+  end_km?: number;
+  start_chainage_km?: number;
+  end_chainage_km?: number;
+  physical_progress_pct?: number;
+  financial_progress_pct?: number;
   status: string;
 }
 
@@ -769,14 +801,16 @@ export interface ProjectRiskItem {
   project_id: number;
   risk_code: string;
   category: string;
-  title: string;
+  title?: string;
   description: string;
   probability: string;
   impact: string;
-  severity_score: number;
+  severity_score?: number;
+  risk_score?: number;
+  owner_role?: string;
   mitigation_strategy: string;
   status: string;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface ProjectProgressRecordItem {
@@ -809,17 +843,21 @@ export interface EVMVarianceMetrics {
   planned_physical_pct: number;
   actual_physical_pct: number;
   physical_variance_pct: number;
-  planned_financial_pct: number;
-  actual_financial_pct: number;
+  planned_financial_pct?: number;
+  actual_financial_pct?: number;
   financial_variance_pct: number;
   status_assessment: 'ON_TRACK' | 'AT_RISK' | 'CRITICAL_DELAY' | 'COST_OVERRUN';
 }
 
 export interface ProjectStakeholderItem {
-  id: number;
-  stakeholder_type: string;
+  id?: number;
+  stakeholder_type?: string;
   department_name?: string;
-  contact_person: string;
+  contact_person?: string;
+  officer_name?: string;
+  role_label?: string;
+  department?: string;
+  office_location?: string;
   email?: string;
   phone?: string;
   responsibility_scope?: string;
@@ -828,7 +866,14 @@ export interface ProjectStakeholderItem {
 }
 
 export interface Project360Detail {
-  project: ProjectItem;
+  project?: ProjectItem;
+  id?: number;
+  project_code?: string;
+  title?: string;
+  description?: string;
+  status?: string;
+  priority?: string;
+  verification_status?: string;
   jurisdiction_hierarchy: {
     zone_name: string;
     circle_name: string;
