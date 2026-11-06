@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle } from 'lucide-react';
+import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle, Menu } from 'lucide-react';
 
 interface HeaderProps {
   currentModuleName: string;
+  onToggleSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentModuleName }) => {
+export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSidebar, isSidebarCollapsed }) => {
   const { user, switchPersona } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,7 +30,16 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName }) => {
   return (
     <header className="h-16 bg-white border-b border-gov-border px-6 flex items-center justify-between sticky top-0 z-20 shadow-sm">
       {/* Brand & Module */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors mr-1"
+            title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <Menu className="w-5 h-5 text-slate-700" />
+          </button>
+        )}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-[#006A4E] text-white flex items-center justify-center font-bold text-lg shadow-sm border border-[#B2DFCD]">
             TN

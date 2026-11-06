@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
@@ -13,15 +13,31 @@ const AppLayout: React.FC = () => {
   const currentNav = navigationItems.find((n) => n.path === location.pathname);
   const currentModuleName = currentNav ? currentNav.name : 'TN-HDOS Master Platform';
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    return localStorage.getItem('tn_hdos_sidebar_collapsed') === 'true';
+  });
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('tn_hdos_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans">
-      {/* 17-Module Persistent Sidebar */}
-      <Sidebar />
+      {/* 17-Module Persistent Sidebar with Category Accordion & Rail Toggle */}
+      <Sidebar isCollapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Global Government Header with RBAC Persona Switcher */}
-        <Header currentModuleName={currentModuleName} />
+        {/* Global Government Header with RBAC Persona Switcher & Sidebar Hamburger */}
+        <Header
+          currentModuleName={currentModuleName}
+          onToggleSidebar={toggleSidebar}
+          isSidebarCollapsed={sidebarCollapsed}
+        />
 
         {/* Dynamic Route Body */}
         <main className="flex-1 overflow-y-auto pb-16">
