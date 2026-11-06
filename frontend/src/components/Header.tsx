@@ -14,6 +14,8 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
   const [searchQuery, setSearchQuery] = useState('');
 
   const personas = [
+    { username: 'minister', label: "Hon'ble Minister (Thiru E. V. Velu)", role: 'Minister (Cabinet & Strategic)' },
+    { username: 'secretary', label: 'Principal Secretary (Thiru Pradeep Yadav IAS)', role: 'Principal Secretary (Governance & Operations)' },
     { username: 'admin', label: 'Admin (Thiru Senthil Kumar IAS)', role: 'System Admin (Statewide)' },
     { username: 'chief_eng', label: 'Chief Engineer (Er. Balasubramanian)', role: 'CE Projects (Statewide)' },
     { username: 'se_chengalpattu', label: 'Superintending Engineer (Er. Rajasekaran)', role: 'SE Chengalpattu Circle' },

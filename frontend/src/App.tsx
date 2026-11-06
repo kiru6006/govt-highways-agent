@@ -5,6 +5,8 @@ import { Header } from './components/Header';
 import { Sidebar, navigationItems } from './components/Sidebar';
 import { AskAIPanel } from './components/AskAIPanel';
 import { Dashboard } from './pages/Dashboard';
+import { MinisterDashboard } from './pages/MinisterDashboard';
+import { SecretaryDashboard } from './pages/SecretaryDashboard';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 
@@ -43,6 +45,8 @@ const AppLayout: React.FC = () => {
         <main className="flex-1 overflow-y-auto pb-16">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/leadership/minister" element={<MinisterDashboard />} />
+            <Route path="/leadership/secretary" element={<SecretaryDashboard />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/leakage" element={<PlaceholderModule />} />
             <Route path="/project-360" element={<PlaceholderModule />} />

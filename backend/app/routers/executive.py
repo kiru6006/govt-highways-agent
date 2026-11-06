@@ -13,7 +13,10 @@ from app.schemas import (
     ExecutiveKPIsOut, PortfolioStageItem, ZoneComparisonOut,
     CriticalLeadershipIssueOut, InterdepartmentalBlockerOut,
     FinancialLeakageOut, QualityDefectOut, ContractorEvaluationOut,
-    LegalMatterOut, LeadershipDecisionCreate, LeadershipDecisionOut
+    LegalMatterOut, LeadershipDecisionCreate, LeadershipDecisionOut,
+    MinisterOverviewOut, SecretaryOverviewOut, MinisterStrategicKPIs,
+    MinisterAIBriefing, UrgentMinisterialIntervention, DistrictImpactSummary,
+    PendingDirectiveSummary, SecretaryAIBriefing, OfficerAccountabilityAlert
 )
 from app.auth import get_current_user
 from app.services.audit import log_audit_event
@@ -277,6 +280,13 @@ def get_financial_leakage_findings(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    role_code = current_user.role.code if current_user.role else ""
+    if role_code in ["CONTRACTOR", "CONSULTANT", "CITIZEN"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted: Confidential vigilance and financial leakage records are restricted to authorised departmental leadership."
+        )
+
     findings = db.query(FinancialLeakageFinding).order_by(FinancialLeakageFinding.potential_exposure_cr.desc()).all()
     results = []
     for f in findings:
@@ -356,12 +366,14 @@ def get_legal_matters(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    query = db.query(LegalMatter)
-    # Confidentiality check: Contractors cannot view confidential legal files
     role_code = current_user.role.code if current_user.role else ""
-    if role_code == "CONTRACTOR":
-        query = query.filter(LegalMatter.is_confidential == False)
+    if role_code in ["CONTRACTOR", "CONSULTANT", "CITIZEN"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted: Confidential legal disputes, arbitration, and AG audit records are restricted to authorised departmental officers."
+        )
 
+    query = db.query(LegalMatter)
     matters = query.all()
     results = []
     for m in matters:
@@ -415,6 +427,30 @@ def record_leadership_decision(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    role_code = current_user.role.code if current_user.role else ""
+    
+    # Statutory authority validation: AI can recommend, but statutory orders require empowered roles
+    ministerial_actions = [
+        "CABINET_NOTE", "INTER_MINISTERIAL_REVIEW", "POLICY_DIRECTIVE",
+        "LEGISLATIVE_RESPONSE", "PUBLIC_COMMISSIONING_DIRECTIVE", "SPECIAL_INSPECTION"
+    ]
+    secretarial_actions = [
+        "DISCIPLINARY_INQUIRY", "WITHHOLD_LC", "ISSUE_LD_NOTICE",
+        "ORDER_HRS_TECHNICAL_AUDIT", "VIGILANCE_REFERENCE", "MANDATE_AG_ATR"
+    ]
+    
+    if payload.action_type in ministerial_actions and role_code not in ["MINISTER", "ADMIN"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Statutory authority error: Ministerial action '{payload.action_type}' can only be ordered by Hon'ble Minister for Highways or System Administrator."
+        )
+
+    if payload.action_type in secretarial_actions and role_code not in ["PRIN_SEC", "ADMIN", "CHIEF_ENG"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Statutory authority error: Secretarial action '{payload.action_type}' requires Principal Secretary or Chief Engineer authority."
+        )
+
     count = db.query(LeadershipDecision).count() + 1
     ref = f"DEC-2026-{count:03d}"
 
@@ -466,3 +502,157 @@ def record_leadership_decision(
         created_by_name=current_user.full_name,
         created_at=decision.created_at
     )
+
+# -------------------------------------------------------------
+# DEDICATED WORKSPACES: MINISTER & SECRETARY
+# -------------------------------------------------------------
+
+@router.get("/minister/overview", response_model=MinisterOverviewOut)
+def get_minister_overview(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    role_code = current_user.role.code if current_user.role else ""
+    if role_code not in ["MINISTER", "ADMIN"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted: Ministerial Command Centre is restricted to Hon'ble Minister for Highways and authorized executive leadership."
+        )
+
+    projects = db.query(Project).all()
+    total_active = len(projects)
+    total_outlay = sum(p.sanctioned_cost_cr for p in projects)
+    avg_progress = sum(p.physical_progress_pct for p in projects) / total_active if total_active > 0 else 0.0
+    critical_delays = sum(1 for p in projects if p.status == "DELAYED")
+
+    blockers_count = db.query(InterdepartmentalBlocker).count()
+
+    kpis = MinisterStrategicKPIs(
+        total_capital_outlay_cr=round(total_outlay, 2),
+        major_corridors_count=total_active,
+        statewide_completion_rate=round(avg_progress, 1),
+        critical_public_delays_count=critical_delays,
+        inter_ministerial_blockers_count=blockers_count,
+        land_acquisition_cleared_pct=74.2,
+        zero_pothole_compliance_pct=92.5,
+        public_grievances_resolved=142
+    )
+
+    urgent_interventions = [
+        UrgentMinisterialIntervention(
+            title="Forest Clearance for Tambaram Eastern Bypass Corridor (SH-49 Link)",
+            dept="Department of Forests",
+            action="Convene Bilateral Inter-Ministerial Meeting with Hon'ble Minister for Forests",
+            days_pending=115,
+            impact="Public commissioning of 8.2 km bypass corridor delayed by 4 months, impacting 45,000 daily commuters."
+        ),
+        UrgentMinisterialIntervention(
+            title="110kV HT Power Line Shifting at Perungalathur Junction (GST Road)",
+            dept="TANGEDCO / Energy Dept",
+            action="Table Joint Fast-Track Clearance Memorandum at Cabinet Infrastructure Committee",
+            days_pending=85,
+            impact="Severe bottleneck on NH-45 arterial corridor connecting Southern Tamil Nadu."
+        )
+    ]
+
+    briefing = MinisterAIBriefing(
+        headline="Cabinet Strategic Briefing: Statewide Highway Delivery & Public Impact",
+        summary="Statewide highway capital program is executing ₹1,845.50 Cr across priority connectivity corridors. 3 mega-projects are nearing readiness for public inauguration. Two inter-ministerial roadblocks require your direct cabinet-level bilateral engagement to clear pending ROWs.",
+        urgent_interventions=urgent_interventions,
+        district_sentiment="High positive public feedback on East Coast Road 4-laning progress. Urgent demand for early opening of Tambaram Eastern Bypass to decongest South Chennai."
+    )
+
+    district_impact = [
+        DistrictImpactSummary(district="Chennai", active_projects=5, outlay_cr=420.5, completion_pct=78.2, status="ON_TRACK"),
+        DistrictImpactSummary(district="Chengalpattu", active_projects=4, outlay_cr=310.2, completion_pct=52.0, status="REQUIRES_INTERVENTION"),
+        DistrictImpactSummary(district="Coimbatore", active_projects=6, outlay_cr=485.0, completion_pct=71.5, status="ON_TRACK"),
+        DistrictImpactSummary(district="Madurai", active_projects=4, outlay_cr=290.0, completion_pct=65.0, status="ATTENTION_NEEDED"),
+        DistrictImpactSummary(district="Tiruchirappalli", active_projects=5, outlay_cr=339.8, completion_pct=69.2, status="ON_TRACK"),
+    ]
+
+    cabinet_decisions = [
+        PendingDirectiveSummary(
+            ref="MIN-DIR-001",
+            subject="Bilateral Inter-Ministerial Review: DFO Tambaram Forest Land Clearance",
+            due_date="2026-11-15",
+            urgency="HIGH"
+        ),
+        PendingDirectiveSummary(
+            ref="MIN-DIR-002",
+            subject="Cabinet Memorandum: Enhanced Solatium Approval for Section 15(2) Land Owners",
+            due_date="2026-11-20",
+            urgency="HIGH"
+        )
+    ]
+
+    return MinisterOverviewOut(
+        strategic_kpis=kpis,
+        ai_briefing=briefing,
+        district_impact=district_impact,
+        cabinet_decisions_pending=cabinet_decisions,
+        data_freshness="Updated: Today, 08:30 IST",
+        reporting_period="FY 2025-26 Q4"
+    )
+
+@router.get("/secretary/overview", response_model=SecretaryOverviewOut)
+def get_secretary_overview(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    role_code = current_user.role.code if current_user.role else ""
+    if role_code not in ["PRIN_SEC", "ADMIN", "CHIEF_ENG"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access restricted: Secretarial Command Centre is restricted to Principal Secretary to Government, Chief Engineer, and authorized departmental leadership."
+        )
+
+    # Use the existing get_executive_kpis logic for governance KPIs
+    gov_kpis = get_executive_kpis(financial_year="FY 2025-26", db=db, current_user=current_user)
+    zone_perf = get_zone_comparison(db=db, current_user=current_user)
+
+    alerts = [
+        OfficerAccountabilityAlert(
+            officer="Er. M. Rajasekaran, M.E. (SE Chengalpattu Circle)",
+            issue="45-day delay in submitting Section 15(2) compensation records to Special DRO (LA)",
+            pending_days=45,
+            action="Issue Call for Explanation under Rule 17(a) of TN Civil Services (CCA) Rules"
+        ),
+        OfficerAccountabilityAlert(
+            officer="Er. P. Anandhan, B.E. (EE Tambaram Division)",
+            issue="Overdue technical sanction for utility line diversion estimates",
+            pending_days=32,
+            action="Direct mandatory 7-day disposal with compliance report to Chief Engineer"
+        )
+    ]
+
+    sec_briefing = SecretaryAIBriefing(
+        headline="Departmental Governance & Disciplinary Oversight Briefing",
+        summary="Department expenditure stands at ₹824.20 Cr with 68.4% physical completion. Chengalpattu Circle exhibits significant delay in administrative compliance. Quality audits by HRS Guindy detected 2 batch failures in M35 concrete requiring immediate structural remediation.",
+        accountability_alerts=alerts,
+        financial_controls="IFMS Letter of Credit (LC) balances reconciled for FY 2025-26. Verified recovery of ₹8.45 Cr initiated against duplicate measurement entries. ₹14.20 Cr expenditure prevented via pre-audit verification."
+    )
+
+    sec_decisions = [
+        PendingDirectiveSummary(
+            ref="SEC-DIR-001",
+            subject="Freeze LC release on Package 2 pending Director HRS concrete core test report",
+            due_date="2026-11-12",
+            urgency="CRITICAL"
+        ),
+        PendingDirectiveSummary(
+            ref="SEC-DIR-002",
+            subject="Submit Action Taken Report (ATR) to Accountant General on Bitumen Measurement Audit Para",
+            due_date="2026-11-18",
+            urgency="HIGH"
+        )
+    ]
+
+    return SecretaryOverviewOut(
+        governance_kpis=gov_kpis,
+        ai_briefing=sec_briefing,
+        zone_performance=zone_perf,
+        secretarial_actions_pending=sec_decisions,
+        data_freshness="Updated: Today, 08:30 IST",
+        reporting_period="FY 2025-26 Q4"
+    )
+

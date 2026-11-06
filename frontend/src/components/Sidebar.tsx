@@ -22,7 +22,9 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  ChevronsUpDown
+  ChevronsUpDown,
+  Landmark,
+  Building2
 } from 'lucide-react';
 
 export interface NavItem {
@@ -43,7 +45,9 @@ export interface NavGroup {
 
 export const navigationItems: NavItem[] = [
   // Group 1: Executive & Strategic
-  { id: '1', name: '1. Executive Command Centre', path: '/', icon: LayoutDashboard, groupId: 'executive' },
+  { id: '1a', name: "1a. Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-900/60 text-amber-200 border border-amber-700/50', groupId: 'executive' },
+  { id: '1b', name: "1b. Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'executive' },
+  { id: '1', name: '1c. Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'executive' },
   { id: '2', name: '2. Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'executive' },
   { id: '16', name: '16. Reports and Analytics', path: '/reports', icon: BarChart3, groupId: 'executive' },
 

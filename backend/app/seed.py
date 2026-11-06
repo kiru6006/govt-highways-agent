@@ -122,6 +122,26 @@ def seed_database(db_session: Session = None):
     pwd_admin = get_password_hash("admin123")
     pwd_common = get_password_hash("highway123")
 
+    user_minister = User(
+        username="minister",
+        email="minister.highways@tn.gov.in",
+        hashed_password=pwd_common,
+        full_name="Hon'ble Thiru E. V. Velu, Minister for Public Works & Highways [DEMO]",
+        phone="+91-9444000008",
+        role_id=role_map["MINISTER"].id,
+        department_id=dept_map["HIGHWAYS"].id
+    )
+
+    user_secretary = User(
+        username="secretary",
+        email="secy.highways@tn.gov.in",
+        hashed_password=pwd_common,
+        full_name="Thiru Pradeep Yadav IAS, Principal Secretary to Government [DEMO]",
+        phone="+91-9444000009",
+        role_id=role_map["PRIN_SEC"].id,
+        department_id=dept_map["HIGHWAYS"].id
+    )
+
     user_admin = User(
         username="admin",
         email="admin.highways@tn.gov.in",
@@ -187,7 +207,7 @@ def seed_database(db_session: Session = None):
         contractor_id=contractor_pst.id
     )
 
-    db.add_all([user_admin, user_ce, user_se, user_ee, user_contractor_lt, user_contractor_pst])
+    db.add_all([user_minister, user_secretary, user_admin, user_ce, user_se, user_ee, user_contractor_lt, user_contractor_pst])
     db.commit()
 
     # 6. OFFICIALS

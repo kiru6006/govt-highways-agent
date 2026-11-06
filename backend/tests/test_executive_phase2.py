@@ -160,3 +160,110 @@ def test_leadership_decision_creation_and_audit(client: TestClient):
     assert audit_res.status_code == 200
     events = audit_res.json()
     assert any(e["entity_reference"] == decision["decision_reference"] for e in events)
+
+def test_minister_workspace_access_and_security(client: TestClient):
+    """
+    Verifies Minister's Command Centre endpoint security and data structure.
+    - Minister role has authorized access.
+    - Field engineers and contractors receive HTTP 403 Forbidden.
+    """
+    token_min = get_auth_token(client, "minister")
+    res_min = client.get("/api/v1/executive/minister/overview", headers={"Authorization": f"Bearer {token_min}"})
+    assert res_min.status_code == 200
+    data = res_min.json()
+    assert "strategic_kpis" in data
+    assert "ai_briefing" in data
+    assert "district_impact" in data
+    assert "cabinet_decisions_pending" in data
+    assert data["strategic_kpis"]["total_capital_outlay_cr"] > 100.0
+
+    # Unauthorized access checks
+    token_contractor = get_auth_token(client, "contractor_lt")
+    res_contractor = client.get("/api/v1/executive/minister/overview", headers={"Authorization": f"Bearer {token_contractor}"})
+    assert res_contractor.status_code == 403
+
+    token_ee = get_auth_token(client, "ee_tambaram")
+    res_ee = client.get("/api/v1/executive/minister/overview", headers={"Authorization": f"Bearer {token_ee}"})
+    assert res_ee.status_code == 403
+
+def test_secretary_workspace_access_and_security(client: TestClient):
+    """
+    Verifies Secretary's Command Centre endpoint security and data structure.
+    - Secretary role has authorized access.
+    - Field engineers and contractors receive HTTP 403 Forbidden.
+    """
+    token_sec = get_auth_token(client, "secretary")
+    res_sec = client.get("/api/v1/executive/secretary/overview", headers={"Authorization": f"Bearer {token_sec}"})
+    assert res_sec.status_code == 200
+    data = res_sec.json()
+    assert "governance_kpis" in data
+    assert "ai_briefing" in data
+    assert "accountability_alerts" in data["ai_briefing"]
+    assert "zone_performance" in data
+    assert "secretarial_actions_pending" in data
+
+    # Unauthorized access checks
+    token_contractor = get_auth_token(client, "contractor_lt")
+    res_contractor = client.get("/api/v1/executive/secretary/overview", headers={"Authorization": f"Bearer {token_contractor}"})
+    assert res_contractor.status_code == 403
+
+    token_ee = get_auth_token(client, "ee_tambaram")
+    res_ee = client.get("/api/v1/executive/secretary/overview", headers={"Authorization": f"Bearer {token_ee}"})
+    assert res_ee.status_code == 403
+
+def test_confidential_leakage_and_legal_protection(client: TestClient):
+    """
+    Verifies confidential financial vigilance and legal records are protected from contractors.
+    """
+    token_contractor = get_auth_token(client, "contractor_lt")
+    h_contr = {"Authorization": f"Bearer {token_contractor}"}
+
+    # Leakage must be blocked with 403
+    res_leak = client.get("/api/v1/executive/leakage", headers=h_contr)
+    assert res_leak.status_code == 403
+
+    # Legal must be blocked with 403
+    res_legal = client.get("/api/v1/executive/legal", headers=h_contr)
+    assert res_legal.status_code == 403
+
+    # Secretary and Admin have authorized access
+    token_sec = get_auth_token(client, "secretary")
+    h_sec = {"Authorization": f"Bearer {token_sec}"}
+    assert client.get("/api/v1/executive/leakage", headers=h_sec).status_code == 200
+    assert client.get("/api/v1/executive/legal", headers=h_sec).status_code == 200
+
+def test_statutory_authority_enforcement_on_decisions(client: TestClient):
+    """
+    Verifies that statutory ministerial and secretarial actions enforce formally authorized powers.
+    """
+    token_min = get_auth_token(client, "minister")
+    token_sec = get_auth_token(client, "secretary")
+    token_ee = get_auth_token(client, "ee_tambaram")
+
+    # EE cannot issue CABINET_NOTE
+    payload_cab = {
+        "required_decision": "Direct Cabinet note for inter-departmental land clearance",
+        "assigned_authority": "Cabinet Secretariat",
+        "action_type": "CABINET_NOTE"
+    }
+    res_fail = client.post("/api/v1/executive/decisions", json=payload_cab, headers={"Authorization": f"Bearer {token_ee}"})
+    assert res_fail.status_code == 403
+
+    # Minister can issue CABINET_NOTE
+    res_ok = client.post("/api/v1/executive/decisions", json=payload_cab, headers={"Authorization": f"Bearer {token_min}"})
+    assert res_ok.status_code == 201
+
+    # EE cannot issue DISCIPLINARY_INQUIRY
+    payload_disc = {
+        "required_decision": "Order 17(a) inquiry under CCA Rules for prolonged project delay",
+        "assigned_authority": "Vigilance Cell",
+        "action_type": "DISCIPLINARY_INQUIRY"
+    }
+    res_disc_fail = client.post("/api/v1/executive/decisions", json=payload_disc, headers={"Authorization": f"Bearer {token_ee}"})
+    assert res_disc_fail.status_code == 403
+
+    # Secretary can issue DISCIPLINARY_INQUIRY
+    res_disc_ok = client.post("/api/v1/executive/decisions", json=payload_disc, headers={"Authorization": f"Bearer {token_sec}"})
+    assert res_disc_ok.status_code == 201
+
+

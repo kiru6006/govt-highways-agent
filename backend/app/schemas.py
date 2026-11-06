@@ -510,3 +510,68 @@ class LeadershipDecisionOut(BaseModel):
     resolution_notes: Optional[str] = None
     created_by_name: str
     created_at: datetime.datetime
+
+# Minister & Secretary Command Centre Schemas
+class UrgentMinisterialIntervention(BaseModel):
+    title: str
+    dept: str
+    action: str
+    days_pending: int
+    impact: str
+
+class DistrictImpactSummary(BaseModel):
+    district: str
+    active_projects: int
+    outlay_cr: float
+    completion_pct: float
+    status: str
+
+class PendingDirectiveSummary(BaseModel):
+    ref: str
+    subject: str
+    due_date: str
+    urgency: str
+
+class MinisterStrategicKPIs(BaseModel):
+    total_capital_outlay_cr: float
+    major_corridors_count: int
+    statewide_completion_rate: float
+    critical_public_delays_count: int
+    inter_ministerial_blockers_count: int
+    land_acquisition_cleared_pct: float
+    zero_pothole_compliance_pct: float
+    public_grievances_resolved: int
+
+class MinisterAIBriefing(BaseModel):
+    headline: str
+    summary: str
+    urgent_interventions: List[UrgentMinisterialIntervention]
+    district_sentiment: str
+
+class MinisterOverviewOut(BaseModel):
+    strategic_kpis: MinisterStrategicKPIs
+    ai_briefing: MinisterAIBriefing
+    district_impact: List[DistrictImpactSummary]
+    cabinet_decisions_pending: List[PendingDirectiveSummary]
+    data_freshness: str
+    reporting_period: str
+
+class OfficerAccountabilityAlert(BaseModel):
+    officer: str
+    issue: str
+    pending_days: int
+    action: str
+
+class SecretaryAIBriefing(BaseModel):
+    headline: str
+    summary: str
+    accountability_alerts: List[OfficerAccountabilityAlert]
+    financial_controls: str
+
+class SecretaryOverviewOut(BaseModel):
+    governance_kpis: ExecutiveKPIsOut
+    ai_briefing: SecretaryAIBriefing
+    zone_performance: List[ZoneComparisonOut]
+    secretarial_actions_pending: List[PendingDirectiveSummary]
+    data_freshness: str
+    reporting_period: str

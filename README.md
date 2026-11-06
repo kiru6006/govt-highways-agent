@@ -1,9 +1,10 @@
 # TN-HDOS: Tamil Nadu Highways Digital Operating System
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-006A4E?style=for-the-badge&logo=github)](https://kiru6006.github.io/govt-highways-agent/)
-[![Phase](https://img.shields.io/badge/Phase-2%20Executive%20Command%20Centre-006A4E)](docs/ARCHITECTURE.md)
-[![Theme](https://img.shields.io/badge/Highways%20Theme-DESIGN.md%20Compliant-FFCC00)](DESIGN.md)
-[![Tests](https://img.shields.io/badge/Pytest-13%20Passed-004B87)](backend/tests/)
+[![Phase](https://img.shields.io/badge/Phase-2%20Dedicated%20Leadership%20Workspaces-006A4E)](docs/PHASE2.md)
+[![Theme](https://img.shields.io/badge/Highways%20Theme-docs%2FDESIGN.md%20Compliant-FFCC00)](docs/DESIGN.md)
+[![Tests](https://img.shields.io/badge/Pytest-17%20Passed-004B87)](backend/tests/)
+[![Docs](https://img.shields.io/badge/Documentation-docs%2F%20Folder-D1197E)](docs/)
 [![License](https://img.shields.io/badge/License-Govt%20of%20Tamil%20Nadu-D1197E)]()
 
 > 🌐 **Live Interactive Deployment**: [https://kiru6006.github.io/govt-highways-agent/](https://kiru6006.github.io/govt-highways-agent/)
@@ -14,7 +15,19 @@ It establishes an integrated foundation connecting projects, roads, bridges, eng
 
 ---
 
-## 🎨 Highways Department Theme Palette (DESIGN.md)
+## 📚 Departmental Documentation Index (`docs/`)
+
+All system architecture, design specifications, and decision records are maintained in [`docs/`](docs/):
+* [**`docs/PHASE2.md`**](docs/PHASE2.md) — Comprehensive Phase 2 specification covering dedicated Minister (`/leadership/minister`) and Secretary (`/leadership/secretary`) workspaces, 16 KPIs, RBAC security, and 17 automated tests.
+* [**`docs/DESIGN.md`**](docs/DESIGN.md) — Official Tamil Nadu Highways color specification (`SH`, `NH`, `MDR`, `ODR`, `Rural`) and component design tokens.
+* [**`docs/ARCHITECT.md`**](docs/ARCHITECT.md) — Enterprise architecture blueprints, component hierarchies, and state boundaries.
+* [**`docs/ARCHITECTURE.md`**](docs/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite data layers.
+* [**`docs/ADR.md`**](docs/ADR.md) — Architecture Decision Records (HashRouter for GitHub Pages, standalone financial buckets, RBAC isolation).
+* [**`docs/PHASE_0_ASSESSMENT.md`**](docs/PHASE_0_ASSESSMENT.md) — Pre-implementation audit and backward compatibility assessment.
+
+---
+
+## 🎨 Highways Department Theme Palette (docs/DESIGN.md)
 
 All user interface elements, badges, charts, and indicators strictly adhere to the official **Tamil Nadu Highways Department Color Specification**:
 
@@ -37,48 +50,56 @@ All user interface elements, badges, charts, and indicators strictly adhere to t
 
 ## 🏛️ Platform Architecture & Features Implemented
 
-### 1. Executive Command Centre Smartboard (Phase 2 Upgrade)
-* **Global Filters & Data Freshness**: Financial year, zone, circle, division, road classification (SH, NH, MDR, ODR, Rural), risk status, and project stage with live freshness indicators.
-* **16 Department Performance KPIs with Drill-Down**:
-  - Active Projects, Approved Project Value (₹ Cr), Actual Expenditure (₹ Cr), Physical Progress (%)
-  - Delayed Projects, High-Risk Projects, Pending Approvals, Pending Land Acquisition (Ha)
-  - Pending Utility Shifting, Open Quality Defects, Contractor Obligations, Open Legal Cases
-  - Unresolved Audit Observations, Potential Financial Exposure (₹ Cr), Verified Recovery (₹ Cr), Prevented Expenditure (₹ Cr)
-  - *Strict financial distinction*: Actual expenditure, potential exposure, verified recovery, and prevented expenditure are strictly isolated and never combined into misleading total savings numbers.
-* **9 Statewide Intelligence Deep-Dive Sections**:
-  1. **CRITICAL ISSUES REQUIRING LEADERSHIP INTERVENTION**: Unresolved bottlenecks with root-cause tracing, accountable officers, external departments, contractor impacts, and direct action triggers.
-  2. **Interdepartmental Coordination Intelligence**: Tracking dependencies blocked by TANGEDCO, Forest, Revenue/LA, TWAD, and Southern Railways with correspondence logs.
-  3. **Financial & Leakage Intelligence**: Duplicate bills, bitumen consumption discrepancies, rate deviations, and unadjusted advances with confidence levels and validation statuses.
-  4. **Engineering & Asset Quality**: Highways Research Station (HRS) test failures, concrete core crush tests, bridge cracks, roughness indices, and NCR tracking.
-  5. **Zone & Division Performance**: Standardized cohort benchmarking across Chennai, Coimbatore, Madurai, and Tiruchirappalli zones with data completeness and sample size disclosure.
-  6. **Statewide Project Portfolio**: Stage distribution (Planning, Tendering, Execution, Delayed, Requiring Intervention) and risk-tier breakdowns.
-  7. **Contractor Performance Summary**: Cohort-based delivery scoring, LD exposure, Mobilisation Bank Guarantee expiry alerts, and pending obligations.
-  8. **Legal & Compliance Register**: High Court writ petitions, Section 15(2) land disputes, arbitration notices, and AG audit paras.
-  9. **DECISIONS AND ACTIONS REQUIRED**: Interactive directive dispatcher enabling leadership to record decisions, assign review teams, or forward inter-departmental notices with immutable audit trails.
+### 1. Dedicated Leadership Workspaces (Phase 2 Upgrade)
+Rather than implementing a single generic cockpit for all senior executives, TN-HDOS implements two dedicated workspaces tailored to ministerial and secretarial statutory mandates:
+
+#### A. Minister's Strategic Command Centre (`/leadership/minister`)
+* **Target Audience**: Hon'ble Minister for Highways & Cabinet Infrastructure Committee.
+* **Access Control**: Strictly restricted to `MINISTER` and `ADMIN` roles via server and client RBAC.
+* **Key Capabilities**:
+  - **8 Strategic Headline KPIs**: Capital Outlay (₹1,845.50 Cr), Major Corridors Active (6), Statewide Completion (68.4%), Critical Delays &gt;60d (3), Cabinet Blockers (4), Land Cleared (74.2%), Zero-Pothole Drive (92.5%), Public Grievances Resolved (142).
+  - **Ministerial AI Strategic Briefing**: Evidence-linked narrative highlighting projects nearing public commissioning and urgent inter-ministerial bilateral actions (DFO Forest clearance, TANGEDCO 110kV line shifting).
+  - **District-Wise Delivery Matrix**: Strategic comparison across Chennai, Chengalpattu, Coimbatore, Madurai, and Tiruchirappalli.
+  - **Ministerial Directive Dispatcher**: Authorized ministerial actions (`CABINET_NOTE`, `INTER_MINISTERIAL_REVIEW`, `POLICY_DIRECTIVE`, `PUBLIC_COMMISSIONING_DIRECTIVE`, `DISTRICT_COLLECTOR_MEETING`, `SPECIAL_INSPECTION`) with immutable audit trails.
+
+#### B. Principal Secretary's Command Centre (`/leadership/secretary`)
+* **Target Audience**: Principal Secretary to Government, Secretary (Highways), Chief Engineer (Projects).
+* **Access Control**: Strictly restricted to `PRIN_SEC`, `CHIEF_ENG`, and `ADMIN` roles.
+* **Key Capabilities**:
+  - **Departmental Governance AI Briefing**: Circle variance alerts, financial pre-audit controls, and **Specific Officer Accountability Alerts** (SE Chengalpattu for 45-day LA delay; EE Tambaram for 32-day utility delay).
+  - **16 Core Department Performance KPIs**: Full operational metrics with modal drill-downs into verified records.
+  - **Zone Benchmarking Cohorts**: Comparative analysis across Chennai, Coimbatore, Madurai, Tiruchirappalli with sample size and completeness metadata.
+  - **Secretarial Directive Console**: Authorized administrative actions (`DISCIPLINARY_INQUIRY`, `WITHHOLD_LC`, `ISSUE_LD_NOTICE`, `ORDER_HRS_TECHNICAL_AUDIT`, `VIGILANCE_REFERENCE`, `MANDATE_AG_ATR`).
+
+#### C. Executive Smartboard Central Cockpit (`/`)
+* **Statewide Project Portfolio & Stage Distribution** (Planning, Tendering, Execution, Delayed, Requiring Intervention).
+* **9 Deep-Dive Intelligence Panels**: Critical Issues, Interdepartmental Friction, Financial Leakage, Quality Non-Conformances, Zone Benchmarking, Contractor Performance, Legal/AG Paras, and Decisions Tracker.
 
 ### 2. Global Application Header & Role Persona Switcher
 * Official Tamil Nadu Government branding and dynamic module title.
 * Global search bar querying project codes, road names, and contractors.
 * **Live RBAC Role Switcher**: Click on the user profile to seamlessly evaluate the platform under different roles with server-side jurisdiction enforcement.
 
-### 2. Full 17-Module Persistent Sidebar
-1. **Executive Command Centre** (`/`) - Main KPI cockpit with portfolio statistics and road classification distribution.
-2. **Leakage Intelligence** (`/leakage`) - Refinery bitumen reconciliation and anti-corruption signals.
-3. **Project Management** (`/projects`) - DPR, technical sanctions, milestone schedules, and progress tracking.
-4. **Project 360°** (`/project-360`) - Unified road stretch and bridge digital passport.
-5. **People & Directory** (`/directory`) - Official hierarchy and contractor registers.
-6. **Department Connections** (`/departments`) - Inter-agency war room (Revenue, TANGEDCO, TWAD, Forest, Railways).
-7. **Engineering Quality** (`/quality`) - Highways Research Station (HRS) cube, core, and roughness tests.
-8. **Finance & Procurement** (`/finance`) - Letter of Credit (LC), IFMS bridge, and bill clearance.
-9. **Contractor Intelligence** (`/contractors`) - Empanelled contractor performance ratings and bid capacities.
-10. **Field Operations** (`/field-ops`) - Daily field logs, gang work maintenance, and JE inspections.
-11. **Road & Bridge Assets** (`/assets`) - RAMS asset register with condition scoring.
-12. **Digital Office** (`/digital-office`) - E-Office files, G.O. repository, and statutory circulars.
-13. **Land & Utility Coordination** (`/land-utility`) - TN Highways Act 2001 Section 15(2) and utility shifting.
-14. **Legal, Audit & Compliance** (`/compliance`) - High Court writ petitions and AG audit paras.
-15. **Citizen Services** (`/citizen-services`) - Pothole grievances and Right to Information (RTI).
-16. **Reports and Analytics** (`/reports`) - Cabinet notes and Legislative Assembly Questions (LAQ).
-17. **Administration** (`/admin`) - User provisioning, circle/division boundaries, and security audits.
+### 3. Full 17-Module Persistent Sidebar
+1. **1a. Minister's Command Centre** (`/leadership/minister`) - Strategic Cabinet intelligence.
+2. **1b. Secretary's Command Centre** (`/leadership/secretary`) - Departmental governance & operational oversight.
+3. **1c. Executive Smartboard** (`/`) - Central KPI cockpit with portfolio statistics and 9 deep-dive sections.
+4. **2. Leakage Intelligence** (`/leakage`) - Refinery bitumen reconciliation and anti-corruption signals.
+5. **3. Project Management** (`/projects`) - DPR, technical sanctions, milestone schedules, and progress tracking.
+6. **4. Project 360°** (`/project-360`) - Unified road stretch and bridge digital passport.
+7. **5. People & Directory** (`/directory`) - Official hierarchy and contractor registers.
+8. **6. Department Connections** (`/departments`) - Inter-agency war room (Revenue, TANGEDCO, TWAD, Forest, Railways).
+9. **7. Engineering Quality** (`/quality`) - Highways Research Station (HRS) cube, core, and roughness tests.
+10. **8. Finance & Procurement** (`/finance`) - Letter of Credit (LC), IFMS bridge, and bill clearance.
+11. **9. Contractor Intelligence** (`/contractors`) - Empanelled contractor performance ratings and bid capacities.
+12. **10. Field Operations** (`/field-ops`) - Daily field logs, gang work maintenance, and JE inspections.
+13. **11. Road & Bridge Assets** (`/assets`) - RAMS asset register with condition scoring.
+14. **12. Digital Office** (`/digital-office`) - E-Office files, G.O. repository, and statutory circulars.
+15. **13. Land & Utility Coordination** (`/land-utility`) - TN Highways Act 2001 Section 15(2) and utility shifting.
+16. **14. Legal, Audit & Compliance** (`/compliance`) - High Court writ petitions and AG audit paras.
+17. **15. Citizen Services** (`/citizen-services`) - Pothole grievances and Right to Information (RTI).
+18. **16. Reports and Analytics** (`/reports`) - Cabinet notes and Legislative Assembly Questions (LAQ).
+19. **17. Administration** (`/admin`) - User provisioning, circle/division boundaries, and security audits.
 
 ### 3. Persistent Ask AI Assistant
 * Available on every dashboard screen via floating entry point.
@@ -101,16 +122,18 @@ Established with complete relational foreign keys, historical tenure tracking, a
 
 All sample accounts are pre-seeded in the database:
 
-| Username | Password | Role / Designation | Jurisdiction Scope |
-| :--- | :--- | :--- | :--- |
-| **`admin`** | `admin123` | System Administrator | Statewide (Full Administration) |
-| **`chief_eng`** | `highway123` | Chief Engineer (Projects) | Statewide (All Highway Circles) |
-| **`se_chengalpattu`**| `highway123` | Superintending Engineer | Chengalpattu Circle |
-| **`ee_tambaram`** | `highway123` | Divisional Engineer | Tambaram Division |
-| **`contractor_lt`** | `highway123` | Contractor (L&T Infrastructure) | Restricted to `PRJ-TN-2026-001` only |
-| **`contractor_pst`**| `highway123` | Contractor (PST Constructions) | Restricted to `PRJ-TN-2026-002` only |
+| Username | Password | Role / Designation | Jurisdiction Scope | Authorized Workspaces |
+| :--- | :--- | :--- | :--- | :--- |
+| **`minister`** | `highway123` | Hon'ble Minister for Highways | Statewide (Cabinet Strategic) | `/leadership/minister` & `/` |
+| **`secretary`**| `highway123` | Principal Secretary to Government | Statewide (Dept Governance) | `/leadership/secretary` & `/` |
+| **`admin`** | `admin123` | System Administrator | Statewide (Full Administration) | All Workspaces |
+| **`chief_eng`** | `highway123` | Chief Engineer (Projects) | Statewide (All Highway Circles) | `/leadership/secretary` & `/` |
+| **`se_chengalpattu`**| `highway123`| Superintending Engineer | Chengalpattu Circle | Circle-scoped `/` |
+| **`ee_tambaram`** | `highway123` | Divisional Engineer | Tambaram Division | Division-scoped `/` |
+| **`contractor_lt`** | `highway123` | Contractor (L&T Infrastructure) | Restricted to `PRJ-TN-2026-001` | Scoped `/` (Leadership blocked 403) |
+| **`contractor_pst`**| `highway123`| Contractor (PST Constructions) | Restricted to `PRJ-TN-2026-002` | Scoped `/` (Leadership blocked 403) |
 
-> **Note**: Contractor isolation is strictly verified via automated tests. `contractor_lt` receives **HTTP 403 Forbidden** if attempting to access `contractor_pst`'s records.
+> **Security Note**: RBAC is enforced both on the client and server. If `ee_tambaram` or `contractor_lt` navigates to `/leadership/minister` or `/leadership/secretary`, or attempts to access `/api/v1/executive/leakage` or `/api/v1/executive/legal`, access is rejected with **HTTP 403 Forbidden**.
 
 ---
 

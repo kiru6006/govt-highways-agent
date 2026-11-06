@@ -18,7 +18,9 @@ import {
   ContractorEvaluation,
   LegalMatter,
   LeadershipDecision,
-  ExecutiveFilters
+  ExecutiveFilters,
+  MinisterOverview,
+  SecretaryOverview
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -96,6 +98,24 @@ const fallbackUsers: Record<string, UserInfo> = {
     role_code: 'CONTRACTOR',
     role_name: 'Empanelled Contractor Representative',
     contractor_id: 2,
+    is_active: true
+  },
+  minister: {
+    id: 7,
+    username: 'minister',
+    full_name: "Hon'ble Thiru E. V. Velu, Minister for Public Works & Highways [DEMO]",
+    role_code: 'MINISTER',
+    role_name: "Hon'ble Minister for Highways (Cabinet)",
+    department_name: 'Tamil Nadu Highways Department',
+    is_active: true
+  },
+  secretary: {
+    id: 8,
+    username: 'secretary',
+    full_name: 'Thiru Pradeep Yadav IAS, Principal Secretary to Govt [DEMO]',
+    role_code: 'PRIN_SEC',
+    role_name: 'Principal Secretary to Government (Highways)',
+    department_name: 'Tamil Nadu Highways Department',
     is_active: true
   }
 };
@@ -548,6 +568,126 @@ let fallbackZones: ZoneComparisonItem[] = [
   }
 ];
 
+const fallbackMinisterOverview: MinisterOverview = {
+  strategic_kpis: {
+    total_capital_outlay_cr: 1845.50,
+    major_corridors_count: 6,
+    statewide_completion_rate: 68.4,
+    critical_public_delays_count: 3,
+    inter_ministerial_blockers_count: 4,
+    land_acquisition_cleared_pct: 74.2,
+    zero_pothole_compliance_pct: 92.5,
+    public_grievances_resolved: 142
+  },
+  ai_briefing: {
+    headline: "Cabinet Strategic Briefing: Statewide Highway Delivery & Public Impact",
+    summary: "Statewide highway capital program is executing ₹1,845.50 Cr across priority connectivity corridors. 3 mega-projects are nearing readiness for public inauguration. Two inter-ministerial roadblocks require your direct cabinet-level bilateral engagement to clear pending ROWs.",
+    urgent_interventions: [
+      {
+        title: "Forest Clearance for Tambaram Eastern Bypass Corridor (SH-49 Link)",
+        dept: "Department of Forests",
+        action: "Convene Bilateral Inter-Ministerial Meeting with Hon'ble Minister for Forests",
+        days_pending: 115,
+        impact: "Public commissioning of 8.2 km bypass corridor delayed by 4 months, impacting 45,000 daily commuters."
+      },
+      {
+        title: "110kV HT Power Line Shifting at Perungalathur Junction (GST Road)",
+        dept: "TANGEDCO / Energy Dept",
+        action: "Table Joint Fast-Track Clearance Memorandum at Cabinet Infrastructure Committee",
+        days_pending: 85,
+        impact: "Severe bottleneck on NH-45 arterial corridor connecting Southern Tamil Nadu."
+      }
+    ],
+    district_sentiment: "High positive public feedback on East Coast Road 4-laning progress. Urgent demand for early opening of Tambaram Eastern Bypass to decongest South Chennai."
+  },
+  district_impact: [
+    { district: "Chennai", active_projects: 5, outlay_cr: 420.5, completion_pct: 78.2, status: "ON_TRACK" },
+    { district: "Chengalpattu", active_projects: 4, outlay_cr: 310.2, completion_pct: 52.0, status: "REQUIRES_INTERVENTION" },
+    { district: "Coimbatore", active_projects: 6, outlay_cr: 485.0, completion_pct: 71.5, status: "ON_TRACK" },
+    { district: "Madurai", active_projects: 4, outlay_cr: 290.0, completion_pct: 65.0, status: "ATTENTION_NEEDED" },
+    { district: "Tiruchirappalli", active_projects: 5, outlay_cr: 339.8, completion_pct: 69.2, status: "ON_TRACK" },
+  ],
+  cabinet_decisions_pending: [
+    {
+      ref: "MIN-DIR-001",
+      subject: "Bilateral Inter-Ministerial Review: DFO Tambaram Forest Land Clearance",
+      due_date: "2026-11-15",
+      urgency: "HIGH"
+    },
+    {
+      ref: "MIN-DIR-002",
+      subject: "Cabinet Memorandum: Enhanced Solatium Approval for Section 15(2) Land Owners",
+      due_date: "2026-11-20",
+      urgency: "HIGH"
+    }
+  ],
+  data_freshness: "Updated: Today, 08:30 IST",
+  reporting_period: "FY 2025-26 Q4"
+};
+
+const fallbackKPIs: ExecutiveKPIs = {
+  total_active_projects: 24,
+  total_approved_project_value_cr: 1845.50,
+  total_expenditure_cr: 824.20,
+  total_physical_progress_pct: 68.4,
+  projects_delayed: 7,
+  projects_high_risk: 3,
+  pending_approvals: 14,
+  pending_land_acquisition_ha: 42.50,
+  pending_utility_shifting_count: 28,
+  open_quality_defects: 12,
+  pending_contractor_obligations: 9,
+  open_legal_cases: 6,
+  unresolved_audit_observations: 18,
+  potential_financial_exposure_cr: 42.80,
+  verified_financial_recovery_cr: 8.45,
+  verified_prevented_expenditure_cr: 14.20,
+  reporting_period: 'FY 2025-26 Q4',
+  data_freshness: 'Updated: Today, 08:30 IST',
+  cohort_sample_size: 24,
+  is_demo: true
+};
+
+const fallbackSecretaryOverview: SecretaryOverview = {
+  governance_kpis: fallbackKPIs,
+  ai_briefing: {
+    headline: "Departmental Governance & Disciplinary Oversight Briefing",
+    summary: "Department expenditure stands at ₹824.20 Cr with 68.4% physical completion. Chengalpattu Circle exhibits significant delay in administrative compliance. Quality audits by HRS Guindy detected 2 batch failures in M35 concrete requiring immediate structural remediation.",
+    accountability_alerts: [
+      {
+        officer: "Er. M. Rajasekaran, M.E. (SE Chengalpattu Circle)",
+        issue: "45-day delay in submitting Section 15(2) compensation records to Special DRO (LA)",
+        pending_days: 45,
+        action: "Issue Call for Explanation under Rule 17(a) of TN Civil Services (CCA) Rules"
+      },
+      {
+        officer: "Er. P. Anandhan, B.E. (EE Tambaram Division)",
+        issue: "Overdue technical sanction for utility line diversion estimates",
+        pending_days: 32,
+        action: "Direct mandatory 7-day disposal with compliance report to Chief Engineer"
+      }
+    ],
+    financial_controls: "IFMS Letter of Credit (LC) balances reconciled for FY 2025-26. Verified recovery of ₹8.45 Cr initiated against duplicate measurement entries. ₹14.20 Cr expenditure prevented via pre-audit verification."
+  },
+  zone_performance: fallbackZones,
+  secretarial_actions_pending: [
+    {
+      ref: "SEC-DIR-001",
+      subject: "Freeze LC release on Package 2 pending Director HRS concrete core test report",
+      due_date: "2026-11-12",
+      urgency: "CRITICAL"
+    },
+    {
+      ref: "SEC-DIR-002",
+      subject: "Submit Action Taken Report (ATR) to Accountant General on Bitumen Measurement Audit Para",
+      due_date: "2026-11-18",
+      urgency: "HIGH"
+    }
+  ],
+  data_freshness: "Updated: Today, 08:30 IST",
+  reporting_period: "FY 2025-26 Q4"
+};
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
@@ -800,6 +940,22 @@ export const api = {
       };
       fallbackDecisions.unshift(newDec);
       return newDec;
+    }
+  },
+
+  getMinisterOverview: async () => {
+    try {
+      return await request<MinisterOverview>('/executive/minister/overview');
+    } catch {
+      return fallbackMinisterOverview;
+    }
+  },
+
+  getSecretaryOverview: async () => {
+    try {
+      return await request<SecretaryOverview>('/executive/secretary/overview');
+    } catch {
+      return fallbackSecretaryOverview;
     }
   },
 

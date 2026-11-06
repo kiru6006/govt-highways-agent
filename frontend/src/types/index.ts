@@ -312,3 +312,77 @@ export interface ExecutiveFilters {
   risk_status?: string;
   stage?: string;
 }
+
+// Separate Leadership Workspaces
+export interface UrgentMinisterialIntervention {
+  title: string;
+  dept: string;
+  action: string;
+  days_pending: number;
+  impact: string;
+}
+
+export interface DistrictImpactSummary {
+  district: string;
+  active_projects: number;
+  outlay_cr: number;
+  completion_pct: number;
+  status: string;
+}
+
+export interface PendingDirectiveSummary {
+  ref: string;
+  subject: string;
+  due_date: string;
+  urgency: string;
+}
+
+export interface MinisterStrategicKPIs {
+  total_capital_outlay_cr: number;
+  major_corridors_count: number;
+  statewide_completion_rate: number;
+  critical_public_delays_count: number;
+  inter_ministerial_blockers_count: number;
+  land_acquisition_cleared_pct: number;
+  zero_pothole_compliance_pct: number;
+  public_grievances_resolved: number;
+}
+
+export interface MinisterAIBriefing {
+  headline: string;
+  summary: string;
+  urgent_interventions: UrgentMinisterialIntervention[];
+  district_sentiment: string;
+}
+
+export interface MinisterOverview {
+  strategic_kpis: MinisterStrategicKPIs;
+  ai_briefing: MinisterAIBriefing;
+  district_impact: DistrictImpactSummary[];
+  cabinet_decisions_pending: PendingDirectiveSummary[];
+  data_freshness: string;
+  reporting_period: string;
+}
+
+export interface OfficerAccountabilityAlert {
+  officer: string;
+  issue: string;
+  pending_days: number;
+  action: string;
+}
+
+export interface SecretaryAIBriefing {
+  headline: string;
+  summary: string;
+  accountability_alerts: OfficerAccountabilityAlert[];
+  financial_controls: string;
+}
+
+export interface SecretaryOverview {
+  governance_kpis: ExecutiveKPIs;
+  ai_briefing: SecretaryAIBriefing;
+  zone_performance: ZoneComparisonItem[];
+  secretarial_actions_pending: PendingDirectiveSummary[];
+  data_freshness: string;
+  reporting_period: string;
+}
