@@ -386,3 +386,114 @@ export interface SecretaryOverview {
   data_freshness: string;
   reporting_period: string;
 }
+
+export interface StatutoryCommitteeItem {
+  id: number;
+  code: string;
+  name: string;
+  chairperson_title: string;
+  mandate_summary: string;
+  constitution_go: string;
+}
+
+export interface DesignationItem {
+  id: number;
+  code: string;
+  title: string;
+  hierarchical_rank: number;
+  is_gazetted: boolean;
+  technical_sanction_limit_cr: number;
+  tender_acceptance_limit_cr: number;
+}
+
+export interface DelegationOfAuthorityItem {
+  id: number;
+  designation_code: string;
+  power_type: string;
+  monetary_limit_cr: number;
+  tender_excess_pct_limit: number;
+  statutory_rule_reference: string;
+  remarks?: string;
+}
+
+export interface HistoricalPostingItem {
+  id: number;
+  designation_title: string;
+  posting_unit: string;
+  posting_type: string;
+  from_date: string;
+  to_date?: string;
+  is_current: boolean;
+  transfer_go_reference?: string;
+}
+
+export interface VerifiedOfficialItem {
+  id: number;
+  name: string;
+  designation: string;
+  wing?: string;
+  phone?: string;
+  email?: string;
+  office_address?: string;
+  charge_status: string;
+  verification_status: string;
+  tenures: HistoricalPostingItem[];
+}
+
+export interface FunctionalPermissionGroupItem {
+  code: string;
+  name: string;
+  nature: string;
+  is_statutory_cadre: boolean;
+  mandate: string;
+}
+
+export interface ExternalStakeholderItem {
+  department: string;
+  spoc: string;
+  portfolio: string;
+  clearance: string;
+  status: string;
+}
+
+export interface ZoneHierarchyItem {
+  name: string;
+  hq: string;
+  chief_engineer: string;
+  circles: string[];
+  divisions_count: number;
+  jurisdiction: string;
+}
+
+export interface VerifiedOrganisationStructure {
+  minister: {
+    name: string;
+    designation: string;
+    portfolio: string;
+    office: string;
+    verification_status: string;
+    source: string;
+  };
+  principal_secretary: {
+    name: string;
+    designation: string;
+    department: string;
+    email: string;
+    phone: string;
+    office: string;
+    verification_status: string;
+    source: string;
+  };
+  heads_of_department: VerifiedOfficialItem[];
+  statutory_committees: StatutoryCommitteeItem[];
+  delegations_of_authority: DelegationOfAuthorityItem[];
+  functional_permission_groups: FunctionalPermissionGroupItem[];
+  external_stakeholders: ExternalStakeholderItem[];
+  zones_hierarchy: ZoneHierarchyItem[];
+  verification_metadata: {
+    rules_citation: string;
+    statutory_delegation_citation: string;
+    verification_date: string;
+    cadre_rule: string;
+  };
+}

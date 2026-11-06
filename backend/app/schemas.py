@@ -646,4 +646,7 @@ class VerifiedOrganisationStructureOut(BaseModel):
     heads_of_department: List[VerifiedOfficialOut]
     statutory_committees: List[StatutoryCommitteeOut]
     delegations_of_authority: List[DelegationOfAuthorityOut]
+    functional_permission_groups: List[dict] = []
+    external_stakeholders: List[dict] = []
+    zones_hierarchy: List[dict] = []
     verification_metadata: dict

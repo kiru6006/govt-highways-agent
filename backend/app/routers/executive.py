@@ -727,12 +727,47 @@ def get_verified_organisation_structure(
             tenures=tenures_out
         ))
 
+    functional_groups = [
+        {"code": "FIN_ACCOUNTS", "name": "Finance & Accounts", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "IFMS Letter of Credit (LC) balances, contractor invoice reconciliation, and bill scrutiny."},
+        {"code": "BUDGET_IFMS", "name": "Budget & Fiscal Control", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "State budget allocation tracking across CMRDP, CRIDP, NABARD, and external aid schemes."},
+        {"code": "PROCUREMENT_COT", "name": "Procurement & Tendering", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "TNTIT Act 1998 compliance, Commissionerate of Tenders (COT) processing, and e-tender processing."},
+        {"code": "QUALITY_HRS", "name": "Quality Control & Forensics", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Highways Research Station (HRS) cube, core, penetration, and Benkelman beam test scrutiny."},
+        {"code": "PLANNING_PDI", "name": "Planning & Investigation", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Detailed Project Report (DPR) preparation, alignment survey, and preliminary estimate scrutiny."},
+        {"code": "LAND_ACQUISITION", "name": "Land Acquisition Coordination", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "TN Highways Act 2001 Section 15(2), 15(1), and 19(1) gazette tracking and solatium disbursement."},
+        {"code": "ADMIN_ESTABLISHMENT", "name": "Administration & Establishment", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Postings, tenures, service book records under TN-HES rules, and ministerial office staff management."},
+        {"code": "LEGAL_COMPLIANCE", "name": "Legal & Court Litigation", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "High Court writ petition counters, arbitration defense under HLDRC, and interim stay management."},
+        {"code": "INTERNAL_AUDIT", "name": "Internal Audit & AG Paras", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Accountant General (Audit II) draft para replies, Action Taken Reports (ATR), and recovery tracking."},
+        {"code": "PROJECT_MONITORING", "name": "Project Monitoring & Milestones", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Schedule tracking, critical path variance, and time-extension recommendation review."},
+        {"code": "MAINTENANCE_OPS", "name": "Maintenance & Gang Operations", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Periodic surface renewal, pothole elimination drive, culvert desilting, and disaster clearance."},
+        {"code": "FIELD_INSPECTION", "name": "Field Inspection & Measurement", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "Check measurement verification, daily road register logs, and site inspection memos."},
+        {"code": "SAFETY_COMPLIANCE", "name": "Road Safety & Blackspot Remediation", "nature": "Functional Permission Group", "is_statutory_cadre": False, "mandate": "IRC safety audit compliance, crash barrier installation, and fatal accident spot engineering fixes."}
+    ]
+
+    external_stakeholders_data = [
+        {"department": "Revenue and Disaster Management", "spoc": "Special District Revenue Officer (LA) / RDO", "portfolio": "Land Acquisition under TN Highways Act 2001", "clearance": "Section 15(2) Notice, Sec 15(1) Gazette, Sec 19(1) Award", "status": "VERIFIED OFFICIAL"},
+        {"department": "Electricity & TANGEDCO/TNPDCL", "spoc": "Superintending Engineer (Distribution Circle)", "portfolio": "Utility Shifting & Power Disconnection", "clearance": "HT tower relocation (110kV/33kV), LT pole shift", "status": "VERIFIED OFFICIAL"},
+        {"department": "Environment, Climate Change & Forests", "spoc": "District Forest Officer (DFO) / PCCF", "portfolio": "Statutory Forest Clearance & Tree Felling", "clearance": "Forest Conservation Act (FCA) Stage I & II Clearance", "status": "VERIFIED OFFICIAL"},
+        {"department": "TWAD Board / CMWSSB", "spoc": "Executive Engineer (Maintenance Division)", "portfolio": "Bulk Water Mains Shifting", "clearance": "Feeder water main diversion along Right-of-Way (ROW)", "status": "VERIFIED OFFICIAL"},
+        {"department": "Southern Railway (Zone 7)", "spoc": "Chief Bridge Engineer (CBE) / Dy. CE (Bridges)", "portfolio": "Railway Over Bridge (ROB) / RUB Track Spans", "clearance": "General Arrangement Drawing (GAD) & CRS Safety Sanction", "status": "VERIFIED OFFICIAL"},
+        {"department": "Corporations & Municipalities (GCC)", "spoc": "City Engineer / Superintending Engineer (Projects)", "portfolio": "Urban Right-of-Way & Storm Water Drains", "clearance": "Traffic diversion NOC & SWD culvert integration", "status": "VERIFIED OFFICIAL"}
+    ]
+
+    zones_hierarchy_data = [
+        {"name": "Chennai Zone", "hq": "Chennai (HRS Campus, Guindy)", "chief_engineer": "Er. S. Palanivel", "circles": ["Chennai Circle", "Chengalpattu Circle", "Tiruvallur Circle"], "divisions_count": 8, "jurisdiction": "Northern Coastal & Metro Corridors"},
+        {"name": "Coimbatore Zone", "hq": "Coimbatore (Mettupalayam Road)", "chief_engineer": "Er. S. Palanivel (A/C)", "circles": ["Coimbatore Circle", "Salem Circle", "Tiruppur Circle"], "divisions_count": 7, "jurisdiction": "Western Industrial & Hill Corridors (Nilgiris)"},
+        {"name": "Madurai Zone", "hq": "Madurai (Alagar Kovil Road)", "chief_engineer": "Er. Ramesh", "circles": ["Madurai Circle", "Tirunelveli Circle", "Ramanathapuram Circle"], "divisions_count": 9, "jurisdiction": "Southern Corridors & Port Connectivity"},
+        {"name": "Tiruchirappalli Zone", "hq": "Trichy (T.V.S. Toll Gate)", "chief_engineer": "Er. S. Jawahar Muthuraj", "circles": ["Trichy Circle", "Thanjavur Circle", "Villupuram Circle"], "divisions_count": 8, "jurisdiction": "Central Delta & Agro-Corridors"}
+    ]
+
     return VerifiedOrganisationStructureOut(
         minister=minister_data,
         principal_secretary=principal_secretary_data,
         heads_of_department=hod_list,
         statutory_committees=[StatutoryCommitteeOut.model_validate(c) for c in committees],
         delegations_of_authority=[DelegationOfAuthorityOut.model_validate(d) for d in delegations],
+        functional_permission_groups=functional_groups,
+        external_stakeholders=external_stakeholders_data,
+        zones_hierarchy=zones_hierarchy_data,
         verification_metadata={
             "rules_citation": "Tamil Nadu Highways Engineering Service (TN-HES) Rules, G.O.Ms.No.172 dated 03.11.2025; G.O.Ms.No.43",
             "statutory_delegation_citation": "G.O. Ms. No. 75 & G.O. Ms. No. 163 (Financial Powers for Technical Sanction & Tender Acceptance)",

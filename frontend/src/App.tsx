@@ -8,6 +8,7 @@ import { Dashboard } from './pages/Dashboard';
 import { MinisterDashboard } from './pages/MinisterDashboard';
 import { SecretaryDashboard } from './pages/SecretaryDashboard';
 import { ProjectsPage } from './pages/ProjectsPage';
+import { DirectoryPage } from './pages/DirectoryPage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 
 const AppLayout: React.FC = () => {
@@ -50,7 +51,7 @@ const AppLayout: React.FC = () => {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/leakage" element={<PlaceholderModule />} />
             <Route path="/project-360" element={<PlaceholderModule />} />
-            <Route path="/directory" element={<PlaceholderModule />} />
+            <Route path="/directory" element={<DirectoryPage />} />
             <Route path="/departments" element={<PlaceholderModule />} />
             <Route path="/quality" element={<PlaceholderModule />} />
             <Route path="/finance" element={<PlaceholderModule />} />

@@ -192,7 +192,7 @@ def seed_official_verification(db_session: Session = None):
             ))
     db.commit()
 
-    # 5. SYNCHRONIZE OFFICIAL VERIFIED USER ACCOUNTS
+    # 5. SYNCHRONIZE OFFICIAL VERIFIED USER ACCOUNTS & PROFILES
     role_minister = db.query(Role).filter(Role.code == "MINISTER").first()
     role_prin_sec = db.query(Role).filter(Role.code == "PRIN_SEC").first()
     role_ce = db.query(Role).filter(Role.code == "CHIEF_ENG").first()
@@ -200,100 +200,371 @@ def seed_official_verification(db_session: Session = None):
     role_ee = db.query(Role).filter(Role.code == "EE_DIV").first()
     dept_hw = db.query(Department).filter(Department.code == "HIGHWAYS").first()
 
-    # A. Minister: Thiru Aadhav Arjuna
-    u_min = db.query(User).filter(User.username == "minister").first()
-    if u_min:
-        u_min.full_name = "Thiru Aadhav Arjuna, Minister for Public Works and Sports Development"
-        u_min.email = "minister.highways@tn.gov.in"
-    else:
-        u_min = User(
-            username="minister",
-            email="minister.highways@tn.gov.in",
-            hashed_password=pwd_common,
-            full_name="Thiru Aadhav Arjuna, Minister for Public Works and Sports Development",
-            phone="+91-9444000008",
-            role_id=role_minister.id if role_minister else 1,
-            department_id=dept_hw.id if dept_hw else None
-        )
-        db.add(u_min)
+    verified_officials_specs = [
+        {
+            "username": "minister",
+            "full_name": "Thiru Aadhav Arjuna",
+            "email": "minister.highways@tn.gov.in",
+            "phone": "+91-9444000008",
+            "role": role_minister,
+            "cadre": "POLITICAL",
+            "designation": "Minister for Public Works and Sports Development",
+            "posting": "Cabinet Secretariat, Fort St. George, Chennai - 600 009",
+            "emp_code": "POL-MIN-001",
+            "postings": [
+                {
+                    "title": "Minister for Public Works and Sports Development (Buildings, Highways & Minor Ports)",
+                    "unit": "Cabinet of Tamil Nadu, Secretariat",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 6, 1),
+                    "go": "G.O. / Council of Ministers Gazette Order 2024"
+                }
+            ]
+        },
+        {
+            "username": "secretary",
+            "full_name": "Thiru Shunchonngam Jatak Chiru, IAS",
+            "email": "hwaysec@tn.gov.in",
+            "phone": "044-25670959",
+            "role": role_prin_sec,
+            "cadre": "IAS",
+            "designation": "Principal Secretary to Government",
+            "posting": "Highways and Minor Ports Department, Secretariat, Fort St. George, Chennai - 600 009",
+            "emp_code": "IAS-SEC-001",
+            "postings": [
+                {
+                    "title": "Principal Secretary to Government, Highways and Minor Ports",
+                    "unit": "Secretariat, Fort St. George, Chennai - 600 009",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 3, 1),
+                    "go": "G.O. Rt. No. 89, Public (Special.A) Dept"
+                }
+            ]
+        },
+        {
+            "username": "dg_highways",
+            "full_name": "Er. R. Selvadurai",
+            "email": "dgchn.hd@tn.gov.in",
+            "phone": "044-22351099",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Director General (H)",
+            "posting": "Integrated Chief Engineers Complex, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-DG-001",
+            "postings": [
+                {
+                    "title": "Director General (H), Highways Department",
+                    "unit": "Directorate of Highways, Guindy, Chennai",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 5, 1),
+                    "go": "G.O. (Rt) No. 45, Highways & Minor Ports"
+                }
+            ]
+        },
+        {
+            "username": "pd_tnrsp",
+            "full_name": "Thiru D. Baskara Pandian, IAS",
+            "email": "pd.tnrsp@gov.in",
+            "phone": "044-24954360",
+            "role": role_ce,
+            "cadre": "IAS",
+            "designation": "Project Director (A/C TNRSP, FAC CKICP)",
+            "posting": "CKICP Complex, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "IAS-PD-002",
+            "postings": [
+                {
+                    "title": "Project Director (A/C), TNRSP-II",
+                    "unit": "TNRSP-II World Bank Project Directorate",
+                    "type": "ADDITIONAL_CHARGE",
+                    "from_date": datetime.datetime(2024, 8, 1),
+                    "go": "G.O. (Rt) No. 132, Public (Special.A)"
+                },
+                {
+                    "title": "Project Director (FAC), CKICP",
+                    "unit": "Chennai-Kanyakumari Industrial Corridor Project",
+                    "type": "FULL_ADDITIONAL_CHARGE",
+                    "from_date": datetime.datetime(2024, 10, 1),
+                    "go": "G.O. (Rt) No. 165, Public (Special.A)"
+                }
+            ]
+        },
+        {
+            "username": "chief_eng",
+            "full_name": "Er. S. Palanivel",
+            "email": "cengrcmchn.hd@tn.gov.in",
+            "phone": "044-22350690",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H), C&M Chennai Region",
+            "posting": "Kalaignar Centenary Building, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-CE-001",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H), Construction and Maintenance (Chennai Region)",
+                    "unit": "C&M Chennai Region",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 7, 1),
+                    "go": "G.O.(Rt) No. 112, Highways"
+                },
+                {
+                    "title": "Chief Engineer (H) (A/C), Construction and Maintenance (Coimbatore Region)",
+                    "unit": "C&M Coimbatore Region",
+                    "type": "ADDITIONAL_CHARGE",
+                    "from_date": datetime.datetime(2025, 1, 15),
+                    "go": "G.O.(Rt) No. 18, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ce_trichy",
+            "full_name": "Er. S. Jawahar Muthuraj",
+            "email": "cehcandmtrichy@gmail.com",
+            "phone": "0431-2420455",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H), C&M Trichy Region",
+            "posting": "T.V.S. Toll Gate, Tiruchirappalli - 620 020",
+            "emp_code": "HES-CE-002",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H), Construction and Maintenance (Trichy Region)",
+                    "unit": "C&M Trichy Region",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 6, 1),
+                    "go": "G.O.(Rt) No. 98, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ce_madurai",
+            "full_name": "Er. Ramesh",
+            "email": "cecandmmduregion1@gmail.com",
+            "phone": "0452-2531234",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H), C&M Madurai Region",
+            "posting": "Alagar Kovil Road, near Thamarai Thotti, Madurai - 625 002",
+            "emp_code": "HES-CE-003",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H), Construction and Maintenance (Madurai Region)",
+                    "unit": "C&M Madurai Region",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 9, 1),
+                    "go": "G.O.(Rt) No. 142, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ce_nh",
+            "full_name": "Er. K. Vanathi",
+            "email": "cenhchn.hd@tn.gov.in",
+            "phone": "044-22355701",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H), National Highways",
+            "posting": "Integrated Chief Engineers Complex, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-CE-004",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H), National Highways Wing",
+                    "unit": "National Highways Wing, Guindy, Chennai",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 4, 1),
+                    "go": "G.O.(Rt) No. 67, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ce_pdi",
+            "full_name": "Er. S. Yamini",
+            "email": "cengr.pdi@tn.gov.in",
+            "phone": "044-22352068",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H), Planning Designs & Investigation",
+            "posting": "Integrated Chief Engineers Complex, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-CE-005",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H), Planning Designs and Investigation (PDI)",
+                    "unit": "PDI Wing, HRS Campus, Guindy",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 5, 15),
+                    "go": "G.O.(Rt) No. 81, Highways"
+                },
+                {
+                    "title": "Chief Engineer (H) (A/C), TNRSP-II",
+                    "unit": "TNRSP-II Directorate, Chennai",
+                    "type": "ADDITIONAL_CHARGE",
+                    "from_date": datetime.datetime(2024, 11, 1),
+                    "go": "G.O.(Rt) No. 177, Highways"
+                }
+            ]
+        },
+        {
+            "username": "dir_hrs",
+            "full_name": "Er. A. Venkatachalam",
+            "email": "dirhrschn.hd@tn.gov.in",
+            "phone": "044-22354851",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Director (H), Highways Research Station",
+            "posting": "HRS Campus, 76 Sardar Patel Road, Guindy, Chennai - 600 025",
+            "emp_code": "HES-DIR-001",
+            "postings": [
+                {
+                    "title": "Director (H), Highways Research Station (HRS)",
+                    "unit": "HRS Guindy, Sardar Patel Road, Chennai",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 2, 1),
+                    "go": "G.O.(Rt) No. 34, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ce_ckicp",
+            "full_name": "Er. R. Vimala",
+            "email": "prjdir.ckicp@tn.gov.in",
+            "phone": "044-22350664",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Chief Engineer (H) (A/C), CKICP",
+            "posting": "CKICP Complex, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-CE-006",
+            "postings": [
+                {
+                    "title": "Chief Engineer (H) (A/C), Chennai-Kanyakumari Industrial Corridor Project",
+                    "unit": "CKICP Directorate, Guindy",
+                    "type": "ADDITIONAL_CHARGE",
+                    "from_date": datetime.datetime(2024, 10, 1),
+                    "go": "G.O.(Rt) No. 165, Highways"
+                }
+            ]
+        },
+        {
+            "username": "mt_tansha",
+            "full_name": "Er. D. Jebaselwin Gladson",
+            "email": "mttansha2.hd@tn.gov.in",
+            "phone": "044-22350022",
+            "role": role_ce,
+            "cadre": "TN_HES",
+            "designation": "Member Technical, TANSHA",
+            "posting": "Kalaignar Centenary Building, HRS Campus, Guindy, Chennai - 600 025",
+            "emp_code": "HES-MT-001",
+            "postings": [
+                {
+                    "title": "Member Technical, Tamil Nadu State Highways Authority (TANSHA)",
+                    "unit": "TANSHA Headquarters, Guindy",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 8, 1),
+                    "go": "G.O.(Rt) No. 129, Highways"
+                }
+            ]
+        },
+        {
+            "username": "se_chengalpattu",
+            "full_name": "Er. M. Rajendran",
+            "email": "sechengalpattu.hd@tn.gov.in",
+            "phone": "044-27426222",
+            "role": role_se,
+            "cadre": "TN_HES",
+            "designation": "Superintending Engineer (H), Chengalpattu Circle",
+            "posting": "Chengalpattu Circle Office, GST Road, Chengalpattu",
+            "emp_code": "HES-SE-001",
+            "postings": [
+                {
+                    "title": "Superintending Engineer (H), Chengalpattu Circle",
+                    "unit": "Chengalpattu Circle Office",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2024, 6, 15),
+                    "go": "G.O.(Rt) No. 102, Highways"
+                }
+            ]
+        },
+        {
+            "username": "ee_tambaram",
+            "full_name": "Er. P. Anandhan",
+            "email": "detambaram.hd@tn.gov.in",
+            "phone": "044-22265111",
+            "role": role_ee,
+            "cadre": "TN_HES",
+            "designation": "Divisional Engineer (H), Tambaram Division",
+            "posting": "Tambaram Division Office, GST Road, Tambaram, Chennai - 600 045",
+            "emp_code": "HES-DE-001",
+            "postings": [
+                {
+                    "title": "Divisional Engineer (H), Tambaram Division (C&M)",
+                    "unit": "Tambaram Division, Chengalpattu Circle",
+                    "type": "REGULAR",
+                    "from_date": datetime.datetime(2023, 11, 1),
+                    "go": "G.O.(Rt) No. 201, Highways, dated 28.10.2023"
+                }
+            ]
+        }
+    ]
 
-    # B. Principal Secretary: Thiru Shunchonngam Jatak Chiru, IAS
-    u_sec = db.query(User).filter(User.username == "secretary").first()
-    if u_sec:
-        u_sec.full_name = "Thiru Shunchonngam Jatak Chiru, IAS, Principal Secretary to Government"
-        u_sec.email = "hwaysec@tn.gov.in"
-        u_sec.phone = "044-25670959"
-    else:
-        u_sec = User(
-            username="secretary",
-            email="hwaysec@tn.gov.in",
-            hashed_password=pwd_common,
-            full_name="Thiru Shunchonngam Jatak Chiru, IAS, Principal Secretary to Government",
-            phone="044-25670959",
-            role_id=role_prin_sec.id if role_prin_sec else 2,
-            department_id=dept_hw.id if dept_hw else None
-        )
-        db.add(u_sec)
-
-    # C. Director General (H): Er. R. Selvadurai
-    u_dg = db.query(User).filter(User.username == "dg_highways").first()
-    if not u_dg:
-        u_dg = User(
-            username="dg_highways",
-            email="dgchn.hd@tn.gov.in",
-            hashed_password=pwd_common,
-            full_name="Er. R. Selvadurai, Director General (H), Highways Department",
-            phone="044-22351099",
-            role_id=role_ce.id if role_ce else 3,
-            department_id=dept_hw.id if dept_hw else None
-        )
-        db.add(u_dg)
-
-    # D. Chief Engineer: Er. S. Palanivel (C&M Chennai Region)
-    u_ce = db.query(User).filter(User.username == "chief_eng").first()
-    if u_ce:
-        u_ce.full_name = "Er. S. Palanivel, Chief Engineer (H), C&M (Chennai Region)"
-        u_ce.email = "cengrcmchn.hd@tn.gov.in"
-        u_ce.phone = "044-22350690"
-
-    # E. Superintending Engineer: Er. M. Rajasekaran
-    u_se = db.query(User).filter(User.username == "se_chengalpattu").first()
-    if u_se:
-        u_se.full_name = "Er. M. Rajasekaran, M.E., Superintending Engineer (H)"
-
-    # F. Divisional Engineer (H): Er. P. Anandhan
-    u_ee = db.query(User).filter(User.username == "ee_tambaram").first()
-    if u_ee:
-        u_ee.full_name = "Er. P. Anandhan, B.E., Divisional Engineer (H), Tambaram Division"
-
-    db.commit()
-
-    # 6. HISTORICAL TENURE & ACTING APPOINTMENTS (A/C and FAC)
-    off_ce = db.query(Official).filter(Official.designation.like("%Chief Engineer%")).first()
-    if off_ce:
-        # Posting 1: Regular Posting (Chennai Region)
-        p1 = db.query(HistoricalPosting).filter(HistoricalPosting.official_id == off_ce.id).first()
-        if not p1:
-            db.add(HistoricalPosting(
-                official_id=off_ce.id,
-                designation_title="Chief Engineer (H), Construction and Maintenance (Chennai Region)",
-                posting_unit="Chennai Region C&M, HRS Campus, Guindy",
-                posting_type="REGULAR",
-                from_date=datetime.datetime(2024, 7, 1),
-                is_current=True,
-                transfer_go_reference="G.O.(Rt) No. 112, Highways, dated 28.06.2024"
-            ))
-            # Posting 2: Additional Charge (Coimbatore Region)
-            db.add(HistoricalPosting(
-                official_id=off_ce.id,
-                designation_title="Chief Engineer (H) (A/C), Construction and Maintenance (Coimbatore Region)",
-                posting_unit="Coimbatore Region C&M, Mettupalayam Road, Coimbatore",
-                posting_type="ADDITIONAL_CHARGE",
-                from_date=datetime.datetime(2025, 1, 15),
-                is_current=True,
-                transfer_go_reference="G.O.(Rt) No. 18, Highways, dated 14.01.2025"
-            ))
+    for spec in verified_officials_specs:
+        u = db.query(User).filter(User.username == spec["username"]).first()
+        if not u:
+            u = User(
+                username=spec["username"],
+                email=spec["email"],
+                hashed_password=pwd_common,
+                full_name=spec["full_name"],
+                phone=spec["phone"],
+                role_id=spec["role"].id if spec["role"] else 1,
+                department_id=dept_hw.id if dept_hw else None
+            )
+            db.add(u)
             db.commit()
+            db.refresh(u)
+        else:
+            u.full_name = spec["full_name"]
+            u.email = spec["email"]
+            u.phone = spec["phone"]
+            db.commit()
+
+        # Official record
+        off = db.query(Official).filter(Official.user_id == u.id).first()
+        if not off:
+            off = db.query(Official).filter(Official.employee_code == spec["emp_code"]).first()
+        if not off:
+            off = Official(
+                user_id=u.id,
+                employee_code=spec["emp_code"],
+                designation=spec["designation"],
+                cadre=spec["cadre"],
+                current_posting=spec["posting"],
+                active_from=datetime.datetime(2024, 1, 1)
+            )
+            db.add(off)
+            db.commit()
+            db.refresh(off)
+        else:
+            off.user_id = u.id
+            off.designation = spec["designation"]
+            off.cadre = spec["cadre"]
+            off.current_posting = spec["posting"]
+            db.commit()
+
+        # Historical Postings
+        for p_spec in spec.get("postings", []):
+            existing_p = db.query(HistoricalPosting).filter(
+                HistoricalPosting.official_id == off.id,
+                HistoricalPosting.designation_title == p_spec["title"]
+            ).first()
+            if not existing_p:
+                db.add(HistoricalPosting(
+                    official_id=off.id,
+                    designation_title=p_spec["title"],
+                    posting_unit=p_spec["unit"],
+                    posting_type=p_spec["type"],
+                    from_date=p_spec["from_date"],
+                    is_current=True,
+                    transfer_go_reference=p_spec["go"]
+                ))
+        db.commit()
 
     print("Official Tamil Nadu organisation, service cadre, and verified leadership seeding complete.")
 

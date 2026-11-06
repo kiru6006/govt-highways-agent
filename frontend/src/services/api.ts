@@ -20,7 +20,8 @@ import {
   LeadershipDecision,
   ExecutiveFilters,
   MinisterOverview,
-  SecretaryOverview
+  SecretaryOverview,
+  VerifiedOrganisationStructure
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -117,6 +118,459 @@ const fallbackUsers: Record<string, UserInfo> = {
     role_name: 'Principal Secretary to Government (Highways & Minor Ports)',
     department_name: 'Highways and Minor Ports Department',
     is_active: true
+  }
+};
+
+const fallbackOrganisationStructure: VerifiedOrganisationStructure = {
+  minister: {
+    name: "Thiru Aadhav Arjuna",
+    designation: "Minister for Public Works and Sports Development",
+    portfolio: "Public Works (Buildings, Highways and Minor Ports), Sports Development",
+    office: "Office of the Minister, Secretariat, Fort St. George, Chennai - 600 009",
+    verification_status: "VERIFIED OFFICIAL",
+    source: "G.O. / TN Portal Directory (dept_id=MTM)"
+  },
+  principal_secretary: {
+    name: "Thiru Shunchonngam Jatak Chiru, IAS",
+    designation: "Principal Secretary to Government",
+    department: "Highways and Minor Ports Department",
+    email: "hwaysec@tn.gov.in",
+    phone: "044-25670959",
+    office: "Secretariat, Fort St. George, Chennai - 600 009",
+    verification_status: "VERIFIED OFFICIAL",
+    source: "TN Portal Directory (dept_id=MTM)"
+  },
+  heads_of_department: [
+    {
+      id: 1,
+      name: "Er. R. Selvadurai",
+      designation: "Director General (H)",
+      wing: "Directorate of Highways, Guindy, Chennai",
+      phone: "044-22351099",
+      email: "dgchn.hd@tn.gov.in",
+      office_address: "Integrated Chief Engineers Complex, HRS Campus, Sardar Patel Road, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 1,
+          designation_title: "Director General (H), Highways Department",
+          posting_unit: "Apex Directorate, Guindy",
+          posting_type: "REGULAR",
+          from_date: "2024-05-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O. (Rt) No. 45, Highways & Minor Ports"
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "Thiru D. Baskara Pandian, IAS",
+      designation: "Project Director (A/C TNRSP, FAC CKICP)",
+      wing: "TNRSP-II World Bank Project / CKICP Directorate",
+      phone: "044-24954360",
+      email: "pd.tnrsp@gov.in",
+      office_address: "CKICP Complex, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "ADDITIONAL_CHARGE",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 2,
+          designation_title: "Project Director (A/C), TNRSP-II",
+          posting_unit: "TNRSP-II Directorate",
+          posting_type: "ADDITIONAL_CHARGE",
+          from_date: "2024-08-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O. (Rt) No. 132, Public (Special.A)"
+        },
+        {
+          id: 3,
+          designation_title: "Project Director (FAC), CKICP",
+          posting_unit: "CKICP Directorate",
+          posting_type: "FULL_ADDITIONAL_CHARGE",
+          from_date: "2024-10-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O. (Rt) No. 165, Public (Special.A)"
+        }
+      ]
+    },
+    {
+      id: 3,
+      name: "Er. S. Palanivel",
+      designation: "Chief Engineer (H), C&M (Chennai Region)",
+      wing: "Construction & Maintenance (Chennai Region)",
+      phone: "044-22350690",
+      email: "cengrcmchn.hd@tn.gov.in",
+      office_address: "Kalaignar Centenary Building, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 4,
+          designation_title: "Chief Engineer (H), Construction and Maintenance (Chennai Region)",
+          posting_unit: "C&M Chennai Region",
+          posting_type: "REGULAR",
+          from_date: "2024-07-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 112, Highways"
+        },
+        {
+          id: 5,
+          designation_title: "Chief Engineer (H) (A/C), Construction and Maintenance (Coimbatore Region)",
+          posting_unit: "C&M Coimbatore Region",
+          posting_type: "ADDITIONAL_CHARGE",
+          from_date: "2025-01-15T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 18, Highways"
+        }
+      ]
+    },
+    {
+      id: 4,
+      name: "Er. S. Jawahar Muthuraj",
+      designation: "Chief Engineer (H), C&M (Trichy Region)",
+      wing: "Construction & Maintenance (Trichy Region)",
+      phone: "0431-2420455",
+      email: "cehcandmtrichy@gmail.com",
+      office_address: "T.V.S. Toll Gate, Tiruchirappalli - 620 020",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 6,
+          designation_title: "Chief Engineer (H), C&M (Trichy Region)",
+          posting_unit: "Trichy Region Office",
+          posting_type: "REGULAR",
+          from_date: "2024-06-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 98, Highways"
+        }
+      ]
+    },
+    {
+      id: 5,
+      name: "Er. Ramesh",
+      designation: "Chief Engineer (H), C&M (Madurai Region)",
+      wing: "Construction & Maintenance (Madurai Region)",
+      phone: "0452-2531234",
+      email: "cecandmmduregion1@gmail.com",
+      office_address: "Alagar Kovil Road, near Thamarai Thotti, Madurai - 625 002",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 7,
+          designation_title: "Chief Engineer (H), C&M (Madurai Region)",
+          posting_unit: "Madurai Region Office",
+          posting_type: "REGULAR",
+          from_date: "2024-09-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 142, Highways"
+        }
+      ]
+    },
+    {
+      id: 6,
+      name: "Er. K. Vanathi",
+      designation: "Chief Engineer (H), National Highways",
+      wing: "National Highways Wing (MoRTH Entrusted Works)",
+      phone: "044-22355701",
+      email: "cenhchn.hd@tn.gov.in",
+      office_address: "Integrated Chief Engineers Complex, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 8,
+          designation_title: "Chief Engineer (H), National Highways Wing",
+          posting_unit: "NH Wing, Guindy",
+          posting_type: "REGULAR",
+          from_date: "2024-04-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 67, Highways"
+        }
+      ]
+    },
+    {
+      id: 7,
+      name: "Er. S. Yamini",
+      designation: "Chief Engineer (H), Planning Designs & Investigation",
+      wing: "Planning Designs and Investigation (PDI) Wing",
+      phone: "044-22352068",
+      email: "cengr.pdi@tn.gov.in",
+      office_address: "Integrated Chief Engineers Complex, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 9,
+          designation_title: "Chief Engineer (H), Planning Designs & Investigation",
+          posting_unit: "PDI Wing, Guindy",
+          posting_type: "REGULAR",
+          from_date: "2024-05-15T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 81, Highways"
+        },
+        {
+          id: 10,
+          designation_title: "Chief Engineer (H) (A/C), TNRSP-II",
+          posting_unit: "TNRSP-II Directorate",
+          posting_type: "ADDITIONAL_CHARGE",
+          from_date: "2024-11-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 177, Highways"
+        }
+      ]
+    },
+    {
+      id: 8,
+      name: "Er. A. Venkatachalam",
+      designation: "Director (H), Highways Research Station",
+      wing: "Highways Research Station (HRS Guindy)",
+      phone: "044-22354851",
+      email: "dirhrschn.hd@tn.gov.in",
+      office_address: "HRS Campus, 76 Sardar Patel Road, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 11,
+          designation_title: "Director (H), Highways Research Station",
+          posting_unit: "HRS Guindy",
+          posting_type: "REGULAR",
+          from_date: "2024-02-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 34, Highways"
+        }
+      ]
+    },
+    {
+      id: 9,
+      name: "Er. R. Vimala",
+      designation: "Chief Engineer (H) (A/C), CKICP",
+      wing: "Chennai-Kanyakumari Industrial Corridor Project",
+      phone: "044-22350664",
+      email: "prjdir.ckicp@tn.gov.in",
+      office_address: "CKICP Complex, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "ADDITIONAL_CHARGE",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 12,
+          designation_title: "Chief Engineer (H) (A/C), CKICP",
+          posting_unit: "CKICP Directorate",
+          posting_type: "ADDITIONAL_CHARGE",
+          from_date: "2024-10-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 165, Highways"
+        }
+      ]
+    },
+    {
+      id: 10,
+      name: "Er. D. Jebaselwin Gladson",
+      designation: "Member Technical, TANSHA",
+      wing: "Tamil Nadu State Highways Authority (TANSHA)",
+      phone: "044-22350022",
+      email: "mttansha2.hd@tn.gov.in",
+      office_address: "Ground Floor, Kalaignar Centenary Building, HRS Campus, Guindy, Chennai - 600 025",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 13,
+          designation_title: "Member Technical, TANSHA",
+          posting_unit: "TANSHA Headquarters",
+          posting_type: "REGULAR",
+          from_date: "2024-08-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 129, Highways"
+        }
+      ]
+    },
+    {
+      id: 11,
+      name: "Er. M. Rajendran",
+      designation: "Superintending Engineer (H), Chengalpattu Circle",
+      wing: "Chengalpattu Circle (C&M)",
+      phone: "044-27426222",
+      email: "sechengalpattu.hd@tn.gov.in",
+      office_address: "Chengalpattu Circle Office, GST Road, Chengalpattu",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 14,
+          designation_title: "Superintending Engineer (H), Chengalpattu Circle",
+          posting_unit: "Chengalpattu Circle Office",
+          posting_type: "REGULAR",
+          from_date: "2024-06-15T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 102, Highways"
+        }
+      ]
+    },
+    {
+      id: 12,
+      name: "Er. P. Anandhan",
+      designation: "Divisional Engineer (H), Tambaram Division",
+      wing: "Tambaram Division (C&M)",
+      phone: "044-22265111",
+      email: "detambaram.hd@tn.gov.in",
+      office_address: "Tambaram Division Office, GST Road, Tambaram, Chennai - 600 045",
+      charge_status: "REGULAR",
+      verification_status: "VERIFIED OFFICIAL",
+      tenures: [
+        {
+          id: 15,
+          designation_title: "Divisional Engineer (H), Tambaram Division (C&M)",
+          posting_unit: "Tambaram Division Office",
+          posting_type: "REGULAR",
+          from_date: "2023-11-01T00:00:00Z",
+          is_current: true,
+          transfer_go_reference: "G.O.(Rt) No. 201, Highways, dated 28.10.2023"
+        }
+      ]
+    }
+  ],
+  statutory_committees: [
+    {
+      id: 1,
+      code: "BOE",
+      name: "Board of Engineers (BOE)",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Highest Technical Authority deciding standard specifications, manual revisions, and technical policies.",
+      constitution_go: "G.O. Ms. No. 359 (12.08.1997) & G.O. Ms. No. 1 (07.01.2011)"
+    },
+    {
+      id: 2,
+      code: "TAC",
+      name: "Technical Audit Committee (TAC)",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Mandatory technical audit for bridge works with linear waterway > 150m and complex bypasses before according Technical Sanction.",
+      constitution_go: "Circular Memo No. 13555/Contracts-1/2009 dated 02.05.2009"
+    },
+    {
+      id: 3,
+      code: "RASC",
+      name: "Revised Administrative Sanction Committee (RASC)",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Processing and recommendation of work proposals requiring Revised Administrative Sanction (RAS).",
+      constitution_go: "G.O. Ms. No. 289 (04.12.2008) & G.O. Ms. No. 1 (07.01.2011)"
+    },
+    {
+      id: 4,
+      code: "RASC_LA",
+      name: "Revised Administrative Sanction Committee for Land Acquisition",
+      chairperson_title: "Commissioner of Land Acquisition",
+      mandate_summary: "Scrutiny and processing of revised land acquisition financial estimates and enhanced solatium proposals.",
+      constitution_go: "G.O. Ms. No. 163, Highways and Minor Ports (HN1), dated 13.12.2023"
+    },
+    {
+      id: 5,
+      code: "COT",
+      name: "Commissionerate of Tenders (COT)",
+      chairperson_title: "Secretary to Government, Finance / Director General (H)",
+      mandate_summary: "Statutory scrutiny of tenders with excess above 10% (up to 50L), above 6% (up to 1Cr), all works > 6Cr, and packages > 7.50Cr.",
+      constitution_go: "G.O. Ms. No. 75 (02.09.2026) & G.O. Ms. No. 29 (03.03.2022)"
+    },
+    {
+      id: 6,
+      code: "SSR",
+      name: "Standard Schedule of Rates (SSR) Committee",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Annual compilation and notification of standardized departmental rate schedule for labor, materials, and machinery.",
+      constitution_go: "G.O. Ms. No. 21 (25.01.1999) & G.O. Ms. No. 1 (07.01.2011)"
+    },
+    {
+      id: 7,
+      code: "HLDRC",
+      name: "High Level Dispute Resolution Committee (HLDRC)",
+      chairperson_title: "Director General (H), Highways Department",
+      mandate_summary: "Amicable settlement and speedy disposal of contractual disputes, claims, and arbitration matters.",
+      constitution_go: "G.O. Ms. No. 17 (06.03.2023) & G.O. Ms. No. 87 (21.07.2023)"
+    },
+    {
+      id: 8,
+      code: "EXPERT_16B",
+      name: "Three Member Expert Committee (Section 16(b) TNTIT Act)",
+      chairperson_title: "Joint Director, Office of the Director General (H)",
+      mandate_summary: "Evaluation and approval for entrustment of additional quantities exceeding 25% of agreement quantities to original contractor.",
+      constitution_go: "G.O. Ms. No. 05, Highways and Minor Ports (HN2), dated 13.01.2026"
+    }
+  ],
+  delegations_of_authority: [
+    {
+      id: 1,
+      designation_code: "COT",
+      power_type: "TENDER_ACCEPTANCE",
+      monetary_limit_cr: 9999.0,
+      tender_excess_pct_limit: 0.0,
+      statutory_rule_reference: "G.O. Ms. No. 75 dated 02.09.2026",
+      remarks: "Individual works > Rs 6.00 Cr and Package works > Rs 7.50 Cr irrespective of tender excess"
+    },
+    {
+      id: 2,
+      designation_code: "CHIEF_ENG",
+      power_type: "TECHNICAL_SANCTION",
+      monetary_limit_cr: 25.0,
+      tender_excess_pct_limit: 0.0,
+      statutory_rule_reference: "G.O. Ms. No. 172 dated 03.11.2025",
+      remarks: "Full powers within sanctioned scheme for road/bridge estimates up to Rs 25.00 Cr"
+    },
+    {
+      id: 3,
+      designation_code: "SUP_ENG",
+      power_type: "TECHNICAL_SANCTION",
+      monetary_limit_cr: 5.0,
+      tender_excess_pct_limit: 0.0,
+      statutory_rule_reference: "Tamil Nadu Highways Manual Vol II",
+      remarks: "Circle jurisdiction estimates up to Rs 5.00 Cr"
+    },
+    {
+      id: 4,
+      designation_code: "DIV_ENG",
+      power_type: "TENDER_ACCEPTANCE",
+      monetary_limit_cr: 0.50,
+      tender_excess_pct_limit: 5.0,
+      statutory_rule_reference: "Tamil Nadu Highways Manual Vol II / G.O. Ms. 29",
+      remarks: "Divisional Engineer (H) approval for maintenance and minor works up to Rs 50 Lakhs"
+    }
+  ],
+  functional_permission_groups: [
+    { code: "FIN_ACCOUNTS", name: "Finance & Accounts", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "IFMS Letter of Credit (LC) balances, contractor invoice reconciliation, and bill scrutiny." },
+    { code: "BUDGET_IFMS", name: "Budget & Fiscal Control", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "State budget allocation tracking across CMRDP, CRIDP, NABARD, and external aid schemes." },
+    { code: "PROCUREMENT_COT", name: "Procurement & Tendering", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "TNTIT Act 1998 compliance, Commissionerate of Tenders (COT) processing, and e-tender processing." },
+    { code: "QUALITY_HRS", name: "Quality Control & Forensics", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Highways Research Station (HRS) cube, core, penetration, and Benkelman beam test scrutiny." },
+    { code: "PLANNING_PDI", name: "Planning & Investigation", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Detailed Project Report (DPR) preparation, alignment survey, and preliminary estimate scrutiny." },
+    { code: "LAND_ACQUISITION", name: "Land Acquisition Coordination", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "TN Highways Act 2001 Section 15(2), 15(1), and 19(1) gazette tracking and solatium disbursement." },
+    { code: "ADMIN_ESTABLISHMENT", name: "Administration & Establishment", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Postings, tenures, service book records under TN-HES rules, and ministerial office staff management." },
+    { code: "LEGAL_COMPLIANCE", name: "Legal & Court Litigation", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "High Court writ petition counters, arbitration defense under HLDRC, and interim stay management." },
+    { code: "INTERNAL_AUDIT", name: "Internal Audit & AG Paras", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Accountant General (Audit II) draft para replies, Action Taken Reports (ATR), and recovery tracking." },
+    { code: "PROJECT_MONITORING", name: "Project Monitoring & Milestones", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Schedule tracking, critical path variance, and time-extension recommendation review." },
+    { code: "MAINTENANCE_OPS", name: "Maintenance & Gang Operations", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Periodic surface renewal, pothole elimination drive, culvert desilting, and disaster clearance." },
+    { code: "FIELD_INSPECTION", name: "Field Inspection & Measurement", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "Check measurement verification, daily road register logs, and site inspection memos." },
+    { code: "SAFETY_COMPLIANCE", name: "Road Safety & Blackspot Remediation", nature: "Functional Permission Group", is_statutory_cadre: false, mandate: "IRC safety audit compliance, crash barrier installation, and fatal accident spot engineering fixes." }
+  ],
+  external_stakeholders: [
+    { department: "Revenue and Disaster Management", spoc: "Special District Revenue Officer (LA) / RDO", portfolio: "Land Acquisition under TN Highways Act 2001", clearance: "Section 15(2) Notice, Sec 15(1) Gazette, Sec 19(1) Award", status: "VERIFIED OFFICIAL" },
+    { department: "Electricity & TANGEDCO/TNPDCL", spoc: "Superintending Engineer (Distribution Circle)", portfolio: "Utility Shifting & Power Disconnection", clearance: "HT tower relocation (110kV/33kV), LT pole shift", status: "VERIFIED OFFICIAL" },
+    { department: "Environment, Climate Change & Forests", spoc: "District Forest Officer (DFO) / PCCF", portfolio: "Statutory Forest Clearance & Tree Felling", clearance: "Forest Conservation Act (FCA) Stage I & II Clearance", status: "VERIFIED OFFICIAL" },
+    { department: "TWAD Board / CMWSSB", spoc: "Executive Engineer (Maintenance Division)", portfolio: "Bulk Water Mains Shifting", clearance: "Feeder water main diversion along Right-of-Way (ROW)", status: "VERIFIED OFFICIAL" },
+    { department: "Southern Railway (Zone 7)", spoc: "Chief Bridge Engineer (CBE) / Dy. CE (Bridges)", portfolio: "Railway Over Bridge (ROB) / RUB Track Spans", clearance: "General Arrangement Drawing (GAD) & CRS Safety Sanction", status: "VERIFIED OFFICIAL" },
+    { department: "Corporations & Municipalities (GCC)", spoc: "City Engineer / Superintending Engineer (Projects)", portfolio: "Urban Right-of-Way & Storm Water Drains", clearance: "Traffic diversion NOC & SWD culvert integration", status: "VERIFIED OFFICIAL" }
+  ],
+  zones_hierarchy: [
+    { name: "Chennai Zone", hq: "Chennai (HRS Campus, Guindy)", chief_engineer: "Er. S. Palanivel", circles: ["Chennai Circle", "Chengalpattu Circle", "Tiruvallur Circle"], divisions_count: 8, jurisdiction: "Northern Coastal & Metro Corridors" },
+    { name: "Coimbatore Zone", hq: "Coimbatore (Mettupalayam Road)", chief_engineer: "Er. S. Palanivel (A/C)", circles: ["Coimbatore Circle", "Salem Circle", "Tiruppur Circle"], divisions_count: 7, jurisdiction: "Western Industrial & Hill Corridors (Nilgiris)" },
+    { name: "Madurai Zone", hq: "Madurai (Alagar Kovil Road)", chief_engineer: "Er. Ramesh", circles: ["Madurai Circle", "Tirunelveli Circle", "Ramanathapuram Circle"], divisions_count: 9, jurisdiction: "Southern Corridors & Port Connectivity" },
+    { name: "Tiruchirappalli Zone", hq: "Trichy (T.V.S. Toll Gate)", chief_engineer: "Er. S. Jawahar Muthuraj", circles: ["Trichy Circle", "Thanjavur Circle", "Villupuram Circle"], divisions_count: 8, jurisdiction: "Central Delta & Agro-Corridors" }
+  ],
+  verification_metadata: {
+    rules_citation: "Tamil Nadu Highways Engineering Service (TN-HES) Rules, G.O.Ms.No.172 dated 03.11.2025; G.O.Ms.No.43",
+    statutory_delegation_citation: "G.O. Ms. No. 75 & G.O. Ms. No. 163 (Financial Powers for Technical Sanction & Tender Acceptance)",
+    verification_date: "2026-11-06",
+    cadre_rule: "Engineering cadre uses Divisional Engineer (H) [DE], Assistant Divisional Engineer (H) [ADE], Assistant Engineer (H) [AE], Junior Engineer (H) [JE]."
   }
 };
 
@@ -1071,6 +1525,14 @@ export const api = {
         is_demo: true,
         disclaimer: 'DEMO DATA ONLY: Generated for executive smartboard demonstration. Official executive actions require formal statutory Government Orders (G.O.).'
       };
+    }
+  },
+
+  getVerifiedOrganisationStructure: async (): Promise<VerifiedOrganisationStructure> => {
+    try {
+      return await request<VerifiedOrganisationStructure>('/executive/organisation/verified-structure');
+    } catch {
+      return fallbackOrganisationStructure;
     }
   },
 };
