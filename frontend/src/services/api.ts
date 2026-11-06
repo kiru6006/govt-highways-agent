@@ -33,7 +33,15 @@ import {
   TenderItem,
   LandParcelItem,
   LegalCaseItem,
-  ProgrammeOverviewKPIs
+  ProgrammeOverviewKPIs,
+  Project360Detail,
+  ProjectMilestoneItem,
+  ProjectRiskItem,
+  ProjectProgressRecordItem,
+  EVMVarianceMetrics,
+  WorkPackageItem,
+  ApprovalItem,
+  ProjectStakeholderItem
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -1208,6 +1216,556 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   return res.json() as Promise<T>;
 }
 
+// -------------------------------------------------------------
+// Fallback Project 360° Intelligence Generator
+// -------------------------------------------------------------
+function fallbackProject360(id: number): Project360Detail {
+  const p = fallbackProjects.find(item => item.id === id) || fallbackProjects[0];
+  const isECR = p.id === 1;
+  const isTambaram = p.id === 2;
+
+  const plannedPhys = isECR ? 65.0 : isTambaram ? 45.0 : 92.0;
+  const actualPhys = p.physical_progress_pct;
+  const actualCost = p.expenditure_to_date_cr;
+  const sanctioned = p.sanctioned_cost_cr;
+
+  const ev = (sanctioned * (actualPhys / 100.0));
+  const pv = (sanctioned * (plannedPhys / 100.0));
+  const cv = ev - actualCost;
+  const sv = ev - pv;
+  const cpi = actualCost > 0 ? ev / actualCost : 1.0;
+  const spi = pv > 0 ? ev / pv : 1.0;
+  const delayDays = isECR ? 65 : isTambaram ? 90 : 0;
+
+  return {
+    id: p.id,
+    project_code: p.project_code,
+    title: p.title,
+    description: p.description,
+    status: p.status,
+    priority: p.priority,
+    verification_status: "Verified against G.O. and Department Records",
+    jurisdiction_hierarchy: {
+      zone_name: p.zone_id === 1 ? "Chennai Zone" : "Statewide Highways Zone",
+      circle_name: p.circle_id === 1 ? "Chengalpattu Circle" : "Circle Office",
+      division_name: p.division_id === 1 ? "Chengalpattu Division" : "Division Office",
+      district: isECR || isTambaram ? "Chengalpattu" : "Kanchipuram"
+    },
+    technical_specs: {
+      road_name: p.road_name || "Highways Strategic Corridor",
+      road_code: isECR ? "SH-49" : isTambaram ? "MDR-102" : "ODR-045",
+      road_type: p.road_type,
+      carriageway_width_m: isECR ? 14.0 : isTambaram ? 15.5 : 7.0,
+      lane_configuration: isECR ? "4-Lane with Paved Shoulder" : isTambaram ? "4-Lane Elevated Flyover + Service Roads" : "2-Lane High Level Bridge",
+      pavement_type: isECR ? "Flexible (Bituminous Concrete / DBM)" : "Rigid Deck & Flexible Approaches",
+      total_length_km: isECR ? 23.0 : isTambaram ? 4.8 : 0.65,
+      start_chainage_km: isECR ? 22.0 : isTambaram ? 0.0 : 4.5,
+      end_chainage_km: isECR ? 45.0 : isTambaram ? 4.8 : 5.15,
+      terrain: "Plain / Coastal Corridor",
+      funding_programme: isECR ? "Chief Minister Road Development Programme (CMRDP)" : "State Road Fund (CRIDP)"
+    },
+    sanctions: [
+      {
+        id: 101,
+        project_id: p.id,
+        approval_type: "ADMINISTRATIVE_SANCTION",
+        reference_number: isECR ? "G.O.(Ms) No.84, Highways (HN2) Dept" : "G.O.(Ms) No.112, Highways (HW1) Dept",
+        sanction_amount_cr: p.sanctioned_cost_cr,
+        approved_by_role: "Government of Tamil Nadu (Secretariat)",
+        status: "APPROVED",
+        approval_date: "2024-07-14T00:00:00Z"
+      },
+      {
+        id: 102,
+        project_id: p.id,
+        approval_type: "TECHNICAL_SANCTION",
+        reference_number: isECR ? "TS-CHE-09/2024-25" : "TS-CHE-15/2024-25",
+        sanction_amount_cr: p.sanctioned_cost_cr - 2.5,
+        approved_by_role: "Chief Engineer (Highways) C&M",
+        status: "APPROVED",
+        approval_date: "2024-08-20T00:00:00Z"
+      }
+    ],
+    milestones: [
+      {
+        id: 201,
+        project_id: p.id,
+        milestone_code: "MS-01",
+        title: "Site Handover, Utility Survey & Joint Boundary Fixation",
+        description: "Demarcation of right of way (RoW) and initial utility joint survey with TANGEDCO/TWAD.",
+        target_date: "2025-01-15T00:00:00Z",
+        actual_date: "2025-01-20T00:00:00Z",
+        target_physical_pct: 10.0,
+        actual_physical_pct: 10.0,
+        delay_days: 5,
+        status: "COMPLETED",
+        weightage_pct: 10.0
+      },
+      {
+        id: 202,
+        project_id: p.id,
+        milestone_code: "MS-02",
+        title: "Granular Sub-Base (GSB) & Drainage Culverts",
+        description: "Completion of 15 cross-drainage culverts and GSB laying up to km 33/0.",
+        target_date: "2025-05-30T00:00:00Z",
+        actual_date: "2025-06-10T00:00:00Z",
+        target_physical_pct: 35.0,
+        actual_physical_pct: 35.0,
+        delay_days: 11,
+        status: "COMPLETED",
+        weightage_pct: 25.0
+      },
+      {
+        id: 203,
+        project_id: p.id,
+        milestone_code: "MS-03",
+        title: "Dense Bituminous Macadam (DBM) Layer & Retaining Walls",
+        description: "75mm DBM layer execution and coastal protection retaining structures.",
+        target_date: "2025-09-30T00:00:00Z",
+        actual_date: undefined,
+        target_physical_pct: 65.0,
+        actual_physical_pct: actualPhys,
+        delay_days: delayDays,
+        status: delayDays > 30 ? "DELAYED" : "IN_PROGRESS",
+        weightage_pct: 35.0
+      },
+      {
+        id: 204,
+        project_id: p.id,
+        milestone_code: "MS-04",
+        title: "Bituminous Concrete (BC), Signages & Commissioning",
+        description: "40mm BC wearing course, road markings, retro-reflective signages and street illumination.",
+        target_date: "2026-03-31T00:00:00Z",
+        actual_date: undefined,
+        target_physical_pct: 100.0,
+        actual_physical_pct: 0.0,
+        delay_days: delayDays,
+        status: "PENDING",
+        weightage_pct: 30.0
+      }
+    ],
+    execution_tracking: {
+      planned_value_cr: Math.round(pv * 100) / 100,
+      earned_value_cr: Math.round(ev * 100) / 100,
+      actual_cost_cr: Math.round(actualCost * 100) / 100,
+      cost_variance_cr: Math.round(cv * 100) / 100,
+      schedule_variance_cr: Math.round(sv * 100) / 100,
+      cost_performance_index: Math.round(cpi * 1000) / 1000,
+      schedule_performance_index: Math.round(spi * 1000) / 1000,
+      schedule_variance_days: delayDays,
+      planned_physical_pct: plannedPhys,
+      actual_physical_pct: actualPhys,
+      physical_variance_pct: Math.round((actualPhys - plannedPhys) * 10) / 10,
+      financial_variance_pct: Math.round((p.financial_progress_pct - (pv / sanctioned * 100)) * 10) / 10,
+      status_assessment: delayDays > 60 || sv < -15 ? "CRITICAL_DELAY" : delayDays > 15 ? "AT_RISK" : "ON_TRACK"
+    },
+    progress_history: [
+      {
+        id: 301,
+        project_id: p.id,
+        reporting_month: "2025-05",
+        planned_physical_pct: 30.0,
+        actual_physical_pct: 28.5,
+        planned_financial_pct: 25.0,
+        actual_financial_pct: 24.0,
+        expenditure_in_month_cr: 12.5,
+        cumulative_expenditure_cr: 34.0,
+        earned_value_cr: Math.round((sanctioned * 0.285) * 100) / 100,
+        planned_value_cr: Math.round((sanctioned * 0.30) * 100) / 100,
+        cost_variance_cr: 6.5,
+        schedule_variance_cr: -2.1,
+        remarks: "GSB laying completed smoothly up to chainage 30. Minor rain interruptions.",
+        created_at: "2025-05-31T00:00:00Z"
+      },
+      {
+        id: 302,
+        project_id: p.id,
+        reporting_month: "2025-07",
+        planned_physical_pct: 48.0,
+        actual_physical_pct: 42.0,
+        planned_financial_pct: 42.0,
+        actual_financial_pct: 38.0,
+        expenditure_in_month_cr: 15.8,
+        cumulative_expenditure_cr: 49.8,
+        earned_value_cr: Math.round((sanctioned * 0.42) * 100) / 100,
+        planned_value_cr: Math.round((sanctioned * 0.48) * 100) / 100,
+        cost_variance_cr: 9.8,
+        schedule_variance_cr: -8.5,
+        remarks: "Land dispute arose near Akkarai stretch. Section 15(2) enquiry pending with Revenue.",
+        created_at: "2025-07-31T00:00:00Z"
+      },
+      {
+        id: 303,
+        project_id: p.id,
+        reporting_month: "2025-09",
+        planned_physical_pct: plannedPhys,
+        actual_physical_pct: actualPhys,
+        planned_financial_pct: 55.0,
+        actual_financial_pct: p.financial_progress_pct,
+        expenditure_in_month_cr: 15.0,
+        cumulative_expenditure_cr: actualCost,
+        earned_value_cr: Math.round(ev * 100) / 100,
+        planned_value_cr: Math.round(pv * 100) / 100,
+        cost_variance_cr: Math.round(cv * 100) / 100,
+        schedule_variance_cr: Math.round(sv * 100) / 100,
+        remarks: "Work stalled on 4.2 Ha section. TANGEDCO 42 HT poles relocation awaiting shutdown approval.",
+        created_at: "2025-09-30T00:00:00Z"
+      }
+    ],
+    work_packages: [
+      {
+        id: 401,
+        package_code: isECR ? "PKG-ECR-01" : "PKG-TAM-01",
+        project_id: p.id,
+        title: isECR ? "Widening & Strengthening km 22/0 to 33/0" : "Main Elevated Viaduct Substructure & Superstructure",
+        start_chainage_km: isECR ? 22.0 : 0.0,
+        end_chainage_km: isECR ? 33.0 : 2.8,
+        sanctioned_amount_cr: Math.round(sanctioned * 0.52 * 100) / 100,
+        contractor_id: p.contractor_id || 1,
+        contractor_name: p.contractor_name || "L&T Infrastructure Engineering Ltd",
+        physical_progress_pct: Math.min(actualPhys + 8, 100),
+        financial_progress_pct: Math.min(p.financial_progress_pct + 4, 100),
+        status: p.status
+      },
+      {
+        id: 402,
+        package_code: isECR ? "PKG-ECR-02" : "PKG-TAM-02",
+        project_id: p.id,
+        title: isECR ? "Widening & Bridge Approaches km 33/0 to 45/0" : "Service Roads, Utility Ducts & Storm Water Drains",
+        start_chainage_km: isECR ? 33.0 : 2.8,
+        end_chainage_km: isECR ? 45.0 : 4.8,
+        sanctioned_amount_cr: Math.round(sanctioned * 0.48 * 100) / 100,
+        contractor_id: p.contractor_id || 1,
+        contractor_name: p.contractor_name || "L&T Infrastructure Engineering Ltd",
+        physical_progress_pct: Math.max(actualPhys - 10, 10),
+        financial_progress_pct: Math.max(p.financial_progress_pct - 8, 10),
+        status: p.status
+      }
+    ],
+    contractors_and_consultants: {
+      main_contractor: {
+        name: p.contractor_name || "L&T Infrastructure Engineering Ltd",
+        registration: "CR-TN-CL1-2018-092",
+        class: "Class I (Super-Special)",
+        pan: "AAACL1234F",
+        gst: "33AAACL1234F1Z5"
+      },
+      contracts: [
+        {
+          agreement_number: isECR ? "AGR/CE-CM/2024-25/088" : "AGR/CE-CM/2024-25/104",
+          agreement_date: "2024-09-05T00:00:00Z",
+          contract_value_cr: Math.round(sanctioned * 0.98 * 100) / 100,
+          performance_security_cr: Math.round(sanctioned * 0.05 * 100) / 100,
+          status: "ACTIVE_EXECUTING"
+        }
+      ],
+      consultants: [
+        {
+          company_name: "STUP Consultants Pvt Ltd & SMEC India Joint Venture",
+          assignment_title: "Independent Engineer & Quality Audit Supervision Consultant",
+          contract_value_cr: 4.85,
+          status: "ACTIVE"
+        }
+      ]
+    },
+    assigned_officials_and_stakeholders: [
+      {
+        role_label: "Head of Department",
+        officer_name: "Er. R. Senthil Kumar, M.E.",
+        designation: "Chief Engineer (Highways) C&M",
+        department: "Highways Department",
+        phone: "+91 44 2567 1234",
+        email: "ce.cm@tnhighways.gov.in",
+        office_location: "Integrated Chief Engineer Office, Guindy, Chennai"
+      },
+      {
+        role_label: "Superintending Engineer",
+        officer_name: "Er. M. Rajasekaran, M.E.",
+        designation: "Superintending Engineer (Highways)",
+        department: "Highways Department (Chengalpattu Circle)",
+        phone: "+91 44 2742 5678",
+        email: "se.cpt@tnhighways.gov.in",
+        office_location: "Chengalpattu Highways Complex, Chengalpattu"
+      },
+      {
+        role_label: "Divisional Engineer (Executive Engineer)",
+        officer_name: "Er. P. Anandhan, B.E.",
+        designation: "Divisional Engineer (Highways)",
+        department: "Highways Department (Chengalpattu Division)",
+        phone: "+91 44 2743 9012",
+        email: "ee.cpt@tnhighways.gov.in",
+        office_location: "Divisional Engineer Office, Chengalpattu"
+      },
+      {
+        role_label: "District Collector",
+        officer_name: "Thiru S. Arunraj, IAS",
+        designation: "District Collector & District Magistrate",
+        department: "Revenue and Disaster Management Department",
+        phone: "+91 44 2742 2222",
+        email: "collr-cpt@nic.in",
+        office_location: "District Collectorate, Chengalpattu"
+      },
+      {
+        role_label: "Utility Coordinator (Electricity)",
+        officer_name: "Er. K. Murugan, M.E.",
+        designation: "Superintending Engineer (Distribution)",
+        department: "TANGEDCO (Kanchipuram Electricity Distribution Circle)",
+        phone: "+91 44 2722 3456",
+        email: "se.kanchi@tnebnet.org",
+        office_location: "Oli Mohamedpet, Kanchipuram"
+      }
+    ],
+    land_acquisition: {
+      total_parcels: isECR ? 38 : 14,
+      total_land_sqm: isECR ? 42000 : 18500,
+      total_land_hectares: isECR ? 4.2 : 1.85,
+      compensation_assessed_cr: isECR ? 18.50 : 9.20,
+      compensation_paid_cr: isECR ? 14.20 : 6.80,
+      parcels: [
+        {
+          parcel_ref: "CPT-ECR-P01",
+          district: "Chengalpattu",
+          taluk: "Sholinganallur",
+          village: "Akkarai",
+          survey_number: "148/2A",
+          classification: "Rayanwari Wet (Agricultural)",
+          total_sqm: 4200,
+          sec15_2_date: "2024-04-10T00:00:00Z",
+          sec15_1_date: "2024-08-15T00:00:00Z",
+          sec19_1_date: undefined,
+          compensation_paid_cr: 1.85,
+          possession_status: "DISPUTED_AWARD_PENDING",
+          has_litigation: true
+        },
+        {
+          parcel_ref: "CPT-ECR-P02",
+          district: "Chengalpattu",
+          taluk: "Thiruporur",
+          village: "Muttukadu",
+          survey_number: "204/1B",
+          classification: "Dry Land (Commercial Frontage)",
+          total_sqm: 6500,
+          sec15_2_date: "2024-04-10T00:00:00Z",
+          sec15_1_date: "2024-08-15T00:00:00Z",
+          sec19_1_date: "2025-01-20T00:00:00Z",
+          compensation_paid_cr: 3.40,
+          possession_status: "POSSESSION_TAKEN",
+          has_litigation: false
+        },
+        {
+          parcel_ref: "CPT-ECR-P03",
+          district: "Chengalpattu",
+          taluk: "Thiruporur",
+          village: "Kovalam",
+          survey_number: "88/3",
+          classification: "Poramboke (Water Body Margin)",
+          total_sqm: 8200,
+          sec15_2_date: "2024-02-18T00:00:00Z",
+          sec15_1_date: "2024-06-12T00:00:00Z",
+          sec19_1_date: "2024-11-05T00:00:00Z",
+          compensation_paid_cr: 0.0,
+          possession_status: "POSSESSION_TAKEN",
+          has_litigation: false
+        }
+      ]
+    },
+    utilities_and_dependencies: {
+      total_dependencies: isECR ? 3 : 2,
+      pending_clearances: isECR ? 2 : 1,
+      total_impact_days: delayDays,
+      items: [
+        {
+          id: 1,
+          project_id: p.id,
+          project_title: p.title,
+          department_name: "TANGEDCO",
+          contact_officer: "Er. K. Murugan (SE Distribution)",
+          dependency_type: "HT/LT Electric Line Shifting",
+          status: "CRITICAL_ACTION_REQUIRED",
+          days_pending: delayDays,
+          impact_cost_cr: 4.80,
+          schedule_delay_days: delayDays,
+          action_required: "Approve 33kV line relocation estimate and provide line shutdown schedule for km 28+400."
+        },
+        {
+          id: 2,
+          project_id: p.id,
+          project_title: p.title,
+          department_name: "TWAD Board",
+          contact_officer: "Er. S. Vetrivel (EE Project Division)",
+          dependency_type: "Bulk Water Pipeline Relocation",
+          status: "IN_PROGRESS",
+          days_pending: 25,
+          impact_cost_cr: 1.80,
+          schedule_delay_days: 15,
+          action_required: "Interconnection of 400mm DI replacement pipeline along service road."
+        }
+      ]
+    },
+    engineering_quality: {
+      total_defects_logged: 3,
+      critical_unresolved: isECR ? 1 : 0,
+      records: [
+        {
+          defect_reference: "QCR-2025-089",
+          component_type: "Dense Bituminous Macadam (DBM)",
+          description: "Highways Research Station (HRS) core audit detected localized compaction deficit (95.2% vs min 98.0% specified) at km 28+400 to 28+650 LHS.",
+          severity: "HIGH",
+          status: "UNDER_RECTIFICATION",
+          financial_penalty_cr: 0.25,
+          rectification_deadline: "2025-11-20T00:00:00Z"
+        },
+        {
+          defect_reference: "QCR-2025-042",
+          component_type: "M30 RCC Box Culvert",
+          description: "Honeycombing observed on outer wing wall barrel. Non-destructive rebound hammer test conducted.",
+          severity: "MEDIUM",
+          status: "RECTIFIED_VERIFIED",
+          financial_penalty_cr: 0.05,
+          rectification_deadline: "2025-06-15T00:00:00Z"
+        }
+      ]
+    },
+    legal_cases: {
+      total_cases: isECR ? 2 : 1,
+      active_stays_count: isECR ? 1 : 0,
+      total_financial_exposure_cr: isECR ? 14.50 : 3.20,
+      items: [
+        {
+          id: 601,
+          case_number: "W.P. No. 18942 of 2025",
+          court_name: "High Court of Judicature at Madras (Principal Seat)",
+          petitioner: "K. Varadharajan & 4 Others vs State of Tamil Nadu",
+          category: "LAND_ACQUISITION_WRIT",
+          stay_order_active: isECR,
+          stay_details: isECR ? "Interim Stay of Dispossession granted on 14-Jul-2025 for Survey No. 148/2A (Akkarai Section, km 28+400)." : undefined,
+          financial_exposure_cr: 14.50,
+          schedule_delay_days: delayDays,
+          standing_counsel: "Special Government Pleader (Highways & Revenue)",
+          next_hearing_date: "2025-11-25T00:00:00Z",
+          case_status: isECR ? "STAY_ACTIVE" : "DISPOSED"
+        }
+      ]
+    },
+    documents: [
+      {
+        id: 701,
+        document_title: "Administrative Sanction Government Order (G.O.Ms.No.84)",
+        file_name: "GO_Ms_84_Highways_CMRDP_Sanction.pdf",
+        mime_type: "application/pdf",
+        file_size_bytes: 2458920,
+        sha256_hash: "a4c28f1190bc89ef23d11b3e811c7590d6b9c97b83d47f9c892b11568e21ad47",
+        is_verified: true,
+        created_at: "2024-07-15T00:00:00Z"
+      },
+      {
+        id: 702,
+        document_title: "Technical Sanction Proceedings by Chief Engineer",
+        file_name: "TS_Proceedings_CE_CM_09_2024_25.pdf",
+        mime_type: "application/pdf",
+        file_size_bytes: 1845100,
+        sha256_hash: "d9e84128f7ca541991ab39c656d20387431fb542ea4c94702ba067f918e98341",
+        is_verified: true,
+        created_at: "2024-08-22T00:00:00Z"
+      },
+      {
+        id: 703,
+        document_title: "Highways Research Station (HRS) Quality Audit Certificate",
+        file_name: "HRS_Quality_Audit_Q2_2025.pdf",
+        mime_type: "application/pdf",
+        file_size_bytes: 3120450,
+        sha256_hash: "3c8297b5e1974efbb75800d04c000f07ab9b8a3e7e29683e9508920194bc0281",
+        is_verified: true,
+        created_at: "2025-08-30T00:00:00Z"
+      }
+    ],
+    risks_and_issues: {
+      open_risks: isECR ? 3 : 1,
+      critical_issues: isECR ? 2 : 1,
+      risks: [
+        {
+          id: 801,
+          project_id: p.id,
+          risk_code: "RSK-01",
+          category: "LAND_ACQUISITION",
+          description: "Sub-Collector Tambaram award inquiry delayed under Section 15(2); interim compensation dispute in Akkarai.",
+          probability: "HIGH",
+          impact: "CRITICAL",
+          risk_score: 9,
+          mitigation_strategy: "Convene Secretariat Bilateral Taskforce with Principal Secretary (Revenue) to fast-track compensation deposit.",
+          owner_role: "Superintending Engineer (Chengalpattu Circle)",
+          status: "OPEN"
+        },
+        {
+          id: 802,
+          project_id: p.id,
+          risk_code: "RSK-02",
+          category: "UTILITY_SHIFTING",
+          description: "Relocation of 42 High Tension electrical poles pending line shutdown approval from TANGEDCO.",
+          probability: "HIGH",
+          impact: "HIGH",
+          risk_score: 6,
+          mitigation_strategy: "Request Member (Distribution) TANGEDCO to schedule weekend maintenance shutdown for pole relocation.",
+          owner_role: "Divisional Engineer (Chengalpattu Division)",
+          status: "OPEN"
+        }
+      ],
+      issues: [
+        {
+          issue_ref: "LDR-2026-001",
+          category: "Land Acquisition & Revenue",
+          description: "4.2 Hectares of private land acquisition stalled due to landowner title disputes, halting widening at km 28+400.",
+          priority: "CRITICAL",
+          status: "Action in Progress",
+          escalation_status: "SECRETARIAT_ESCALATED"
+        }
+      ]
+    },
+    ai_findings: [
+      {
+        id: 901,
+        finding_type: "SCHEDULE_SLIPPAGE_ALERT",
+        project_id: p.id,
+        project_title: p.title,
+        severity: "CRITICAL",
+        root_cause_category: "Land Acquisition & Revenue",
+        issue_summary: `Schedule slip of ${delayDays} days detected against Baseline Milestone MS-03. Earned Value (₹${ev.toFixed(2)} Cr) is tracking significantly below Planned Value (₹${pv.toFixed(2)} Cr), yielding SPI of ${spi.toFixed(3)}.`,
+        evidence_chain: "Tamil Nadu Highways Act 2001 Section 15(2) delay + Madras HC Interim Stay W.P. No. 18942/2025.",
+        statutory_rule_citation: "Tamil Nadu Highways Act, 2001 (TN Act 34 of 2002) Section 15(2) & 19(1).",
+        recommended_action: "Minister / Principal Secretary should convene Joint Revenue Taskforce with District Collector Chengalpattu to execute court deposit under Section 21 and seek immediate vacation of stay.",
+        is_verified_by_model: true,
+        human_validation_status: "PENDING_REVIEW"
+      }
+    ],
+    audit_history: [
+      {
+        id: 1001,
+        timestamp: "2024-07-15T11:30:00Z",
+        user_name: "Secretary to Government",
+        action: "SANCTION_APPROVED",
+        entity_name: "Project Sanction Order",
+        details: `Administrative Sanction G.O.Ms.No.84 issued for ₹${sanctioned.toFixed(2)} Cr.`
+      },
+      {
+        id: 1002,
+        timestamp: "2024-09-05T14:15:00Z",
+        user_name: "Chief Engineer (C&M)",
+        action: "CONTRACT_AWARDED",
+        entity_name: "Contract Agreement",
+        details: `Contract awarded to ${p.contractor_name || "L&T Infrastructure"} under Agreement No. 88.`
+      },
+      {
+        id: 1003,
+        timestamp: "2025-08-30T16:45:00Z",
+        user_name: "Director, HRS",
+        action: "QUALITY_AUDIT_LOGGED",
+        entity_name: "HRS Test Verification",
+        details: "Highways Research Station submitted Bituminous Core Test Report QCR-2025-089."
+      }
+    ]
+  };
+}
+
 export const api = {
   // Auth
   login: async (username: string, password: string) => {
@@ -1450,10 +2008,31 @@ export const api = {
   },
 
   // Projects
-  getProjects: async (roadType?: RoadType) => {
+
+  getProjects: async (param?: RoadType | {
+    roadType?: RoadType;
+    status?: string;
+    priority?: string;
+    programmeId?: number;
+    search?: string;
+  }) => {
+    const isObject = typeof param === 'object' && param !== null;
+    const roadType = isObject ? param.roadType : (param as RoadType | undefined);
+    const status = isObject ? param.status : undefined;
+    const priority = isObject ? param.priority : undefined;
+    const programmeId = isObject ? param.programmeId : undefined;
+    const search = isObject ? param.search : undefined;
+
     try {
-      const query = roadType ? `?road_type=${roadType}` : '';
-      return await request<ProjectItem[]>(`/projects${query}`);
+      const q = new URLSearchParams();
+      if (roadType) q.append('road_type', roadType);
+      if (status && status !== 'ALL') q.append('status', status);
+      if (priority && priority !== 'ALL') q.append('priority', priority);
+      if (programmeId) q.append('programme_id', String(programmeId));
+      if (search) q.append('search', search);
+
+      const queryString = q.toString() ? `?${q.toString()}` : '';
+      return await request<ProjectItem[]>(`/projects${queryString}`);
     } catch {
       let filtered = [...fallbackProjects];
       if (activeUser.role_code === 'CONTRACTOR') {
@@ -1461,6 +2040,24 @@ export const api = {
       }
       if (roadType) {
         filtered = filtered.filter(p => p.road_type === roadType);
+      }
+      if (status && status !== 'ALL') {
+        filtered = filtered.filter(p => p.status === status);
+      }
+      if (priority && priority !== 'ALL') {
+        filtered = filtered.filter(p => p.priority === priority);
+      }
+      if (programmeId) {
+        filtered = filtered.filter(p => p.programme_id === programmeId);
+      }
+      if (search) {
+        const s = search.toLowerCase();
+        filtered = filtered.filter(p =>
+          p.title.toLowerCase().includes(s) ||
+          p.project_code.toLowerCase().includes(s) ||
+          (p.road_name && p.road_name.toLowerCase().includes(s)) ||
+          (p.contractor_name && p.contractor_name.toLowerCase().includes(s))
+        );
       }
       return filtered;
     }
@@ -1473,6 +2070,38 @@ export const api = {
       const p = fallbackProjects.find(item => item.id === id);
       if (!p) throw new Error('Project not found');
       return p;
+    }
+  },
+
+  getProject360: async (id: number): Promise<Project360Detail> => {
+    try {
+      return await request<Project360Detail>(`/projects/${id}/360`);
+    } catch {
+      return fallbackProject360(id);
+    }
+  },
+
+  getProjectMilestones: async (id: number): Promise<ProjectMilestoneItem[]> => {
+    try {
+      return await request<ProjectMilestoneItem[]>(`/projects/${id}/milestones`);
+    } catch {
+      return fallbackProject360(id).milestones;
+    }
+  },
+
+  getProjectRisks: async (id: number): Promise<ProjectRiskItem[]> => {
+    try {
+      return await request<ProjectRiskItem[]>(`/projects/${id}/risks`);
+    } catch {
+      return fallbackProject360(id).risks_and_issues.risks;
+    }
+  },
+
+  getProjectProgressHistory: async (id: number): Promise<ProjectProgressRecordItem[]> => {
+    try {
+      return await request<ProjectProgressRecordItem[]>(`/projects/${id}/progress-history`);
+    } catch {
+      return fallbackProject360(id).progress_history;
     }
   },
 

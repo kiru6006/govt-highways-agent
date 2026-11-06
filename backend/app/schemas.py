@@ -167,6 +167,28 @@ class ProjectOut(BaseModel):
     contractor_name: Optional[str] = None
     road_name: Optional[str] = None
     created_at: datetime.datetime
+    start_date: Optional[datetime.datetime] = None
+    target_completion_date: Optional[datetime.datetime] = None
+    actual_completion_date: Optional[datetime.datetime] = None
+    planned_start_date: Optional[datetime.datetime] = None
+    planned_completion_date: Optional[datetime.datetime] = None
+    revised_cost_cr: Optional[float] = None
+    sanction_as_number: Optional[str] = None
+    sanction_as_date: Optional[datetime.datetime] = None
+    sanction_ts_number: Optional[str] = None
+    sanction_ts_date: Optional[datetime.datetime] = None
+    carriageway_width_m: Optional[float] = None
+    lane_configuration: Optional[str] = None
+    pavement_type: Optional[str] = None
+    total_length_km: Optional[float] = None
+    start_chainage_km: Optional[float] = None
+    end_chainage_km: Optional[float] = None
+    funding_source: Optional[str] = None
+    project_director_name: Optional[str] = None
+    responsible_ee_name: Optional[str] = None
+    programme_id: Optional[int] = None
+    programme_code: Optional[str] = None
+    verification_status: Optional[str] = "Verified"
 
     class Config:
         from_attributes = True
@@ -880,3 +902,137 @@ class ProgrammeOverviewKPIs(BaseModel):
     financial_exposure_cr: float
     critical_risk_count: int
     leadership: dict
+
+# -------------------------------------------------------------
+# PHASE 3: PROJECT 360° INTELLIGENCE SCHEMAS
+# -------------------------------------------------------------
+
+class WorkPackageOut(BaseModel):
+    id: int
+    project_id: int
+    package_number: str
+    title: str
+    scope_description: Optional[str] = None
+    cost_cr: float
+    start_km: float
+    end_km: float
+    status: str
+
+    class Config:
+        from_attributes = True
+
+class ApprovalOut(BaseModel):
+    id: int
+    project_id: int
+    approval_type: str
+    reference_number: str
+    sanction_amount_cr: float
+    approved_by_role: str
+    status: str
+    approval_date: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class ProjectMilestoneOut(BaseModel):
+    id: int
+    project_id: int
+    work_package_id: Optional[int] = None
+    milestone_code: str
+    title: str
+    description: Optional[str] = None
+    target_date: datetime.datetime
+    actual_date: Optional[datetime.datetime] = None
+    target_physical_pct: float
+    actual_physical_pct: float
+    delay_days: int
+    status: str
+    weightage_pct: float
+
+    class Config:
+        from_attributes = True
+
+class ProjectRiskOut(BaseModel):
+    id: int
+    project_id: int
+    risk_code: str
+    category: str
+    title: str
+    description: str
+    probability: str
+    impact: str
+    severity_score: float
+    mitigation_strategy: str
+    status: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class ProjectProgressRecordOut(BaseModel):
+    id: int
+    project_id: int
+    reporting_month: str
+    planned_physical_pct: float
+    actual_physical_pct: float
+    planned_financial_pct: float
+    actual_financial_pct: float
+    expenditure_in_month_cr: float
+    cumulative_expenditure_cr: float
+    earned_value_cr: float
+    planned_value_cr: float
+    cost_variance_cr: float
+    schedule_variance_cr: float
+    remarks: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class EVMVarianceMetrics(BaseModel):
+    planned_value_cr: float
+    earned_value_cr: float
+    actual_cost_cr: float
+    cost_variance_cr: float  # CV = EV - AC
+    schedule_variance_cr: float  # SV = EV - PV
+    cost_performance_index: float  # CPI = EV / AC
+    schedule_performance_index: float  # SPI = EV / PV
+    schedule_variance_days: int
+    planned_physical_pct: float
+    actual_physical_pct: float
+    physical_variance_pct: float
+    planned_financial_pct: float
+    actual_financial_pct: float
+    financial_variance_pct: float
+    status_assessment: str  # ON_TRACK, AT_RISK, CRITICAL_DELAY, COST_OVERRUN
+
+class ProjectStakeholderOut(BaseModel):
+    id: int
+    stakeholder_type: str
+    department_name: Optional[str] = None
+    contact_person: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    responsibility_scope: Optional[str] = None
+    designation: Optional[str] = None
+    posting_unit: Optional[str] = None
+
+class Project360DetailOut(BaseModel):
+    project: ProjectOut
+    jurisdiction_hierarchy: dict
+    technical_specs: dict
+    sanctions: List[ApprovalOut]
+    milestones: List[ProjectMilestoneOut]
+    execution_tracking: EVMVarianceMetrics
+    progress_history: List[ProjectProgressRecordOut]
+    work_packages: List[WorkPackageOut]
+    contractors_and_consultants: dict
+    assigned_officials_and_stakeholders: List[ProjectStakeholderOut]
+    land_acquisition: dict
+    utilities_and_dependencies: dict
+    engineering_quality: dict
+    legal_cases: dict
+    documents: List[DocumentOut]
+    risks_and_issues: dict
+    ai_findings: List[AIIntelligenceFindingOut]
+    audit_history: List[AuditEventOut]

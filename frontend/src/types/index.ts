@@ -34,6 +34,28 @@ export interface ProjectItem {
   contractor_name?: string;
   road_name?: string;
   created_at: string;
+  start_date?: string;
+  target_completion_date?: string;
+  actual_completion_date?: string;
+  planned_start_date?: string;
+  planned_completion_date?: string;
+  revised_cost_cr?: number;
+  sanction_as_number?: string;
+  sanction_as_date?: string;
+  sanction_ts_number?: string;
+  sanction_ts_date?: string;
+  carriageway_width_m?: number;
+  lane_configuration?: string;
+  pavement_type?: string;
+  total_length_km?: number;
+  start_chainage_km?: number;
+  end_chainage_km?: number;
+  funding_source?: string;
+  project_director_name?: string;
+  responsible_ee_name?: string;
+  programme_id?: number;
+  programme_code?: string;
+  verification_status?: string;
 }
 
 export interface DepartmentDependencyItem {
@@ -698,5 +720,235 @@ export interface ProgrammeOverviewKPIs {
   active_stays_count: number;
   litigation_financial_exposure_cr: number;
 }
+
+// -------------------------------------------------------------
+// Phase 3: Project 360° Intelligence Interfaces
+// -------------------------------------------------------------
+
+export interface WorkPackageItem {
+  id: number;
+  project_id: number;
+  package_number: string;
+  title: string;
+  scope_description?: string;
+  cost_cr: number;
+  start_km: number;
+  end_km: number;
+  status: string;
+}
+
+export interface ApprovalItem {
+  id: number;
+  project_id: number;
+  approval_type: string;
+  reference_number: string;
+  sanction_amount_cr: number;
+  approved_by_role: string;
+  status: string;
+  approval_date: string;
+}
+
+export interface ProjectMilestoneItem {
+  id: number;
+  project_id: number;
+  work_package_id?: number;
+  milestone_code: string;
+  title: string;
+  description?: string;
+  target_date: string;
+  actual_date?: string;
+  target_physical_pct: number;
+  actual_physical_pct: number;
+  delay_days: number;
+  status: string;
+  weightage_pct: number;
+}
+
+export interface ProjectRiskItem {
+  id: number;
+  project_id: number;
+  risk_code: string;
+  category: string;
+  title: string;
+  description: string;
+  probability: string;
+  impact: string;
+  severity_score: number;
+  mitigation_strategy: string;
+  status: string;
+  created_at: string;
+}
+
+export interface ProjectProgressRecordItem {
+  id: number;
+  project_id: number;
+  reporting_month: string;
+  planned_physical_pct: number;
+  actual_physical_pct: number;
+  planned_financial_pct: number;
+  actual_financial_pct: number;
+  expenditure_in_month_cr: number;
+  cumulative_expenditure_cr: number;
+  earned_value_cr: number;
+  planned_value_cr: number;
+  cost_variance_cr: number;
+  schedule_variance_cr: number;
+  remarks?: string;
+  created_at: string;
+}
+
+export interface EVMVarianceMetrics {
+  planned_value_cr: number;
+  earned_value_cr: number;
+  actual_cost_cr: number;
+  cost_variance_cr: number;
+  schedule_variance_cr: number;
+  cost_performance_index: number;
+  schedule_performance_index: number;
+  schedule_variance_days: number;
+  planned_physical_pct: number;
+  actual_physical_pct: number;
+  physical_variance_pct: number;
+  planned_financial_pct: number;
+  actual_financial_pct: number;
+  financial_variance_pct: number;
+  status_assessment: 'ON_TRACK' | 'AT_RISK' | 'CRITICAL_DELAY' | 'COST_OVERRUN';
+}
+
+export interface ProjectStakeholderItem {
+  id: number;
+  stakeholder_type: string;
+  department_name?: string;
+  contact_person: string;
+  email?: string;
+  phone?: string;
+  responsibility_scope?: string;
+  designation?: string;
+  posting_unit?: string;
+}
+
+export interface Project360Detail {
+  project: ProjectItem;
+  jurisdiction_hierarchy: {
+    zone_name: string;
+    circle_name: string;
+    division_name: string;
+    district: string;
+  };
+  technical_specs: {
+    road_name: string;
+    road_code: string;
+    road_type: string;
+    carriageway_width_m: number;
+    lane_configuration: string;
+    pavement_type: string;
+    total_length_km: number;
+    start_chainage_km: number;
+    end_chainage_km: number;
+    terrain: string;
+    funding_programme: string;
+  };
+  sanctions: ApprovalItem[];
+  milestones: ProjectMilestoneItem[];
+  execution_tracking: EVMVarianceMetrics;
+  progress_history: ProjectProgressRecordItem[];
+  work_packages: WorkPackageItem[];
+  contractors_and_consultants: {
+    main_contractor: {
+      name: string;
+      registration: string;
+      class: string;
+      pan?: string;
+      gst?: string;
+    };
+    contracts: Array<{
+      agreement_number: string;
+      agreement_date?: string;
+      contract_value_cr: number;
+      performance_security_cr: number;
+      status: string;
+    }>;
+    consultants: Array<{
+      company_name: string;
+      assignment_title: string;
+      contract_value_cr: number;
+      status: string;
+    }>;
+  };
+  assigned_officials_and_stakeholders: ProjectStakeholderItem[];
+  land_acquisition: {
+    total_parcels: number;
+    total_land_sqm: number;
+    total_land_hectares: number;
+    compensation_assessed_cr: number;
+    compensation_paid_cr: number;
+    parcels: Array<{
+      parcel_ref: string;
+      district: string;
+      taluk: string;
+      village: string;
+      survey_number: string;
+      classification: string;
+      total_sqm: number;
+      sec15_2_date?: string;
+      sec15_1_date?: string;
+      sec19_1_date?: string;
+      compensation_paid_cr: number;
+      possession_status: string;
+      has_litigation: boolean;
+    }>;
+  };
+  utilities_and_dependencies: {
+    total_dependencies: number;
+    pending_clearances: number;
+    total_impact_days: number;
+    items: DepartmentDependencyItem[];
+  };
+  engineering_quality: {
+    total_defects_logged: number;
+    critical_unresolved: number;
+    records: Array<{
+      defect_reference: string;
+      component_type: string;
+      description: string;
+      severity: string;
+      status: string;
+      financial_penalty_cr: number;
+      rectification_deadline?: string;
+    }>;
+  };
+  legal_cases: {
+    total_cases: number;
+    active_stays_count: number;
+    total_financial_exposure_cr: number;
+    items: LegalCaseItem[];
+  };
+  documents: Array<{
+    id: number;
+    document_title: string;
+    file_name: string;
+    mime_type: string;
+    file_size_bytes: number;
+    sha256_hash: string;
+    is_verified: boolean;
+    created_at: string;
+  }>;
+  risks_and_issues: {
+    open_risks: number;
+    critical_issues: number;
+    risks: ProjectRiskItem[];
+    issues: Array<{
+      issue_ref: string;
+      category: string;
+      description: string;
+      priority: string;
+      status: string;
+      escalation_status: string;
+    }>;
+  };
+  ai_findings: AIIntelligenceFindingItem[];
+  audit_history: AuditEventItem[];
+}
+
 
 

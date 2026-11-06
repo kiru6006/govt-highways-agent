@@ -233,6 +233,26 @@ class Project(Base):
     start_date = Column(DateTime, nullable=True)
     target_completion_date = Column(DateTime, nullable=True)
     actual_completion_date = Column(DateTime, nullable=True)
+    planned_start_date = Column(DateTime, nullable=True)
+    planned_completion_date = Column(DateTime, nullable=True)
+    revised_cost_cr = Column(Float, nullable=True)
+    sanction_as_number = Column(String(100), nullable=True)
+    sanction_as_date = Column(DateTime, nullable=True)
+    sanction_as_amount_cr = Column(Float, nullable=True)
+    sanction_ts_number = Column(String(100), nullable=True)
+    sanction_ts_date = Column(DateTime, nullable=True)
+    sanction_ts_amount_cr = Column(Float, nullable=True)
+    carriageway_width_m = Column(Float, default=7.0)
+    lane_configuration = Column(String(50), default="2-Lane with Paved Shoulder")
+    pavement_type = Column(String(50), default="Flexible (Bituminous Concrete)")
+    total_length_km = Column(Float, default=0.0)
+    start_chainage_km = Column(Float, default=0.0)
+    end_chainage_km = Column(Float, default=0.0)
+    funding_source = Column(String(100), default="State GoTN (CRIDP)")
+    project_director_name = Column(String(150), nullable=True)
+    responsible_ee_name = Column(String(150), nullable=True)
+    source_url = Column(String(300), nullable=True)
+    verification_status = Column(String(50), default="Verified")
     
     zone_id = Column(Integer, ForeignKey("zones.id"), nullable=False)
     circle_id = Column(Integer, ForeignKey("circles.id"), nullable=False)
@@ -264,6 +284,9 @@ class Project(Base):
     land_parcels = relationship("LandParcel", back_populates="project")
     legal_cases = relationship("LegalCase", back_populates="project")
     consultants = relationship("ProjectConsultant", back_populates="project")
+    milestones = relationship("ProjectMilestone", back_populates="project")
+    risks = relationship("ProjectRisk", back_populates="project")
+    progress_records = relationship("ProjectProgressRecord", back_populates="project")
 
 class WorkPackage(Base):
     __tablename__ = "work_packages"
@@ -890,3 +913,59 @@ class ProjectConsultant(Base):
 
     project = relationship("Project", back_populates="consultants")
     consultant = relationship("Consultant")
+
+class ProjectMilestone(Base):
+    __tablename__ = "project_milestones"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    milestone_code = Column(String(50), nullable=False)  # e.g., MS-01, MS-02
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    target_date = Column(DateTime, nullable=False)
+    actual_date = Column(DateTime, nullable=True)
+    target_physical_pct = Column(Float, default=0.0)
+    actual_physical_pct = Column(Float, default=0.0)
+    delay_days = Column(Integer, default=0)
+    status = Column(String(50), default="PENDING")  # PENDING, IN_PROGRESS, COMPLETED, DELAYED
+    weightage_pct = Column(Float, default=0.0)
+
+    project = relationship("Project", back_populates="milestones")
+    work_package = relationship("WorkPackage")
+
+class ProjectRisk(Base):
+    __tablename__ = "project_risks"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    risk_code = Column(String(50), nullable=False)  # e.g., RSK-01
+    category = Column(String(100), nullable=False)  # Land Acquisition, Utility Shifting, Weather / Monsoon, Contractor Capacity, Legal Stay
+    title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=False)
+    probability = Column(String(20), default="MEDIUM")  # HIGH, MEDIUM, LOW
+    impact = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    severity_score = Column(Float, default=5.0)  # 1 to 10
+    mitigation_strategy = Column(Text, nullable=False)
+    status = Column(String(50), default="OPEN")  # OPEN, MITIGATING, CLOSED
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project", back_populates="risks")
+
+class ProjectProgressRecord(Base):
+    __tablename__ = "project_progress_records"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    reporting_month = Column(String(20), nullable=False)  # e.g., "2025-10", "2025-11", "2025-12"
+    planned_physical_pct = Column(Float, default=0.0)
+    actual_physical_pct = Column(Float, default=0.0)
+    planned_financial_pct = Column(Float, default=0.0)
+    actual_financial_pct = Column(Float, default=0.0)
+    expenditure_in_month_cr = Column(Float, default=0.0)
+    cumulative_expenditure_cr = Column(Float, default=0.0)
+    earned_value_cr = Column(Float, default=0.0)
+    planned_value_cr = Column(Float, default=0.0)
+    cost_variance_cr = Column(Float, default=0.0)
+    schedule_variance_cr = Column(Float, default=0.0)
+    remarks = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project", back_populates="progress_records")
