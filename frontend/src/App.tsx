@@ -33,13 +33,18 @@ const AppLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('tn_hdos_sidebar_collapsed') === 'true';
   });
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
-    setSidebarCollapsed((prev) => {
-      const next = !prev;
-      localStorage.setItem('tn_hdos_sidebar_collapsed', String(next));
-      return next;
-    });
+    if (window.innerWidth < 768) {
+      setMobileSidebarOpen((prev) => !prev);
+    } else {
+      setSidebarCollapsed((prev) => {
+        const next = !prev;
+        localStorage.setItem('tn_hdos_sidebar_collapsed', String(next));
+        return next;
+      });
+    }
   };
 
   return (
@@ -48,8 +53,13 @@ const AppLayout: React.FC = () => {
         isNavyGov ? 'bg-[#F4F7FB] text-[#1F2937]' : 'bg-slate-50 text-slate-900'
       }`}
     >
-      {/* 17-Module Persistent Sidebar with Category Accordion & Rail Toggle */}
-      <Sidebar isCollapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
+      {/* 17-Module Persistent Sidebar with Category Accordion, Rail Toggle & Mobile Offcanvas Drawer */}
+      <Sidebar
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
+        isMobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">

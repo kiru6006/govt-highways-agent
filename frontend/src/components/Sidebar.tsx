@@ -26,7 +26,8 @@ import {
   ChevronsUpDown,
   Landmark,
   Building2,
-  Globe
+  Globe,
+  X
 } from 'lucide-react';
 
 export interface NavItem {
@@ -109,11 +110,15 @@ export const navigationGroups: NavGroup[] = [
 interface SidebarProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed: controlledCollapsed,
   onToggleCollapse: controlledToggle,
+  isMobileOpen = false,
+  onCloseMobile,
 }) => {
   const location = useLocation();
   const { isNavyGov } = useTheme();
@@ -174,221 +179,228 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside
-      className={`flex flex-col flex-shrink-0 min-h-screen border-r transition-all duration-300 select-none ${
-        isNavyGov
-          ? 'bg-[#091A2E] text-slate-200 border-[#142842] theme-sidebar'
-          : 'bg-slate-900 text-slate-300 border-slate-800'
-      } ${isCollapsed ? 'w-20' : 'w-72'}`}
-    >
-      {/* Tamil Nadu Govt Header in Sidebar */}
-      <div
-        className={`p-3.5 border-b flex items-center justify-between ${
-          isNavyGov ? 'bg-[#05111F] border-[#142842]' : 'bg-slate-950/50 border-slate-800/80'
-        }`}
-      >
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm border ${
-              isNavyGov
-                ? 'bg-[#0F2A4A] text-white border-sky-400/50'
-                : 'bg-[#006A4E] text-white border-[#B2DFCD]/40'
-            }`}
-          >
-            TN
-          </div>
-          {!isCollapsed && (
-            <div className="overflow-hidden">
-              <div className="text-xs font-bold text-white tracking-wide truncate">
-                GOVERNMENT OF TN
-              </div>
-              <div
-                className={`text-[10px] font-medium truncate ${
-                  isNavyGov ? 'text-sky-300' : 'text-emerald-400'
-                }`}
-              >
-                Highways Department
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Expand / Collapse Sidebar Width Button */}
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? (
-            <PanelLeftOpen className="w-4 h-4 text-emerald-400" />
-          ) : (
-            <PanelLeftClose className="w-4 h-4 text-slate-400" />
-          )}
-        </button>
-      </div>
-
-      {/* Global Quick Action: Expand/Collapse All Categories (when not collapsed) */}
-      {!isCollapsed && (
-        <div className="px-3 py-2 border-b border-slate-800/60 bg-slate-900/60 flex items-center justify-between text-[11px]">
-          <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-            Modules (17)
-          </span>
-          <button
-            onClick={toggleAllGroups}
-            className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-400 font-medium px-2 py-0.5 rounded hover:bg-slate-800 transition-colors"
-            title="Expand or collapse all menu sections"
-          >
-            <ChevronsUpDown className="w-3 h-3" />
-            <span>
-              {Object.values(openGroups).every(Boolean) ? 'Collapse All' : 'Expand All'}
-            </span>
-          </button>
-        </div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          onClick={onCloseMobile}
+          aria-hidden="true"
+        />
       )}
 
-      {/* Nav List with Collapsible Groups */}
-      <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-3 scrollbar-thin">
-        {navigationGroups.map((group) => {
-          const isOpen = openGroups[group.id];
-          const hasActiveChild = group.items.some((i) => i.path === location.pathname);
-
-          return (
-            <div key={group.id} className="space-y-1">
-              {/* Group Header (Accordion Toggle) */}
-              {!isCollapsed ? (
-                <button
-                  type="button"
-                  onClick={() => toggleGroup(group.id)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] font-bold tracking-wider uppercase transition-colors ${
-                    hasActiveChild
-                      ? 'text-emerald-400 bg-emerald-950/20'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      <aside
+        className={`flex flex-col flex-shrink-0 min-h-screen border-r transition-all duration-300 select-none ${
+          isNavyGov
+            ? 'bg-[#091A2E] text-slate-200 border-[#142842] theme-sidebar'
+            : 'bg-slate-900 text-slate-300 border-slate-800'
+        } ${isCollapsed ? 'md:w-20' : 'md:w-72'} ${
+          isMobileOpen
+            ? 'fixed inset-y-0 left-0 z-50 w-72 shadow-2xl translate-x-0'
+            : 'fixed md:static inset-y-0 left-0 z-50 md:z-auto -translate-x-full md:translate-x-0'
+        }`}
+      >
+        {/* Tamil Nadu Govt Header in Sidebar */}
+        <div
+          className={`p-3.5 border-b flex items-center justify-between ${
+            isNavyGov ? 'bg-[#05111F] border-[#142842]' : 'bg-slate-950/50 border-slate-800/80'
+          }`}
+        >
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs border ${
+                isNavyGov
+                  ? 'bg-[#0F2A4A] text-white border-sky-400/50'
+                  : 'bg-[#006A4E] text-white border-[#B2DFCD]/40'
+              }`}
+            >
+              TN
+            </div>
+            {(!isCollapsed || isMobileOpen) && (
+              <div className="overflow-hidden">
+                <div className="text-xs font-bold text-white tracking-wide truncate">
+                  GOVERNMENT OF TN
+                </div>
+                <div
+                  className={`text-[10px] font-medium truncate ${
+                    isNavyGov ? 'text-sky-300' : 'text-emerald-400'
                   }`}
                 >
-                  <span className="truncate">{group.title}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-mono text-slate-500 font-normal">
-                      ({group.items.length})
-                    </span>
-                    {isOpen ? (
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
-                    ) : (
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
-                    )}
-                  </div>
-                </button>
-              ) : (
-                // In collapsed mode: subtle separator
-                <div className="h-px bg-slate-800 my-2 mx-1" />
-              )}
-
-              {/* Group Menu Items */}
-              {(isCollapsed || isOpen) && (
-                <div className="space-y-0.5 animate-in slide-in-from-top-1 duration-150">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <NavLink
-                        key={item.id}
-                        to={item.path}
-                        title={isCollapsed ? item.name : undefined}
-                        className={({ isActive }) =>
-                          `relative flex items-center ${
-                            isCollapsed
-                              ? 'justify-center p-2.5'
-                              : 'justify-between px-3 py-2'
-                          } rounded-lg text-xs font-medium transition-all group ${
-                            isActive
-                              ? isNavyGov
-                                ? 'bg-[#0F2A4A] text-white shadow-sm font-semibold border-l-4 border-white theme-active-nav'
-                                : 'bg-[#006A4E] text-white shadow-sm font-semibold'
-                              : isNavyGov
-                              ? 'text-slate-300 hover:bg-[#14355B] hover:text-white'
-                              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                          }`
-                        }
-                      >
-                        {({ isActive }) => (
-                          <>
-                            <div className="flex items-center gap-2.5 truncate">
-                              <Icon
-                                className={`w-4 h-4 flex-shrink-0 ${
-                                  isActive
-                                    ? 'text-white'
-                                    : isNavyGov
-                                    ? 'text-slate-400 group-hover:text-sky-300'
-                                    : 'text-slate-400 group-hover:text-emerald-400'
-                                }`}
-                              />
-                              {!isCollapsed && (
-                                <span className="truncate">{item.name}</span>
-                              )}
-                            </div>
-
-                            {/* Badges in expanded mode */}
-                            {!isCollapsed && item.badge && (
-                              <span
-                                className={`text-[9px] font-semibold px-1.5 py-0.5 rounded shadow-2xs ${
-                                  item.badgeColor || 'bg-slate-700 text-slate-200'
-                                }`}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
-
-                            {/* Floating Tooltip in Collapsed Rail Mode */}
-                            {isCollapsed && (
-                              <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-slate-950 text-white text-xs font-medium rounded-md shadow-xl border border-slate-700 whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 flex items-center gap-2">
-                                <span>{item.name}</span>
-                                {item.badge && (
-                                  <span className="text-[9px] bg-[#006A4E] text-white px-1.5 py-0.5 rounded">
-                                    {item.badge}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </NavLink>
-                    );
-                  })}
+                  Highways Department
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </nav>
+              </div>
+            )}
+          </div>
 
-      {/* Footer Info & Toggle */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/70 text-[10px] text-slate-400 flex flex-col gap-1.5">
-        {!isCollapsed ? (
-          <>
-            <div className="flex justify-between items-center">
-              <span className="font-semibold text-slate-300">TN-HDOS Platform</span>
-              <span className="text-emerald-400 font-mono">v1.0.0</span>
-            </div>
-            <div className="flex items-center justify-between text-slate-500">
-              <span>Highways Primary Code:</span>
-              <span className="font-mono text-emerald-400 font-bold">#006A4E</span>
-            </div>
+          <div className="flex items-center gap-1">
+            {/* Close button on mobile */}
+            {isMobileOpen && (
+              <button
+                onClick={onCloseMobile}
+                className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors flex-shrink-0"
+                aria-label="Close navigation drawer"
+              >
+                <X className="w-5 h-5 text-slate-300" />
+              </button>
+            )}
+
+            {/* Expand / Collapse Sidebar Width Button (Desktop only) */}
             <button
               onClick={toggleSidebar}
-              className="mt-1 w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded flex items-center justify-center gap-1.5 text-xs font-medium transition-colors"
+              className="hidden md:flex p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
+              title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-label="Toggle sidebar collapse"
             >
-              <PanelLeftClose className="w-3.5 h-3.5" />
-              <span>Collapse Sidebar</span>
+              {isCollapsed ? (
+                <PanelLeftOpen className="w-4 h-4 text-emerald-400" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4 text-slate-400" />
+              )}
             </button>
-          </>
-        ) : (
-          <button
-            onClick={toggleSidebar}
-            className="w-full py-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded flex items-center justify-center transition-colors"
-            title="Expand full sidebar"
-          >
-            <PanelLeftOpen className="w-4 h-4 text-emerald-400" />
-          </button>
+          </div>
+        </div>
+
+        {/* Global Quick Action: Expand/Collapse All Categories (when not collapsed) */}
+        {(!isCollapsed || isMobileOpen) && (
+          <div className="px-3 py-2 border-b border-slate-800/60 bg-slate-900/60 flex items-center justify-between text-[11px]">
+            <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
+              Modules (17)
+            </span>
+            <button
+              onClick={toggleAllGroups}
+              className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-400 font-medium px-2 py-0.5 rounded hover:bg-slate-800 transition-colors"
+              title="Expand or collapse all menu sections"
+            >
+              <ChevronsUpDown className="w-3 h-3" />
+              <span>
+                {Object.values(openGroups).every(Boolean) ? 'Collapse All' : 'Expand All'}
+              </span>
+            </button>
+          </div>
         )}
-      </div>
-    </aside>
+
+        {/* Nav List with Collapsible Groups */}
+        <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-3 scrollbar-thin">
+          {navigationGroups.map((group) => {
+            const isOpen = openGroups[group.id];
+            const hasActiveChild = group.items.some((i) => i.path === location.pathname);
+
+            return (
+              <div key={group.id} className="space-y-1">
+                {/* Group Header (Accordion Toggle) */}
+                {!isCollapsed || isMobileOpen ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(group.id)}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] font-bold tracking-wider uppercase transition-colors ${
+                      hasActiveChild
+                        ? 'text-emerald-400 bg-emerald-950/20'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <span className="truncate">{group.title}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] font-mono text-slate-500 font-normal">
+                        ({group.items.length})
+                      </span>
+                      {isOpen ? (
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
+                      ) : (
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
+                      )}
+                    </div>
+                  </button>
+                ) : (
+                  // In collapsed desktop mode: subtle separator
+                  <div className="h-px bg-slate-800 my-2 mx-1" />
+                )}
+
+                {/* Group Menu Items */}
+                {(isCollapsed && !isMobileOpen ? true : isOpen) && (
+                  <div className="space-y-0.5 animate-in slide-in-from-top-1 duration-150">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <NavLink
+                          key={item.id}
+                          to={item.path}
+                          onClick={() => {
+                            if (onCloseMobile) onCloseMobile();
+                          }}
+                          title={isCollapsed && !isMobileOpen ? item.name : undefined}
+                          className={({ isActive }) =>
+                            `relative flex items-center ${
+                              isCollapsed && !isMobileOpen
+                                ? 'justify-center p-2.5'
+                                : 'justify-between px-3 py-2'
+                            } rounded-lg text-xs font-medium transition-all group ${
+                              isActive
+                                ? isNavyGov
+                                  ? 'bg-[#0F2A4A] text-white shadow-xs font-semibold border-l-4 border-white theme-active-nav'
+                                  : 'bg-[#006A4E] text-white shadow-xs font-semibold'
+                                : isNavyGov
+                                ? 'text-slate-300 hover:bg-[#14355B] hover:text-white'
+                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              <div className="flex items-center gap-2.5 truncate">
+                                <Icon
+                                  className={`w-4 h-4 flex-shrink-0 ${
+                                    isActive
+                                      ? 'text-white'
+                                      : isNavyGov
+                                      ? 'text-slate-400 group-hover:text-sky-300'
+                                      : 'text-slate-400 group-hover:text-emerald-400'
+                                  }`}
+                                />
+                                {(!isCollapsed || isMobileOpen) && (
+                                  <span className="truncate">{item.name}</span>
+                                )}
+                              </div>
+
+                              {/* Badges in expanded mode */}
+                              {(!isCollapsed || isMobileOpen) && item.badge && (
+                                <span
+                                  className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                                    item.badgeColor ||
+                                    'bg-slate-800 text-slate-300 border border-slate-700'
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Footer in Sidebar */}
+        <div className="p-3 border-t border-slate-800/80 bg-slate-950/40 text-[10px] text-slate-500">
+          {(!isCollapsed || isMobileOpen) ? (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-slate-400 font-medium">
+                <span>TN-HDOS Platform</span>
+                <span className="font-mono text-emerald-400">v2.1.0</span>
+              </div>
+              <div className="text-[9px] text-slate-500">
+                Statutory Highways OS • Govt of Tamil Nadu
+              </div>
+            </div>
+          ) : (
+            <div className="text-center font-mono text-[9px] text-slate-400">v2.1</div>
+          )}
+        </div>
+      </aside>
+    </>
   );
 };

@@ -35,6 +35,7 @@ import {
   Briefcase,
   HardHat,
   ChevronRight,
+  ChevronDown,
   PlusCircle,
   FileText,
   X,
@@ -52,6 +53,7 @@ export const Dashboard: React.FC = () => {
   const [selectedRoadType, setSelectedRoadType] = useState<string>('ALL');
   const [selectedRisk, setSelectedRisk] = useState<string>('ALL');
   const [selectedStage, setSelectedStage] = useState<string>('ALL');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Executive Data State
   const [kpis, setKpis] = useState<ExecutiveKPIs | null>(null);
@@ -194,47 +196,65 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  const activeFilterCount =
+    (financialYear !== 'FY 2025-26' ? 1 : 0) +
+    (selectedZone !== undefined ? 1 : 0) +
+    (selectedRoadType !== 'ALL' ? 1 : 0) +
+    (selectedRisk !== 'ALL' ? 1 : 0) +
+    (selectedStage !== 'ALL' ? 1 : 0);
+
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6 max-w-7xl mx-auto">
       {/* 1. Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-md border border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="bg-[#006A4E] text-[#E6F4EA] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#B2DFCD]/40 uppercase tracking-wide">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 text-white shadow-md border border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+            <span className="bg-[#006A4E] text-[#E6F4EA] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-full border border-[#B2DFCD]/40 uppercase tracking-wide">
               Executive Command Centre • Phase 2
             </span>
-            <span className="text-slate-400 text-xs font-mono">
+            <span className="text-slate-400 text-[10px] sm:text-xs font-mono">
               Period: {kpis?.reporting_period} | Freshness: {kpis?.data_freshness}
             </span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white truncate">
             Statewide Highways Intelligence Smartboard
           </h2>
           <p className="text-slate-300 text-xs mt-1">
-            Active Role: <span className="font-semibold text-emerald-400">{user?.role_name}</span> | Jurisdiction Scope:{' '}
+            Active Role: <span className="font-semibold text-emerald-400">{user?.role_name}</span> | Scope:{' '}
             <span className="font-semibold text-amber-300">
               {user?.circle_id ? 'Chengalpattu Circle' : user?.zone_id ? 'Chennai Zone' : 'Statewide Executive Oversight'}
             </span>
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3 border border-white/10 backdrop-blur-sm">
-          <Activity className="w-6 h-6 text-[#FFCC00]" />
+        <div className="flex items-center gap-3 bg-white/10 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 border border-white/10 backdrop-blur-xs flex-shrink-0 self-start md:self-auto">
+          <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-[#FFCC00] flex-shrink-0" />
           <div>
-            <div className="text-[11px] text-slate-300">Monitored Portfolio Value</div>
-            <div className="text-lg font-bold text-white font-mono">
+            <div className="text-[10px] sm:text-[11px] text-slate-300">Monitored Portfolio Value</div>
+            <div className="text-base sm:text-lg font-bold text-white font-mono">
               ₹{kpis?.total_approved_project_value_cr.toFixed(2) || '245.30'} <span className="text-xs font-normal">Crores</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. Global Filter Toolbar (Section 3.A) */}
-      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+      {/* 2. Global Filter Toolbar (Section 3.A) with Mobile Accordion */}
+      <div className="bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-xs space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
-            <Filter className="w-4 h-4 text-[#006A4E]" />
-            Global Executive Filters & Cohorts
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="md:hidden flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700"
+              aria-expanded={mobileFiltersOpen}
+            >
+              <Filter className="w-3.5 h-3.5 text-[#006A4E]" />
+              <span>Filters {activeFilterCount > 0 ? `(${activeFilterCount} active)` : ''}</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileFiltersOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+              <Filter className="w-4 h-4 text-[#006A4E]" />
+              Global Executive Filters & Cohorts {activeFilterCount > 0 && <span className="text-[10px] font-mono text-[#006A4E]">({activeFilterCount} active)</span>}
+            </div>
           </div>
           <button
             onClick={() => {
@@ -250,7 +270,7 @@ export const Dashboard: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs">
+        <div className={`${mobileFiltersOpen ? 'grid' : 'hidden md:grid'} grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 text-xs`}>
           {/* Financial Year */}
           <div>
             <label className="block text-[11px] font-semibold text-slate-500 mb-1">Financial Year</label>
@@ -336,209 +356,209 @@ export const Dashboard: React.FC = () => {
 
       {/* 3. The 16 Department Performance KPIs Grid (Section 3.B) */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-slate-900">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900">
               Department Performance KPIs (16 Core Metrics)
             </h3>
-            <span className="text-[10px] text-slate-500 font-medium">Click any KPI card to inspect underlying records</span>
+            <span className="hidden sm:inline text-[10px] text-slate-500 font-medium">Click card to inspect</span>
           </div>
-          <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium">
-            Cohort Sample: {kpis?.cohort_sample_size || 3} Projects
+          <span className="text-[10px] sm:text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium self-start sm:self-auto">
+            Sample: {kpis?.cohort_sample_size || 3} Projects
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5 md:gap-3">
           {/* KPI 1 */}
           <div
             onClick={() => handleOpenDrilldown('Total Active Projects', 'All projects currently sanctioned, tendered, or in execution', 'active_projects')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">1. Active Works</div>
-            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate">1. Active Works</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-mono mt-0.5 sm:mt-1 group-hover:text-[#006A4E] truncate">
               {kpis?.total_active_projects || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Monitored</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Monitored</div>
           </div>
 
           {/* KPI 2 */}
           <div
             onClick={() => handleOpenDrilldown('Approved Value', 'Total sanctioned capital budget under CMRDP/CRIDP', 'approved_value')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">2. Approved Val</div>
-            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate">2. Approved Val</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-mono mt-0.5 sm:mt-1 group-hover:text-[#006A4E] truncate">
               ₹{kpis?.total_approved_project_value_cr.toFixed(1) || 0} Cr
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Sanctioned</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Sanctioned</div>
           </div>
 
           {/* KPI 3 */}
           <div
             onClick={() => handleOpenDrilldown('Actual Expenditure', 'Recorded billable expenditure to date against LC sanctions', 'expenditure')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">3. Expenditure</div>
-            <div className="text-lg font-bold text-slate-900 font-mono mt-1 group-hover:text-[#006A4E]">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate">3. Expenditure</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-mono mt-0.5 sm:mt-1 group-hover:text-[#006A4E] truncate">
               ₹{kpis?.total_expenditure_cr.toFixed(1) || 0} Cr
             </div>
-            <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">42.1% Utilized</div>
+            <div className="text-[10px] text-emerald-600 font-semibold mt-0.5 truncate">42.1% Utilized</div>
           </div>
 
           {/* KPI 4 */}
           <div
             onClick={() => handleOpenDrilldown('Physical Progress', 'Average weighted physical progress verified via field inspections', 'progress')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">4. Physical %</div>
-            <div className="text-lg font-bold text-[#006A4E] font-mono mt-1">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate">4. Physical %</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-[#006A4E] font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.total_physical_progress_pct || 0}%
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Site Verified</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Site Verified</div>
           </div>
 
           {/* KPI 5 */}
           <div
             onClick={() => handleOpenDrilldown('Projects Delayed', 'Projects exceeding contractual milestone dates', 'delayed')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide">5. Delayed</div>
-            <div className="text-lg font-bold text-red-600 font-mono mt-1">
+            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide truncate">5. Delayed</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-red-600 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.projects_delayed || 0}
             </div>
-            <div className="text-[10px] text-red-500 font-semibold mt-0.5">+45d Avg Slip</div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5 truncate">+45d Slip</div>
           </div>
 
           {/* KPI 6 */}
           <div
             onClick={() => handleOpenDrilldown('High Risk Projects', 'Projects designated as Critical or High priority bottleneck', 'risk')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">6. High Risk</div>
-            <div className="text-lg font-bold text-amber-600 font-mono mt-1">
+            <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wide truncate">6. High Risk</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-amber-600 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.projects_high_risk || 0}
             </div>
-            <div className="text-[10px] text-amber-500 font-semibold mt-0.5">Needs Action</div>
+            <div className="text-[10px] text-amber-500 font-semibold mt-0.5 truncate">Needs Action</div>
           </div>
 
           {/* KPI 7 */}
           <div
             onClick={() => handleOpenDrilldown('Pending Approvals', 'Technical, Administrative, or Revised Estimate approvals pending', 'approvals')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-blue-500 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-blue-500 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">7. Approvals</div>
-            <div className="text-lg font-bold text-blue-600 font-mono mt-1">
+            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-wide truncate">7. Approvals</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-blue-600 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.pending_approvals || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">TS / AS Pending</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">TS / AS Pending</div>
           </div>
 
           {/* KPI 8 */}
           <div
             onClick={() => handleOpenDrilldown('Pending Land Acquisition', 'Total land area pending award enquiry under TN Highways Act 2001', 'la')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#004B87] transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-[#004B87] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-[#004B87] uppercase tracking-wide">8. Pending LA</div>
-            <div className="text-lg font-bold text-[#004B87] font-mono mt-1">
+            <div className="text-[10px] font-bold text-[#004B87] uppercase tracking-wide truncate">8. Pending LA</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-[#004B87] font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.pending_land_acquisition_ha || 0} <span className="text-[11px] font-normal">Ha</span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Sec 15(2)</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Sec 15(2)</div>
           </div>
 
           {/* KPI 9 */}
           <div
             onClick={() => handleOpenDrilldown('Pending Utility Shifting', 'TANGEDCO electric poles, TWAD water pipelines, and OFC lines', 'utility')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-800 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-800 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">9. Utilities</div>
-            <div className="text-lg font-bold text-slate-900 font-mono mt-1">
+            <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wide truncate">9. Utilities</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.pending_utility_shifting_count || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">EB Poles / TWAD</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">EB Poles/TWAD</div>
           </div>
 
           {/* KPI 10 */}
           <div
             onClick={() => handleOpenDrilldown('Open Quality Defects', 'Non-conformance reports, core density failures, and lab cube test fails', 'defects')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-red-500 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide">10. Defects</div>
-            <div className="text-lg font-bold text-red-600 font-mono mt-1">
+            <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide truncate">10. Defects</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-red-600 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.open_quality_defects || 0}
             </div>
-            <div className="text-[10px] text-red-500 font-semibold mt-0.5">HRS Lab Fail</div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5 truncate">HRS Lab Fail</div>
           </div>
 
           {/* KPI 11 */}
           <div
             onClick={() => handleOpenDrilldown('Pending Contractor Obligations', 'Expired bank guarantees, delayed submissions, or performance defaults', 'contractor_obligations')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-amber-500 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-amber-700 uppercase tracking-wide">11. Cont. Default</div>
-            <div className="text-lg font-bold text-amber-700 font-mono mt-1">
+            <div className="text-[10px] font-bold text-amber-700 uppercase tracking-wide truncate">11. Cont. Default</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-amber-700 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.pending_contractor_obligations || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Under Scrutiny</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Under Scrutiny</div>
           </div>
 
           {/* KPI 12 */}
           <div
             onClick={() => handleOpenDrilldown('Open Legal Cases', 'High Court writs, PILs, and arbitration proceedings', 'legal')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-purple-600 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-purple-600 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wide">12. Legal Cases</div>
-            <div className="text-lg font-bold text-purple-700 font-mono mt-1">
+            <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wide truncate">12. Legal Cases</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-purple-700 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.open_legal_cases || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">HC / Tribunal</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">HC / Tribunal</div>
           </div>
 
           {/* KPI 13 */}
           <div
             onClick={() => handleOpenDrilldown('Unresolved Audit Observations', 'Accountant General (AG) audit paras pending settlement', 'audit')}
-            className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-700 transition-all cursor-pointer group"
+            className="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-2xs hover:shadow-md hover:border-slate-700 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">13. AG Audit</div>
-            <div className="text-lg font-bold text-slate-900 font-mono mt-1">
+            <div className="text-[10px] font-bold text-slate-700 uppercase tracking-wide truncate">13. AG Audit</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-slate-900 font-mono mt-0.5 sm:mt-1 truncate">
               {kpis?.unresolved_audit_observations || 0}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Para Pending</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">Para Pending</div>
           </div>
 
           {/* KPI 14 (Distinct Financial Bucket) */}
           <div
             onClick={() => handleOpenDrilldown('Potential Financial Exposure', 'Unreconciled advance risk, measurement variance, or penalty exposure', 'exposure')}
-            className="bg-red-50/50 rounded-xl p-3 border border-red-200 shadow-2xs hover:shadow-md hover:border-red-400 transition-all cursor-pointer group"
+            className="bg-red-50/50 rounded-xl p-2.5 sm:p-3 border border-red-200 shadow-2xs hover:shadow-md hover:border-red-400 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-red-700 uppercase tracking-wide">14. Exposure</div>
-            <div className="text-lg font-bold text-red-700 font-mono mt-1">
+            <div className="text-[10px] font-bold text-red-700 uppercase tracking-wide truncate">14. Exposure</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-red-700 font-mono mt-0.5 sm:mt-1 truncate">
               ₹{kpis?.potential_financial_exposure_cr.toFixed(2) || 0} Cr
             </div>
-            <div className="text-[10px] text-red-500 font-semibold mt-0.5">Potential Risk</div>
+            <div className="text-[10px] text-red-500 font-semibold mt-0.5 truncate">Potential Risk</div>
           </div>
 
           {/* KPI 15 (Distinct Financial Bucket) */}
           <div
             onClick={() => handleOpenDrilldown('Verified Financial Recovery', 'Actual recovered amounts through bill withholdings and penalty deductions', 'recovery')}
-            className="bg-emerald-50/50 rounded-xl p-3 border border-[#B2DFCD] shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
+            className="bg-emerald-50/50 rounded-xl p-2.5 sm:p-3 border border-[#B2DFCD] shadow-2xs hover:shadow-md hover:border-[#006A4E] transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-[#006A4E] uppercase tracking-wide">15. Recovery</div>
-            <div className="text-lg font-bold text-[#006A4E] font-mono mt-1">
+            <div className="text-[10px] font-bold text-[#006A4E] uppercase tracking-wide truncate">15. Recovery</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-[#006A4E] font-mono mt-0.5 sm:mt-1 truncate">
               ₹{kpis?.verified_financial_recovery_cr.toFixed(2) || 0} Cr
             </div>
-            <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">Verified Inward</div>
+            <div className="text-[10px] text-emerald-700 font-semibold mt-0.5 truncate">Verified Inward</div>
           </div>
 
           {/* KPI 16 (Distinct Financial Bucket) */}
           <div
             onClick={() => handleOpenDrilldown('Verified Prevented Expenditure', 'Expenditure prevented by detecting quantity inflation and duplicate claims', 'prevented')}
-            className="bg-blue-50/50 rounded-xl p-3 border border-blue-200 shadow-2xs hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group"
+            className="bg-blue-50/50 rounded-xl p-2.5 sm:p-3 border border-blue-200 shadow-2xs hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group"
           >
-            <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">16. Prevented</div>
-            <div className="text-lg font-bold text-blue-700 font-mono mt-1">
+            <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wide truncate">16. Prevented</div>
+            <div className="text-sm sm:text-base md:text-lg font-bold text-blue-700 font-mono mt-0.5 sm:mt-1 truncate">
               ₹{kpis?.verified_prevented_expenditure_cr.toFixed(2) || 0} Cr
             </div>
-            <div className="text-[10px] text-blue-600 font-semibold mt-0.5">Leakage Blocked</div>
+            <div className="text-[10px] text-blue-600 font-semibold mt-0.5 truncate">Leakage Blocked</div>
           </div>
         </div>
 
@@ -683,7 +703,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Tab Content Panels */}
-        <div className="p-6">
+        <div className="p-3 sm:p-4 md:p-6">
           {/* TAB 1: CRITICAL ISSUES REQUIRING LEADERSHIP INTERVENTION (Section 3.E) */}
           {activeTab === 'critical' && (
             <div className="space-y-4">
@@ -802,7 +822,38 @@ export const Dashboard: React.FC = () => {
                 </p>
               </div>
 
-              <div className="overflow-x-auto custom-scrollbar">
+              {/* Mobile Blockers Card View (< md) */}
+              <div className="block md:hidden space-y-3">
+                {blockers.map((b) => (
+                  <div key={b.id} className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-bold text-xs text-[#004B87] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        {b.department_category}
+                      </span>
+                      <span className="font-bold text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200 flex-shrink-0">
+                        {b.days_pending}d Delay
+                      </span>
+                    </div>
+                    <div>
+                      <div className="font-bold text-xs text-slate-900">{b.project_title}</div>
+                      <div className="text-[11px] text-slate-600 mt-0.5">{b.approval_required}</div>
+                    </div>
+                    <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-100">
+                      <span className="font-semibold text-slate-700">Latest: </span>{b.latest_correspondence}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-600 pt-1 border-t border-slate-100">
+                      <div><span className="font-semibold text-slate-800">HW:</span> {b.responsible_highways_officer}</div>
+                      <div><span className="font-semibold text-slate-800">Ext:</span> {b.external_contact}</div>
+                    </div>
+                    <div className="text-[11px] text-[#006A4E] font-medium pt-1">
+                      <span className="font-bold">Escalation: </span>{b.recommended_action}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Blockers Table View (>= md) */}
+              <div className="hidden md:block overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left text-xs min-w-[950px]">
                   <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
                     <tr>
@@ -967,7 +1018,35 @@ export const Dashboard: React.FC = () => {
                 </span>
               </div>
 
-              <div className="overflow-x-auto custom-scrollbar">
+              {/* Mobile Zone Comparison Card View (< md) */}
+              <div className="block md:hidden space-y-3">
+                {zoneComparisons.map((z) => (
+                  <div key={z.zone_id} className="p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h5 className="font-bold text-xs text-slate-900">{z.zone_name}</h5>
+                        <span className="text-[10px] text-slate-500">HQ: {z.headquarters} • {z.cohort_sample_size} Works</span>
+                      </div>
+                      <span className="font-mono font-bold text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {z.completed_projects_pct}% Done
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded text-[11px] font-mono">
+                      <div>Delay: <span className="text-red-600 font-bold">+{z.average_project_delay_days}d</span></div>
+                      <div>Budget Util: <span className="font-bold">{z.budget_utilisation_pct}%</span></div>
+                      <div>Defects: <span className="font-bold">{z.quality_defects_count}</span></div>
+                      <div>LA Pending: <span className="font-bold">{z.land_acquisition_pending_ha} Ha</span></div>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
+                      <span>Contractor Score: <strong className="text-slate-800">{z.contractor_performance_score}/100</strong></span>
+                      <span>Data Completeness: <strong className="text-emerald-600">{z.data_completeness_pct}%</strong></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Zone Comparison Table View (>= md) */}
+              <div className="hidden md:block overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left text-xs min-w-[950px]">
                   <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200">
                     <tr>
