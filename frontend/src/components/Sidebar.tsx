@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import {
   LayoutDashboard,
   ShieldAlert,
@@ -115,6 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse: controlledToggle,
 }) => {
   const location = useLocation();
+  const { isNavyGov } = useTheme();
 
   // Internal collapse state with localStorage persistence
   const [internalCollapsed, setInternalCollapsed] = useState<boolean>(() => {
@@ -173,14 +175,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
-      className={`bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800 transition-all duration-300 select-none ${
-        isCollapsed ? 'w-20' : 'w-72'
-      }`}
+      className={`flex flex-col flex-shrink-0 min-h-screen border-r transition-all duration-300 select-none ${
+        isNavyGov
+          ? 'bg-[#091A2E] text-slate-200 border-[#142842] theme-sidebar'
+          : 'bg-slate-900 text-slate-300 border-slate-800'
+      } ${isCollapsed ? 'w-20' : 'w-72'}`}
     >
       {/* Tamil Nadu Govt Header in Sidebar */}
-      <div className="p-3.5 border-b border-slate-800/80 bg-slate-950/50 flex items-center justify-between">
+      <div
+        className={`p-3.5 border-b flex items-center justify-between ${
+          isNavyGov ? 'bg-[#05111F] border-[#142842]' : 'bg-slate-950/50 border-slate-800/80'
+        }`}
+      >
         <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-8 h-8 rounded-lg bg-[#006A4E] text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm border border-[#B2DFCD]/40">
+          <div
+            className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm border ${
+              isNavyGov
+                ? 'bg-[#0F2A4A] text-white border-sky-400/50'
+                : 'bg-[#006A4E] text-white border-[#B2DFCD]/40'
+            }`}
+          >
             TN
           </div>
           {!isCollapsed && (
@@ -188,7 +202,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="text-xs font-bold text-white tracking-wide truncate">
                 GOVERNMENT OF TN
               </div>
-              <div className="text-[10px] text-emerald-400 font-medium truncate">
+              <div
+                className={`text-[10px] font-medium truncate ${
+                  isNavyGov ? 'text-sky-300' : 'text-emerald-400'
+                }`}
+              >
                 Highways Department
               </div>
             </div>
@@ -281,7 +299,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               : 'justify-between px-3 py-2'
                           } rounded-lg text-xs font-medium transition-all group ${
                             isActive
-                              ? 'bg-[#006A4E] text-white shadow-sm font-semibold'
+                              ? isNavyGov
+                                ? 'bg-[#0F2A4A] text-white shadow-sm font-semibold border-l-4 border-white theme-active-nav'
+                                : 'bg-[#006A4E] text-white shadow-sm font-semibold'
+                              : isNavyGov
+                              ? 'text-slate-300 hover:bg-[#14355B] hover:text-white'
                               : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                           }`
                         }
@@ -293,6 +315,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 className={`w-4 h-4 flex-shrink-0 ${
                                   isActive
                                     ? 'text-white'
+                                    : isNavyGov
+                                    ? 'text-slate-400 group-hover:text-sky-300'
                                     : 'text-slate-400 group-hover:text-emerald-400'
                                 }`}
                               />

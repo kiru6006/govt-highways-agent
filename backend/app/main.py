@@ -7,11 +7,15 @@ from app.config import settings
 from app.database import engine, Base, get_db
 from app.seed import seed_database
 from app.seed_synthetic_foundation import seed_synthetic_foundation_data
+from app.seed_engineering_quality_assets import seed_engineering_quality_assets_data
+from app.seed_department_land_utility import seed_department_land_utility_data
+from app.seed_digital_office import seed_digital_office_data
 from app.models import Project, Issue, DepartmentDependency, WorkflowTask, Road
 from app.routers import (
     auth, users, roles, departments, organisations, projects,
     officials, contractors, dependencies, issues, workflows,
-    documents, audit, ai, executive, programmes, leakage
+    documents, audit, ai, executive, programmes, leakage, reports,
+    engineering_quality_assets, land_utility, digital_office
 )
 
 # Initialize schema tables
@@ -42,12 +46,17 @@ def on_startup():
     # Automatically seed the database if fresh
     seed_database()
     seed_synthetic_foundation_data()
+    seed_engineering_quality_assets_data()
+    seed_department_land_utility_data()
+    seed_digital_office_data()
 
 # Include versioned API routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(roles.router, prefix=settings.API_V1_STR)
 app.include_router(departments.router, prefix=settings.API_V1_STR)
+app.include_router(land_utility.router, prefix=settings.API_V1_STR)
+app.include_router(digital_office.router, prefix=settings.API_V1_STR)
 app.include_router(organisations.router, prefix=settings.API_V1_STR)
 app.include_router(projects.router, prefix=settings.API_V1_STR)
 app.include_router(officials.router, prefix=settings.API_V1_STR)
@@ -61,6 +70,8 @@ app.include_router(ai.router, prefix=settings.API_V1_STR)
 app.include_router(executive.router, prefix=settings.API_V1_STR)
 app.include_router(programmes.router, prefix=settings.API_V1_STR)
 app.include_router(leakage.router, prefix=settings.API_V1_STR)
+app.include_router(reports.router, prefix=settings.API_V1_STR)
+app.include_router(engineering_quality_assets.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

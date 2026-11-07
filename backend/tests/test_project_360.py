@@ -208,3 +208,106 @@ def test_project_360_not_found(client: TestClient):
 
     res = client.get("/api/v1/projects/99999/360", headers=headers)
     assert res.status_code == 404
+
+def test_project_360_prompt03_lifecycle_intelligence_extensions(client: TestClient):
+    """
+    Prompt 03: Unified project 360 includes AI Project Intelligence Assessment (5 subsections),
+    utility shifting, field inspections, associated assets, citizen grievances, financial transactions,
+    and action register.
+    """
+    token = get_auth_token(client, "admin")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    res = client.get("/api/v1/projects/4/360", headers=headers)
+    assert res.status_code == 200
+    dossier = res.json()
+
+    # AI Project Intelligence Assessment
+    ai_intel = dossier.get("ai_project_intelligence")
+    assert ai_intel is not None
+    assert "executive_summary" in ai_intel
+    assert len(ai_intel["critical_findings"]) >= 2
+    assert "root_cause_analysis" in ai_intel
+    assert "land_acquisition" in ai_intel["root_cause_analysis"]
+    assert "utility_shifting" in ai_intel["root_cause_analysis"]
+    assert len(ai_intel["recommended_actions"]) >= 2
+    assert "decision_required" in ai_intel
+
+    # Utility Shifting
+    utility_shift = dossier.get("utility_shifting")
+    assert utility_shift is not None
+    assert utility_shift["total_utilities"] >= 14
+    assert len(utility_shift["items"]) >= 2
+
+    # Field Operations
+    field_ops = dossier.get("field_operations")
+    assert field_ops is not None
+    assert field_ops["total_inspections"] >= 1
+    assert len(field_ops["inspections"]) >= 1
+
+    # Assets
+    assets = dossier.get("assets")
+    assert assets is not None
+    assert assets["total_assets"] >= 1
+    assert len(assets["items"]) >= 1
+
+    # Citizen Grievances
+    grievances = dossier.get("citizen_grievances")
+    assert grievances is not None
+    assert grievances["total_grievances"] >= 1
+    assert len(grievances["items"]) >= 1
+
+    # Financial Transactions
+    txns = dossier.get("financial_transactions")
+    assert txns is not None
+    assert len(txns) >= 2
+
+    # Actions Register
+    actions = dossier.get("actions_register")
+    assert actions is not None
+    assert len(actions) >= 1
+
+def test_project_360_action_creation_and_audit(client: TestClient):
+    """
+    POST /api/v1/projects/{id}/actions assigns an action item and creates an audit event.
+    """
+    token = get_auth_token(client, "admin")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    payload = {
+        "issue": "Coordinate clearance with TANGEDCO for overhead 11kV line shutdown",
+        "department": "TANGEDCO",
+        "assigned_officer": "Er. K. Ramesh (Superintending Engineer)",
+        "priority": "CRITICAL",
+        "target_date": "2026-11-25",
+        "remarks": "Priority executive clearance per Prompt 03 Section 20."
+    }
+
+    res = client.post("/api/v1/projects/4/actions", json=payload, headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert "action" in data
+    assert data["action"]["issue"] == payload["issue"]
+    assert data["action"]["status"] == "ASSIGNED"
+
+def test_project_360_quality_observation_and_audit(client: TestClient):
+    """
+    POST /api/v1/projects/{id}/quality-observations records a quality observation.
+    """
+    token = get_auth_token(client, "chief_eng")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    payload = {
+        "defect_type": "Retaining Wall Drainage Weephole Alignment",
+        "observation_notes": "Weepholes at km 16/400 blocked by concrete slurry; non-conformance logged.",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "contractor_response": "Contractor notified for immediate de-clogging."
+    }
+
+    res = client.post("/api/v1/projects/4/quality-observations", json=payload, headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert "record" in data
+    assert data["record"]["component_type"] == payload["defect_type"]
+

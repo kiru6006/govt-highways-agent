@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Header } from './components/Header';
 import { Sidebar, navigationItems } from './components/Sidebar';
 import { AskAIPanel } from './components/AskAIPanel';
@@ -13,11 +14,19 @@ import { GovernanceRegistryPage } from './pages/GovernanceRegistryPage';
 import { ProgrammeIntelligencePage } from './pages/ProgrammeIntelligencePage';
 import { Project360Page } from './pages/Project360Page';
 import { LeakageIntelligencePage } from './pages/LeakageIntelligencePage';
+import { ReportsPage } from './pages/ReportsPage';
+import { QualityPage } from './pages/QualityPage';
+import { FieldOpsPage } from './pages/FieldOpsPage';
+import { AssetsPage } from './pages/AssetsPage';
+import { DepartmentsPage } from './pages/DepartmentsPage';
+import { LandUtilityPage } from './pages/LandUtilityPage';
+import { DigitalOfficePage } from './pages/DigitalOfficePage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 import { DemoBanner } from './components/DemoBanner';
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
+  const { isNavyGov } = useTheme();
   const currentNav = navigationItems.find((n) => n.path === location.pathname);
   const currentModuleName = currentNav ? currentNav.name : 'TN-HDOS Master Platform';
 
@@ -34,7 +43,11 @@ const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans">
+    <div
+      className={`flex min-h-screen font-sans transition-colors duration-200 ${
+        isNavyGov ? 'bg-[#F4F7FB] text-[#1F2937]' : 'bg-slate-50 text-slate-900'
+      }`}
+    >
       {/* 17-Module Persistent Sidebar with Category Accordion & Rail Toggle */}
       <Sidebar isCollapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
 
@@ -62,18 +75,18 @@ const AppLayout: React.FC = () => {
             <Route path="/leakage" element={<LeakageIntelligencePage />} />
             <Route path="/project-360" element={<Project360Page />} />
             <Route path="/directory" element={<DirectoryPage />} />
-            <Route path="/departments" element={<PlaceholderModule />} />
-            <Route path="/quality" element={<PlaceholderModule />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
+            <Route path="/quality" element={<QualityPage />} />
             <Route path="/finance" element={<PlaceholderModule />} />
             <Route path="/contractors" element={<PlaceholderModule />} />
-            <Route path="/field-ops" element={<PlaceholderModule />} />
-            <Route path="/assets" element={<PlaceholderModule />} />
-            <Route path="/digital-office" element={<PlaceholderModule />} />
-            <Route path="/land-utility" element={<PlaceholderModule />} />
+            <Route path="/field-ops" element={<FieldOpsPage />} />
+            <Route path="/assets" element={<AssetsPage />} />
+            <Route path="/digital-office" element={<DigitalOfficePage />} />
+            <Route path="/land-utility" element={<LandUtilityPage />} />
             <Route path="/compliance" element={<GovernanceRegistryPage />} />
             <Route path="/governance" element={<GovernanceRegistryPage />} />
             <Route path="/citizen-services" element={<PlaceholderModule />} />
-            <Route path="/reports" element={<PlaceholderModule />} />
+            <Route path="/reports" element={<ReportsPage />} />
             <Route path="/admin" element={<PlaceholderModule />} />
             <Route path="*" element={<Dashboard />} />
           </Routes>
@@ -88,11 +101,13 @@ const AppLayout: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <AppLayout />
-      </HashRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <HashRouter>
+          <AppLayout />
+        </HashRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

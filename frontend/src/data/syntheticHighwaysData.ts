@@ -1539,3 +1539,956 @@ export function getSyntheticDecisionsRequiringAttention() {
   ];
 }
 
+// -------------------------------------------------------------
+// PROMPT 02: MINISTERIAL REPORTS & AI DECISION INTELLIGENCE HELPERS
+// -------------------------------------------------------------
+
+export let SYNTHETIC_MINISTERIAL_DECISIONS = [
+  {
+    id: 1,
+    decision_reference: 'MDR-2026-001',
+    project_id: 4,
+    project_title: 'Four Laning of SH-15 Ooty-Gudalur Ghat Corridor',
+    programme: 'CKICP',
+    district: 'Coimbatore',
+    issue_title: '115-day delay caused by pending 12 revenue land parcels, 48 unshifted TANGEDCO poles, and unsanctioned ₹9.80 Cr rock excavation claim.',
+    evidence_summary: 'Joint Inspection Report #CKICP-COIM-04 confirms 48 poles unshifted despite ₹48.2 Lakh deposit paid 142 days ago; DRO (LA) award pending for 3.4 km bypass stretch; MB Book 104 contains non-BOQ hydraulic rock splitting rates.',
+    impact_assessment: 'Critical corridor connecting Nilgiris tea logistics stalled; ₹9.80 Cr potential cost overrun; contractor idle machinery penalty notice issued.',
+    financial_exposure_cr: 9.80,
+    recommended_action: 'Convene Interdepartmental Clearance Taskforce with Revenue Secretary and TANGEDCO CMD; freeze variation order payment pending Standing Finance Committee concurrence.',
+    decision_authority: 'MINISTER',
+    current_status: 'Pending Decision',
+    assigned_department: 'Highways & Revenue Coordination',
+    assigned_officer: 'Er. K. Senthil Nathan, M.E. (Chief Engineer CKICP)',
+    due_date: '2026-11-20',
+    recorded_decision: '',
+    remarks: 'Priority docket placed before the Hon\'ble Minister for decisive interdepartmental directive.',
+    is_simulated: true,
+    created_at: '2026-11-06',
+    updated_at: '2026-11-06',
+    actions: [
+      {
+        id: 101,
+        decision_id: 1,
+        action_type: 'CREATION_AND_ESCALATION',
+        actor_name: 'TN-HDOS AI Decision Intelligence System',
+        actor_role: 'EXECUTIVE_INTELLIGENCE_ENGINE',
+        old_status: '',
+        new_status: 'Pending Decision',
+        remarks: 'Composite cross-module risk triggered for SH-15 Ooty-Gudalur Ghat Corridor.',
+        assigned_to: 'Er. K. Senthil Nathan, M.E. (Chief Engineer CKICP)',
+        due_date: '2026-11-20',
+        created_at: '2026-11-06 09:30'
+      }
+    ]
+  },
+  {
+    id: 2,
+    decision_reference: 'MDR-2026-002',
+    project_id: 1,
+    project_title: 'Widening of SH-49 (East Coast Road) km 22/0 to 45/0',
+    programme: 'CMRDP',
+    district: 'Chengalpattu',
+    issue_title: 'Duplicate billing voucher entry #ECR-RA-03 of ₹21.00 Cr and 1,810 MT bitumen gate pass discrepancy.',
+    evidence_summary: 'Electronic voucher audit matched duplicate bill submission across Kelambakkam and Chengalpattu sub-divisions; IOCL Manali refinery manifests show zero corresponding gate passes for Batch VG-30.',
+    impact_assessment: 'Risk of ₹18.20 Cr net double disbursement and sub-standard pavement life along tourist coastal corridor.',
+    financial_exposure_cr: 18.20,
+    recommended_action: 'Freeze second voucher #TXN-2025-004 in Treasury ECS; order vigilance audit of Kelambakkam MB Book 412.',
+    decision_authority: 'MINISTER',
+    current_status: 'Under Review',
+    assigned_department: 'Highways Accounts & Audit',
+    assigned_officer: 'Thiru K. Sundaramoorthy, IA&AS (FA & CAO)',
+    due_date: '2026-11-18',
+    recorded_decision: 'Voucher disbursement held. Original Measurement Book called for.',
+    remarks: 'Sub-divisional engineer summoned to Chief Engineer office on 14th Nov.',
+    is_simulated: true,
+    created_at: '2026-11-06',
+    updated_at: '2026-11-06',
+    actions: [
+      {
+        id: 102,
+        decision_id: 2,
+        action_type: 'CREATION_AND_ESCALATION',
+        actor_name: 'TN-HDOS Anomaly Engine',
+        actor_role: 'SYSTEM',
+        old_status: '',
+        new_status: 'Under Review',
+        remarks: 'Detection rule R-DUP-01 flag triggered.',
+        assigned_to: 'Thiru K. Sundaramoorthy, IA&AS (FA & CAO)',
+        due_date: '2026-11-18',
+        created_at: '2026-11-06 10:15'
+      }
+    ]
+  },
+  {
+    id: 3,
+    decision_reference: 'MDR-2026-003',
+    project_id: 2,
+    project_title: 'Construction of Tambaram Grade Separator on MDR-102',
+    programme: 'CMRDP',
+    district: 'Chennai',
+    issue_title: 'Structural concrete strength failure (achieved 31.8 MPa vs M-45) on Pier P-14 with open NCR and unamortized advance lag.',
+    evidence_summary: 'Highways Research Station (HRS) Guindy 28-day cube compression test report #HRS-QC-2025-889 confirms shortfall; advance recovery lag of ₹2.20 Cr.',
+    impact_assessment: 'Public safety risk on Chennai southern arterial node; delay of 85 days in bridge deck launching.',
+    financial_exposure_cr: 8.40,
+    recommended_action: 'Order immediate halt to pier cap girder erection; mandate independent ultrasonic non-destructive testing by IIT Madras Department of Civil Engineering.',
+    decision_authority: 'MINISTER',
+    current_status: 'Action Assigned',
+    assigned_department: 'Highways Research Station & Quality Control',
+    assigned_officer: 'Dr. V. Gomathi, Ph.D. (Director, HRS Guindy)',
+    due_date: '2026-11-19',
+    recorded_decision: 'IIT Madras structural safety certification mandated prior to girder launching.',
+    remarks: 'Joint inspection scheduled with IIT Madras team on 18th Nov.',
+    is_simulated: true,
+    created_at: '2026-11-06',
+    updated_at: '2026-11-06',
+    actions: [
+      {
+        id: 103,
+        decision_id: 3,
+        action_type: 'CREATION_AND_ESCALATION',
+        actor_name: 'HRS Quality Surveillance',
+        actor_role: 'QC_DIRECTORATE',
+        old_status: '',
+        new_status: 'Action Assigned',
+        remarks: 'Structural testing directive issued.',
+        assigned_to: 'Dr. V. Gomathi, Ph.D. (Director, HRS Guindy)',
+        due_date: '2026-11-19',
+        created_at: '2026-11-06 11:00'
+      }
+    ]
+  },
+  {
+    id: 4,
+    decision_reference: 'MDR-2026-004',
+    project_id: 8,
+    project_title: 'Reconstruction of 6 Major Bridges along SH-115 Cheyyar-Vandavasi',
+    programme: 'NABARD',
+    district: 'Tiruvannamalai',
+    issue_title: '130-day interdepartmental delay in Water Resources Department (WRD) NOC for Cheyyar river bridge waterway expansion.',
+    evidence_summary: 'WRD Chief Engineer Plan Formulation letter #WRD-PF-780 pending hydraulic model approval since June 2025.',
+    impact_assessment: 'Monsoon flood cutoff hazard for 42 agricultural villages; idling machinery claims of ₹1.10 Cr.',
+    financial_exposure_cr: 1.10,
+    recommended_action: 'Principal Secretary (Highways) to issue Demi-Official letter to WRD Secretary for single-window bridge waterway sanction.',
+    decision_authority: 'SECRETARY',
+    current_status: 'Referred to Department',
+    assigned_department: 'Water Resources Department (WRD)',
+    assigned_officer: 'Er. M. Thanikachalam, M.E. (Chief Engineer WRD)',
+    due_date: '2026-11-25',
+    recorded_decision: 'Referred to WRD with strict 7-day compliance timeline.',
+    remarks: 'Joint video conference scheduled between Highways SE and WRD SE.',
+    is_simulated: true,
+    created_at: '2026-11-06',
+    updated_at: '2026-11-06',
+    actions: [
+      {
+        id: 104,
+        decision_id: 4,
+        action_type: 'CREATION_AND_ESCALATION',
+        actor_name: 'Secretariat Interdepartmental Desk',
+        actor_role: 'SECRETARIAT',
+        old_status: '',
+        new_status: 'Referred to Department',
+        remarks: 'Forwarded for interdepartmental clearance.',
+        assigned_to: 'Er. M. Thanikachalam, M.E. (Chief Engineer WRD)',
+        due_date: '2026-11-25',
+        created_at: '2026-11-06 14:00'
+      }
+    ]
+  },
+  {
+    id: 5,
+    decision_reference: 'MDR-2026-005',
+    project_id: 5,
+    project_title: 'TNRSP-II Strengthening of SH-10 Cuddalore-Vridhachalam-Salem',
+    programme: 'TNRSP_II',
+    district: 'Cuddalore',
+    issue_title: 'Repeated contractor milestone slippage on Package 2 and unauthorized sub-contracting of asphalt overlay.',
+    evidence_summary: 'Engineer-in-Chief field audit noticed unapproved plant machinery of third-party firm operating on site; 65-day cumulative milestone lag.',
+    impact_assessment: 'World Bank loan disbursement milestone compliance jeopardy and contract default penalty triggers.',
+    financial_exposure_cr: 6.50,
+    recommended_action: 'Issue formal Show-Cause Notice under Clause 60 of EPC contract; enforce liquidated damages of ₹65.0 Lakh for overdue Milestone 2.',
+    decision_authority: 'SECRETARY',
+    current_status: 'Approved',
+    assigned_department: 'TNRSP Project Management Unit',
+    assigned_officer: 'Thiru P. Kumaravel, IAS (Project Director TNRSP)',
+    due_date: '2026-11-28',
+    recorded_decision: 'Approved issuance of contractual default notice and liquidated damages deduction.',
+    remarks: 'Notice served to contractor on 10th Nov with 14-day cure period.',
+    is_simulated: true,
+    created_at: '2026-11-06',
+    updated_at: '2026-11-06',
+    actions: [
+      {
+        id: 105,
+        decision_id: 5,
+        action_type: 'CREATION_AND_ESCALATION',
+        actor_name: 'TNRSP PMU',
+        actor_role: 'PROGRAMME_DIRECTORATE',
+        old_status: '',
+        new_status: 'Approved',
+        remarks: 'Action sanctioned by Principal Secretary.',
+        assigned_to: 'Thiru P. Kumaravel, IAS (Project Director TNRSP)',
+        due_date: '2026-11-28',
+        created_at: '2026-11-06 16:30'
+      }
+    ]
+  }
+];
+
+export function getSyntheticReportsOverview(filters?: { programme?: string; district?: string; project_id?: number }) {
+  let projects = SYNTHETIC_PROJECTS;
+  if (filters?.programme && filters.programme !== 'ALL') {
+    projects = projects.filter(p => p.programme === filters.programme);
+  }
+  if (filters?.district && filters.district !== 'ALL') {
+    projects = projects.filter(p => p.district === filters.district);
+  }
+  if (filters?.project_id) {
+    projects = projects.filter(p => p.id === filters.project_id);
+  }
+
+  const totalProjects = projects.length;
+  const totalValue = projects.reduce((s, p) => s + p.sanctioned_cost_cr, 0);
+  const totalBudget = projects.reduce((s, p) => s + (p.revised_cost_cr || p.sanctioned_cost_cr), 0);
+  const totalExp = projects.reduce((s, p) => s + p.expenditure_to_date_cr, 0);
+  const avgPhysical = totalProjects > 0 ? projects.reduce((s, p) => s + p.physical_progress_pct, 0) / totalProjects : 0;
+  
+  const delayedProjects = projects.filter(p => p.physical_progress_pct < 60 && p.status === 'IN_PROGRESS');
+  const delayedValue = delayedProjects.reduce((s, p) => s + p.sanctioned_cost_cr, 0);
+
+  return {
+    total_active_projects: totalProjects,
+    total_project_value_cr: Math.round(totalValue * 100) / 100,
+    total_budget_allocation_cr: Math.round(totalBudget * 100) / 100,
+    total_expenditure_cr: Math.round(totalExp * 100) / 100,
+    physical_progress_avg_pct: Math.round(avgPhysical * 10) / 10,
+    delayed_projects_count: delayedProjects.length,
+    delayed_projects_value_cr: Math.round(delayedValue * 100) / 100,
+    critical_risk_projects_count: 3,
+    pending_approvals_count: 38,
+    land_acquisition_pending_count: 46,
+    potential_financial_exposure_cr: 54.00,
+    reporting_period: 'Q3-Q4 FY 2025-26',
+    frequency: 'Quarterly',
+    last_updated_timestamp: '06 Nov 2026, 18:30 IST',
+    data_mode: 'mock',
+    data_status: 'Seeded Demo',
+    kpi_definitions: {
+      total_active_projects: 'Count of sanctioned, tendered, or active infrastructure projects in Tamil Nadu Highways portfolio.',
+      total_project_value_cr: 'Cumulative administrative sanction (AS) cost across portfolio in ₹ Crores.',
+      total_budget_allocation_cr: 'Current revised budgetary allotment committed under state head of account.',
+      total_expenditure_cr: 'Cumulative electronic letter-of-credit (LC) disbursements released to date.',
+      physical_progress_avg_pct: 'Portfolio-wide arithmetic average of certified field physical progress.',
+      delayed_projects_count: 'Projects exhibiting schedule variance greater than 30 days against approved milestones.',
+      critical_risk_projects_count: 'Projects flagged with composite vulnerability score >= 65 or open critical anomalies.',
+      pending_approvals_count: 'Pending interdepartmental clearances across Revenue, TANGEDCO, Forest, and WRD.',
+      land_acquisition_pending_count: 'Total survey parcels with pending DRO section 19 awards or court references.',
+      potential_financial_exposure_cr: 'Aggregated value of detected financial anomalies currently under administrative review.'
+    }
+  };
+}
+
+export function getSyntheticProgrammePerformance() {
+  return [
+    {
+      programme_code: 'CKICP',
+      programme_name: 'Chennai-Kanyakumari Industrial Corridor Project (ADB Assisted)',
+      projects_count: 3,
+      packages_count: 5,
+      approved_cost_cr: 384.20,
+      budget_allocation_cr: 412.50,
+      expenditure_cr: 194.80,
+      physical_progress_pct: 52.4,
+      financial_progress_pct: 50.7,
+      delayed_projects_count: 2,
+      high_risk_projects_count: 2,
+      variance_pct: 1.7,
+      status: 'BEHIND_SCHEDULE'
+    },
+    {
+      programme_code: 'TNRSP_II',
+      programme_name: 'Tamil Nadu Road Sector Project - II (World Bank Assisted)',
+      projects_count: 2,
+      packages_count: 4,
+      approved_cost_cr: 268.00,
+      budget_allocation_cr: 285.00,
+      expenditure_cr: 142.30,
+      physical_progress_pct: 54.0,
+      financial_progress_pct: 53.1,
+      delayed_projects_count: 1,
+      high_risk_projects_count: 1,
+      variance_pct: 0.9,
+      status: 'WATCHLIST'
+    },
+    {
+      programme_code: 'CMRDP',
+      programme_name: 'Chief Minister Road Development Programme (State Capital Works)',
+      projects_count: 3,
+      packages_count: 6,
+      approved_cost_cr: 412.80,
+      budget_allocation_cr: 425.00,
+      expenditure_cr: 182.40,
+      physical_progress_pct: 47.8,
+      financial_progress_pct: 44.2,
+      delayed_projects_count: 2,
+      high_risk_projects_count: 2,
+      variance_pct: 3.6,
+      status: 'BEHIND_SCHEDULE'
+    },
+    {
+      programme_code: 'CRIDP',
+      programme_name: 'Comprehensive Road Infrastructure Development Programme',
+      projects_count: 2,
+      packages_count: 3,
+      approved_cost_cr: 195.40,
+      budget_allocation_cr: 204.00,
+      expenditure_cr: 128.60,
+      physical_progress_pct: 68.2,
+      financial_progress_pct: 65.8,
+      delayed_projects_count: 0,
+      high_risk_projects_count: 0,
+      variance_pct: 2.4,
+      status: 'ON_TRACK'
+    },
+    {
+      programme_code: 'NABARD',
+      programme_name: 'NABARD Rural Road & Bridge Infrastructure Programme (RIDF)',
+      projects_count: 2,
+      packages_count: 2,
+      approved_cost_cr: 115.60,
+      budget_allocation_cr: 120.00,
+      expenditure_cr: 72.10,
+      physical_progress_pct: 64.5,
+      financial_progress_pct: 62.4,
+      delayed_projects_count: 1,
+      high_risk_projects_count: 1,
+      variance_pct: 2.1,
+      status: 'MODERATE_RISK'
+    }
+  ];
+}
+
+export function getSyntheticProjectPerformance(filters?: { programme?: string; district?: string; project_id?: number }) {
+  let projects = SYNTHETIC_PROJECTS;
+  if (filters?.programme && filters.programme !== 'ALL') {
+    projects = projects.filter(p => p.programme === filters.programme);
+  }
+  if (filters?.district && filters.district !== 'ALL') {
+    projects = projects.filter(p => p.district === filters.district);
+  }
+  if (filters?.project_id) {
+    projects = projects.filter(p => p.id === filters.project_id);
+  }
+
+  const contractorNames: Record<number, string> = {
+    1: 'L&T Infrastructure Engineering Ltd',
+    2: 'PST Engineering Construction',
+    3: 'URC Construction Pvt Ltd',
+    4: 'KCP Infra Projects Ltd',
+    5: 'Sri Balaji Roadworks',
+    6: 'RPP Infra Projects Ltd',
+    7: 'K. Rajagopal & Co',
+    8: 'NCC Limited',
+    9: 'Bhavani Constructions',
+    10: 'GVR Infra Projects Ltd'
+  };
+
+  return projects.map(p => {
+    const varianceDays = p.id === 4 ? 115 : (p.id === 2 ? 85 : (p.id === 8 ? 74 : (p.id === 5 ? 65 : 0)));
+    const overallRisk = p.id === 4 || p.id === 1 || p.id === 2 ? 'CRITICAL' : (varianceDays > 40 ? 'HIGH' : (varianceDays > 0 ? 'MEDIUM' : 'LOW'));
+    const expected = varianceDays > 0 ? '2026-07-24' : p.target_completion_date;
+
+    return {
+      project_id: p.id,
+      project_code: p.project_code,
+      project_title: p.title,
+      programme: p.programme,
+      district: p.district,
+      sanctioned_cost_cr: p.sanctioned_cost_cr,
+      expenditure_to_date_cr: p.expenditure_to_date_cr,
+      physical_progress_pct: p.physical_progress_pct,
+      financial_progress_pct: p.financial_progress_pct,
+      planned_completion_date: p.target_completion_date,
+      expected_completion_date: expected,
+      schedule_variance_days: varianceDays,
+      contractor_id: p.contractor_id,
+      contractor_name: contractorNames[p.contractor_id] || 'Empanelled EPC Contractor',
+      overall_risk: overallRisk as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+      status: p.status,
+      has_critical_blocker: p.id === 1 || p.id === 2 || p.id === 4 || p.id === 8
+    };
+  });
+}
+
+export function getSyntheticFinancialPerformance() {
+  return {
+    approved_budget_cr: 1376.00,
+    revised_budget_cr: 1446.50,
+    actual_expenditure_cr: 720.20,
+    pending_bills_cr: 84.50,
+    payments_made_cr: 635.70,
+    retention_amount_cr: 36.80,
+    cost_variations_cr: 42.10,
+    potential_exposure_under_review_cr: 54.00,
+    budget_vs_expenditure_by_programme: [
+      { programme: 'CKICP', budget: 412.50, expenditure: 194.80, pending_bills: 28.40 },
+      { programme: 'TNRSP_II', budget: 285.00, expenditure: 142.30, pending_bills: 16.20 },
+      { programme: 'CMRDP', budget: 425.00, expenditure: 182.40, pending_bills: 24.50 },
+      { programme: 'CRIDP', budget: 204.00, expenditure: 128.60, pending_bills: 9.10 },
+      { programme: 'NABARD', budget: 120.00, expenditure: 72.10, pending_bills: 6.30 }
+    ],
+    monthly_expenditure_trend: [
+      { month: 'May 2025', expenditure: 48.20, target: 52.00, bills_cleared: 44.10 },
+      { month: 'Jun 2025', expenditure: 54.60, target: 55.00, bills_cleared: 51.20 },
+      { month: 'Jul 2025', expenditure: 62.10, target: 65.00, bills_cleared: 58.40 },
+      { month: 'Aug 2025', expenditure: 71.30, target: 75.00, bills_cleared: 66.80 },
+      { month: 'Sep 2025', expenditure: 68.40, target: 72.00, bills_cleared: 64.00 },
+      { month: 'Oct 2025', expenditure: 74.80, target: 80.00, bills_cleared: 70.50 }
+    ],
+    contractor_payment_distribution: [
+      { contractor: 'L&T Infrastructure Engineering', disbursed: 142.50, pending: 14.80, retention: 8.20 },
+      { contractor: 'PST Engineering Construction', disbursed: 98.40, pending: 12.10, retention: 5.80 },
+      { contractor: 'KCP Infra Projects Ltd', disbursed: 88.20, pending: 18.50, retention: 6.10 },
+      { contractor: 'URC Construction Pvt Ltd', disbursed: 76.40, pending: 9.20, retention: 4.50 },
+      { contractor: 'RPP Infra Projects Ltd', disbursed: 64.10, pending: 7.80, retention: 3.90 },
+      { contractor: 'Others (Class 1 & 2)', disbursed: 166.10, pending: 22.10, retention: 8.30 }
+    ],
+    pending_payment_ageing: [
+      { age_bracket: '< 30 Days', bills_count: 28, amount_cr: 44.20, status: 'NORMAL_SCRUTINY' },
+      { age_bracket: '30 - 60 Days', bills_count: 14, amount_cr: 22.80, status: 'OBSERVATION' },
+      { age_bracket: '60 - 90 Days', bills_count: 6, amount_cr: 11.40, status: 'EXECUTIVE_ESCALATION' },
+      { age_bracket: '> 90 Days', bills_count: 3, amount_cr: 6.10, status: 'HELD_OR_DISPUTED' }
+    ],
+    cost_variation_analysis: [
+      { project: 'SH-15 Ooty-Gudalur Ghat Corridor', original_cr: 112.50, variation_cr: 9.80, reason: 'Non-BOQ hydraulic rock splitting in landslide prone slopes', approval_status: 'PENDING_SFC' },
+      { project: 'SH-49 East Coast Road Widening', original_cr: 142.20, variation_cr: 14.20, reason: 'Additional pedestrian underpass and utility ducting', approval_status: 'APPROVED_CABINET' },
+      { project: 'MDR-102 Tambaram Grade Separator', original_cr: 85.00, variation_cr: 6.40, reason: 'Foundation redesign due to metro pier clash', approval_status: 'SANCTIONED_GO' },
+      { project: 'SH-115 Cheyyar Bridge Reconstruction', original_cr: 38.40, variation_cr: 3.20, reason: 'Deep scouring protection well curbs extension', approval_status: 'UNDER_SCRUTINY' }
+    ]
+  };
+}
+
+export function getSyntheticSchedulePerformance() {
+  return {
+    projects_on_schedule_count: 7,
+    delayed_projects_count: 5,
+    critical_delays_count: 2,
+    milestones_due_count: 18,
+    overdue_milestones_count: 4,
+    contract_extensions_count: 3,
+    delay_analysis_table: [
+      {
+        project_code: 'PRJ-TN-2026-004',
+        project_title: 'Four Laning of SH-15 Ooty-Gudalur Ghat Corridor',
+        package_name: 'PKG-01 (km 28/0 to km 42/0)',
+        contractor: 'KCP Infra Projects Ltd',
+        planned_completion: '2026-03-31',
+        expected_completion: '2026-07-24',
+        delay_days: 115,
+        primary_blocker: '12 Revenue land parcels pending award & 48 unshifted TANGEDCO poles',
+        responsible_department: 'Revenue (LA) & TANGEDCO',
+        recommended_action: 'Joint Ministerial Directive to DRO (LA) and TANGEDCO SE; establish 30-day clearance taskforce.'
+      },
+      {
+        project_code: 'PRJ-TN-2026-002',
+        project_title: 'Construction of Tambaram Grade Separator on MDR-102',
+        package_name: 'PKG-01 (Flyover and Approach Ramps)',
+        contractor: 'PST Engineering Construction',
+        planned_completion: '2026-04-15',
+        expected_completion: '2026-07-09',
+        delay_days: 85,
+        primary_blocker: 'Concrete strength defect on Pier P-14 & heavy peak traffic restrictions',
+        responsible_department: 'Highways Research Station & Traffic Police',
+        recommended_action: 'IIT Madras structural retrofitting certification & nocturnal 6-hour deck launching permission.'
+      },
+      {
+        project_code: 'PRJ-TN-2026-008',
+        project_title: 'Reconstruction of 6 Major Bridges along SH-115 Cheyyar-Vandavasi',
+        package_name: 'PKG-02 (Cheyyar River Major Bridge)',
+        contractor: 'K. Rajagopal & Co',
+        planned_completion: '2026-01-31',
+        expected_completion: '2026-04-15',
+        delay_days: 74,
+        primary_blocker: 'Delayed WRD water resources design clearance for HFL discharge',
+        responsible_department: 'Water Resources Department (WRD)',
+        recommended_action: 'Principal Secretary Demi-Official letter to WRD Chief Engineer Plan Formulation.'
+      },
+      {
+        project_code: 'PRJ-TN-2026-005',
+        project_title: 'TNRSP-II Strengthening of SH-10 Cuddalore-Vridhachalam-Salem',
+        package_name: 'PKG-02 (Vridhachalam Bypass Stretch)',
+        contractor: 'Sri Balaji Roadworks',
+        planned_completion: '2025-12-31',
+        expected_completion: '2026-03-06',
+        delay_days: 65,
+        primary_blocker: 'Contractor sub-contracting friction & slow bitumen procurement',
+        responsible_department: 'TNRSP Project Management Unit',
+        recommended_action: 'Enforce liquidated damages deduction of ₹65.0 Lakh on upcoming RA bill.'
+      }
+    ]
+  };
+}
+
+export function getSyntheticDepartmentPerformance() {
+  return [
+    {
+      department_name: 'Revenue Department (Land Acquisition)',
+      category: 'Statutory Land Clearances',
+      pending_approvals: 14,
+      avg_approval_age_days: 148,
+      critical_dependencies: 4,
+      projects_affected: 5,
+      overdue_actions: 6,
+      escalations_count: 3,
+      lead_officer: 'Special DRO (Land Acquisition - Highways)',
+      status: 'CRITICAL_BOTTLENECK'
+    },
+    {
+      department_name: 'TANGEDCO (Electricity Distribution)',
+      category: 'Utility Shifting (Poles & Cables)',
+      pending_approvals: 11,
+      avg_approval_age_days: 112,
+      critical_dependencies: 3,
+      projects_affected: 4,
+      overdue_actions: 4,
+      escalations_count: 2,
+      lead_officer: 'Superintending Engineer (TANGEDCO GCC)',
+      status: 'HIGH_ATTENTION'
+    },
+    {
+      department_name: 'Water Resources Department (WRD)',
+      category: 'Waterways, Canals & River Bridges NOC',
+      pending_approvals: 7,
+      avg_approval_age_days: 94,
+      critical_dependencies: 2,
+      projects_affected: 3,
+      overdue_actions: 2,
+      escalations_count: 1,
+      lead_officer: 'Chief Engineer (WRD Plan Formulation)',
+      status: 'MODERATE_FRICTION'
+    },
+    {
+      department_name: 'Forest Department',
+      category: 'Forest Clearance & Tree Felling Sanction',
+      pending_approvals: 5,
+      avg_approval_age_days: 160,
+      critical_dependencies: 2,
+      projects_affected: 2,
+      overdue_actions: 3,
+      escalations_count: 2,
+      lead_officer: 'District Forest Officer (DFO)',
+      status: 'HIGH_ATTENTION'
+    },
+    {
+      department_name: 'Tamil Nadu Police (Traffic Wing)',
+      category: 'Urban Corridor Traffic Diversion Permission',
+      pending_approvals: 4,
+      avg_approval_age_days: 28,
+      critical_dependencies: 1,
+      projects_affected: 2,
+      overdue_actions: 0,
+      escalations_count: 0,
+      lead_officer: 'Joint Commissioner of Police (Traffic)',
+      status: 'ON_TRACK'
+    },
+    {
+      department_name: 'Tamil Nadu Pollution Control Board (TNPCB)',
+      category: 'Environmental & Hot Mix Plant Clearances',
+      pending_approvals: 3,
+      avg_approval_age_days: 42,
+      critical_dependencies: 0,
+      projects_affected: 2,
+      overdue_actions: 0,
+      escalations_count: 0,
+      lead_officer: 'District Environmental Engineer',
+      status: 'ON_TRACK'
+    }
+  ];
+}
+
+export function getSyntheticContractorPerformance() {
+  const contractors = [
+    {
+      id: 1,
+      name: 'L&T Infrastructure Engineering Ltd',
+      class: 'CLASS_1_SUPER',
+      active_contracts: 3,
+      contract_value: 310.50,
+      progress_avg: 78.4,
+      schedule_adherence: 92.0,
+      qc_observations: 2,
+      pending_payments: 14.80,
+      extensions: 0,
+      open_corrective: 0,
+      schedule_score: 92.0,
+      qc_score: 95.0,
+      pace_score: 90.0,
+      discipline_score: 95.0
+    },
+    {
+      id: 2,
+      name: 'PST Engineering Construction',
+      class: 'CLASS_1',
+      active_contracts: 2,
+      contract_value: 145.00,
+      progress_avg: 45.2,
+      schedule_adherence: 68.0,
+      qc_observations: 4,
+      pending_payments: 12.10,
+      extensions: 2,
+      open_corrective: 2,
+      schedule_score: 68.0,
+      qc_score: 70.0,
+      pace_score: 65.0,
+      discipline_score: 60.0
+    },
+    {
+      id: 4,
+      name: 'KCP Infra Projects Ltd',
+      class: 'CLASS_1',
+      active_contracts: 2,
+      contract_value: 198.20,
+      progress_avg: 41.5,
+      schedule_adherence: 62.0,
+      qc_observations: 5,
+      pending_payments: 18.50,
+      extensions: 2,
+      open_corrective: 3,
+      schedule_score: 62.0,
+      qc_score: 65.0,
+      pace_score: 60.0,
+      discipline_score: 50.0
+    },
+    {
+      id: 3,
+      name: 'URC Construction Pvt Ltd',
+      class: 'CLASS_1',
+      active_contracts: 2,
+      contract_value: 115.60,
+      progress_avg: 68.5,
+      schedule_adherence: 85.0,
+      qc_observations: 2,
+      pending_payments: 9.20,
+      extensions: 1,
+      open_corrective: 1,
+      schedule_score: 85.0,
+      qc_score: 88.0,
+      pace_score: 82.0,
+      discipline_score: 85.0
+    },
+    {
+      id: 5,
+      name: 'Sri Balaji Roadworks',
+      class: 'CLASS_2',
+      active_contracts: 1,
+      contract_value: 52.40,
+      progress_avg: 54.0,
+      schedule_adherence: 72.0,
+      qc_observations: 3,
+      pending_payments: 6.50,
+      extensions: 1,
+      open_corrective: 1,
+      schedule_score: 72.0,
+      qc_score: 75.0,
+      pace_score: 70.0,
+      discipline_score: 75.0
+    }
+  ];
+
+  return contractors.map(c => {
+    const composite = Math.round(
+      ((c.schedule_score * 0.35) + (c.qc_score * 0.35) + (c.pace_score * 0.20) + (c.discipline_score * 0.10)) * 10
+    ) / 10;
+    return {
+      contractor_id: c.id,
+      name: c.name,
+      contractor_class: c.class,
+      active_contracts: c.active_contracts,
+      contract_value_cr: c.contract_value,
+      project_progress_avg: c.progress_avg,
+      schedule_adherence_pct: c.schedule_adherence,
+      quality_observations_count: c.qc_observations,
+      pending_payments_cr: c.pending_payments,
+      contract_extensions_count: c.extensions,
+      open_corrective_actions_count: c.open_corrective,
+      performance_score: composite,
+      score_breakdown: {
+        formula: 'Score = (0.35 * ScheduleAdherence) + (0.35 * QualityCompliance) + (0.20 * ProgressPace) + (0.10 * ContractDiscipline)',
+        schedule_component: Math.round(c.schedule_score * 0.35 * 10) / 10,
+        quality_component: Math.round(c.qc_score * 0.35 * 10) / 10,
+        pace_component: Math.round(c.pace_score * 0.20 * 10) / 10,
+        discipline_component: Math.round(c.discipline_score * 0.10 * 10) / 10
+      }
+    };
+  });
+}
+
+export function getSyntheticQualityAssetPerformance() {
+  return {
+    inspections_conducted: 172,
+    open_defects: 13,
+    critical_observations: 3,
+    ncrs_count: 6,
+    corrective_actions_pending: 5,
+    overdue_quality_closures: 2,
+    contractor_quality_breakdown: [
+      { contractor: 'KCP Infra Projects Ltd', tests_conducted: 42, passed: 36, failed: 6, open_ncrs: 3 },
+      { contractor: 'PST Engineering Construction', tests_conducted: 38, passed: 34, failed: 4, open_ncrs: 2 },
+      { contractor: 'L&T Infrastructure Engineering', tests_conducted: 64, passed: 63, failed: 1, open_ncrs: 0 },
+      { contractor: 'URC Construction Pvt Ltd', tests_conducted: 28, passed: 26, failed: 2, open_ncrs: 1 }
+    ],
+    total_assets: 482,
+    road_assets_km: 1284.6,
+    bridges_count: 94,
+    culverts_count: 388,
+    assets_requiring_inspection: 34,
+    maintenance_pending: 18,
+    critical_asset_conditions: 4
+  };
+}
+
+export function getSyntheticLandUtilityPerformance() {
+  return {
+    total_land_parcels: 142,
+    parcels_under_acquisition: 46,
+    awards_pending: 18,
+    compensation_pending: 14,
+    possession_pending: 14,
+    utility_shifting_pending: 192,
+    projects_affected: 6,
+    avg_pending_duration_days: 128,
+    department_dependencies: [
+      { department: 'Revenue (DRO Land Acquisition)', parcels_pending: 38, projects: 5, avg_days: 148, status: 'CRITICAL' },
+      { department: 'TANGEDCO (Electricity Poles)', utilities_pending: 126, projects: 4, avg_days: 112, status: 'HIGH' },
+      { department: 'Water Resources / TWAD (Mains)', utilities_pending: 18, projects: 3, avg_days: 94, status: 'MODERATE' },
+      { department: 'Forest Department (Stage 1 Clearance)', parcels_pending: 8, projects: 2, avg_days: 160, status: 'HIGH' }
+    ],
+    utility_type_breakdown: [
+      { utility_type: 'TANGEDCO LT/HT Electric Poles', count: 126, estimated_shifting_cost_cr: 4.80, action: 'Deposit paid; work stalled' },
+      { utility_type: 'TWAD Board Bulk Water Pipelines', count: 18, estimated_shifting_cost_cr: 3.20, action: 'Joint alignment survey complete' },
+      { utility_type: 'Telecom Optical Fibre Cables', count: 44, estimated_shifting_cost_cr: 1.10, action: 'Notice served to operators' },
+      { utility_type: 'Gas Pipeline Crossings', count: 4, estimated_shifting_cost_cr: 1.40, action: 'NOC under scrutiny with IOCL' }
+    ]
+  };
+}
+
+export function getSyntheticAIMinisterialBriefing() {
+  return {
+    title: 'AI Ministerial Intelligence Briefing',
+    subtitle: 'Cross-domain algorithmic synthesis of highway programme progress, statutory friction, and financial exposure.',
+    generated_at: '06 Nov 2026, 18:30 IST',
+    scenario_id: 'SCENARIO-MINISTER-DEMO-01',
+    what_needs_attention: {
+      headline: 'Three demonstration projects require immediate executive intervention.',
+      summary: 'AI cross-correlation of field milestones, ledger disbursements, and statutory correspondence has detected acute friction on SH-15 Ooty-Gudalur (CKICP), SH-49 ECR Widening (CMRDP), and Tambaram Grade Separator (CMRDP).',
+      primary_blockers: [
+        'Unshifted utilities: 48 TANGEDCO poles on SH-15 Ooty Ghat corridor have stalled hill slope cutting for 142 days despite 100% deposit payment.',
+        'Statutory land acquisition: 12 revenue parcels on SH-15 bypass pending section 19 final declaration with Special DRO Coimbatore.',
+        'Contractor milestone slippage: Milestone #3 delayed by 115 days with idle machinery escalation notice issued by KCP Infra Projects Ltd.',
+        'Financial variance claim: ₹9.80 Cr non-BOQ hydraulic rock splitting variation claim submitted without prior Standing Finance Committee concurrence.'
+      ]
+    },
+    why_does_it_matter: {
+      financial_impact: 'Cumulative potential financial exposure under active scrutiny stands at ₹54.00 Cr across 16 findings. If unresolved, contractual delay claims will compound by ₹12.5 Lakh per idle week.',
+      schedule_impact: 'SH-15 Ghat corridor expected completion has slipped from March 2026 to July 2026 (115 days delay), threatening pre-monsoon connectivity for Nilgiris agriculture.',
+      departmental_impact: 'Lack of structured monthly coordination meetings between Highways Chief Engineers and Revenue DROs is causing sequential rather than parallel statutory clearances.',
+      public_safety_impact: 'Open concrete quality defect on Pier P-14 at Tambaram Grade Separator (achieved 31.8 MPa vs M-45) poses structural risk on Chennai\'s highest-density suburban junction.'
+    },
+    what_should_be_done: {
+      immediate_directives: [
+        'Issue joint government directive convening a Special Interdepartmental Clearing Committee with Revenue Secretary and TANGEDCO CMD.',
+        'Impose 21-day timebound deadline on TANGEDCO Coimbatore Circle to complete 48-pole relocation on SH-15.',
+        'Order immediate freeze on duplicate voucher #TXN-2025-004 (₹21.00 Cr) and audit MB Book 412.',
+        'Halt pier cap girder erection on Pier P-14 at Tambaram pending independent ultrasonic non-destructive testing by IIT Madras.',
+        'Direct Superintending Engineers to enforce PWD Schedule of Rates on non-BOQ rock splitting claims rather than contractor-quoted rates.'
+      ]
+    },
+    who_should_act: {
+      actions: [
+        { officer: 'Thiru K. Phanindra Reddy, IAS', role: 'Principal Secretary (Highways)', dept: 'Highways & Minor Ports', target_date: '2026-11-18', directive: 'Convene joint coordination with Revenue & Energy Secretaries.' },
+        { officer: 'Er. K. Senthil Nathan, M.E.', role: 'Chief Engineer (CKICP)', dept: 'CKICP Project Unit', target_date: '2026-11-20', directive: 'Resolve 48 TANGEDCO poles relocation at site with SE Coimbatore.' },
+        { officer: 'Thiru K. Sundaramoorthy, IA&AS', role: 'Financial Advisor & CAO', dept: 'Accounts & Audit', target_date: '2026-11-17', directive: 'Freeze duplicate voucher #TXN-2025-004 in Treasury ECS portal.' },
+        { officer: 'Dr. V. Gomathi, Ph.D.', role: 'Director, HRS Guindy', dept: 'Highways Research Station', target_date: '2026-11-19', directive: 'Submit independent IIT Madras NDT test report for Pier P-14.' }
+      ]
+    },
+    what_decision_is_required: SYNTHETIC_MINISTERIAL_DECISIONS.map(d => ({
+      id: d.id,
+      decision_reference: d.decision_reference,
+      project_id: d.project_id,
+      project_title: d.project_title,
+      programme: d.programme,
+      district: d.district,
+      issue_title: d.issue_title,
+      evidence_summary: d.evidence_summary,
+      impact_assessment: d.impact_assessment,
+      financial_exposure_cr: d.financial_exposure_cr,
+      recommended_action: d.recommended_action,
+      decision_authority: d.decision_authority,
+      current_status: d.current_status,
+      assigned_department: d.assigned_department,
+      assigned_officer: d.assigned_officer,
+      due_date: d.due_date,
+      recorded_decision: d.recorded_decision,
+      remarks: d.remarks,
+      is_simulated: d.is_simulated,
+      created_at: d.created_at
+    })),
+    data_mode: 'mock',
+    disclaimer: 'AI Executive Briefing is generated algorithmically for demonstration purposes. Recommendations are strictly advisory and require human officer authentication.'
+  };
+}
+
+export function generateSyntheticMinisterialReport(req: any) {
+  const overview = getSyntheticReportsOverview({ programme: req.programme, district: req.district, project_id: req.project_id });
+  const sections: Array<{
+    section_key: string;
+    title: string;
+    summary: string;
+    highlights: string[];
+  }> = [];
+
+  if (req.include_financial) {
+    sections.push({
+      section_key: 'financial_analysis',
+      title: '1. Financial Allocation & Expenditure Scrutiny',
+      summary: `Portfolio expenditure stands at ₹${overview.total_expenditure_cr} Cr against sanctioned outlay of ₹${overview.total_project_value_cr} Cr.`,
+      highlights: [
+        `Current verified disbursements: ₹${overview.total_expenditure_cr} Cr.`,
+        'Unamortized mobilization advances under active recovery: ₹14.80 Cr.',
+        'Non-BOQ variation claims pending Standing Finance Committee review: ₹42.10 Cr.'
+      ]
+    });
+  }
+
+  if (req.include_delays) {
+    sections.push({
+      section_key: 'schedule_delays',
+      title: '2. Project Milestone Adherence & Critical Delay Registry',
+      summary: `${overview.delayed_projects_count} projects exhibit schedule variance exceeding 30 days. Critical delay on SH-15 (115 days) driven by utility pole relocation and DRO land awards.`,
+      highlights: [
+        'SH-15 Ooty-Gudalur Ghat Corridor: 115 days delay; expected completion 24 July 2026.',
+        'Tambaram Grade Separator on MDR-102: 85 days delay; pier defect rectification underway.',
+        'SH-115 Cheyyar River Bridge: 74 days delay; awaiting WRD hydraulic model approval.'
+      ]
+    });
+  }
+
+  if (req.include_contractor) {
+    sections.push({
+      section_key: 'contractor_performance',
+      title: '3. Contractor Performance & Score Matrix',
+      summary: 'Contractor capability and compliance evaluated using deterministic weighted index: Schedule (35%), Quality (35%), Pace (20%), and Discipline (10%).',
+      highlights: [
+        'L&T Infrastructure Engineering: Score 92.4 (High Adherence; 0 Open NCRs).',
+        'URC Construction Pvt Ltd: Score 83.2 (Moderate; 1 Open NCR).',
+        'PST Engineering Construction: Score 66.8 (Watchlist; Pier defect & advance lag).',
+        'KCP Infra Projects Ltd: Score 60.4 (Under Scrutiny; Milestone delay & rock rate claim).'
+      ]
+    });
+  }
+
+  if (req.include_land_utility) {
+    sections.push({
+      section_key: 'land_utility',
+      title: '4. Interdepartmental Land Acquisition & Utility Shifting Friction',
+      summary: '142 total demonstration survey parcels tracked. 46 parcels under acquisition with average pending age of 148 days across Special DRO units.',
+      highlights: [
+        'Revenue Department: 38 parcels pending award in Coimbatore, Chengalpattu, and Cuddalore.',
+        'TANGEDCO: 126 unshifted LT/HT electric poles across 4 major road corridors.',
+        'WRD: 18 bulk water pipeline crossings pending joint alignment clearance.'
+      ]
+    });
+  }
+
+  if (req.include_quality) {
+    sections.push({
+      section_key: 'quality_assets',
+      title: '5. Quality Assurance & Highways Research Station Audit',
+      summary: '172 field inspections logged. 13 open quality observations and 6 non-conformance reports (NCRs) active on state registry.',
+      highlights: [
+        'Pier P-14 on MDR-102 failed 28-day concrete cube strength test (31.8 MPa vs M-45).',
+        '1,810 MT of bitumen billed on SH-49 lacks matching electronic refinery gate passes.',
+        'Core test compaction on Salem bypass verified within IRC SP:84 specifications.'
+      ]
+    });
+  }
+
+  if (req.include_ai_findings) {
+    sections.push({
+      section_key: 'ai_findings',
+      title: '6. AI Algorithmic Anomaly & Exposure Findings',
+      summary: 'Automated surveillance rules flagged ₹54.00 Cr in potential financial and contractual exposure across 16 findings.',
+      highlights: [
+        'Duplicate bill identifier trigger R-DUP-01: Voucher #ECR-RA-03 submitted twice (₹21.00 Cr).',
+        'Unsanctioned variation order trigger R-VAR-03: ₹9.80 Cr rock excavation rate on SH-15.',
+        'Mobilization advance recovery deficit trigger R-ADV-02: ₹2.20 Cr lag on Tambaram.'
+      ]
+    });
+  }
+
+  return {
+    report_id: `REP-TN-DEMO-${Date.now()}`,
+    title: `TN-HDOS Ministerial Executive Intelligence Report: ${req.report_type || 'Executive Briefing'}`,
+    generated_at: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' IST',
+    reporting_period: req.reporting_period || 'Quarterly',
+    filters_applied: {
+      programme: req.programme || 'ALL',
+      district: req.district || 'ALL',
+      project_id: req.project_id || 'All Projects',
+      department: req.department || 'ALL',
+      frequency: req.reporting_period || 'Quarterly'
+    },
+    executive_summary: `This ministerial briefing covers ${overview.total_active_projects} highway infrastructure projects with a cumulative outlay of ₹${overview.total_project_value_cr} Cr. Portfolio physical progress averages ${overview.physical_progress_avg_pct}% with expenditure of ₹${overview.total_expenditure_cr} Cr. Immediate executive intervention is advised on SH-15 Ooty-Gudalur Ghat Corridor and SH-49 ECR Widening to resolve critical interdepartmental land/utility bottlenecks and verify detected billing discrepancies.`,
+    kpis_summary: {
+      projects_covered: overview.total_active_projects,
+      total_sanctioned_cr: overview.total_project_value_cr,
+      total_expenditure_cr: overview.total_expenditure_cr,
+      avg_physical_progress_pct: overview.physical_progress_avg_pct,
+      critical_risk_projects: overview.critical_risk_projects_count,
+      potential_exposure_cr: overview.potential_financial_exposure_cr
+    },
+    sections,
+    recommended_decisions: SYNTHETIC_MINISTERIAL_DECISIONS.slice(0, 3).map(d => ({
+      ref: d.decision_reference,
+      project: d.project_title,
+      issue: d.issue_title,
+      recommended: d.recommended_action,
+      authority: d.decision_authority,
+      status: d.current_status
+    })),
+    data_mode: 'mock'
+  };
+}
+
+export function updateSyntheticMinisterialDecision(id: number, payload: any) {
+  const dec = SYNTHETIC_MINISTERIAL_DECISIONS.find(d => d.id === id);
+  if (!dec) return null;
+
+  const oldStatus = dec.current_status;
+  dec.current_status = payload.current_status || dec.current_status;
+  if (payload.recorded_decision) dec.recorded_decision = payload.recorded_decision;
+  if (payload.remarks) dec.remarks = payload.remarks;
+  if (payload.assigned_officer) dec.assigned_officer = payload.assigned_officer;
+  if (payload.assigned_department) dec.assigned_department = payload.assigned_department;
+  if (payload.due_date) dec.due_date = payload.due_date;
+  dec.updated_at = new Date().toISOString().split('T')[0];
+
+  dec.actions.push({
+    id: dec.actions.length + 101,
+    decision_id: dec.id,
+    action_type: 'MINISTERIAL_ACTION_RECORDED',
+    actor_name: 'Ministerial Executive Reviewer',
+    actor_role: 'EXECUTIVE_LEADERSHIP',
+    old_status: oldStatus,
+    new_status: dec.current_status,
+    remarks: payload.remarks || payload.recorded_decision || 'Status updated in executive decision register.',
+    assigned_to: dec.assigned_officer,
+    due_date: dec.due_date,
+    created_at: new Date().toISOString().replace('T', ' ').substring(0, 16)
+  });
+
+  return dec;
+}
+
+

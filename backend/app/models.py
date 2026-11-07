@@ -41,6 +41,17 @@ class Department(Base):
     name = Column(String(150), nullable=False)
     contact_email = Column(String(100), nullable=True)
     is_external = Column(Boolean, default=False)  # False for Highways, True for TANGEDCO, Revenue, TWAD, etc.
+    category = Column(String(100), default="Infrastructure")
+    responsible_minister = Column(String(150), nullable=True)
+    responsible_secretary = Column(String(150), nullable=True)
+    head_of_department = Column(String(150), nullable=True)
+    nodal_officer_name = Column(String(150), nullable=True)
+    nodal_officer_designation = Column(String(150), nullable=True)
+    nodal_officer_phone = Column(String(50), nullable=True)
+    jurisdiction = Column(String(150), nullable=True)
+    sla_standard_days = Column(Integer, default=30)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
     
     users = relationship("User", back_populates="department")
     projects = relationship("Project", back_populates="executing_department")
@@ -353,15 +364,30 @@ class StakeholderResponsibility(Base):
 class DepartmentDependency(Base):
     __tablename__ = "department_dependencies"
     id = Column(Integer, primary_key=True, index=True)
+    dependency_code = Column(String(50), nullable=True, index=True)  # e.g., DEP-2026-001
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
     requesting_dept_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
     target_dept_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
+    responsible_officer = Column(String(150), nullable=True)
     dependency_type = Column(String(100), nullable=False)  # Land Acquisition, EB Pole Shifting, TWAD Pipe Relocation, Forest Clearance, Railway General Arrangement Drawing (GAD)
     description = Column(Text, nullable=False)
     impact_days = Column(Integer, default=0)
+    criticality = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    date_raised = Column(DateTime, default=datetime.datetime.utcnow)
     target_clearance_date = Column(DateTime, nullable=True)
     actual_clearance_date = Column(DateTime, nullable=True)
+    days_pending = Column(Integer, default=0)
+    escalation_level = Column(String(50), default="NONE")  # NONE, DIVISIONAL, SECRETARY, MINISTERIAL
+    recommended_action = Column(Text, nullable=True)
+    supporting_document_ref = Column(String(100), nullable=True)
+    upstream_dependency_id = Column(Integer, nullable=True)
+    downstream_dependency_id = Column(Integer, nullable=True)
     status = Column(String(50), default="PENDING")  # PENDING, IN_PROGRESS, ESCALATED, CLEARED, REJECTED
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    generated_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     project = relationship("Project", back_populates="dependencies")
     requesting_dept = relationship("Department", foreign_keys=[requesting_dept_id])
@@ -371,13 +397,27 @@ class Approval(Base):
     __tablename__ = "approvals"
     id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    approval_type = Column(String(100), nullable=False)  # Administrative Sanction (AS), Technical Sanction (TS), Revised Estimate, CRIDP Approval
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    approval_type = Column(String(100), nullable=False)  # Administrative Sanction (AS), Technical Sanction (TS), Revised Estimate, CRIDP Approval, Forest Clearance, Railway GAD, Utility Shifting Sanction
     reference_number = Column(String(100), unique=True, nullable=False)
     sanction_amount_cr = Column(Float, default=0.0)
+    submitting_department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    approving_department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
     approved_by_role = Column(String(100), nullable=False)
+    assigned_officer = Column(String(150), nullable=True)
+    submission_date = Column(DateTime, default=datetime.datetime.utcnow)
+    sla_target_days = Column(Integer, default=30)
+    overdue_days = Column(Integer, default=0)
+    review_remarks = Column(Text, nullable=True)
+    document_ref = Column(String(100), nullable=True)
+    sla_status = Column(String(50), default="ON_TRACK")  # ON_TRACK, OVERDUE, ESCALATED
     parent_approval_id = Column(Integer, ForeignKey("approvals.id"), nullable=True)
-    status = Column(String(50), default="APPROVED")  # SUBMITTED, RECOMMENDED, APPROVED, REVISED, REJECTED
+    status = Column(String(50), default="APPROVED")  # SUBMITTED, UNDER_REVIEW, APPROVED, REVISED, REJECTED
     approval_date = Column(DateTime, default=datetime.datetime.utcnow)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    generated_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     project = relationship("Project", back_populates="approvals")
 
@@ -873,6 +913,19 @@ class LandParcel(Base):
     possession_status = Column(String(50), default="PENDING_POSSESSION")  # PENDING_POSSESSION, POSSESSION_HANDED_OVER, PARTIAL_DISPUTED
     has_litigation = Column(Boolean, default=False)
     responsible_revenue_officer = Column(String(150), nullable=False)
+    landowner_name = Column(String(150), nullable=True)
+    acquisition_stage = Column(String(50), default="Valuation")  # Identification, Survey, Notification 15(2), Objections 15(3), Gazette 15(1), Valuation, Award 19(1), Compensation, Possession, Handover
+    legal_provision = Column(String(100), default="Tamil Nadu Highways Act 2001 (TN Act 34/2002)")
+    compensation_status = Column(String(50), default="PENDING")  # PENDING, PAID, PARTIAL, DISPUTED
+    possession_date = Column(DateTime, nullable=True)
+    dispute_details = Column(Text, nullable=True)
+    geo_lat = Column(Float, nullable=True)
+    geo_lng = Column(Float, nullable=True)
+    blocking_project_milestone = Column(String(200), nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    generated_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     project = relationship("Project", back_populates="land_parcels")
     work_package = relationship("WorkPackage", back_populates="land_parcels")
@@ -1034,3 +1087,599 @@ class AnomalyActionHistory(Base):
 
     finding = relationship("AnomalyFinding", back_populates="actions")
 
+# -------------------------------------------------------------
+# Ministerial Reports & Decision Intelligence Models (Prompt 02)
+# -------------------------------------------------------------
+
+class MinisterialDecisionRecord(Base):
+    __tablename__ = "ministerial_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    decision_reference = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    project_title = Column(String(250), nullable=False)
+    programme = Column(String(50), nullable=False)
+    district = Column(String(100), default="All Districts")
+    issue_title = Column(String(250), nullable=False)
+    evidence_summary = Column(Text, nullable=True)
+    impact_assessment = Column(Text, nullable=True)
+    financial_exposure_cr = Column(Float, default=0.0)
+    recommended_action = Column(Text, nullable=False)
+    decision_authority = Column(String(100), default="MINISTER")  # MINISTER, SECRETARY, CHIEF_ENGINEER
+    current_status = Column(String(50), default="Pending Decision")  # Pending Decision, Under Review, Approved, Rejected, Referred to Department, Action Assigned, Completed, Closed
+    assigned_department = Column(String(100), nullable=True)
+    assigned_officer = Column(String(150), nullable=True)
+    due_date = Column(String(50), nullable=True)
+    recorded_decision = Column(Text, nullable=True)
+    remarks = Column(Text, nullable=True)
+    escalation_level = Column(String(50), default="MINISTER")
+    is_simulated = Column(Boolean, default=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    actions = relationship("MinisterialDecisionActionHistory", back_populates="decision", cascade="all, delete-orphan")
+
+class MinisterialDecisionActionHistory(Base):
+    __tablename__ = "ministerial_decision_action_history"
+    id = Column(Integer, primary_key=True, index=True)
+    decision_id = Column(Integer, ForeignKey("ministerial_decisions.id"), nullable=False)
+    action_type = Column(String(50), nullable=False)
+    actor_name = Column(String(150), nullable=False)
+    actor_role = Column(String(100), nullable=False)
+    old_status = Column(String(50), nullable=True)
+    new_status = Column(String(50), nullable=True)
+    remarks = Column(Text, nullable=True)
+    assigned_to = Column(String(150), nullable=True)
+    due_date = Column(String(50), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    decision = relationship("MinisterialDecisionRecord", back_populates="actions")
+
+
+# ==============================================================================
+# PROMPT 04: Engineering Quality, Field Operations & Asset Intelligence Models
+# ==============================================================================
+
+class FieldInspectionRecord(Base):
+    __tablename__ = "field_inspections"
+    id = Column(Integer, primary_key=True, index=True)
+    inspection_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    officer_name = Column(String(150), nullable=False)
+    officer_designation = Column(String(100), nullable=False)
+    contractor_name = Column(String(150), nullable=False)
+    inspection_date = Column(String(50), nullable=False)
+    site_location = Column(String(200), nullable=False)
+    work_activity = Column(String(200), nullable=False)
+    progress_reported_pct = Column(Float, default=0.0)
+    progress_verified_pct = Column(Float, default=0.0)
+    findings_summary = Column(Text, nullable=False)
+    severity = Column(String(20), default="MEDIUM")  # LOW, MEDIUM, HIGH, CRITICAL
+    status = Column(String(50), default="COMPLETED")  # SCHEDULED, IN_PROGRESS, COMPLETED, OVERDUE, FOLLOWUP_REQUIRED
+    geo_lat = Column(Float, nullable=True)
+    geo_lng = Column(Float, nullable=True)
+    photos_count = Column(Integer, default=0)
+    follow_up_action = Column(Text, nullable=True)
+    follow_up_date = Column(String(50), nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-FLD-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class FieldIssueRecord(Base):
+    __tablename__ = "field_issues"
+    id = Column(Integer, primary_key=True, index=True)
+    issue_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    category = Column(String(100), nullable=False)  # Workmanship, Road Damage, Drainage, Material, Construction Delay, Safety Observation, Utility Obstruction, Land Access, Environmental Concern
+    description = Column(Text, nullable=False)
+    location = Column(String(200), nullable=False)
+    reported_date = Column(String(50), nullable=False)
+    assigned_officer = Column(String(150), nullable=False)
+    assigned_department = Column(String(100), default="Highways Department")
+    status = Column(String(50), default="NEW")  # NEW, ASSIGNED, UNDER_INVESTIGATION, CONTRACTOR_ACTION_REQUIRED, DEPARTMENT_ACTION_REQUIRED, VERIFICATION_PENDING, RESOLVED, CLOSED
+    priority = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    resolution_target = Column(String(50), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-ISS-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class QualityInspectionRecord(Base):
+    __tablename__ = "quality_inspections"
+    id = Column(Integer, primary_key=True, index=True)
+    inspection_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    inspection_date = Column(String(50), nullable=False)
+    inspection_type = Column(String(100), nullable=False)  # Road Surface, Pavement Quality, Bridge, Structural, Drainage, Culvert, Material Testing, Concrete Testing, Bitumen Testing, Road Safety, Workmanship, General Engineering
+    site_location = Column(String(200), nullable=False)
+    inspecting_officer = Column(String(150), nullable=False)
+    contractor_name = Column(String(150), nullable=False)
+    findings_count = Column(Integer, default=0)
+    severity = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    status = Column(String(50), default="COMPLETED")  # SCHEDULED, COMPLETED, REINSPECTION_PENDING, CLOSED
+    findings_summary = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-QLT-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class QualityFindingRecord(Base):
+    __tablename__ = "quality_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)  # e.g., QC-2026-041 / NCR-2025-041
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    asset_id = Column(Integer, nullable=True)
+    inspection_id = Column(Integer, nullable=True)
+    defect_category = Column(String(100), nullable=False)
+    description = Column(Text, nullable=False)
+    severity = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    status = Column(String(50), default="NEW")  # NEW, UNDER_REVIEW, CONTRACTOR_NOTIFIED, CORRECTIVE_ACTION_PENDING, RECTIFICATION_IN_PROGRESS, REINSPECTION_PENDING, VERIFIED, CLOSED
+    identified_date = Column(String(50), nullable=False)
+    contractor_name = Column(String(150), nullable=False)
+    contractor_response = Column(Text, nullable=True)
+    corrective_action = Column(Text, nullable=True)
+    target_closure_date = Column(String(50), nullable=True)
+    reinspection_date = Column(String(50), nullable=True)
+    reinspection_officer = Column(String(150), nullable=True)
+    reinspection_notes = Column(Text, nullable=True)
+    is_ncr = Column(Boolean, default=False)
+    penalty_cr = Column(Float, default=0.0)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-DEF-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class MaterialTestRecord(Base):
+    __tablename__ = "material_tests"
+    id = Column(Integer, primary_key=True, index=True)
+    test_ref = Column(String(50), unique=True, index=True, nullable=False)
+    material_type = Column(String(50), nullable=False)  # Concrete, Cement, Bitumen, Aggregate, Soil, Steel, Other
+    sample_date = Column(String(50), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    laboratory_name = Column(String(150), nullable=False)
+    test_parameter = Column(String(150), nullable=False)
+    measured_result = Column(String(100), nullable=False)
+    reference_limit = Column(String(100), nullable=False)
+    result_status = Column(String(30), default="PASSED")  # PASSED, FAILED, OUT_OF_SPEC
+    report_file_name = Column(String(150), nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-MAT-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class InfrastructureAssetRecord(Base):
+    __tablename__ = "infrastructure_assets"
+    id = Column(Integer, primary_key=True, index=True)
+    asset_code = Column(String(50), unique=True, index=True, nullable=False)
+    asset_name = Column(String(200), nullable=False)
+    asset_type = Column(String(50), nullable=False)  # Roads, Bridges, Flyovers, Culverts, Drainage Systems, Retaining Walls, Traffic Infrastructure, Road Safety
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    district = Column(String(100), nullable=False)
+    location_chainage = Column(String(150), nullable=False)
+    completion_date = Column(String(50), nullable=True)
+    condition = Column(String(30), default="Good")  # Good, Fair, Poor, Critical, Not Assessed
+    pci_score = Column(Float, default=85.0)  # Pavement/Asset Condition Index (0-100)
+    last_inspection_date = Column(String(50), nullable=True)
+    next_inspection_date = Column(String(50), nullable=True)
+    maintenance_status = Column(String(50), default="Operational")  # Operational, Under Maintenance, Inspection Due, Urgent Maintenance Required, Under Construction
+    responsible_authority = Column(String(150), nullable=False)
+    replacement_value_cr = Column(Float, default=0.0)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-AST-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    package = relationship("WorkPackage")
+
+
+class MaintenanceWorkOrderRecord(Base):
+    __tablename__ = "maintenance_work_orders"
+    id = Column(Integer, primary_key=True, index=True)
+    work_order_code = Column(String(50), unique=True, index=True, nullable=False)
+    asset_id = Column(Integer, ForeignKey("infrastructure_assets.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    maintenance_type = Column(String(50), nullable=False)  # Preventive, Corrective, Emergency, Periodic Rehabilitation
+    description = Column(Text, nullable=False)
+    priority = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    estimated_cost_cr = Column(Float, default=0.0)
+    assigned_contractor = Column(String(150), nullable=False)
+    assigned_engineer = Column(String(150), nullable=False)
+    scheduled_date = Column(String(50), nullable=False)
+    completion_date = Column(String(50), nullable=True)
+    status = Column(String(50), default="MAINTENANCE_IDENTIFIED")  # MAINTENANCE_IDENTIFIED, WORK_ORDER_CREATED, ASSIGNED, IN_PROGRESS, INSPECTION_TRIGGERED, VERIFIED, CLOSED
+    inspection_verified = Column(Boolean, default=False)
+    remarks = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-MNT-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    asset = relationship("InfrastructureAssetRecord")
+    project = relationship("Project")
+
+
+class EngineeringAIFinding(Base):
+    __tablename__ = "engineering_ai_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    module_source = Column(String(50), nullable=False)  # QUALITY, FIELD_OPS, ASSETS
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    title = Column(String(200), nullable=False)
+    category = Column(String(100), nullable=False)
+    severity = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    confidence_score = Column(Float, default=0.90)
+    explanation = Column(Text, nullable=False)
+    recommended_action = Column(Text, nullable=False)
+    evidence_references = Column(Text, nullable=True)
+    status = Column(String(50), default="ACTIVE")
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+
+
+class UtilityShiftingRecord(Base):
+    __tablename__ = "utility_shiftings"
+    id = Column(Integer, primary_key=True, index=True)
+    utility_code = Column(String(50), unique=True, index=True, nullable=False)  # e.g., UTL-2026-001
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    location_chainage = Column(String(150), nullable=False)
+    utility_category = Column(String(100), nullable=False)  # Electricity Poles, Water Pipelines, Sewage & Drainage, Telecom Cables, Gas Pipelines
+    owning_agency = Column(String(150), nullable=False)  # TANGEDCO, TWAD Board, BSNL, etc.
+    department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    contact_officer = Column(String(150), nullable=False)
+    affected_assets_count = Column(Integer, default=1)
+    estimated_cost_cr = Column(Float, default=0.0)
+    approved_cost_cr = Column(Float, default=0.0)
+    fund_allocation_status = Column(String(50), default="PENDING")  # PENDING, SANCTIONED, DISBURSED
+    application_date = Column(DateTime, nullable=True)
+    joint_inspection_date = Column(DateTime, nullable=True)
+    approval_status = Column(String(50), default="PENDING")  # PENDING, APPROVED, UNDER_REVIEW, REJECTED
+    work_order_status = Column(String(50), default="NOT_ISSUED")  # NOT_ISSUED, ISSUED, IN_PROGRESS, COMPLETED
+    physical_shifting_progress_pct = Column(Float, default=0.0)
+    verification_status = Column(String(50), default="UNVERIFIED")  # UNVERIFIED, VERIFIED, REJECTED
+    target_completion_date = Column(DateTime, nullable=True)
+    actual_completion_date = Column(DateTime, nullable=True)
+    blocking_milestone = Column(String(200), nullable=True)
+    remarks = Column(Text, nullable=True)
+    geo_lat = Column(Float, nullable=True)
+    geo_lng = Column(Float, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    scenario_id = Column(String(50), default="SCN-UTL-01")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    department = relationship("Department")
+
+
+class LandAcquisitionWorkflowRecord(Base):
+    __tablename__ = "land_acquisition_workflows"
+    id = Column(Integer, primary_key=True, index=True)
+    parcel_id = Column(Integer, ForeignKey("land_parcels.id"), nullable=False)
+    stage_name = Column(String(50), nullable=False)  # Identification, Survey, Notification 15(2), Objections 15(3), Gazette 15(1), Valuation, Award 19(1), Compensation, Possession, Handover
+    sequence_order = Column(Integer, default=1)
+    status = Column(String(50), default="PENDING")  # COMPLETED, IN_PROGRESS, PENDING, BLOCKED
+    responsible_authority = Column(String(150), nullable=False)
+    target_date = Column(DateTime, nullable=True)
+    completed_date = Column(DateTime, nullable=True)
+    document_reference = Column(String(100), nullable=True)
+    remarks = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    parcel = relationship("LandParcel")
+
+
+class DepartmentAIFinding(Base):
+    __tablename__ = "department_ai_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    category = Column(String(100), nullable=False)  # Land Acquisition Delay, Utility Shifting Blocker, SLA Breach, Multi-Dept Deadlock, Inconsistent Area/Compensation, Missing Documentation, Critical Path Blocker, Ministerial Escalation
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    work_package_id = Column(Integer, nullable=True)
+    related_entity_type = Column(String(50), nullable=True)  # PARCEL, UTILITY, APPROVAL, DEPENDENCY
+    related_entity_id = Column(Integer, nullable=True)
+    related_entity_code = Column(String(100), nullable=True)
+    responsible_department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    responsible_department_name = Column(String(150), nullable=True)
+    title = Column(String(250), nullable=False)
+    severity = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    confidence = Column(Float, default=0.90)
+    impact_statement = Column(Text, nullable=False)
+    evidence_notes = Column(Text, nullable=False)
+    recommended_action = Column(Text, nullable=False)
+    suggested_role = Column(String(100), default="Superintending Engineer")
+    target_due_date = Column(DateTime, nullable=True)
+    verification_status = Column(String(50), default="UNVERIFIED")
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    department = relationship("Department")
+
+
+class SupportingDocumentReference(Base):
+    __tablename__ = "supporting_document_references"
+    id = Column(Integer, primary_key=True, index=True)
+    document_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(200), nullable=False)
+    document_type = Column(String(100), nullable=False)  # Government Order (GO), Gazette Notification, Joint Inspection Report, Valuation Statement, Court Interim Order, NOC
+    issuing_department = Column(String(150), nullable=False)
+    reference_number = Column(String(100), nullable=False)
+    order_date = Column(String(50), nullable=False)
+    related_entity_type = Column(String(50), nullable=False)  # PARCEL, UTILITY, APPROVAL, DEPENDENCY
+    related_entity_id = Column(Integer, nullable=False)
+    file_name = Column(String(150), nullable=False)
+    verification_status = Column(String(50), default="Verified")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+
+
+# -------------------------------------------------------------
+# Digital Office, E-File Management & Workflow Intelligence (Prompt 07)
+# -------------------------------------------------------------
+
+class CorrespondenceRecord(Base):
+    __tablename__ = "correspondences"
+    id = Column(Integer, primary_key=True, index=True)
+    communication_code = Column(String(50), unique=True, index=True, nullable=False)
+    reference_number = Column(String(100), index=True, nullable=False)
+    communication_type = Column(String(20), default="INCOMING")  # INCOMING, OUTGOING
+    received_or_dispatch_date = Column(DateTime, default=datetime.datetime.utcnow)
+    sender_or_recipient_org = Column(String(200), nullable=False)
+    sender_or_recipient_name = Column(String(150), nullable=False)
+    sender_or_recipient_role = Column(String(100), nullable=False)
+    subject = Column(String(300), nullable=False)
+    category = Column(String(100), nullable=False)  # Statutory Clearance, Public Grievance, Contractor Claim, Interdepartmental Requisition, Cabinet Memo, Audit Para, Administrative Sanction
+    department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    priority = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    confidentiality_level = Column(String(20), default="INTERNAL")  # PUBLIC, INTERNAL, CONFIDENTIAL, SECRET
+    assigned_officer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assigned_officer_name = Column(String(150), nullable=True)
+    status = Column(String(50), default="RECEIVED")  # RECEIVED, UNDER_REVIEW, FILE_CREATED, ACTION_TAKEN, DISPATCHED, CLOSED
+    due_date = Column(DateTime, nullable=True)
+    document_reference = Column(String(150), nullable=True)
+    government_file_id = Column(Integer, nullable=True)
+    dispatch_evidence_ref = Column(String(150), nullable=True)
+    action_history_summary = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    generated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class GovernmentFileRecord(Base):
+    __tablename__ = "government_files"
+    id = Column(Integer, primary_key=True, index=True)
+    file_number = Column(String(80), unique=True, index=True, nullable=False)
+    subject = Column(String(350), nullable=False)
+    file_category = Column(String(100), nullable=False)  # Land Acquisition & Valuation, Utility Shifting Sanction, Revised Administrative Sanction (RAS), Contractor Extension & Variation, Court Writ Compliance, Statutory NOC
+    originating_department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
+    current_department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
+    originating_officer_name = Column(String(150), nullable=False)
+    current_responsible_officer_name = Column(String(150), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    priority = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    confidentiality_level = Column(String(20), default="INTERNAL")  # INTERNAL, CONFIDENTIAL, SECRET
+    current_workflow_stage = Column(String(50), default="SUBMITTED")  # DRAFT, SUBMITTED, SECTION_REVIEW, DEPARTMENT_REVIEW, SECRETARY_REVIEW, MINISTER_DECISION, APPROVED, REJECTED, RETURNED_FOR_CLARIFICATION, ACTION_ISSUED, CLOSED
+    pending_action = Column(String(250), nullable=True)
+    due_date = Column(DateTime, nullable=True)
+    is_closed = Column(Boolean, default=False)
+    closure_date = Column(DateTime, nullable=True)
+    closure_remarks = Column(Text, nullable=True)
+    document_reference = Column(String(150), nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    source_type = Column(String(50), default="synthetic")
+    generated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class FileMovementRecord(Base):
+    __tablename__ = "file_movements"
+    id = Column(Integer, primary_key=True, index=True)
+    file_id = Column(Integer, ForeignKey("government_files.id"), index=True, nullable=False)
+    movement_number = Column(Integer, nullable=False)
+    from_department_id = Column(Integer, nullable=False)
+    from_department_name = Column(String(150), nullable=False)
+    from_officer_name = Column(String(150), nullable=False)
+    to_department_id = Column(Integer, nullable=False)
+    to_department_name = Column(String(150), nullable=False)
+    to_officer_name = Column(String(150), nullable=False)
+    movement_date = Column(DateTime, default=datetime.datetime.utcnow)
+    reason_for_movement = Column(String(250), nullable=False)
+    instruction_note = Column(Text, nullable=False)
+    expected_action = Column(String(200), nullable=False)
+    due_date = Column(DateTime, nullable=True)
+    acknowledgement_status = Column(String(50), default="ACKNOWLEDGED")  # SENT, RECEIVED, ACKNOWLEDGED
+    received_date = Column(DateTime, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class OfficeNoteRecord(Base):
+    __tablename__ = "office_notes"
+    id = Column(Integer, primary_key=True, index=True)
+    file_id = Column(Integer, ForeignKey("government_files.id"), index=True, nullable=False)
+    note_number = Column(Integer, nullable=False)
+    author_officer_name = Column(String(150), nullable=False)
+    author_designation = Column(String(150), nullable=False)
+    submission_date = Column(DateTime, default=datetime.datetime.utcnow)
+    background_context = Column(Text, nullable=False)
+    factual_matrix = Column(Text, nullable=False)
+    financial_implications_cr = Column(Float, default=0.0)
+    legal_and_compliance_implications = Column(Text, nullable=True)
+    project_milestone_impact = Column(String(250), nullable=True)
+    officer_recommendation = Column(Text, nullable=False)
+    ai_advisory_note = Column(Text, nullable=True)
+    decision_statement = Column(Text, nullable=True)
+    supporting_doc_ref = Column(String(150), nullable=True)
+    status = Column(String(50), default="SUBMITTED")  # DRAFT, SUBMITTED, ENDORSED, APPROVED, RETURNED
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class GovernmentDecisionRecord(Base):
+    __tablename__ = "government_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    decision_code = Column(String(50), unique=True, index=True, nullable=False)
+    file_id = Column(Integer, ForeignKey("government_files.id"), index=True, nullable=False)
+    decision_authority = Column(String(50), nullable=False)  # MINISTER, PRINCIPAL_SECRETARY, CHIEF_ENGINEER, DISTRICT_COLLECTOR
+    decision_date = Column(DateTime, default=datetime.datetime.utcnow)
+    decision_category = Column(String(100), nullable=False)
+    decision_statement = Column(Text, nullable=False)
+    approved_action = Column(Text, nullable=False)
+    responsible_department_id = Column(Integer, nullable=False)
+    responsible_department_name = Column(String(150), nullable=False)
+    responsible_officer_name = Column(String(150), nullable=False)
+    due_date = Column(DateTime, nullable=True)
+    supporting_doc_ref = Column(String(150), nullable=True)
+    implementation_status = Column(String(50), default="IN_PROGRESS")  # PENDING, IN_PROGRESS, COMPLIED, OVERDUE
+    compliance_evidence_ref = Column(String(150), nullable=True)
+    closure_date = Column(DateTime, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class DigitalOfficeMeetingRecord(Base):
+    __tablename__ = "digital_office_meetings"
+    id = Column(Integer, primary_key=True, index=True)
+    meeting_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    meeting_category = Column(String(100), nullable=False)  # MINISTERIAL_REVIEW, SECRETARY_COORDINATION, PROJECT_MONITORING, INTERDEPARTMENTAL_CLEARANCE, STATUTORY_COMMITTEE
+    meeting_date = Column(DateTime, nullable=False)
+    chairperson_name = Column(String(150), nullable=False)
+    departments_represented_json = Column(Text, nullable=False)  # JSON array of dept names
+    related_project_ids_json = Column(Text, nullable=True)  # JSON array of project IDs
+    agenda_summary = Column(Text, nullable=False)
+    minutes_summary = Column(Text, nullable=True)
+    decisions_taken_summary = Column(Text, nullable=True)
+    status = Column(String(50), default="CONCLUDED")  # SCHEDULED, CONCLUDED, MINUTES_CIRCULATED, ACTIONS_TRACKED
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class GovernmentActionItemRecord(Base):
+    __tablename__ = "government_action_items"
+    id = Column(Integer, primary_key=True, index=True)
+    action_code = Column(String(50), unique=True, index=True, nullable=False)
+    origin_type = Column(String(50), nullable=False)  # FILE, DECISION, MEETING, CORRESPONDENCE
+    origin_id = Column(Integer, nullable=False)
+    description = Column(Text, nullable=False)
+    responsible_department_id = Column(Integer, nullable=False)
+    responsible_department_name = Column(String(150), nullable=False)
+    responsible_officer_name = Column(String(150), nullable=False)
+    priority = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    due_date = Column(DateTime, nullable=False)
+    status = Column(String(50), default="IN_PROGRESS")  # PENDING, IN_PROGRESS, COMPLETED, DEFERRED, REOPENED
+    progress_pct = Column(Float, default=0.0)
+    evidence_ref = Column(String(150), nullable=True)
+    escalation_level = Column(String(50), default="NONE")  # NONE, HOD, SECRETARY, MINISTER
+    closure_remarks = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class DigitalDocumentRecord(Base):
+    __tablename__ = "digital_documents"
+    id = Column(Integer, primary_key=True, index=True)
+    document_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    category = Column(String(100), nullable=False)  # Government Order, Administrative Sanction, Technical Sanction, Joint Inspection Report, Court Order, Treasury Voucher, Meeting Minutes
+    reference_number = Column(String(100), nullable=False)
+    document_date = Column(DateTime, default=datetime.datetime.utcnow)
+    issuing_authority = Column(String(150), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    related_file_id = Column(Integer, nullable=True)
+    version = Column(String(20), default="1.0")
+    storage_path = Column(String(250), default="/documents/synthetic/gov-doc-2026.pdf")
+    uploading_user = Column(String(100), default="admin")
+    confidentiality_level = Column(String(20), default="INTERNAL")  # INTERNAL, CONFIDENTIAL, SECRET
+    verification_status = Column(String(50), default="Verified")  # Verified, Unverified
+    checksum_sha256 = Column(String(64), nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class DigitalOfficeAIFinding(Base):
+    __tablename__ = "digital_office_ai_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    finding_type = Column(String(50), nullable=False)  # CORRESPONDENCE_ROUTING, SLA_BREACH_WARNING, MULTI_AGENCY_DEADLOCK, MISSING_EVIDENCE, MINISTERIAL_BRIEFING, OVERDUE_DECISION_ACTION
+    severity = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    title = Column(String(250), nullable=False)
+    ai_confidence = Column(Float, default=0.92)
+    problem_statement = Column(Text, nullable=False)
+    evidence_reference = Column(String(150), nullable=True)
+    affected_file_id = Column(Integer, nullable=True)
+    affected_project_id = Column(Integer, nullable=True)
+    recommended_action = Column(Text, nullable=False)
+    suggested_responsible_role = Column(String(150), nullable=False)
+    is_escalation_required = Column(Boolean, default=False)
+    status = Column(String(50), default="ACTIVE")  # ACTIVE, ACKNOWLEDGED, RESOLVED
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)

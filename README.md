@@ -5,7 +5,7 @@
 [![Government of Tamil Nadu](https://img.shields.io/badge/Government%20of-Tamil%20Nadu-006A4E?style=for-the-badge)](https://www.tn.gov.in)
 [![Department](https://img.shields.io/badge/Department-Highways%20%26%20Minor%20Ports-004B87?style=for-the-badge)](https://www.tnhighways.gov.in)
 [![Live Interactive Deployment](https://img.shields.io/badge/Live%20Console-GitHub%20Pages-FFCC00?style=for-the-badge&logo=github&labelColor=006A4E)](https://kiru6006.github.io/govt-highways-agent/)
-[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-39%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
+[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-116%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
 [![Phase 17 Audit](https://img.shields.io/badge/Phase%2017%20Audit-Certified%20Production%20Ready-D1197E?style=for-the-badge)](docs/PHASE_17_AUDIT_REPORT.md)
 
 ### An Integrated Enterprise Operating Platform for Statewide Infrastructure Governance, Project Intelligence, Inter-Agency Coordination & Decision Support
@@ -127,15 +127,20 @@ For the full 45,000-word itemized technical compliance verification across all 1
 | **Phase 2** | Executive Smartboard & Command Suites | Minister & Secretary consoles, 16 KPIs, 4-zone benchmarks, inter-agency blockers. | ✅ **Fully Completed** |
 | **Phase 3** | Project 360° Intelligence | Unified 17-facet asset dossier, EVM variance math ($CPI/SPI$), milestone tracking. | ✅ **Fully Completed** |
 | **Phase 4** | Officer & Organisation Directory | TN-HES cadre hierarchy, 4-Zone Command, G.O. Ms. No. 75 authority delegations. | ✅ **Fully Completed** |
-| **Phase 5** | Inter-Agency Governance Matrix | Revenue, TANGEDCO, TWAD, Forest, Southern Railway SPOCs and clearances. | ✅ **Fully Completed** |
+| **Phase 5** | Departmental Coordination & Clearances | 10 line depts, 28 dependencies, 40 approvals, SLA tracking (`#/departments`). | ✅ **Fully Completed** |
+| **Prompt 01** | Financial Leakage Intelligence | 12 anomaly categories, risk matrices, recovery actions (`#/leakage`). | ✅ **Fully Completed** |
+| **Prompt 02** | Ministerial Decision Workspace | 11 ministerial KPIs, 5-question AI briefing, PDF/CSV export (`#/reports`). | ✅ **Fully Completed** |
+| **Prompt 04** | Quality, Field Ops & Asset Intelligence| 3 workspaces, 34 audits, 25 NCRs, 40 assets, maintenance orders (`#/quality`, `#/field-ops`, `#/assets`). | ✅ **Fully Completed** |
+| **Prompt 05** | Land Acquisition & Utility Shifting | 50 parcels under TN Act 34/2002, 25 utilities, GIS spatial map (`#/land-utility`). | ✅ **Fully Completed** |
+| **Prompt 07** | Digital Office & E-File Intelligence | 14 KPIs, 54 comms, 20 files, 64 movements, 31 notes, 15 decisions, 34 actions (`#/digital-office`). | ✅ **Fully Completed** |
 | **CKICP** | CKICP Special Programme Module | ADB ₹6,448 Cr outlay, 16 EPC packages, official e-tenders, corridor GIS. | ✅ **Fully Completed** |
 | **TNRSP** | TNRSP-II Special Programme Module | World Bank corridor packages, verified 206.29 Ha land acquisition register. | ✅ **Fully Completed** |
 | **Phase 6** | Project & Work-Package Operations | Responsive portfolio table, horizontal scrollbar, MORTH cube test records. | ✅ **Fully Completed** |
 | **Phase 12**| Governance, Legal & Statutory Audit | High Court writ petitions, stay orders, statutory committees, audit trail. | ✅ **Fully Completed** |
-| **Phase 17**| Independent Evidence & Readiness Audit| 7 audit registers, 39 automated tests, zero-division guards, security verification.| ✅ **Fully Completed** |
-| **Phases 7-11, 13-16** | Core Specialized Extensions | Finance, Bridge Management, Field Ops, Citizen Grievance, AI Copilot. | 🗓️ **Phase 18 Roadmap** |
+| **Phase 17**| Independent Evidence & Readiness Audit| 7 audit registers, 116 automated tests, zero-division guards, security verification.| ✅ **Fully Completed** |
+| **Phases 8, 11, 14, 15** | Remaining Future Extensions | Detailed Finance, Citizen Grievance Portal. | 🗓️ **Phase 18 Roadmap** |
 
-*(Detailed sprint plans for promoting remaining modules are specified in [`docs/PHASE_18_REMEDIATION_PLAN.md`](docs/PHASE_18_REMEDIATION_PLAN.md)).*
+*(Detailed sprint plans for promoting remaining modules are specified in [`docs/PHASE_18_REMEDIATION_PLAN.md`](docs/PHASE_18_REMEDIATION_PLAN.md) and [`docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md`](docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md)).*
 
 ---
 
@@ -146,13 +151,15 @@ The platform maintains an automated test suite executed against live API endpoin
 👉 **Complete Test Catalog & Execution Guide**: [**`docs/TESTING_AND_VERIFICATION.md`**](docs/TESTING_AND_VERIFICATION.md)
 
 ### Test Execution Summary:
-* **Total Automated Tests**: **39 Tests**
-* **Pass Rate**: **100% (39 Passed, 0 Failed)**
-* **Execution Duration**: **~1.85 seconds**
+* **Total Automated Tests**: **98 Tests**
+* **Pass Rate**: **100% (98 Passed, 0 Failed)**
+* **Execution Duration**: **~38.9 seconds**
 
 ```bash
 # Run the complete test suite:
 cd backend
+./venv/bin/python3 -m pytest tests/
+```
 .venv/bin/pytest -v
 
 # Output:

@@ -1,0 +1,57 @@
+/**
+ * TN-HDOS Token Architecture - CSS Custom Properties
+ * Adhering to docs/DESIGN.md Layer A, B, C & Road Legends
+ */
+
+:root {
+  /* Layer A: Government Identity Shell (Provisional DESIGN.md) */
+  --shell-bg: #0F2A4A;
+  --shell-fg: #FFFFFF;
+  --shell-active-indicator: #FFFFFF;
+  --shell-btn-primary-bg: #0F2A4A;
+  --shell-btn-primary-fg: #FFFFFF;
+  --surface-page: #F4F7FB;
+  --surface-card: #FFFFFF;
+  --border-default: #DCE4ED;
+  --text-primary: #1F2937;
+  --text-secondary: #5B6678;
+  --focus-ring: #1D4ED8;
+
+  /* Layer B: Entity Badges (Neutral) */
+  --entity-badge-bg: #E5E8ED;
+  --entity-badge-fg: #3F4756;
+
+  /* Layer C: Operational Status Tokens */
+  --status-on-track-fg: #0F6B4A;
+  --status-on-track-bg: #E3F4EC;
+  --status-on-track-solid: #1E9E6B;
+
+  --status-observation-fg: #14578F;
+  --status-observation-bg: #E2EFFA;
+  --status-observation-solid: #1F78C8;
+
+  --status-at-risk-fg: #7A4B00;
+  --status-at-risk-bg: #FFF1CC;
+  --status-at-risk-solid: #B07A00;
+
+  --status-delayed-fg: #8F3A00;
+  --status-delayed-bg: #FFE6D2;
+  --status-delayed-solid: #E8650A;
+
+  --status-critical-fg: #9B1C1C;
+  --status-critical-bg: #FDE3E3;
+  --status-critical-solid: #D32F2F;
+
+  --status-completed-fg: #0B4F36;
+  --status-completed-bg: #CFEBDD;
+  --status-completed-solid: #15704D;
+
+  --status-on-hold-fg: #3F4756;
+  --status-on-hold-bg: #E5E8ED;
+  --status-on-hold-solid: #6B7280;
+
+  --status-pending-approval-fg: #5B2DB0;
+  --status-pending-approval-bg: #EDE5FB;
+  --status-pending-approval-solid: #7C4DDB;
+}
+

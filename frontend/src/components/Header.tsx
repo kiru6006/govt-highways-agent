@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle, Menu } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle, Menu, Palette, Check } from 'lucide-react';
 
 interface HeaderProps {
   currentModuleName: string;
@@ -10,7 +11,9 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSidebar, isSidebarCollapsed }) => {
   const { user, switchPersona } = useAuth();
+  const { theme, setTheme, isNavyGov } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const personas = [
@@ -30,42 +33,72 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gov-border px-6 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+    <header
+      className={`h-16 border-b px-6 flex items-center justify-between sticky top-0 z-20 shadow-sm transition-colors duration-200 ${
+        isNavyGov
+          ? 'bg-[#0F2A4A] border-[#1A3E66] text-white theme-header'
+          : 'bg-white border-gov-border text-slate-900'
+      }`}
+    >
       {/* Brand & Module */}
       <div className="flex items-center gap-3">
         {onToggleSidebar && (
           <button
             onClick={onToggleSidebar}
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors mr-1"
+            className={`p-2 rounded-lg transition-colors mr-1 ${
+              isNavyGov
+                ? 'text-slate-300 hover:text-white hover:bg-[#14355B]'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+            }`}
             title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <Menu className="w-5 h-5 text-slate-700" />
+            <Menu className={`w-5 h-5 ${isNavyGov ? 'text-slate-200' : 'text-slate-700'}`} />
           </button>
         )}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-[#006A4E] text-white flex items-center justify-center font-bold text-lg shadow-sm border border-[#B2DFCD]">
+          <div
+            className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg shadow-sm border ${
+              isNavyGov
+                ? 'bg-[#14355B] text-white border-sky-400/50'
+                : 'bg-[#006A4E] text-white border-[#B2DFCD]'
+            }`}
+          >
             TN
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-base tracking-tight text-slate-900 leading-none">
+              <h1 className={`font-bold text-base tracking-tight leading-none ${isNavyGov ? 'text-white' : 'text-slate-900'}`}>
                 TN-HDOS
               </h1>
-              <span className="bg-[#E6F4EA] text-[#006A4E] border border-[#B2DFCD] text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
+              <span
+                className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase border ${
+                  isNavyGov
+                    ? 'bg-[#14355B] text-sky-200 border-sky-400/40'
+                    : 'bg-[#E6F4EA] text-[#006A4E] border-[#B2DFCD]'
+                }`}
+              >
                 Phase 1 Live
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium leading-tight">
+            <p className={`text-[11px] font-medium leading-tight ${isNavyGov ? 'text-sky-200/80' : 'text-slate-500'}`}>
               Highways Digital Operating System
             </p>
           </div>
         </div>
 
-        <div className="h-6 w-px bg-slate-200 hidden md:block" />
+        <div className={`h-6 w-px hidden md:block ${isNavyGov ? 'bg-[#1A3E66]' : 'bg-slate-200'}`} />
 
-        <div className="hidden md:flex items-center gap-2 text-slate-700">
-          <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Module:</span>
-          <span className="text-sm font-semibold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+        <div className="hidden md:flex items-center gap-2">
+          <span className={`text-xs uppercase tracking-wider font-semibold ${isNavyGov ? 'text-sky-300/80' : 'text-slate-400'}`}>
+            Module:
+          </span>
+          <span
+            className={`text-sm font-semibold px-2.5 py-1 rounded-md border ${
+              isNavyGov
+                ? 'bg-[#14355B] text-white border-[#234D7E]'
+                : 'bg-slate-100 text-slate-900 border-slate-200'
+            }`}
+          >
             {currentModuleName}
           </span>
         </div>
@@ -74,28 +107,134 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
       {/* Global Search Bar */}
       <div className="hidden lg:flex items-center flex-1 max-w-md mx-8">
         <div className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${isNavyGov ? 'text-slate-400' : 'text-slate-400'}`} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects, roads (SH-49, MDR-102), contractors, officials..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006A4E] focus:border-transparent transition-all"
+            className={`w-full rounded-lg pl-9 pr-4 py-1.5 text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all border ${
+              isNavyGov
+                ? 'bg-[#091C33] border-[#1E4673] text-white focus:ring-[#1D4ED8]'
+                : 'bg-slate-50 border-slate-200 text-slate-800 focus:ring-[#006A4E]'
+            }`}
           />
         </div>
       </div>
 
-      {/* Right Side: Demo notice, Notifications & Role Persona Switcher */}
+      {/* Right Side: Theme Switcher, Demo notice, Notifications & Role Persona Switcher */}
       <div className="flex items-center gap-3">
+        {/* THEME SWITCHER BUTTON (Prompt DESIGN.md) */}
+        <div className="relative">
+          <button
+            onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-sm transition-all ${
+              isNavyGov
+                ? 'bg-[#14355B] border-[#234D7E] text-white hover:bg-[#1A4372]'
+                : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
+            }`}
+            title="Switch theme color (TN Classic / Government Navy)"
+          >
+            <Palette className={`w-4 h-4 ${isNavyGov ? 'text-sky-300' : 'text-[#006A4E]'}`} />
+            <span className="hidden sm:inline">
+              {isNavyGov ? 'Theme: Govt Navy' : 'Theme: TN Classic'}
+            </span>
+            <span
+              className={`w-2 h-2 rounded-full ring-1 ring-white ${
+                isNavyGov ? 'bg-sky-400' : 'bg-[#006A4E]'
+              }`}
+            />
+            <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5" />
+          </button>
+
+          {/* Theme Dropdown */}
+          {themeDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl shadow-xl py-2 z-50 text-slate-800 dark:text-slate-200">
+              <div className="px-3.5 py-2 border-b border-slate-100 dark:border-gray-800">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Visual Theme Selection
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Toggle between original brand and DESIGN.md specification:
+                </p>
+              </div>
+
+              <div className="p-1.5 space-y-1">
+                {/* Theme 1: TN Classic */}
+                <button
+                  onClick={() => {
+                    setTheme('classic');
+                    setThemeDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-start gap-2.5 transition-colors ${
+                    !isNavyGov
+                      ? 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700'
+                      : 'hover:bg-slate-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <div className="w-6 h-6 rounded-md bg-[#006A4E] text-white flex items-center justify-center text-[11px] font-bold mt-0.5 flex-shrink-0 shadow-sm">
+                    TN
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                      <span>Tamil Nadu Classic</span>
+                      {!isNavyGov && <Check className="w-4 h-4 text-emerald-600" />}
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Emerald (#006A4E) & Slate palette
+                    </p>
+                  </div>
+                </button>
+
+                {/* Theme 2: Government Navy from DESIGN.md */}
+                <button
+                  onClick={() => {
+                    setTheme('navy-gov');
+                    setThemeDropdownOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-lg flex items-start gap-2.5 transition-colors ${
+                    isNavyGov
+                      ? 'bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-700'
+                      : 'hover:bg-slate-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <div className="w-6 h-6 rounded-md bg-[#0F2A4A] text-white flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0 border border-sky-400 shadow-sm">
+                    Gov
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                      <span>Government Navy</span>
+                      {isNavyGov && <Check className="w-4 h-4 text-blue-600" />}
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      DESIGN.md Layer A (#0F2A4A) & #F4F7FB
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Demo Data Disclaimer Tag */}
-        <div className="hidden sm:flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2.5 py-1 rounded-md font-medium">
-          <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+        <div
+          className={`hidden sm:flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md font-medium border ${
+            isNavyGov
+              ? 'bg-[#14355B] text-amber-300 border-amber-500/40'
+              : 'bg-amber-50 text-amber-800 border-amber-200'
+          }`}
+        >
+          <AlertCircle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
           <span>Demo Data Environment</span>
         </div>
 
         {/* Notifications Icon */}
         <button
-          className="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+          className={`relative p-2 rounded-lg transition-colors ${
+            isNavyGov
+              ? 'text-slate-300 hover:text-white hover:bg-[#14355B]'
+              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+          }`}
           title="3 Active statutory alerts"
         >
           <Bell className="w-4 h-4" />
@@ -106,21 +245,33 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 transition-all text-left"
+            className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-lg border transition-all text-left ${
+              isNavyGov
+                ? 'bg-[#14355B] border-[#234D7E] text-white hover:bg-[#1A4372]'
+                : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-slate-100 text-slate-800'
+            }`}
           >
-            <div className="w-8 h-8 rounded-full bg-[#006A4E] text-white flex items-center justify-center font-semibold text-xs shadow-sm">
+            <div
+              className={`w-8 h-8 rounded-full text-white flex items-center justify-center font-semibold text-xs shadow-sm ${
+                isNavyGov ? 'bg-[#091C33] border border-sky-400/50' : 'bg-[#006A4E]'
+              }`}
+            >
               {user?.full_name ? user.full_name[0] : 'U'}
             </div>
             <div className="hidden sm:block">
-              <div className="text-xs font-bold text-slate-800 leading-tight">
+              <div className={`text-xs font-bold leading-tight ${isNavyGov ? 'text-white' : 'text-slate-800'}`}>
                 {user?.full_name || 'Loading user...'}
               </div>
-              <div className="text-[10px] text-[#006A4E] font-semibold flex items-center gap-1 leading-tight">
+              <div
+                className={`text-[10px] font-semibold flex items-center gap-1 leading-tight ${
+                  isNavyGov ? 'text-sky-300' : 'text-[#006A4E]'
+                }`}
+              >
                 <Shield className="w-2.5 h-2.5" />
                 {user?.role_name || user?.role_code}
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1" />
+            <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-1" />
           </button>
 
           {/* Persona Menu */}

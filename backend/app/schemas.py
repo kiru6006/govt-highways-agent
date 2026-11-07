@@ -1036,6 +1036,13 @@ class Project360DetailOut(BaseModel):
     risks_and_issues: dict
     ai_findings: List[AIIntelligenceFindingOut]
     audit_history: List[AuditEventOut]
+    ai_project_intelligence: Optional[dict] = None
+    field_operations: Optional[dict] = None
+    assets: Optional[dict] = None
+    citizen_grievances: Optional[dict] = None
+    financial_transactions: Optional[List[dict]] = None
+    actions_register: Optional[List[dict]] = None
+    utility_shifting: Optional[dict] = None
 
 # -------------------------------------------------------------
 # Anomaly & Leakage Intelligence Schemas (Prompt 01)
@@ -1172,4 +1179,247 @@ class DecisionRequiredOut(BaseModel):
     recommended_decision: str
     escalation_level: str  # MINISTER, SECRETARY, CHIEF_ENGINEER
     due_date: Optional[str] = None
+
+# -------------------------------------------------------------
+# Ministerial Reports & Decision Intelligence Schemas (Prompt 02)
+# -------------------------------------------------------------
+
+class ReportsOverviewOut(BaseModel):
+    total_active_projects: int
+    total_project_value_cr: float
+    total_budget_allocation_cr: float
+    total_expenditure_cr: float
+    physical_progress_avg_pct: float
+    delayed_projects_count: int
+    delayed_projects_value_cr: float
+    critical_risk_projects_count: int
+    pending_approvals_count: int
+    land_acquisition_pending_count: int
+    potential_financial_exposure_cr: float
+    reporting_period: str
+    frequency: str
+    last_updated_timestamp: str
+    data_mode: str = "mock"
+    data_status: str = "Seeded Demo"
+    kpi_definitions: dict
+
+class ProgrammePerformanceItem(BaseModel):
+    programme_code: str
+    programme_name: str
+    projects_count: int
+    packages_count: int
+    approved_cost_cr: float
+    budget_allocation_cr: float
+    expenditure_cr: float
+    physical_progress_pct: float
+    financial_progress_pct: float
+    delayed_projects_count: int
+    high_risk_projects_count: int
+    variance_pct: float
+    status: str
+
+class ProjectPerformanceItem(BaseModel):
+    project_id: int
+    project_code: str
+    project_title: str
+    programme: str
+    district: str
+    sanctioned_cost_cr: float
+    expenditure_to_date_cr: float
+    physical_progress_pct: float
+    financial_progress_pct: float
+    planned_completion_date: str
+    expected_completion_date: str
+    schedule_variance_days: int
+    contractor_id: Optional[int] = None
+    contractor_name: str
+    overall_risk: str  # CRITICAL, HIGH, MEDIUM, LOW
+    status: str
+    has_critical_blocker: bool
+
+class FinancialPerformanceOut(BaseModel):
+    approved_budget_cr: float
+    revised_budget_cr: float
+    actual_expenditure_cr: float
+    pending_bills_cr: float
+    payments_made_cr: float
+    retention_amount_cr: float
+    cost_variations_cr: float
+    potential_exposure_under_review_cr: float
+    budget_vs_expenditure_by_programme: List[dict]
+    monthly_expenditure_trend: List[dict]
+    contractor_payment_distribution: List[dict]
+    pending_payment_ageing: List[dict]
+    cost_variation_analysis: List[dict]
+
+class SchedulePerformanceOut(BaseModel):
+    projects_on_schedule_count: int
+    delayed_projects_count: int
+    critical_delays_count: int
+    milestones_due_count: int
+    overdue_milestones_count: int
+    contract_extensions_count: int
+    delay_analysis_table: List[dict]
+
+class DepartmentPerformanceItem(BaseModel):
+    department_name: str
+    category: str
+    pending_approvals: int
+    avg_approval_age_days: int
+    critical_dependencies: int
+    projects_affected: int
+    overdue_actions: int
+    escalations_count: int
+    lead_officer: str
+    status: str
+
+class ContractorPerformanceItem(BaseModel):
+    contractor_id: int
+    name: str
+    contractor_class: str
+    active_contracts: int
+    contract_value_cr: float
+    project_progress_avg: float
+    schedule_adherence_pct: float
+    quality_observations_count: int
+    pending_payments_cr: float
+    contract_extensions_count: int
+    open_corrective_actions_count: int
+    performance_score: float
+    score_breakdown: dict
+
+class QualityAssetPerformanceOut(BaseModel):
+    inspections_conducted: int
+    open_defects: int
+    critical_observations: int
+    ncrs_count: int
+    corrective_actions_pending: int
+    overdue_quality_closures: int
+    contractor_quality_breakdown: List[dict]
+    total_assets: int
+    road_assets_km: float
+    bridges_count: int
+    culverts_count: int
+    assets_requiring_inspection: int
+    maintenance_pending: int
+    critical_asset_conditions: int
+
+class LandUtilityPerformanceOut(BaseModel):
+    total_land_parcels: int
+    parcels_under_acquisition: int
+    awards_pending: int
+    compensation_pending: int
+    possession_pending: int
+    utility_shifting_pending: int
+    projects_affected: int
+    avg_pending_duration_days: int
+    department_dependencies: List[dict]
+    utility_type_breakdown: List[dict]
+
+class DecisionQueueItem(BaseModel):
+    id: int
+    decision_reference: str
+    project_id: Optional[int] = None
+    project_title: str
+    programme: str
+    district: str
+    issue_title: str
+    evidence_summary: str
+    impact_assessment: str
+    financial_exposure_cr: float
+    recommended_action: str
+    decision_authority: str
+    current_status: str
+    assigned_department: Optional[str] = None
+    assigned_officer: Optional[str] = None
+    due_date: Optional[str] = None
+    recorded_decision: Optional[str] = None
+    remarks: Optional[str] = None
+    is_simulated: bool = True
+    created_at: str
+
+class AIMinisterialBriefingOut(BaseModel):
+    title: str = "AI Ministerial Intelligence Briefing"
+    subtitle: str
+    generated_at: str
+    scenario_id: str = "SCENARIO-MINISTER-DEMO"
+    what_needs_attention: dict
+    why_does_it_matter: dict
+    what_should_be_done: dict
+    who_should_act: dict
+    what_decision_is_required: List[DecisionQueueItem]
+    data_mode: str = "mock"
+    disclaimer: str
+
+class ReportGenerateRequest(BaseModel):
+    report_type: str = "Executive Briefing"
+    programme: str = "ALL"
+    district: str = "ALL"
+    project_id: Optional[int] = None
+    department: str = "ALL"
+    reporting_period: str = "Quarterly"
+    include_financial: bool = True
+    include_delays: bool = True
+    include_contractor: bool = True
+    include_ai_findings: bool = True
+    include_land_utility: bool = True
+    include_quality: bool = True
+
+class ReportGenerateOut(BaseModel):
+    report_id: str
+    title: str
+    generated_at: str
+    reporting_period: str
+    filters_applied: dict
+    executive_summary: str
+    kpis_summary: dict
+    sections: List[dict]
+    recommended_decisions: List[dict]
+    data_mode: str = "mock"
+
+class MinisterialDecisionActionHistoryOut(BaseModel):
+    id: int
+    decision_id: int
+    action_type: str
+    actor_name: str
+    actor_role: str
+    old_status: Optional[str] = None
+    new_status: Optional[str] = None
+    remarks: Optional[str] = None
+    assigned_to: Optional[str] = None
+    due_date: Optional[str] = None
+    created_at: str
+
+class MinisterialDecisionOut(BaseModel):
+    id: int
+    decision_reference: str
+    project_id: Optional[int] = None
+    project_title: str
+    programme: str
+    district: str
+    issue_title: str
+    evidence_summary: Optional[str] = None
+    impact_assessment: Optional[str] = None
+    financial_exposure_cr: float
+    recommended_action: str
+    decision_authority: str
+    current_status: str
+    assigned_department: Optional[str] = None
+    assigned_officer: Optional[str] = None
+    due_date: Optional[str] = None
+    recorded_decision: Optional[str] = None
+    remarks: Optional[str] = None
+    is_simulated: bool = True
+    created_at: str
+    updated_at: str
+    actions: List[MinisterialDecisionActionHistoryOut] = []
+
+class MinisterialDecisionUpdate(BaseModel):
+    current_status: str
+    recorded_decision: Optional[str] = None
+    remarks: Optional[str] = None
+    assigned_officer: Optional[str] = None
+    assigned_department: Optional[str] = None
+    due_date: Optional[str] = None
+
 

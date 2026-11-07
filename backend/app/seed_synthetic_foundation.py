@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal, Base, engine
 from app.models import (
     Project, WorkPackage, Contractor, User, Role,
-    AnomalyFinding, AnomalyActionHistory, FinancialLeakageFinding
+    AnomalyFinding, AnomalyActionHistory, FinancialLeakageFinding,
+    MinisterialDecisionRecord, MinisterialDecisionActionHistory
 )
 import datetime
 
@@ -21,17 +22,13 @@ def seed_synthetic_foundation_data(db_session: Session = None):
         db = db_session
         close_on_exit = False
 
-    # Check if already seeded
-    if db.query(AnomalyFinding).first():
-        if close_on_exit:
-            db.close()
-        return
+    # Check if Anomalies seeded
+    if not db.query(AnomalyFinding).first():
+        print("Seeding TN-HDOS Central Synthetic Foundation & Leakage Intelligence data...")
 
-    print("Seeding TN-HDOS Central Synthetic Foundation & Leakage Intelligence data...")
-
-    # Ensure projects exist or use IDs 1..12
-    # Seed 16 Anomaly Findings
-    anomalies_data = [
+        # Ensure projects exist or use IDs 1..12
+        # Seed 16 Anomaly Findings
+        anomalies_data = [
         {
             "finding_code": "ANM-2026-001",
             "project_id": 1,
@@ -500,53 +497,202 @@ def seed_synthetic_foundation_data(db_session: Session = None):
         }
     ]
 
-    for item in anomalies_data:
-        finding = AnomalyFinding(
-            finding_code=item["finding_code"],
-            project_id=item["project_id"],
-            package_id=item.get("package_id"),
-            contractor_id=item.get("contractor_id"),
-            category=item["category"],
-            title=item["title"],
-            description=item["description"],
-            what_detected=item["what_detected"],
-            why_flagged=item["why_flagged"],
-            detection_rule=item["detection_rule"],
-            calculation_formula=item["calculation_formula"],
-            potential_exposure_cr=item["potential_exposure_cr"],
-            transaction_value_cr=item["transaction_value_cr"],
-            verified_impact_cr=item["verified_impact_cr"],
-            amount_under_review_cr=item["amount_under_review_cr"],
-            severity=item["severity"],
-            ai_confidence=item["ai_confidence"],
-            evidence_status=item["evidence_status"],
-            responsible_department=item["responsible_department"],
-            responsible_officer=item["responsible_officer"],
-            review_status=item["review_status"],
-            assigned_to=item.get("assigned_to"),
-            review_remarks=item.get("review_remarks"),
-            suggested_verification=item.get("suggested_verification"),
-            recommended_action=item.get("recommended_action"),
-            corrective_action=item.get("corrective_action"),
-            action_due_date=item.get("action_due_date"),
-            escalated_to_secretary=item.get("escalated_to_secretary", False),
-            scenario_id=item.get("scenario_id")
-        )
-        db.add(finding)
-        db.flush()
+        for item in anomalies_data:
+            finding = AnomalyFinding(
+                finding_code=item["finding_code"],
+                project_id=item["project_id"],
+                package_id=item.get("package_id"),
+                contractor_id=item.get("contractor_id"),
+                category=item["category"],
+                title=item["title"],
+                description=item["description"],
+                what_detected=item["what_detected"],
+                why_flagged=item["why_flagged"],
+                detection_rule=item["detection_rule"],
+                calculation_formula=item["calculation_formula"],
+                potential_exposure_cr=item["potential_exposure_cr"],
+                transaction_value_cr=item["transaction_value_cr"],
+                verified_impact_cr=item["verified_impact_cr"],
+                amount_under_review_cr=item["amount_under_review_cr"],
+                severity=item["severity"],
+                ai_confidence=item["ai_confidence"],
+                evidence_status=item["evidence_status"],
+                responsible_department=item["responsible_department"],
+                responsible_officer=item["responsible_officer"],
+                review_status=item["review_status"],
+                assigned_to=item.get("assigned_to"),
+                review_remarks=item.get("review_remarks"),
+                suggested_verification=item.get("suggested_verification"),
+                recommended_action=item.get("recommended_action"),
+                corrective_action=item.get("corrective_action"),
+                action_due_date=item.get("action_due_date"),
+                escalated_to_secretary=item.get("escalated_to_secretary", False),
+                scenario_id=item.get("scenario_id")
+            )
+            db.add(finding)
+            db.flush()
 
-        # Seed initial action history
-        action = AnomalyActionHistory(
-            finding_id=finding.id,
-            action_type="SYSTEM_DETECTION",
-            actor_name="TN-HDOS AI Anomaly Engine",
-            actor_role="AUTOMATED_AUDIT_SYSTEM",
-            old_status=None,
-            new_status=item["review_status"],
-            remarks=f"Anomaly detected by rule engine ({item['detection_rule']})",
-            action_details=item.get("corrective_action") or "Initial detection logged for departmental investigation."
-        )
-        db.add(action)
+            # Seed initial action history
+            action = AnomalyActionHistory(
+                finding_id=finding.id,
+                action_type="SYSTEM_DETECTION",
+                actor_name="TN-HDOS AI Anomaly Engine",
+                actor_role="AUTOMATED_AUDIT_SYSTEM",
+                old_status=None,
+                new_status=item["review_status"],
+                remarks=f"Anomaly detected by rule engine ({item['detection_rule']})",
+                action_details=item.get("corrective_action") or "Initial detection logged for departmental investigation."
+            )
+            db.add(action)
+
+        db.commit()
+
+    # Check if Ministerial Decisions already seeded
+    if not db.query(MinisterialDecisionRecord).first():
+        print("Seeding Ministerial Decision Intelligence Records (Prompt 02)...")
+        decisions_data = [
+            {
+                "decision_reference": "MDR-2026-001",
+                "project_id": 4,
+                "project_title": "Four Laning of SH-15 Ooty-Gudalur Ghat Corridor",
+                "programme": "CKICP",
+                "district": "Coimbatore",
+                "issue_title": "115-day delay caused by pending 12 revenue land parcels, 48 unshifted TANGEDCO poles, and unsanctioned ₹9.80 Cr rock excavation claim.",
+                "evidence_summary": "Joint Inspection Report #CKICP-COIM-04 confirms 48 poles unshifted despite ₹48.2 Lakh deposit paid 142 days ago; DRO (LA) award pending for 3.4 km bypass stretch; MB Book 104 contains non-BOQ hydraulic rock splitting rates.",
+                "impact_assessment": "Critical corridor connecting Nilgiris tea logistics stalled; ₹9.80 Cr potential cost overrun; contractor idle machinery penalty notice issued.",
+                "financial_exposure_cr": 9.80,
+                "recommended_action": "Convene Interdepartmental Clearance Taskforce with Revenue Secretary and TANGEDCO CMD; freeze variation order payment pending Standing Finance Committee concurrence.",
+                "decision_authority": "MINISTER",
+                "current_status": "Pending Decision",
+                "assigned_department": "Highways & Revenue Coordination",
+                "assigned_officer": "Er. K. Senthil Nathan, M.E. (Chief Engineer CKICP)",
+                "due_date": "2026-11-20",
+                "escalation_level": "MINISTER",
+                "recorded_decision": None,
+                "remarks": "Priority docket placed before the Hon'ble Minister for decisive interdepartmental directive."
+            },
+            {
+                "decision_reference": "MDR-2026-002",
+                "project_id": 1,
+                "project_title": "Widening of SH-49 (East Coast Road) km 22/0 to 45/0",
+                "programme": "CMRDP",
+                "district": "Chengalpattu",
+                "issue_title": "Duplicate billing voucher entry #ECR-RA-03 of ₹21.00 Cr and 1,810 MT bitumen gate pass discrepancy.",
+                "evidence_summary": "Electronic voucher audit matched duplicate bill submission across Kelambakkam and Chengalpattu sub-divisions; IOCL Manali refinery manifests show zero corresponding gate passes for Batch VG-30.",
+                "impact_assessment": "Risk of ₹18.20 Cr net double disbursement and sub-standard pavement life along tourist coastal corridor.",
+                "financial_exposure_cr": 18.20,
+                "recommended_action": "Freeze second voucher #TXN-2025-004 in Treasury ECS; order vigilance audit of Kelambakkam MB Book 412.",
+                "decision_authority": "MINISTER",
+                "current_status": "Under Review",
+                "assigned_department": "Highways Accounts & Audit",
+                "assigned_officer": "Thiru K. Sundaramoorthy, IA&AS (FA & CAO)",
+                "due_date": "2026-11-18",
+                "escalation_level": "MINISTER",
+                "recorded_decision": "Voucher disbursement held. Original Measurement Book called for.",
+                "remarks": "Sub-divisional engineer summoned to Chief Engineer office on 14th Nov."
+            },
+            {
+                "decision_reference": "MDR-2026-003",
+                "project_id": 2,
+                "project_title": "Construction of Tambaram Grade Separator on MDR-102",
+                "programme": "CMRDP",
+                "district": "Chennai",
+                "issue_title": "Structural concrete strength failure (achieved 31.8 MPa vs M-45) on Pier P-14 with open NCR and unamortized mobilization advance lag.",
+                "evidence_summary": "Highways Research Station (HRS) Guindy 28-day cube compression test report #HRS-QC-2025-889 confirms shortfall; advance recovery lag of ₹2.20 Cr.",
+                "impact_assessment": "Public safety risk on Chennai southern arterial node; delay of 85 days in bridge deck launching.",
+                "financial_exposure_cr": 8.40,
+                "recommended_action": "Order immediate halt to pier cap girder erection; mandate independent ultrasonic non-destructive testing by IIT Madras Department of Civil Engineering.",
+                "decision_authority": "MINISTER",
+                "current_status": "Action Assigned",
+                "assigned_department": "Highways Research Station & Quality Control",
+                "assigned_officer": "Dr. V. Gomathi, Ph.D. (Director, HRS Guindy)",
+                "due_date": "2026-11-19",
+                "escalation_level": "MINISTER",
+                "recorded_decision": "IIT Madras structural safety certification mandated prior to girder launching.",
+                "remarks": "Joint inspection scheduled with IIT Madras team on 18th Nov."
+            },
+            {
+                "decision_reference": "MDR-2026-004",
+                "project_id": 8,
+                "project_title": "Reconstruction of 6 Major Bridges along SH-115 Cheyyar-Vandavasi",
+                "programme": "NABARD",
+                "district": "Tiruvannamalai",
+                "issue_title": "130-day interdepartmental delay in Water Resources Department (WRD) NOC for Cheyyar river bridge waterway expansion.",
+                "evidence_summary": "WRD Chief Engineer Plan Formulation letter #WRD-PF-780 pending hydraulic model approval since June 2025.",
+                "impact_assessment": "Monsoon flood cutoff hazard for 42 agricultural villages; idling machinery claims of ₹1.10 Cr.",
+                "financial_exposure_cr": 1.10,
+                "recommended_action": "Principal Secretary (Highways) to issue Demi-Official letter to WRD Secretary for single-window bridge waterway sanction.",
+                "decision_authority": "SECRETARY",
+                "current_status": "Referred to Department",
+                "assigned_department": "Water Resources Department (WRD)",
+                "assigned_officer": "Er. M. Thanikachalam, M.E. (Chief Engineer WRD)",
+                "due_date": "2026-11-25",
+                "escalation_level": "SECRETARY",
+                "recorded_decision": "Referred to WRD with strict 7-day compliance timeline.",
+                "remarks": "Joint video conference scheduled between Highways SE and WRD SE."
+            },
+            {
+                "decision_reference": "MDR-2026-005",
+                "project_id": 5,
+                "project_title": "TNRSP-II Strengthening of SH-10 Cuddalore-Vridhachalam-Salem",
+                "programme": "TNRSP_II",
+                "district": "Cuddalore",
+                "issue_title": "Repeated contractor milestone slippage on Package 2 and unauthorized sub-contracting of asphalt overlay.",
+                "evidence_summary": "Engineer-in-Chief field audit noticed unapproved plant machinery of third-party firm operating on site; 65-day cumulative milestone lag.",
+                "impact_assessment": "World Bank loan disbursement milestone compliance jeopardy and contract default penalty triggers.",
+                "financial_exposure_cr": 6.50,
+                "recommended_action": "Issue formal Show-Cause Notice under Clause 60 of EPC contract; enforce liquidated damages of ₹65.0 Lakh for overdue Milestone 2.",
+                "decision_authority": "SECRETARY",
+                "current_status": "Approved",
+                "assigned_department": "TNRSP Project Management Unit",
+                "assigned_officer": "Thiru P. Kumaravel, IAS (Project Director TNRSP)",
+                "due_date": "2026-11-28",
+                "escalation_level": "SECRETARY",
+                "recorded_decision": "Approved issuance of contractual default notice and liquidated damages deduction.",
+                "remarks": "Notice served to contractor on 10th Nov with 14-day cure period."
+            }
+        ]
+
+        for d_item in decisions_data:
+            dec = MinisterialDecisionRecord(
+                decision_reference=d_item["decision_reference"],
+                project_id=d_item["project_id"],
+                project_title=d_item["project_title"],
+                programme=d_item["programme"],
+                district=d_item["district"],
+                issue_title=d_item["issue_title"],
+                evidence_summary=d_item["evidence_summary"],
+                impact_assessment=d_item["impact_assessment"],
+                financial_exposure_cr=d_item["financial_exposure_cr"],
+                recommended_action=d_item["recommended_action"],
+                decision_authority=d_item["decision_authority"],
+                current_status=d_item["current_status"],
+                assigned_department=d_item["assigned_department"],
+                assigned_officer=d_item["assigned_officer"],
+                due_date=d_item["due_date"],
+                escalation_level=d_item["escalation_level"],
+                recorded_decision=d_item["recorded_decision"],
+                remarks=d_item["remarks"],
+                is_simulated=True,
+                data_mode="mock",
+                data_status="Seeded Demo",
+                source_type="synthetic"
+            )
+            db.add(dec)
+            db.flush()
+
+            act = MinisterialDecisionActionHistory(
+                decision_id=dec.id,
+                action_type="CREATION_AND_ESCALATION",
+                actor_name="TN-HDOS AI Decision Intelligence System",
+                actor_role="EXECUTIVE_INTELLIGENCE_ENGINE",
+                old_status=None,
+                new_status=d_item["current_status"],
+                remarks=f"Generated via composite cross-module risk detection for {d_item['project_title']}.",
+                assigned_to=d_item["assigned_officer"],
+                due_date=d_item["due_date"]
+            )
+            db.add(act)
 
     db.commit()
     if close_on_exit:

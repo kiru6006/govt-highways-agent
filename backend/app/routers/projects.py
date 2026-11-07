@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Body, status
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from app.database import get_db
@@ -144,6 +144,89 @@ def get_project_by_id(
         )
         
     return build_project_out(project)
+
+@router.post("/{project_id}/actions")
+def create_project_action(
+    project_id: int,
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    action_id = f"ACT-{project.project_code}-{datetime.datetime.utcnow().strftime('%M%S')}"
+    new_action = {
+        "action_id": action_id,
+        "issue": payload.get("issue", "Project directive"),
+        "department": payload.get("department", "Highways Department"),
+        "assigned_officer": payload.get("assigned_officer", current_user.full_name),
+        "priority": payload.get("priority", "HIGH"),
+        "target_date": payload.get("target_date", "2026-11-30"),
+        "status": payload.get("status", "ASSIGNED"),
+        "remarks": payload.get("remarks", "Direct executive instruction")
+    }
+
+    log_audit_event(
+        db=db,
+        action="CREATE_ACTION",
+        entity_type="PROJECT",
+        entity_id=project.id,
+        entity_reference=action_id,
+        user=current_user,
+        changes=new_action
+    )
+
+    return {"message": "Action assigned successfully", "action": new_action}
+
+@router.post("/{project_id}/quality-observations")
+def create_project_quality_observation(
+    project_id: int,
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    defect_code = f"QC-{project.project_code}-{datetime.datetime.utcnow().strftime('%M%S')}"
+    new_obs = QualityDefectRecord(
+        defect_code=defect_code,
+        project_id=project.id,
+        road_id=project.road_id,
+        defect_type=payload.get("defect_type", "Open NCR"),
+        observation_notes=payload.get("observation_notes", "Observation logged during inspection"),
+        severity=payload.get("severity", "MEDIUM"),
+        corrective_action_status=payload.get("status", "PENDING_RECTIFICATION"),
+        responsible_engineer=payload.get("responsible_engineer", current_user.full_name)
+    )
+    db.add(new_obs)
+    db.commit()
+    db.refresh(new_obs)
+
+    log_audit_event(
+        db=db,
+        action="CREATE_QUALITY_DEFECT",
+        entity_type="PROJECT",
+        entity_id=project.id,
+        entity_reference=defect_code,
+        user=current_user,
+        changes={"defect_code": defect_code, "severity": new_obs.severity}
+    )
+
+    return {
+        "message": "Quality observation recorded successfully",
+        "record": {
+            "defect_reference": new_obs.defect_code,
+            "component_type": new_obs.defect_type,
+            "description": new_obs.observation_notes,
+            "severity": new_obs.severity,
+            "status": new_obs.corrective_action_status
+        }
+    }
+
 
 @router.get("/{project_id}/360", response_model=Project360DetailOut)
 def get_project_360(
@@ -606,6 +689,293 @@ def get_project_360(
         ) for ae in audit_events
     ]
 
+    # 16. Utility Shifting Breakdown (Prompt 03 Section 11)
+    utility_shifting = {
+        "total_utilities": 48 if project_id in [4, 6] else 14,
+        "shifting_in_progress": 32 if project_id in [4, 6] else 8,
+        "completed": 16 if project_id in [4, 6] else 6,
+        "estimated_shifting_cost_cr": 4.80 if project_id in [4, 6] else 1.65,
+        "items": [
+            {
+                "utility_type": "TANGEDCO 11kV Electrical Poles",
+                "department": "TANGEDCO",
+                "affected_chainage": "km 18/200 to 24/600",
+                "quantity": 48 if project_id in [4, 6] else 12,
+                "unit": "Poles",
+                "estimated_cost_cr": 3.20 if project_id in [4, 6] else 0.85,
+                "deposit_status": "PAID_TO_TANGEDCO",
+                "work_status": "PENDING_SHUTDOWN_APPROVAL",
+                "schedule_impact_days": 115 if project_id in [4, 6] else 25
+            },
+            {
+                "utility_type": "TANGEDCO 100kVA Transformers",
+                "department": "TANGEDCO",
+                "affected_chainage": "km 19/400 & km 22/800",
+                "quantity": 2,
+                "unit": "Units",
+                "estimated_cost_cr": 0.90,
+                "deposit_status": "ESTIMATE_SANCTIONED",
+                "work_status": "SITE_ACQUISITION_PENDING",
+                "schedule_impact_days": 90 if project_id in [4, 6] else 15
+            },
+            {
+                "utility_type": "TWAD Drinking Water Pipeline (300mm DI)",
+                "department": "TWAD Board",
+                "affected_chainage": "km 14/000 to 16/500",
+                "quantity": 2.5,
+                "unit": "km",
+                "estimated_cost_cr": 0.70,
+                "deposit_status": "JOINT_INSPECTION_COMPLETED",
+                "work_status": "ALIGNMENT_AGREED",
+                "schedule_impact_days": 30
+            }
+        ]
+    }
+
+    # 17. Field Operations & Physical Inspection (Prompt 03 Section 14)
+    field_operations = {
+        "total_inspections": 18,
+        "verified_progress_pct": round(project.physical_progress_pct, 1),
+        "last_inspection_date": "2026-10-24",
+        "inspections": [
+            {
+                "inspection_id": f"INSP-{project.project_code}-01",
+                "date": "2026-10-24",
+                "officer_name": "Er. P. Anandhan (Divisional Engineer)",
+                "site_location": "Chainage km 14/200 to 22/000",
+                "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+                "work_activity": "Hill slope stabilization, breast wall construction and rock profiling",
+                "progress_reported_pct": round(project.physical_progress_pct + 1.5, 1),
+                "progress_verified_pct": round(project.physical_progress_pct, 1),
+                "findings": "Work halted at km 18/200 due to unshifted 11kV poles. Honeycombing observed on breast wall panel 4.",
+                "verified_by_geo_tag": True,
+                "has_photo_evidence": True,
+                "photo_url": "/evidence/site_inspect_ch14.jpg",
+                "follow_up_action": "Issue rectification notice to contractor for honeycombing; escalate pole shutdown to TANGEDCO EE."
+            },
+            {
+                "inspection_id": f"INSP-{project.project_code}-02",
+                "date": "2026-09-18",
+                "officer_name": "Er. M. Senthilkumar (Assistant Executive Engineer)",
+                "site_location": "Chainage km 0/000 to 12/000",
+                "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+                "work_activity": "Granular Sub-Base (GSB) laying and compaction tests",
+                "progress_reported_pct": round(max(project.physical_progress_pct - 5.0, 5.0), 1),
+                "progress_verified_pct": round(max(project.physical_progress_pct - 5.5, 4.5), 1),
+                "findings": "GSB layer density test passed 98.4% MDD. Side drain masonry progressing satisfactorily.",
+                "verified_by_geo_tag": True,
+                "has_photo_evidence": True,
+                "photo_url": "/evidence/site_gsb_km10.jpg",
+                "follow_up_action": "Permit WMM trial stretch between km 6/0 and 8/0."
+            }
+        ]
+    }
+
+    # 18. Associated Infrastructure Assets (Prompt 03 Section 16)
+    assets_out = {
+        "total_assets": 8,
+        "road_carriageway_km": project.total_length_km or 28.5,
+        "bridges_count": 2,
+        "culverts_count": 14,
+        "items": [
+            {
+                "asset_id": f"AST-RD-{project.project_code}",
+                "asset_type": "CARRIAGEWAY",
+                "name": f"{technical_specs['road_name']} Main Alignment",
+                "location": f"km {technical_specs['start_chainage_km']} to {technical_specs['end_chainage_km']}",
+                "condition": "UNDER_UPGRADATION",
+                "last_inspection": "2026-10-24",
+                "maintenance_status": "CONTRACTOR_WARRANTY_STAGE"
+            },
+            {
+                "asset_id": f"AST-BRG-{project.id}-01",
+                "asset_type": "HIGH_LEVEL_BRIDGE",
+                "name": "Major Bridge across Periyar River / Stream",
+                "location": "Chainage km 18/450",
+                "condition": "SUBSTRUCTURE_IN_PROGRESS",
+                "last_inspection": "2026-10-15",
+                "maintenance_status": "CONSTRUCTION_STAGE"
+            },
+            {
+                "asset_id": f"AST-CUL-{project.id}-01",
+                "asset_type": "BOX_CULVERT",
+                "name": "Double Cell RCC Box Culvert (2 x 3.0m)",
+                "location": "Chainage km 12/300",
+                "condition": "COMPLETED",
+                "last_inspection": "2026-09-10",
+                "maintenance_status": "SOUND"
+            }
+        ]
+    }
+
+    # 19. Citizen Grievances (Prompt 03 Section 17)
+    grievances_out = {
+        "total_grievances": 14,
+        "resolved_count": 9,
+        "pending_count": 5,
+        "critical_count": 1,
+        "items": [
+            {
+                "grievance_id": f"GRV-2026-{project.id}01",
+                "category": "Drainage Obstruction & Water Stagnation",
+                "location": "Adjacent to Village Settlement km 14/800",
+                "date_received": "2026-10-02",
+                "petitioner_type": "Resident Association",
+                "assigned_officer": "Er. P. Anandhan (DE Highways)",
+                "status": "ACTION_IN_PROGRESS",
+                "resolution_target": "2026-11-15",
+                "resolution_details": "Contractor directed to excavate temporary bypass diversion drain during monsoon."
+            },
+            {
+                "grievance_id": f"GRV-2026-{project.id}02",
+                "category": "Dust Nuisance & Road Safety Signage",
+                "location": "School Zone km 8/200",
+                "date_received": "2026-09-14",
+                "petitioner_type": "Parent-Teacher Council",
+                "assigned_officer": "Er. M. Senthilkumar (AEE Highways)",
+                "status": "RESOLVED",
+                "resolution_target": "2026-09-20",
+                "resolution_details": "Water bowser sprinkling mandated twice daily; retro-reflective cautionary signage installed."
+            }
+        ]
+    }
+
+    # 20. Financial Transactions (Prompt 03 Section 12)
+    financial_txns = [
+        {
+            "txn_reference": f"TXN-{project.project_code}-001",
+            "voucher_number": "IFHRMS-VCH-2024-912",
+            "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+            "contractor_name": project.contractor.company_name if project.contractor else "Contractor",
+            "bill_date": "2024-05-10",
+            "bill_type": "MOBILISATION_ADVANCE",
+            "bill_amount_cr": round(project.sanctioned_cost_cr * 0.10, 2),
+            "approved_amount_cr": round(project.sanctioned_cost_cr * 0.10, 2),
+            "paid_amount_cr": round(project.sanctioned_cost_cr * 0.10, 2),
+            "payment_status": "DISBURSED",
+            "supporting_evidence_status": "VERIFIED_BG_HELD"
+        },
+        {
+            "txn_reference": f"TXN-{project.project_code}-002",
+            "voucher_number": "IFHRMS-VCH-2024-1182",
+            "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+            "contractor_name": project.contractor.company_name if project.contractor else "Contractor",
+            "bill_date": "2024-11-20",
+            "bill_type": "RA_BILL_01",
+            "bill_amount_cr": round(project.sanctioned_cost_cr * 0.12, 2),
+            "approved_amount_cr": round(project.sanctioned_cost_cr * 0.115, 2),
+            "paid_amount_cr": round(project.sanctioned_cost_cr * 0.115, 2),
+            "payment_status": "DISBURSED",
+            "supporting_evidence_status": "VERIFIED_MB_BOOK"
+        },
+        {
+            "txn_reference": f"TXN-{project.project_code}-003",
+            "voucher_number": "IFHRMS-VCH-2025-045",
+            "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+            "contractor_name": project.contractor.company_name if project.contractor else "Contractor",
+            "bill_date": "2025-06-14",
+            "bill_type": "RA_BILL_02",
+            "bill_amount_cr": round(project.sanctioned_cost_cr * 0.15, 2),
+            "approved_amount_cr": round(project.sanctioned_cost_cr * 0.14, 2),
+            "paid_amount_cr": round(project.sanctioned_cost_cr * 0.14, 2),
+            "payment_status": "DISBURSED",
+            "supporting_evidence_status": "VERIFIED_MB_BOOK"
+        },
+        {
+            "txn_reference": f"TXN-{project.project_code}-004",
+            "voucher_number": "IFHRMS-VCH-2025-992",
+            "package_name": work_packages_out[0].title if work_packages_out else "Package 1",
+            "contractor_name": project.contractor.company_name if project.contractor else "Contractor",
+            "bill_date": "2025-10-20",
+            "bill_type": "RA_BILL_03",
+            "bill_amount_cr": 9.80 if project_id in [4, 6] else 6.50,
+            "approved_amount_cr": 0.0,
+            "paid_amount_cr": 0.0,
+            "payment_status": "HELD_UNDER_AUDIT",
+            "supporting_evidence_status": "VARIATION_CLAIM_UNDER_REVIEW"
+        }
+    ]
+
+    # 21. Action Register (Prompt 03 Section 20)
+    actions_register = [
+        {
+            "action_id": f"ACT-{project.project_code}-01",
+            "issue": "Inter-Departmental Joint Inspection for 48 TANGEDCO 11kV electrical pole relocation",
+            "department": "TANGEDCO / Highways",
+            "assigned_officer": "District Collector / Superintending Engineer (TANGEDCO)",
+            "priority": "CRITICAL",
+            "target_date": "2026-11-20",
+            "status": "ASSIGNED",
+            "remarks": "High-level coordination meeting scheduled at Collectorate."
+        },
+        {
+            "action_id": f"ACT-{project.project_code}-02",
+            "issue": "Expedite DRO Award enquiry for 12 revenue parcels in Taluk office",
+            "department": "Revenue Department",
+            "assigned_officer": "District Revenue Officer (DRO)",
+            "priority": "HIGH",
+            "target_date": "2026-11-28",
+            "status": "IN_PROGRESS",
+            "remarks": "Compensation determination finalized; gazette publication pending."
+        },
+        {
+            "action_id": f"ACT-{project.project_code}-03",
+            "issue": "Rectification of honeycombing defects in breast wall concrete at km 14/200",
+            "department": "Highways C&M / Quality Control Wing",
+            "assigned_officer": "Executive Engineer (Quality Control)",
+            "priority": "MEDIUM",
+            "target_date": "2026-11-15",
+            "status": "RECTIFICATION_SUBMITTED",
+            "remarks": "Pressure grouting methodology submitted by contractor."
+        }
+    ]
+
+    # 22. AI Project Intelligence Assessment (Prompt 03 Section 6)
+    is_scenario_project = project_id in [4, 6] or "CKICP" in (project.funding_source or "") or "Ooty" in project.title
+    ai_project_intelligence = {
+        "title": "AI Project Intelligence Assessment",
+        "executive_summary": (
+            f"This demonstration project ({project.project_code}) faces acute schedule pressure with a critical delay of "
+            f"{max_delay} days against baseline. Financial disbursements ({project.financial_progress_pct}%) lead verified physical progress "
+            f"({project.physical_progress_pct}%), driven by mobilization advances and an unapproved non-BOQ variation claim. "
+            f"Utility shifting (48 TANGEDCO 11kV electrical poles) and pending DRO land awards constitute the primary critical path bottlenecks. "
+            f"AI recommends convening a multi-departmental clearance review and auditing rock variation quantities prior to releasing further payments."
+            if is_scenario_project else
+            f"Project {project.project_code} is progressing under {technical_specs['funding_programme']} with physical progress at {project.physical_progress_pct}% "
+            f"against planned {planned_phys}%. Schedule variance is {max_delay} days. Inter-agency dependencies with Revenue and TANGEDCO require "
+            f"routine monitoring to avoid compounding delays."
+        ),
+        "critical_findings": [
+            f"Schedule variance has reached {max_delay} days, triggering Critical Delay alert.",
+            "TANGEDCO electrical pole shifting obstructing main carriageway slope stabilization.",
+            "Disputed ₹9.80 Cr non-BOQ variation claim requires Standing Finance Committee approval.",
+            "Two open quality Non-Conformance Reports (NCR) awaiting field closure."
+        ],
+        "root_cause_analysis": {
+            "land_acquisition": "12 parcels awaiting DRO award inquiry and statutory 19(1) gazette declaration.",
+            "utility_shifting": "48 overhead 11kV poles and 2 distribution transformers obstructing slope benches.",
+            "departmental_approvals": "Stage-II clearance pending with Forest Department; power shutdown pending with TANGEDCO.",
+            "contractor_performance": "Contractor slowed earthwork citing non-handover of unencumbered ROW stretches.",
+            "funding_and_payment": "Disbursement exceeds verified physical progress; ₹9.80 Cr variation claim withheld under audit.",
+            "engineering_quality": "M30 concrete honeycombing observed on breast wall; cube test records verified.",
+            "legal_restrictions": "Interim stay petition pending in Sub-Court regarding compensation quantum on survey parcel 14.",
+            "field_execution": "Heavy monsoon rains in hill terrain reduced working hours by 18 days in September-October."
+        },
+        "recommended_actions": [
+            "Convene District Level Coordination Committee under District Collector to order TANGEDCO shutdown schedule.",
+            "Withhold RA Bill #3 non-BOQ items until State Technical Committee verifies rock profiling measurements.",
+            "Direct Contractor to deploy secondary machinery on unencumbered chainage km 0/000 to 12/000.",
+            "Instruct DRO to deposit interim land compensation into court escrow to obtain symbolic possession under Sec 19."
+        ],
+        "decision_required": {
+            "reference": "MDR-2026-001" if is_scenario_project else f"MDR-{project.project_code}",
+            "decision_title": "Inter-Departmental Deadlock Resolution & Contract Variation Scrutiny",
+            "decision_authority": "Hon'ble Minister / Principal Secretary",
+            "current_status": "PENDING_DECISION",
+            "recommended_directive": "Order joint physical survey with TANGEDCO & freeze extra item payment pending Technical Sanction revision."
+        }
+    }
+
     return Project360DetailOut(
         project=build_project_out(project),
         jurisdiction_hierarchy=jurisdiction_hierarchy,
@@ -624,7 +994,14 @@ def get_project_360(
         documents=docs_out,
         risks_and_issues=risks_and_issues,
         ai_findings=ai_findings_out,
-        audit_history=audit_out
+        audit_history=audit_out,
+        ai_project_intelligence=ai_project_intelligence,
+        field_operations=field_operations,
+        assets=assets_out,
+        citizen_grievances=grievances_out,
+        financial_transactions=financial_txns,
+        actions_register=actions_register,
+        utility_shifting=utility_shifting
     )
 
 @router.get("/{project_id}/milestones", response_model=List[ProjectMilestoneOut])
@@ -767,5 +1144,88 @@ def create_project(
     )
     
     return build_project_out(project)
+
+@router.post("/{project_id}/actions")
+def create_project_action(
+    project_id: int,
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    action_id = f"ACT-{project.project_code}-{datetime.datetime.utcnow().strftime('%M%S')}"
+    new_action = {
+        "action_id": action_id,
+        "issue": payload.get("issue", "Project directive"),
+        "department": payload.get("department", "Highways Department"),
+        "assigned_officer": payload.get("assigned_officer", current_user.full_name),
+        "priority": payload.get("priority", "HIGH"),
+        "target_date": payload.get("target_date", "2026-11-30"),
+        "status": payload.get("status", "ASSIGNED"),
+        "remarks": payload.get("remarks", "Direct executive instruction")
+    }
+
+    log_audit_event(
+        db=db,
+        action="CREATE_ACTION",
+        entity_type="PROJECT",
+        entity_id=project.id,
+        entity_reference=action_id,
+        user=current_user,
+        changes=new_action
+    )
+
+    return {"message": "Action assigned successfully", "action": new_action}
+
+@router.post("/{project_id}/quality-observations")
+def create_project_quality_observation(
+    project_id: int,
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    defect_code = f"QC-{project.project_code}-{datetime.datetime.utcnow().strftime('%M%S')}"
+    new_obs = QualityDefectRecord(
+        defect_code=defect_code,
+        project_id=project.id,
+        road_id=project.road_id,
+        defect_type=payload.get("defect_type", "Open NCR"),
+        observation_notes=payload.get("observation_notes", "Observation logged during inspection"),
+        severity=payload.get("severity", "MEDIUM"),
+        corrective_action_status=payload.get("status", "PENDING_RECTIFICATION"),
+        responsible_engineer=payload.get("responsible_engineer", current_user.full_name)
+    )
+    db.add(new_obs)
+    db.commit()
+    db.refresh(new_obs)
+
+    log_audit_event(
+        db=db,
+        action="CREATE_QUALITY_DEFECT",
+        entity_type="PROJECT",
+        entity_id=project.id,
+        entity_reference=defect_code,
+        user=current_user,
+        changes={"defect_code": defect_code, "severity": new_obs.severity}
+    )
+
+    return {
+        "message": "Quality observation recorded successfully",
+        "record": {
+            "defect_reference": new_obs.defect_code,
+            "component_type": new_obs.defect_type,
+            "description": new_obs.observation_notes,
+            "severity": new_obs.severity,
+            "status": new_obs.corrective_action_status
+        }
+    }
+
 
 

@@ -49,17 +49,75 @@ import {
   ExposureAnalysisData,
   ProjectRiskScoreItem,
   ExecutiveAssessmentData,
-  DecisionRequiredItem
+  DecisionRequiredItem,
+  ReportsOverviewData,
+  ProgrammePerformanceItem,
+  ProjectPerformanceItem,
+  FinancialPerformanceData,
+  SchedulePerformanceData,
+  DepartmentPerformanceItem,
+  ContractorPerformanceItem,
+  QualityAssetPerformanceData,
+  LandUtilityPerformanceData,
+  AIMinisterialBriefingData,
+  DecisionQueueItem,
+  ReportGenerateRequest,
+  ReportGenerateResponse,
+  MinisterialDecisionItem,
+  MinisterialDecisionUpdatePayload,
+  QualitySummaryData,
+  QualityInspectionItem,
+  QualityFindingItem,
+  MaterialTestItem,
+  FieldOpsSummaryData,
+  FieldInspectionItem,
+  FieldIssueItem,
+  AssetsSummaryData,
+  InfrastructureAssetItem,
+  MaintenanceWorkOrderItem,
+  DepartmentOverviewData,
+  DepartmentDirectoryItem,
+  DepartmentCoordinationDependencyItem,
+  DepartmentApprovalItem,
+  DepartmentAIFindingItem,
+  LandUtilityOverviewData,
+  LandAcquisitionParcelItem,
+  UtilityShiftingItem,
+  LandUtilityMapPoint,
+  DigitalOfficeOverviewData,
+  CorrespondenceItem,
+  GovernmentFileItem,
+  FileMovementItem,
+  OfficeNoteItem,
+  GovernmentDecisionItem,
+  DigitalOfficeMeetingItem,
+  GovernmentActionItem,
+  DigitalDocumentItem,
+  DigitalOfficeAIFindingItem,
+  GovernmentFileDetail
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
   SYNTHETIC_PROJECTS,
+  SYNTHETIC_MINISTERIAL_DECISIONS,
   getSyntheticKPIs,
   getSyntheticCategorySummary,
   getSyntheticExposureAnalysis,
   getSyntheticProjectRiskMatrix,
   getSyntheticExecutiveAssessment,
-  getSyntheticDecisionsRequiringAttention
+  getSyntheticDecisionsRequiringAttention,
+  getSyntheticReportsOverview,
+  getSyntheticProgrammePerformance,
+  getSyntheticProjectPerformance,
+  getSyntheticFinancialPerformance,
+  getSyntheticSchedulePerformance,
+  getSyntheticDepartmentPerformance,
+  getSyntheticContractorPerformance,
+  getSyntheticQualityAssetPerformance,
+  getSyntheticLandUtilityPerformance,
+  getSyntheticAIMinisterialBriefing,
+  generateSyntheticMinisterialReport,
+  updateSyntheticMinisterialDecision
 } from '../data/syntheticHighwaysData';
 
 const API_BASE = '/api/v1';
@@ -1787,6 +1845,272 @@ function fallbackProject360(id: number): Project360Detail {
         entity_name: "HRS Test Verification",
         details: "Highways Research Station submitted Bituminous Core Test Report QCR-2025-089."
       }
+    ],
+    ai_project_intelligence: {
+      title: "AI Project Intelligence Assessment",
+      executive_summary: (
+        p.id === 4 || p.project_code === 'PRJ-TN-2026-004' ?
+        "This demonstration project (PRJ-TN-2026-004) faces acute schedule pressure with a critical delay of 115 days against baseline. Financial disbursements (34.2%) lead verified physical progress (22.8%), driven by mobilization advances and an unapproved non-BOQ rock variation claim of ₹9.80 Cr. Utility shifting (48 TANGEDCO 11kV electrical poles) and pending DRO land awards in Ooty Taluk constitute the primary critical path bottlenecks. AI recommends convening a multi-departmental clearance review and auditing rock variation quantities prior to releasing further payments." :
+        `Project ${p.project_code} is progressing with physical progress at ${p.physical_progress_pct}% against planned ${plannedPhys}%. Schedule variance is ${delayDays} days. Inter-agency dependencies with Revenue and TANGEDCO require routine monitoring to avoid compounding delays.`
+      ),
+      critical_findings: [
+        `Schedule variance has reached ${delayDays} days, triggering Critical Delay alert.`,
+        "TANGEDCO electrical pole shifting obstructing main carriageway slope stabilization.",
+        "Disputed ₹9.80 Cr non-BOQ variation claim requires Standing Finance Committee approval.",
+        "Two open quality Non-Conformance Reports (NCR) awaiting field closure."
+      ],
+      root_cause_analysis: {
+        land_acquisition: "12 parcels awaiting DRO award inquiry and statutory 19(1) gazette declaration.",
+        utility_shifting: "48 overhead 11kV poles and 2 distribution transformers obstructing slope benches.",
+        departmental_approvals: "Stage-II clearance pending with Forest Department; power shutdown pending with TANGEDCO.",
+        contractor_performance: "Contractor slowed earthwork citing non-handover of unencumbered ROW stretches.",
+        funding_and_payment: "Disbursement exceeds verified physical progress; ₹9.80 Cr variation claim withheld under audit.",
+        engineering_quality: "M30 concrete honeycombing observed on breast wall; cube test records verified.",
+        legal_restrictions: "Interim stay petition pending in Sub-Court regarding compensation quantum on survey parcel 14.",
+        field_execution: "Heavy monsoon rains in hill terrain reduced working hours by 18 days in September-October."
+      },
+      recommended_actions: [
+        "Convene District Level Coordination Committee under District Collector to order TANGEDCO shutdown schedule.",
+        "Withhold RA Bill #3 non-BOQ items until State Technical Committee verifies rock profiling measurements.",
+        "Direct Contractor to deploy secondary machinery on unencumbered chainage km 0/000 to 12/000.",
+        "Instruct DRO to deposit interim land compensation into court escrow to obtain symbolic possession under Sec 19."
+      ],
+      decision_required: {
+        reference: p.id === 4 ? "MDR-2026-001" : `MDR-${p.project_code}`,
+        decision_title: "Inter-Departmental Deadlock Resolution & Contract Variation Scrutiny",
+        decision_authority: "Hon'ble Minister / Principal Secretary",
+        current_status: "PENDING_DECISION",
+        recommended_directive: "Order joint physical survey with TANGEDCO & freeze extra item payment pending Technical Sanction revision."
+      }
+    },
+    utility_shifting: {
+      total_utilities: p.id === 4 ? 48 : 14,
+      shifting_in_progress: p.id === 4 ? 32 : 8,
+      completed: p.id === 4 ? 16 : 6,
+      estimated_shifting_cost_cr: p.id === 4 ? 4.80 : 1.65,
+      items: [
+        {
+          utility_type: "TANGEDCO 11kV Electrical Poles",
+          department: "TANGEDCO",
+          affected_chainage: "km 18/200 to 24/600",
+          quantity: p.id === 4 ? 48 : 12,
+          unit: "Poles",
+          estimated_cost_cr: p.id === 4 ? 3.20 : 0.85,
+          deposit_status: "PAID_TO_TANGEDCO",
+          work_status: "PENDING_SHUTDOWN_APPROVAL",
+          schedule_impact_days: p.id === 4 ? 115 : 25
+        },
+        {
+          utility_type: "TANGEDCO 100kVA Transformers",
+          department: "TANGEDCO",
+          affected_chainage: "km 19/400 & km 22/800",
+          quantity: 2,
+          unit: "Units",
+          estimated_cost_cr: 0.90,
+          deposit_status: "ESTIMATE_SANCTIONED",
+          work_status: "SITE_ACQUISITION_PENDING",
+          schedule_impact_days: p.id === 4 ? 90 : 15
+        },
+        {
+          utility_type: "TWAD Drinking Water Pipeline (300mm DI)",
+          department: "TWAD Board",
+          affected_chainage: "km 14/000 to 16/500",
+          quantity: 2.5,
+          unit: "km",
+          estimated_cost_cr: 0.70,
+          deposit_status: "JOINT_INSPECTION_COMPLETED",
+          work_status: "ALIGNMENT_AGREED",
+          schedule_impact_days: 30
+        }
+      ]
+    },
+    field_operations: {
+      total_inspections: 18,
+      verified_progress_pct: actualPhys,
+      last_inspection_date: "2026-10-24",
+      inspections: [
+        {
+          inspection_id: `INSP-${p.project_code}-01`,
+          date: "2026-10-24",
+          officer_name: "Er. P. Anandhan (Divisional Engineer)",
+          site_location: "Chainage km 14/200 to 22/000",
+          package_name: "Package EPC-01",
+          work_activity: "Hill slope stabilization, breast wall construction and rock profiling",
+          progress_reported_pct: Math.min(actualPhys + 1.5, 100),
+          progress_verified_pct: actualPhys,
+          findings: "Work halted at km 18/200 due to unshifted 11kV poles. Honeycombing observed on breast wall panel 4.",
+          verified_by_geo_tag: true,
+          has_photo_evidence: true,
+          photo_url: "/evidence/site_inspect_ch14.jpg",
+          follow_up_action: "Issue rectification notice to contractor for honeycombing; escalate pole shutdown to TANGEDCO EE."
+        },
+        {
+          inspection_id: `INSP-${p.project_code}-02`,
+          date: "2026-09-18",
+          officer_name: "Er. M. Senthilkumar (Assistant Executive Engineer)",
+          site_location: "Chainage km 0/000 to 12/000",
+          package_name: "Package EPC-01",
+          work_activity: "Granular Sub-Base (GSB) laying and compaction tests",
+          progress_reported_pct: Math.max(actualPhys - 5.0, 5.0),
+          progress_verified_pct: Math.max(actualPhys - 5.5, 4.5),
+          findings: "GSB layer density test passed 98.4% MDD. Side drain masonry progressing satisfactorily.",
+          verified_by_geo_tag: true,
+          has_photo_evidence: true,
+          photo_url: "/evidence/site_gsb_km10.jpg",
+          follow_up_action: "Permit WMM trial stretch between km 6/0 and 8/0."
+        }
+      ]
+    },
+    assets: {
+      total_assets: 8,
+      road_carriageway_km: p.total_length_km || 28.5,
+      bridges_count: 2,
+      culverts_count: 14,
+      items: [
+        {
+          asset_id: `AST-RD-${p.project_code}`,
+          asset_type: "CARRIAGEWAY",
+          name: `${p.road_name || 'Highways'} Alignment`,
+          location: `km 0.0 to ${p.total_length_km || 28.5}`,
+          condition: "UNDER_UPGRADATION",
+          last_inspection: "2026-10-24",
+          maintenance_status: "CONTRACTOR_WARRANTY_STAGE"
+        },
+        {
+          asset_id: `AST-BRG-${p.id}-01`,
+          asset_type: "HIGH_LEVEL_BRIDGE",
+          name: "Major Bridge across Stream",
+          location: "Chainage km 18/450",
+          condition: "SUBSTRUCTURE_IN_PROGRESS",
+          last_inspection: "2026-10-15",
+          maintenance_status: "CONSTRUCTION_STAGE"
+        },
+        {
+          asset_id: `AST-CUL-${p.id}-01`,
+          asset_type: "BOX_CULVERT",
+          name: "Double Cell RCC Box Culvert (2 x 3.0m)",
+          location: "Chainage km 12/300",
+          condition: "COMPLETED",
+          last_inspection: "2026-09-10",
+          maintenance_status: "SOUND"
+        }
+      ]
+    },
+    citizen_grievances: {
+      total_grievances: 14,
+      resolved_count: 9,
+      pending_count: 5,
+      critical_count: 1,
+      items: [
+        {
+          grievance_id: `GRV-2026-${p.id}01`,
+          category: "Drainage Obstruction & Water Stagnation",
+          location: "Adjacent to Village Settlement km 14/800",
+          date_received: "2026-10-02",
+          petitioner_type: "Resident Association",
+          assigned_officer: "Er. P. Anandhan (DE Highways)",
+          status: "ACTION_IN_PROGRESS",
+          resolution_target: "2026-11-15",
+          resolution_details: "Contractor directed to excavate temporary bypass diversion drain during monsoon."
+        },
+        {
+          grievance_id: `GRV-2026-${p.id}02`,
+          category: "Dust Nuisance & Road Safety Signage",
+          location: "School Zone km 8/200",
+          date_received: "2026-09-14",
+          petitioner_type: "Parent-Teacher Council",
+          assigned_officer: "Er. M. Senthilkumar (AEE Highways)",
+          status: "RESOLVED",
+          resolution_target: "2026-09-20",
+          resolution_details: "Water bowser sprinkling mandated twice daily; retro-reflective cautionary signage installed."
+        }
+      ]
+    },
+    financial_transactions: [
+      {
+        txn_reference: `TXN-${p.project_code}-001`,
+        voucher_number: "IFHRMS-VCH-2024-912",
+        package_name: "Package EPC-01",
+        contractor_name: p.contractor_name || "Contractor",
+        bill_date: "2024-05-10",
+        bill_type: "MOBILISATION_ADVANCE",
+        bill_amount_cr: Math.round(sanctioned * 0.10 * 100) / 100,
+        approved_amount_cr: Math.round(sanctioned * 0.10 * 100) / 100,
+        paid_amount_cr: Math.round(sanctioned * 0.10 * 100) / 100,
+        payment_status: "DISBURSED",
+        supporting_evidence_status: "VERIFIED_BG_HELD"
+      },
+      {
+        txn_reference: `TXN-${p.project_code}-002`,
+        voucher_number: "IFHRMS-VCH-2024-1182",
+        package_name: "Package EPC-01",
+        contractor_name: p.contractor_name || "Contractor",
+        bill_date: "2024-11-20",
+        bill_type: "RA_BILL_01",
+        bill_amount_cr: Math.round(sanctioned * 0.12 * 100) / 100,
+        approved_amount_cr: Math.round(sanctioned * 0.115 * 100) / 100,
+        paid_amount_cr: Math.round(sanctioned * 0.115 * 100) / 100,
+        payment_status: "DISBURSED",
+        supporting_evidence_status: "VERIFIED_MB_BOOK"
+      },
+      {
+        txn_reference: `TXN-${p.project_code}-003`,
+        voucher_number: "IFHRMS-VCH-2025-045",
+        package_name: "Package EPC-01",
+        contractor_name: p.contractor_name || "Contractor",
+        bill_date: "2025-06-14",
+        bill_type: "RA_BILL_02",
+        bill_amount_cr: Math.round(sanctioned * 0.15 * 100) / 100,
+        approved_amount_cr: Math.round(sanctioned * 0.14 * 100) / 100,
+        paid_amount_cr: Math.round(sanctioned * 0.14 * 100) / 100,
+        payment_status: "DISBURSED",
+        supporting_evidence_status: "VERIFIED_MB_BOOK"
+      },
+      {
+        txn_reference: `TXN-${p.project_code}-004`,
+        voucher_number: "IFHRMS-VCH-2025-992",
+        package_name: "Package EPC-01",
+        contractor_name: p.contractor_name || "Contractor",
+        bill_date: "2025-10-20",
+        bill_type: "RA_BILL_03",
+        bill_amount_cr: p.id === 4 ? 9.80 : 6.50,
+        approved_amount_cr: 0.0,
+        paid_amount_cr: 0.0,
+        payment_status: "HELD_UNDER_AUDIT",
+        supporting_evidence_status: "VARIATION_CLAIM_UNDER_REVIEW"
+      }
+    ],
+    actions_register: [
+      {
+        action_id: `ACT-${p.project_code}-01`,
+        issue: "Inter-Departmental Joint Inspection for 48 TANGEDCO 11kV electrical pole relocation",
+        department: "TANGEDCO / Highways",
+        assigned_officer: "District Collector / Superintending Engineer (TANGEDCO)",
+        priority: "CRITICAL",
+        target_date: "2026-11-20",
+        status: "ASSIGNED",
+        remarks: "High-level coordination meeting scheduled at Collectorate."
+      },
+      {
+        action_id: `ACT-${p.project_code}-02`,
+        issue: "Expedite DRO Award enquiry for 12 revenue parcels in Taluk office",
+        department: "Revenue Department",
+        assigned_officer: "District Revenue Officer (DRO)",
+        priority: "HIGH",
+        target_date: "2026-11-28",
+        status: "IN_PROGRESS",
+        remarks: "Compensation determination finalized; gazette publication pending."
+      },
+      {
+        action_id: `ACT-${p.project_code}-03`,
+        issue: "Rectification of honeycombing defects in breast wall concrete at km 14/200",
+        department: "Highways C&M / Quality Control Wing",
+        assigned_officer: "Executive Engineer (Quality Control)",
+        priority: "MEDIUM",
+        target_date: "2026-11-15",
+        status: "RECTIFICATION_SUBMITTED",
+        remarks: "Pressure grouting methodology submitted by contractor."
+      }
     ]
   };
 }
@@ -2129,6 +2453,43 @@ export const api = {
       return await request<ProjectProgressRecordItem[]>(`/projects/${id}/progress-history`);
     } catch {
       return fallbackProject360(id).progress_history;
+    }
+  },
+
+  createProjectAction: async (projectId: number, payload: any) => {
+    try {
+      return await request<{ message: string; action: any }>(`/projects/${projectId}/actions`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return {
+        message: 'Action assigned successfully',
+        action: {
+          action_id: `ACT-${projectId}-${Date.now().toString().slice(-4)}`,
+          ...payload
+        }
+      };
+    }
+  },
+
+  createProjectQualityObservation: async (projectId: number, payload: any) => {
+    try {
+      return await request<{ message: string; record: any }>(`/projects/${projectId}/quality-observations`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return {
+        message: 'Quality observation recorded successfully',
+        record: {
+          defect_reference: `QC-${projectId}-${Date.now().toString().slice(-4)}`,
+          component_type: payload.defect_type,
+          description: payload.observation_notes,
+          severity: payload.severity,
+          status: payload.status
+        }
+      };
     }
   },
 
@@ -2539,6 +2900,1023 @@ export const api = {
       }
       throw new Error("Finding not found");
     }
+  },
+
+  // -------------------------------------------------------------
+  // Reports & AI Ministerial Decision Intelligence (Prompt 02)
+  // -------------------------------------------------------------
+
+  getReportsOverview: async (filters?: {
+    programme?: string;
+    district?: string;
+    project_id?: number;
+    department?: string;
+    frequency?: string;
+  }): Promise<ReportsOverviewData> => {
+    try {
+      const q = new URLSearchParams();
+      if (filters?.programme && filters.programme !== 'ALL') q.append('programme', filters.programme);
+      if (filters?.district && filters.district !== 'ALL') q.append('district', filters.district);
+      if (filters?.project_id) q.append('project_id', String(filters.project_id));
+      if (filters?.department && filters.department !== 'ALL') q.append('department', filters.department);
+      if (filters?.frequency) q.append('frequency', filters.frequency);
+      const url = `/reports/overview${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<ReportsOverviewData>(url);
+    } catch {
+      return getSyntheticReportsOverview(filters);
+    }
+  },
+
+  getProgrammePerformance: async (): Promise<ProgrammePerformanceItem[]> => {
+    try {
+      return await request<ProgrammePerformanceItem[]>('/reports/programmes');
+    } catch {
+      return getSyntheticProgrammePerformance();
+    }
+  },
+
+  getProjectPerformanceReport: async (filters?: {
+    programme?: string;
+    district?: string;
+    search?: string;
+    status?: string;
+  }): Promise<ProjectPerformanceItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (filters?.programme && filters.programme !== 'ALL') q.append('programme', filters.programme);
+      if (filters?.district && filters.district !== 'ALL') q.append('district', filters.district);
+      if (filters?.search) q.append('search', filters.search);
+      if (filters?.status && filters.status !== 'ALL') q.append('status', filters.status);
+      const url = `/reports/projects${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<ProjectPerformanceItem[]>(url);
+    } catch {
+      return getSyntheticProjectPerformance(filters);
+    }
+  },
+
+  getFinancialPerformanceReport: async (programme?: string): Promise<FinancialPerformanceData> => {
+    try {
+      const q = programme && programme !== 'ALL' ? `?programme=${encodeURIComponent(programme)}` : '';
+      return await request<FinancialPerformanceData>(`/reports/financial${q}`);
+    } catch {
+      return getSyntheticFinancialPerformance();
+    }
+  },
+
+  getSchedulePerformanceReport: async (programme?: string): Promise<SchedulePerformanceData> => {
+    try {
+      const q = programme && programme !== 'ALL' ? `?programme=${encodeURIComponent(programme)}` : '';
+      return await request<SchedulePerformanceData>(`/reports/schedule${q}`);
+    } catch {
+      return getSyntheticSchedulePerformance();
+    }
+  },
+
+  getDepartmentPerformanceReport: async (): Promise<DepartmentPerformanceItem[]> => {
+    try {
+      return await request<DepartmentPerformanceItem[]>('/reports/departments');
+    } catch {
+      return getSyntheticDepartmentPerformance();
+    }
+  },
+
+  getContractorPerformanceReport: async (): Promise<ContractorPerformanceItem[]> => {
+    try {
+      return await request<ContractorPerformanceItem[]>('/reports/contractors');
+    } catch {
+      return getSyntheticContractorPerformance();
+    }
+  },
+
+  getQualityAssetPerformanceReport: async (): Promise<QualityAssetPerformanceData> => {
+    try {
+      return await request<QualityAssetPerformanceData>('/reports/quality-assets');
+    } catch {
+      return getSyntheticQualityAssetPerformance();
+    }
+  },
+
+  getLandUtilityPerformanceReport: async (): Promise<LandUtilityPerformanceData> => {
+    try {
+      return await request<LandUtilityPerformanceData>('/reports/land-utility');
+    } catch {
+      return getSyntheticLandUtilityPerformance();
+    }
+  },
+
+  getAIMinisterialBriefing: async (): Promise<AIMinisterialBriefingData> => {
+    try {
+      return await request<AIMinisterialBriefingData>('/reports/ai-briefing');
+    } catch {
+      return getSyntheticAIMinisterialBriefing();
+    }
+  },
+
+  generateMinisterialReport: async (req: ReportGenerateRequest): Promise<ReportGenerateResponse> => {
+    try {
+      return await request<ReportGenerateResponse>('/reports/generate', {
+        method: 'POST',
+        body: JSON.stringify(req)
+      });
+    } catch {
+      return generateSyntheticMinisterialReport(req);
+    }
+  },
+
+  getMinisterialDecisions: async (params?: {
+    status?: string;
+    authority?: string;
+    programme?: string;
+  }): Promise<MinisterialDecisionItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params?.authority && params.authority !== 'ALL') q.append('authority', params.authority);
+      if (params?.programme && params.programme !== 'ALL') q.append('programme', params.programme);
+      const url = `/reports/decisions${q.toString() ? '?' + q.toString() : ''}`;
+      return await request<MinisterialDecisionItem[]>(url);
+    } catch {
+      let list = [...SYNTHETIC_MINISTERIAL_DECISIONS];
+      if (params?.status && params.status !== 'ALL') {
+        list = list.filter(d => d.current_status === params.status);
+      }
+      if (params?.authority && params.authority !== 'ALL') {
+        list = list.filter(d => d.decision_authority === params.authority);
+      }
+      if (params?.programme && params.programme !== 'ALL') {
+        list = list.filter(d => d.programme === params.programme);
+      }
+      return list;
+    }
+  },
+
+  getMinisterialDecisionDetail: async (id: number): Promise<MinisterialDecisionItem> => {
+    try {
+      return await request<MinisterialDecisionItem>(`/reports/decisions/${id}`);
+    } catch {
+      const target = SYNTHETIC_MINISTERIAL_DECISIONS.find(d => d.id === id);
+      if (!target) throw new Error("Decision record not found");
+      return target;
+    }
+  },
+
+  updateMinisterialDecisionAction: async (
+    id: number,
+    payload: MinisterialDecisionUpdatePayload
+  ): Promise<MinisterialDecisionItem> => {
+    try {
+      return await request<MinisterialDecisionItem>(`/reports/decisions/${id}/action`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const res = updateSyntheticMinisterialDecision(id, payload);
+      if (!res) throw new Error("Decision not found");
+      return res as unknown as MinisterialDecisionItem;
+    }
+  },
+
+  exportReportsCsv: async (reportType: string, programme?: string): Promise<string> => {
+    try {
+      const token = getAuthToken();
+      const q = new URLSearchParams();
+      q.append('report_type', reportType);
+      if (programme && programme !== 'ALL') q.append('programme', programme);
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`${API_BASE}/reports/export/csv?${q.toString()}`, { headers });
+      if (!res.ok) throw new Error('CSV export failed');
+      return await res.text();
+    } catch {
+      // Fallback CSV generation
+      const overview = getSyntheticReportsOverview({ programme });
+      const projects = getSyntheticProjectPerformance({ programme });
+      let csv = `Report: TN-HDOS Executive Performance Export\nGenerated: ${new Date().toISOString()}\nProgramme: ${programme || 'ALL'}\n`;
+      csv += `Total Active Projects,${overview.total_active_projects}\n`;
+      csv += `Total Project Value (Cr),${overview.total_project_value_cr}\n`;
+      csv += `Total Expenditure (Cr),${overview.total_expenditure_cr}\n\n`;
+      csv += `Project Code,Project Name,Programme,District,Value (Cr),Physical %,Financial %,Planned,Expected,Delay Days,Status,Contractor,Risk\n`;
+      for (const p of projects) {
+        csv += `"${p.project_code}","${p.project_title.replace(/"/g, '""')}","${p.programme}","${p.district}",${p.sanctioned_cost_cr},${p.physical_progress_pct},${p.financial_progress_pct},"${p.planned_completion_date}","${p.expected_completion_date}",${p.schedule_variance_days},"${p.status}","${p.contractor_name}","${p.overall_risk}"\n`;
+      }
+      return csv;
+    }
+  },
+
+  // -----------------------------------------------------------
+  // Prompt 04: Quality Intelligence APIs
+  // -----------------------------------------------------------
+  getQualitySummary: async (projectId?: number): Promise<QualitySummaryData> => {
+    try {
+      const q = projectId ? `?project_id=${projectId}` : '';
+      return await request<QualitySummaryData>(`/quality/summary${q}`);
+    } catch {
+      return {
+        kpis: {
+          total_inspections: 34,
+          open_quality_findings: 13,
+          critical_defects: 3,
+          non_conformance_reports: 25,
+          corrective_actions_pending: 12,
+          overdue_corrective_actions: 2,
+          reinspections_pending: 4,
+          quality_closure_rate_pct: 82.5
+        },
+        kpi_definitions: {
+          total_inspections: 'Total quality audits conducted across pavement, structural and material domains.',
+          open_quality_findings: 'Active defects and observations not yet closed or verified by engineers.',
+          critical_defects: 'Non-conformances with potential structural integrity or road safety risk.',
+          non_conformance_reports: 'Formal NCRs issued under contract quality assurance provisions.',
+          corrective_actions_pending: 'Rectification plans submitted by contractors awaiting field execution.',
+          overdue_corrective_actions: 'Corrective actions that have crossed stipulated target closure dates.',
+          reinspections_pending: 'Rectifications completed by contractor awaiting departmental engineer verification.',
+          quality_closure_rate_pct: 'Formula: (Verified + Closed Findings) / Total Findings * 100'
+        },
+        ai_quality_assessment: {
+          overall_assessment: 'State-wide quality conformance stands at 85.0%. However, critical friction is observed on SH-15 Ooty-Gudalur Ghat Corridor where binder content deficiency (4.6% vs 5.2%) on 1.3 km stretch remains under corrective milling, and subgrade compaction failed MDD test. Immediate reinspection verification recommended.',
+          critical_concerns: [
+            'SH-15 Ooty Corridor: NCR-2025-041 binder content failure represents acute moisture stripping risk.',
+            'Contractor PST Engineering Fictional Ltd logged 14.2% material test failure rate over 90 days.',
+            '3 Bridge structural observations awaiting final Schmidt rebound hammer test certifications.'
+          ],
+          repeated_defect_patterns: [
+            'Bituminous binder extraction variations recurring across high-altitude ghat packages.',
+            'Subgrade dry density compaction below 97% MDD in rocky cut sections due to inadequate pneumatic rolling.'
+          ],
+          contractors_requiring_attention: [
+            { name: 'KCP Infra Fictional Ltd', reason: '2 Open Critical NCRs on SH-15; variation review active' },
+            { name: 'PST Engineering Fictional Ltd', reason: 'High material test failure frequency (14.2%)' }
+          ],
+          recommended_actions: [
+            'Direct Divisional Engineer Ooty to conduct mandatory joint core sample reinspection on Km 14+200.',
+            'Enforce Clause 46 financial withholding of ₹0.30 Cr on RA Bill #14 until lab clearance.',
+            'Issue show-cause notice to automated batching plant operator regarding temperature monitoring.'
+          ]
+        },
+        contractor_scorecard: [
+          { contractor_id: 1, contractor_name: 'KCP Infra Fictional Ltd', contractor_class: 'Class I', inspections_count: 42, total_observations: 8, critical_observations: 2, corrective_actions_pending: 2, quality_score: 76.5, compliance_rate_pct: 75.0 },
+          { contractor_id: 2, contractor_name: 'Southern Highway Builders Ltd', contractor_class: 'Class I', inspections_count: 36, total_observations: 4, critical_observations: 0, corrective_actions_pending: 1, quality_score: 91.0, compliance_rate_pct: 88.0 },
+          { contractor_id: 3, contractor_name: 'PST Engineering Fictional Ltd', contractor_class: 'Class I', inspections_count: 38, total_observations: 9, critical_observations: 3, corrective_actions_pending: 3, quality_score: 68.2, compliance_rate_pct: 66.7 }
+        ],
+        last_updated: '07 Nov 2026, 09:30 IST'
+      };
+    }
+  },
+
+  getQualityInspections: async (params: any = {}): Promise<{ total: number; items: QualityInspectionItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.inspection_type && params.inspection_type !== 'ALL') q.append('inspection_type', params.inspection_type);
+      if (params.severity && params.severity !== 'ALL') q.append('severity', params.severity);
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: QualityInspectionItem[] }>(`/quality/inspections?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            inspection_code: 'QINSP-2026-001',
+            project_id: 4,
+            package_id: 1,
+            inspection_date: '2026-02-04',
+            inspection_type: 'Bitumen Testing',
+            site_location: 'SH-15 Km 14+200 to 15+500',
+            inspecting_officer: 'Dr. P. Ramanathan (Authority QA Team Leader)',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            findings_count: 2,
+            severity: 'CRITICAL',
+            status: 'REINSPECTION_PENDING',
+            findings_summary: 'Bituminous Concrete surface course test failed binder percentage requirement. NCR-2025-041 issued.'
+          },
+          {
+            id: 2,
+            inspection_code: 'QINSP-2026-002',
+            project_id: 4,
+            package_id: 1,
+            inspection_date: '2026-01-20',
+            inspection_type: 'Pavement Quality',
+            site_location: 'SH-15 Km 21+200 to 22+000',
+            inspecting_officer: 'Er. K. Balaji (HRS Field Specialist)',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            findings_count: 1,
+            severity: 'CRITICAL',
+            status: 'COMPLETED',
+            findings_summary: 'Subgrade dry density compaction observed at 93.8% MDD vs specification >=97%. NCR-2025-042 issued.'
+          }
+        ]
+      };
+    }
+  },
+
+  getQualityFindings: async (params: any = {}): Promise<{ total: number; items: QualityFindingItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.is_ncr !== undefined) q.append('is_ncr', String(params.is_ncr));
+      if (params.severity && params.severity !== 'ALL') q.append('severity', params.severity);
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: QualityFindingItem[] }>(`/quality/defects?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            finding_code: 'NCR-2025-041',
+            project_id: 4,
+            package_id: 1,
+            asset_id: 1,
+            inspection_id: 1,
+            defect_category: 'Bituminous Concrete (BC)',
+            description: 'Binder content in surface course between Km 14+000 and 15+500 sampled at 4.6% vs specification of 5.2%. Core samples failed Marshall stability criteria.',
+            severity: 'CRITICAL',
+            status: 'CORRECTIVE_ACTION_PENDING',
+            identified_date: '2026-02-04',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            contractor_response: 'Contractor attributes binder variation to automated batching plant sensor malfunction at Ooty mix unit.',
+            corrective_action: 'Milling of affected 1.3 km layer and re-laying Dense Bituminous Macadam using calibrated batching plant under AEE supervision.',
+            target_closure_date: '2026-03-15',
+            reinspection_date: '2026-03-18',
+            reinspection_officer: 'Dr. P. Ramanathan (Authority QA Lead)',
+            reinspection_notes: 'Reinspection scheduled upon receipt of contractor readiness compliance certificate.',
+            is_ncr: true,
+            penalty_cr: 0.20
+          },
+          {
+            id: 2,
+            finding_code: 'NCR-2025-042',
+            project_id: 4,
+            package_id: 1,
+            asset_id: 1,
+            inspection_id: 2,
+            defect_category: 'Subgrade & Embankment',
+            description: 'Dry density compaction between Km 21+200 and 22+000 tested at 93.8% MDD (standard MoRTH requirement >=97%).',
+            severity: 'CRITICAL',
+            status: 'RECTIFICATION_IN_PROGRESS',
+            identified_date: '2026-01-20',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            contractor_response: 'Contractor deployed additional 12-ton vibratory roller with pneumatic tyred roller for re-compaction.',
+            corrective_action: 'Moisture conditioning and re-rolling of subgrade layer in 200mm lifts until achieving 97.5% MDD field density.',
+            target_closure_date: '2026-03-10',
+            reinspection_date: '2026-03-12',
+            reinspection_officer: 'Er. R. Venkatesh (AEE)',
+            reinspection_notes: 'Preliminary sand cone test indicated 96.8% MDD; final core clearance pending.',
+            is_ncr: true,
+            penalty_cr: 0.10
+          }
+        ]
+      };
+    }
+  },
+
+  updateQualityDefectAction: async (defectId: number, payload: any): Promise<any> => {
+    return await request<any>(`/quality/defects/${defectId}/action`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getMaterialTests: async (params: any = {}): Promise<{ total: number; items: MaterialTestItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.material_type && params.material_type !== 'ALL') q.append('material_type', params.material_type);
+      if (params.result_status && params.result_status !== 'ALL') q.append('result_status', params.result_status);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: MaterialTestItem[] }>(`/quality/material-tests?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            test_ref: 'MAT-2026-001',
+            material_type: 'Bitumen',
+            sample_date: '2026-02-04',
+            project_id: 4,
+            package_id: 1,
+            laboratory_name: 'HRS Regional Lab, Coimbatore',
+            test_parameter: 'Bitumen Binder Extraction (ASTM D2172)',
+            measured_result: '4.62% by weight of mix',
+            reference_limit: '5.20% ± 0.3% (IRC:111-2009)',
+            result_status: 'FAILED',
+            report_file_name: 'HRS_CBE_Report_2026_014.pdf'
+          },
+          {
+            id: 2,
+            test_ref: 'MAT-2026-002',
+            material_type: 'Concrete',
+            sample_date: '2026-01-22',
+            project_id: 4,
+            package_id: 1,
+            laboratory_name: 'Highways Research Station (HRS), Guindy',
+            test_parameter: '28-Day Compressive Strength (M-40)',
+            measured_result: '44.2 N/mm²',
+            reference_limit: 'Min 40.0 N/mm²',
+            result_status: 'PASSED',
+            report_file_name: 'HRS_Guindy_Concrete_442.pdf'
+          }
+        ]
+      };
+    }
+  },
+
+  // -----------------------------------------------------------
+  // Prompt 04: Field Operations Intelligence APIs
+  // -----------------------------------------------------------
+  getFieldOpsSummary: async (projectId?: number): Promise<FieldOpsSummaryData> => {
+    try {
+      const q = projectId ? `?project_id=${projectId}` : '';
+      return await request<FieldOpsSummaryData>(`/field-ops/summary${q}`);
+    } catch {
+      return {
+        kpis: {
+          total_site_inspections: 50,
+          inspections_completed: 38,
+          inspections_scheduled: 8,
+          overdue_inspections: 4,
+          open_field_issues: 14,
+          critical_field_issues: 3,
+          progress_updates_submitted: 42,
+          verification_pending: 6
+        },
+        kpi_definitions: {
+          total_site_inspections: 'Total documented physical site visits by engineering officers and consultants.',
+          inspections_completed: 'Visits completed with geo-tagged observation logs and photo evidence.',
+          inspections_scheduled: 'Mandatory milestone and quality audits programmed in the digital calendar.',
+          overdue_inspections: 'Scheduled visits not logged within 7 days of stipulated target date.',
+          open_field_issues: 'Active site obstructions, safety findings, or workmanship impediments.',
+          critical_field_issues: 'Field issues directly blocking critical path milestones or public traffic.',
+          progress_updates_submitted: 'Contractor measurement submissions awaiting engineer verification.',
+          verification_pending: 'Inspections requiring departmental engineer re-audit or joint cross-check.'
+        },
+        ai_field_intelligence: {
+          overall_execution_status: 'Field progress monitoring reveals strong overall activity (50 logged visits across state). However, a significant divergence of 14.0% was detected on SH-15 Ooty Ghat Corridor (68.0% contractor claimed vs 54.0% verified by AEE), alongside 48 unshifted TANGEDCO electrical poles halting earthworks.',
+          divergence_alerts: [
+            {
+              project_code: 'PRJ-CKICP-001',
+              project_name: 'SH-15 Ooty-Gudalur Ghat Corridor',
+              package: 'PKG-EPC-01',
+              reported_progress: 68.0,
+              verified_progress: 54.0,
+              gap_pct: 14.0,
+              status: 'FLAGGED_FOR_CURTAILMENT'
+            }
+          ],
+          repeated_observations: [
+            'Temporary drainage absence along excavated slope cuts triggering shoulder scouring.',
+            'Inadequate flaggers and safety delineation at sharp ghat curves during blasting hours.'
+          ],
+          recommended_actions: [
+            'Schedule joint inspection between AEE (Highways) and TANGEDCO SE on SH-15 corridor.',
+            'Enforce measurement book curtailment to 54.0% physical progress on RA Bill #14.',
+            'Mandate weekly drone-based volumetric excavation audits for rock cutting stretches.'
+          ]
+        },
+        last_updated: '07 Nov 2026, 09:30 IST'
+      };
+    }
+  },
+
+  getFieldInspections: async (params: any = {}): Promise<{ total: number; items: FieldInspectionItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.severity && params.severity !== 'ALL') q.append('severity', params.severity);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: FieldInspectionItem[] }>(`/field-ops/inspections?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            inspection_code: 'INSP-2026-001',
+            project_id: 4,
+            package_id: 1,
+            officer_name: 'Er. R. Venkatesh',
+            officer_designation: 'Assistant Executive Engineer',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            inspection_date: '2026-02-04',
+            site_location: 'SH-15 Km 14+200 to 18+000 (Pykara stretch)',
+            work_activity: 'Dense Bituminous Macadam (DBM) Surface Course Compaction',
+            progress_reported_pct: 68.0,
+            progress_verified_pct: 54.0,
+            findings_summary: 'Observed binder segregation and temperature drop at paver screed. Core samples extracted at Km 14+600 and 15+200 for laboratory bitumen content test.',
+            severity: 'CRITICAL',
+            status: 'FOLLOWUP_REQUIRED',
+            geo_lat: 11.4124,
+            geo_lng: 76.6958,
+            photos_count: 4,
+            follow_up_action: 'Await HRS Coimbatore lab report; withhold certification of RA Bill #14 item 4.2 pending binder quality clearance.',
+            follow_up_date: '2026-02-15'
+          },
+          {
+            id: 2,
+            inspection_code: 'INSP-2026-002',
+            project_id: 4,
+            package_id: 1,
+            officer_name: 'Tmt. M. Kalaiselvi',
+            officer_designation: 'Divisional Engineer (Highways)',
+            contractor_name: 'KCP Infra Fictional Ltd',
+            inspection_date: '2026-01-22',
+            site_location: 'SH-15 Km 4+800 Minor Bridge Abutment #1',
+            work_activity: 'RCC Pier Cap Reinforcement & Concrete Pouring',
+            progress_reported_pct: 75.0,
+            progress_verified_pct: 75.0,
+            findings_summary: 'Rebar placement and cover blocks verified as per drawing #CKICP/BR/44. Concrete 7-day cube strength satisfied 28 N/mm².',
+            severity: 'LOW',
+            status: 'COMPLETED',
+            geo_lat: 11.4310,
+            geo_lng: 76.7120,
+            photos_count: 3,
+            follow_up_action: 'Authorise staging removal and proceed with girder pre-stressing preparation.',
+            follow_up_date: '2026-02-10'
+          }
+        ]
+      };
+    }
+  },
+
+  scheduleFieldInspection: async (payload: any): Promise<any> => {
+    return await request<any>('/field-ops/schedule', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getFieldIssues: async (params: any = {}): Promise<{ total: number; items: FieldIssueItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.category && params.category !== 'ALL') q.append('category', params.category);
+      if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: FieldIssueItem[] }>(`/field-ops/issues?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            issue_code: 'FISS-2026-001',
+            project_id: 4,
+            package_id: 1,
+            category: 'Road Damage',
+            description: 'Surface cracking and aggregate ravelling observed on freshly laid DBM between Km 14+200 and 15+500 following light rain.',
+            location: 'SH-15 Km 14+400',
+            reported_date: '2026-02-04',
+            assigned_officer: 'Er. R. Venkatesh (AEE)',
+            assigned_department: 'Highways Department',
+            status: 'UNDER_INVESTIGATION',
+            priority: 'CRITICAL',
+            resolution_target: '2026-02-28',
+            resolution_notes: 'Contractor served notice to submit core test analysis and joint rectification methodology.'
+          },
+          {
+            id: 2,
+            issue_code: 'FISS-2026-002',
+            project_id: 4,
+            package_id: 1,
+            category: 'Utility Obstruction',
+            description: '48 TANGEDCO 11kV electrical poles remaining unshifted along ghat carriage edge between Km 4+200 and 12+800.',
+            location: 'SH-15 Km 4/0 to 12/0',
+            reported_date: '2026-01-15',
+            assigned_officer: 'Superintending Engineer, TANGEDCO Nilgiris EDC',
+            assigned_department: 'TANGEDCO',
+            status: 'DEPARTMENT_ACTION_REQUIRED',
+            priority: 'CRITICAL',
+            resolution_target: '2026-03-10',
+            resolution_notes: 'Power shutdown schedule awaited from Gudalur 66kV substation.'
+          }
+        ]
+      };
+    }
+  },
+
+  updateFieldIssueStatus: async (issueId: number, payload: any): Promise<any> => {
+    return await request<any>(`/field-ops/issues/${issueId}/status`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getFieldOpsMapLocations: async (): Promise<{ points: any[] }> => {
+    try {
+      return await request<{ points: any[] }>('/field-ops/map-locations');
+    } catch {
+      return {
+        points: [
+          { type: 'INSPECTION', id: 1, code: 'INSP-2026-001', title: 'Dense Bituminous Macadam Laying', location: 'SH-15 Km 14+200 (Pykara)', lat: 11.4124, lng: 76.6958, severity: 'CRITICAL', status: 'FOLLOWUP_REQUIRED', officer: 'Er. R. Venkatesh', verified_progress: 54.0 },
+          { type: 'ASSET', id: 1, code: 'AST-PVM-01', title: 'Flexible Pavement Section', location: 'Nilgiris • Km 0/0 to 14/0', lat: 11.4250, lng: 76.7020, severity: 'CRITICAL', status: 'Fair', officer: 'Highways C&M Ooty', verified_progress: 71.5 },
+          { type: 'INSPECTION', id: 2, code: 'INSP-2026-002', title: 'Bridge Pier Reinforcement', location: 'SH-15 Km 4+800', lat: 11.4310, lng: 76.7120, severity: 'LOW', status: 'COMPLETED', officer: 'Tmt. M. Kalaiselvi', verified_progress: 75.0 }
+        ]
+      };
+    }
+  },
+
+  // -----------------------------------------------------------
+  // Prompt 04: Asset Management Intelligence APIs
+  // -----------------------------------------------------------
+  getAssetsSummary: async (district?: string, assetType?: string): Promise<AssetsSummaryData> => {
+    try {
+      const q = new URLSearchParams();
+      if (district && district !== 'ALL') q.append('district', district);
+      if (assetType && assetType !== 'ALL') q.append('asset_type', assetType);
+      return await request<AssetsSummaryData>(`/assets/summary?${q.toString()}`);
+    } catch {
+      return {
+        kpis: {
+          total_assets: 40,
+          roads_km: 1284.6,
+          bridges_count: 8,
+          culverts_count: 16,
+          assets_requiring_inspection: 6,
+          assets_requiring_maintenance: 8,
+          critical_asset_conditions: 4,
+          overdue_maintenance_activities: 3
+        },
+        condition_distribution: {
+          Good: 22,
+          Fair: 12,
+          Poor: 4,
+          Critical: 2,
+          'Not Assessed': 0
+        },
+        ai_asset_intelligence: {
+          overall_health_statement: 'State-wide Highway Asset Condition Index averages 78.4 (Fair to Good). Key attention required on Asset AST-PVM-01 (SH-15 Flexible Pavement) where binder deficiency has lowered PCI to 71.5, triggering corrective maintenance order MNT-2026-004. In addition, 1 river bridge foundation is overdue for underwater scour check.',
+          health_alerts: [
+            {
+              asset_code: 'AST-PVM-01',
+              asset_name: 'SH-15 Flexible Pavement Stretch Km 0/0 to 14/0',
+              current_condition: 'Fair (PCI 71.5)',
+              trigger_event: 'Failed binder content test MAT-2026-014 (4.6% vs 5.2%)',
+              action_required: 'Milling and surface replacement under work order MNT-2026-004'
+            },
+            {
+              asset_code: 'AST-BR-03',
+              asset_name: 'Bhavani River High-Level Bridge',
+              current_condition: 'Inspection Due (14 Months Lag)',
+              trigger_event: 'Annual monsoon underwater scour inspection overdue',
+              action_required: 'Deploy HRS Guindy specialised bridge diving team'
+            }
+          ],
+          preventive_maintenance_candidates: [
+            '12 Cross-drainage culverts in Tiruppur division require pre-monsoon desilting.',
+            'Reinforced Earth retaining wall at Km 24+100 requires inclinometer settlement monitoring.'
+          ],
+          recommended_actions: [
+            'Approve preventive desilting work orders under CRIDP annual maintenance head.',
+            'Schedule joint inspection for AST-PVM-01 upon contractor milling completion.',
+            'Install automated solar blinkers on 2.4 km unshielded embankment stretch.'
+          ]
+        },
+        last_updated: '07 Nov 2026, 09:30 IST'
+      };
+    }
+  },
+
+  getAssetsList: async (params: any = {}): Promise<{ total: number; items: InfrastructureAssetItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.asset_type && params.asset_type !== 'ALL') q.append('asset_type', params.asset_type);
+      if (params.condition && params.condition !== 'ALL') q.append('condition', params.condition);
+      if (params.district && params.district !== 'ALL') q.append('district', params.district);
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: InfrastructureAssetItem[] }>(`/assets/items?${q.toString()}`);
+    } catch {
+      return {
+        total: 2,
+        items: [
+          {
+            id: 1,
+            asset_code: 'AST-PVM-01',
+            asset_name: 'SH-15 Flexible Pavement Stretch Km 0/0 to 14/0',
+            asset_type: 'Roads',
+            project_id: 4,
+            package_id: 1,
+            district: 'Nilgiris',
+            location_chainage: 'Km 0/0 to 14/0',
+            completion_date: '2024-11-20',
+            condition: 'Fair',
+            pci_score: 71.5,
+            last_inspection_date: '2026-02-04',
+            next_inspection_date: '2026-03-15',
+            maintenance_status: 'Inspection Due',
+            responsible_authority: 'Highways C&M Ooty Division',
+            replacement_value_cr: 28.50
+          },
+          {
+            id: 2,
+            asset_code: 'AST-BR-01',
+            asset_name: 'Pykara Tributary High-Level Bridge (2x24m Spans)',
+            asset_type: 'Bridges',
+            project_id: 4,
+            package_id: 1,
+            district: 'Nilgiris',
+            location_chainage: 'Km 14+800',
+            condition: 'Good',
+            pci_score: 88.0,
+            last_inspection_date: '2026-01-22',
+            next_inspection_date: '2026-04-15',
+            maintenance_status: 'Under Construction',
+            responsible_authority: 'CKICP PIU Coimbatore',
+            replacement_value_cr: 14.20
+          }
+        ]
+      };
+    }
+  },
+
+  getAssetDetail: async (assetId: number): Promise<any> => {
+    return await request<any>(`/assets/items/${assetId}`);
+  },
+
+  updateAssetCondition: async (assetId: number, payload: any): Promise<any> => {
+    return await request<any>(`/assets/items/${assetId}/condition`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getMaintenanceOrders: async (params: any = {}): Promise<{ total: number; items: MaintenanceWorkOrderItem[] }> => {
+    try {
+      const q = new URLSearchParams();
+      if (params.asset_id) q.append('asset_id', String(params.asset_id));
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+      if (params.search) q.append('search', params.search);
+      return await request<{ total: number; items: MaintenanceWorkOrderItem[] }>(`/assets/maintenance-orders?${q.toString()}`);
+    } catch {
+      return {
+        total: 1,
+        items: [
+          {
+            id: 1,
+            work_order_code: 'MNT-2026-001',
+            asset_id: 1,
+            project_id: 4,
+            maintenance_type: 'Corrective',
+            description: 'Milling and replacement of 1.3 km bitumen surface course (Km 14+200 to 15+500) following failed binder test MAT-2026-001.',
+            priority: 'CRITICAL',
+            estimated_cost_cr: 0.45,
+            assigned_contractor: 'KCP Infra Fictional Ltd',
+            assigned_engineer: 'Er. R. Venkatesh (AEE)',
+            scheduled_date: '2026-02-15',
+            status: 'IN_PROGRESS',
+            inspection_verified: false,
+            remarks: 'Contractor ordered to rectify at own cost under Clause 46 Defect Rectification without billing department.'
+          }
+        ]
+      };
+    }
+  },
+
+  createMaintenanceOrder: async (payload: any): Promise<any> => {
+    return await request<any>('/assets/maintenance-orders', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateMaintenanceOrderStatus: async (orderId: number, payload: any): Promise<any> => {
+    return await request<any>(`/assets/maintenance-orders/${orderId}/status`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  // -----------------------------------------------------------
+  // Prompt 05: Departmental Coordination & Land/Utility APIs
+  // -----------------------------------------------------------
+  getDepartmentOverview: async (projectId?: number): Promise<DepartmentOverviewData> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<DepartmentOverviewData>(`/departments/overview${q}`);
+  },
+
+  getDepartmentDirectory: async (category?: string, search?: string): Promise<DepartmentDirectoryItem[]> => {
+    const q = new URLSearchParams();
+    if (category && category !== 'ALL') q.append('category', category);
+    if (search) q.append('search', search);
+    return await request<DepartmentDirectoryItem[]>(`/departments/directory?${q.toString()}`);
+  },
+
+  getDepartmentDependencies: async (params: any = {}): Promise<DepartmentCoordinationDependencyItem[]> => {
+    const q = new URLSearchParams();
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.criticality && params.criticality !== 'ALL') q.append('criticality', params.criticality);
+    if (params.status && params.status !== 'ALL') q.append('status', params.status);
+    if (params.escalation_level && params.escalation_level !== 'ALL') q.append('escalation_level', params.escalation_level);
+    if (params.target_dept_id) q.append('target_dept_id', String(params.target_dept_id));
+    if (params.search) q.append('search', params.search);
+    return await request<DepartmentCoordinationDependencyItem[]>(`/departments/dependencies?${q.toString()}`);
+  },
+
+  updateDepartmentDependencyAction: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/departments/dependencies/${id}/action`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getDepartmentApprovals: async (params: any = {}): Promise<DepartmentApprovalItem[]> => {
+    const q = new URLSearchParams();
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.sla_status && params.sla_status !== 'ALL') q.append('sla_status', params.sla_status);
+    if (params.status && params.status !== 'ALL') q.append('status', params.status);
+    if (params.approving_dept_id) q.append('approving_dept_id', String(params.approving_dept_id));
+    if (params.search) q.append('search', params.search);
+    return await request<DepartmentApprovalItem[]>(`/departments/approvals?${q.toString()}`);
+  },
+
+  updateDepartmentApprovalAction: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/departments/approvals/${id}/action`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getDepartmentAIIntelligence: async (projectId?: number): Promise<{ items: DepartmentAIFindingItem[]; total: number }> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<{ items: DepartmentAIFindingItem[]; total: number }>(`/departments/ai-intelligence${q}`);
+  },
+
+  getLandUtilityOverview: async (projectId?: number): Promise<LandUtilityOverviewData> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<LandUtilityOverviewData>(`/land-utility/overview${q}`);
+  },
+
+  getLandParcels: async (params: any = {}): Promise<LandAcquisitionParcelItem[]> => {
+    const q = new URLSearchParams();
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.district && params.district !== 'ALL') q.append('district', params.district);
+    if (params.stage && params.stage !== 'ALL') q.append('stage', params.stage);
+    if (params.compensation_status && params.compensation_status !== 'ALL') q.append('compensation_status', params.compensation_status);
+    if (params.possession_status && params.possession_status !== 'ALL') q.append('possession_status', params.possession_status);
+    if (params.has_litigation !== undefined) q.append('has_litigation', String(params.has_litigation));
+    if (params.is_blocking !== undefined) q.append('is_blocking', String(params.is_blocking));
+    if (params.search) q.append('search', params.search);
+    return await request<LandAcquisitionParcelItem[]>(`/land-utility/parcels?${q.toString()}`);
+  },
+
+  getLandParcelDetail: async (id: number): Promise<any> => {
+    return await request<any>(`/land-utility/parcels/${id}`);
+  },
+
+  updateLandParcelWorkflow: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/land-utility/parcels/${id}/workflow`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getUtilityShiftings: async (params: any = {}): Promise<UtilityShiftingItem[]> => {
+    const q = new URLSearchParams();
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.owning_agency && params.owning_agency !== 'ALL') q.append('owning_agency', params.owning_agency);
+    if (params.work_order_status && params.work_order_status !== 'ALL') q.append('work_order_status', params.work_order_status);
+    if (params.verification_status && params.verification_status !== 'ALL') q.append('verification_status', params.verification_status);
+    if (params.is_blocking !== undefined) q.append('is_blocking', String(params.is_blocking));
+    if (params.search) q.append('search', params.search);
+    return await request<UtilityShiftingItem[]>(`/land-utility/utilities?${q.toString()}`);
+  },
+
+  updateUtilityWorkflow: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/land-utility/utilities/${id}/workflow`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getLandUtilityMapLocations: async (projectId?: number): Promise<LandUtilityMapPoint[]> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<LandUtilityMapPoint[]>(`/land-utility/gis/locations${q}`);
+  },
+
+  getLandUtilityAIIntelligence: async (projectId?: number): Promise<{ items: DepartmentAIFindingItem[]; total: number }> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<{ items: DepartmentAIFindingItem[]; total: number }>(`/land-utility/ai-intelligence${q}`);
+  },
+
+  // ============================================================================
+  // DIGITAL OFFICE, E-FILE MANAGEMENT & GOVERNMENT WORKFLOW INTELLIGENCE
+  // ============================================================================
+
+  getDigitalOfficeOverview: async (projectId?: number, departmentId?: number): Promise<DigitalOfficeOverviewData> => {
+    const q = new URLSearchParams();
+    if (projectId) q.append('project_id', String(projectId));
+    if (departmentId) q.append('department_id', String(departmentId));
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<DigitalOfficeOverviewData>(`/digital-office/overview${qs}`);
+  },
+
+  getCorrespondence: async (params: any = {}): Promise<CorrespondenceItem[]> => {
+    const q = new URLSearchParams();
+    if (params.type && params.type !== 'ALL') q.append('type', params.type);
+    if (params.status && params.status !== 'ALL') q.append('status', params.status);
+    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+    if (params.category && params.category !== 'ALL') q.append('category', params.category);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.department_id) q.append('department_id', String(params.department_id));
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<CorrespondenceItem[]>(`/digital-office/correspondence${qs}`);
+  },
+
+  createCorrespondence: async (payload: any): Promise<any> => {
+    return await request<any>('/digital-office/correspondence', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getGovernmentFiles: async (params: any = {}): Promise<GovernmentFileItem[]> => {
+    const q = new URLSearchParams();
+    if (params.stage && params.stage !== 'ALL') q.append('stage', params.stage);
+    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+    if (params.category && params.category !== 'ALL') q.append('category', params.category);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.is_closed !== undefined) q.append('is_closed', String(params.is_closed));
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<GovernmentFileItem[]>(`/digital-office/files${qs}`);
+  },
+
+  getGovernmentFileDetail: async (id: number): Promise<GovernmentFileDetail> => {
+    return await request<GovernmentFileDetail>(`/digital-office/files/${id}`);
+  },
+
+  addFileMovement: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/digital-office/files/${id}/movement`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  submitOfficeNote: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/digital-office/files/${id}/notes`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  advanceFileWorkflow: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/digital-office/files/${id}/workflow`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getGovernmentDecisions: async (params: any = {}): Promise<GovernmentDecisionItem[]> => {
+    const q = new URLSearchParams();
+    if (params.authority && params.authority !== 'ALL') q.append('authority', params.authority);
+    if (params.status && params.status !== 'ALL') q.append('status', params.status);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<GovernmentDecisionItem[]>(`/digital-office/decisions${qs}`);
+  },
+
+  getDigitalOfficeMeetings: async (category?: string): Promise<DigitalOfficeMeetingItem[]> => {
+    const q = category && category !== 'ALL' ? `?category=${category}` : '';
+    return await request<DigitalOfficeMeetingItem[]>(`/digital-office/meetings${q}`);
+  },
+
+  getGovernmentActionItems: async (params: any = {}): Promise<GovernmentActionItem[]> => {
+    const q = new URLSearchParams();
+    if (params.status && params.status !== 'ALL') q.append('status', params.status);
+    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+    if (params.escalation_level && params.escalation_level !== 'ALL') q.append('escalation_level', params.escalation_level);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<GovernmentActionItem[]>(`/digital-office/actions${qs}`);
+  },
+
+  updateGovernmentActionItem: async (id: number, payload: any): Promise<any> => {
+    return await request<any>(`/digital-office/actions/${id}/update`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getDigitalDocuments: async (params: any = {}): Promise<DigitalDocumentItem[]> => {
+    const q = new URLSearchParams();
+    if (params.category && params.category !== 'ALL') q.append('category', params.category);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<DigitalDocumentItem[]>(`/digital-office/documents${qs}`);
+  },
+
+  getDigitalOfficeAIIntelligence: async (projectId?: number): Promise<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }> => {
+    const q = projectId ? `?project_id=${projectId}` : '';
+    return await request<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }>(`/digital-office/ai-intelligence${q}`);
   }
 };
 
