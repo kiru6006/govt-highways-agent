@@ -444,3 +444,4 @@ def update_user_preferences(
         "category_filters": categories,
         "daily_briefing_enabled": pref.daily_briefing_enabled
     }
+

@@ -29,6 +29,7 @@ import {
   Globe,
   Bell,
   Calendar,
+  MessageSquare,
   X
 } from 'lucide-react';
 
@@ -55,6 +56,7 @@ export const navigationItems: NavItem[] = [
   { id: '1', name: '1c. Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'executive' },
   { id: 'notifications', name: 'Notifications & Alerts', path: '/notifications', icon: Bell, badge: 'Live', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'executive' },
   { id: 'calendar', name: 'Unified Calendar', path: '/calendar', icon: Calendar, groupId: 'executive' },
+  { id: 'messages', name: 'Discussions & Chat', path: '/messages', icon: MessageSquare, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'executive' },
   { id: '2', name: '2. Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'executive' },
   { id: '16', name: '16. Reports and Analytics', path: '/reports', icon: BarChart3, groupId: 'executive' },
 

@@ -68,3 +68,4 @@ Records official Minutes of Meeting, decisions summary, and creates tracked foll
 
 ### `GET /api/v1/calendar/today-schedule`
 Returns today's active schedule and overdue action items for quick widget rendering.
+

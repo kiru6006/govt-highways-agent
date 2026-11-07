@@ -23,3 +23,4 @@ This matrix details the role-specific targeting, isolation boundaries, and allow
 | **P24** | `utility_officer` | Utility Nodal Officer (TANGEDCO/TWAD)| Transmission line shifting, water main relocations, joint inspection schedules, deposit reconciliations. | General roadway pavement tenders. |
 | **P26** | `legal_officer` | Special Government Pleader | High Court writ petitions, counter-affidavits, court stay orders, arbitration hearings. | Standard construction progress records. |
 | **P27** | `citizen_officer` | Citizen Grievance Redressal Officer | CM Helpline petitions, road safety complaints, pedestrian access requests, SLA escalations. | Highly confidential cabinet notes. |
+

@@ -1809,3 +1809,123 @@ class DigitalOfficeAIFinding(Base):
     data_mode = Column(String(20), default="mock")
     data_status = Column(String(50), default="Seeded Demo")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+# ============================================================================
+# Phase 19: One-to-One Messaging, Group Chat & Discussion Intelligence
+# ============================================================================
+
+class Conversation(Base):
+    __tablename__ = "conversations"
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_code = Column(String(50), unique=True, index=True, nullable=False)
+    conversation_type = Column(String(30), default="DIRECT")  # DIRECT, GROUP, PROJECT_LINKED
+    title = Column(String(250), nullable=False)
+    description = Column(Text, nullable=True)
+    category = Column(String(50), default="GENERAL")  # DIRECT, PROJECT_WORKING_GROUP, DEPARTMENT_WORKING_GROUP, PROGRAMME_REVIEW, CIRCLE_DIVISION, CONTRACTOR_COORDINATION, LAND_ACQUISITION, UTILITY_COORDINATION, QUALITY_INSPECTION, LEGAL_COMPLIANCE, COMMITTEE_REVIEW, CUSTOM
+    related_project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    related_project_name = Column(String(250), nullable=True)
+    related_record_type = Column(String(50), nullable=True)  # PROJECT, MILESTONE, INSPECTION, NCR, BILL, COURT_CASE, MEETING
+    related_record_id = Column(String(100), nullable=True)
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_archived = Column(Boolean, default=False)
+    last_message_preview = Column(Text, nullable=True)
+    last_message_at = Column(DateTime, default=datetime.datetime.utcnow)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    created_by = relationship("User", foreign_keys=[created_by_user_id])
+    participants = relationship("ConversationParticipant", back_populates="conversation", cascade="all, delete-orphan")
+    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
+    action_suggestions = relationship("MessageActionSuggestion", back_populates="conversation", cascade="all, delete-orphan")
+
+class ConversationParticipant(Base):
+    __tablename__ = "conversation_participants"
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    role_in_conversation = Column(String(50), default="MEMBER")  # OWNER, MODERATOR, MEMBER, OBSERVER
+    is_pinned = Column(Boolean, default=False)
+    is_muted = Column(Boolean, default=False)
+    is_archived = Column(Boolean, default=False)
+    last_read_message_id = Column(Integer, nullable=True)
+    last_read_at = Column(DateTime, nullable=True)
+    joined_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    conversation = relationship("Conversation", back_populates="participants")
+    user = relationship("User")
+
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    sender_user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    sender_name = Column(String(150), nullable=False)
+    sender_role = Column(String(100), nullable=False)
+    sender_department = Column(String(150), nullable=True)
+    content = Column(Text, nullable=False)
+    message_type = Column(String(50), default="TEXT")  # TEXT, FILE, IMAGE, RECORD_LINK, MEETING_REF, ACTION_REF, SYSTEM_UPDATE, AI_SUMMARY
+    reply_to_message_id = Column(Integer, ForeignKey("messages.id"), nullable=True)
+    is_edited = Column(Boolean, default=False)
+    is_deleted = Column(Boolean, default=False)
+    is_pinned = Column(Boolean, default=False)
+    priority = Column(String(20), default="NORMAL")  # CRITICAL, HIGH, NORMAL, INFO
+    related_entity_type = Column(String(50), nullable=True)
+    related_entity_id = Column(String(100), nullable=True)
+    ai_priority_reason = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+
+    conversation = relationship("Conversation", back_populates="messages")
+    sender = relationship("User")
+    reply_to = relationship("Message", remote_side=[id])
+    attachments = relationship("MessageAttachment", back_populates="message", cascade="all, delete-orphan")
+
+class MessageAttachment(Base):
+    __tablename__ = "message_attachments"
+    id = Column(Integer, primary_key=True, index=True)
+    message_id = Column(Integer, ForeignKey("messages.id"), nullable=False, index=True)
+    file_name = Column(String(250), nullable=False)
+    file_type = Column(String(100), nullable=False)  # application/pdf, image/jpeg, etc.
+    file_size_bytes = Column(Integer, default=0)
+    storage_path = Column(String(250), nullable=True)
+    checksum_sha256 = Column(String(64), nullable=True)
+    security_scan_status = Column(String(50), default="VERIFIED_CLEAN")  # VERIFIED_CLEAN, PENDING, REJECTED
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    message = relationship("Message", back_populates="attachments")
+
+class MessageActionSuggestion(Base):
+    __tablename__ = "message_action_suggestions"
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    message_id = Column(Integer, ForeignKey("messages.id"), nullable=True)
+    title = Column(String(250), nullable=False)
+    suggested_assignee_name = Column(String(150), nullable=True)
+    suggested_assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    suggested_due_date = Column(String(50), nullable=True)
+    priority = Column(String(20), default="HIGH")
+    is_confirmed = Column(Boolean, default=False)
+    confirmed_action_code = Column(String(50), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    conversation = relationship("Conversation", back_populates="action_suggestions")
+    message = relationship("Message")
+    suggested_assignee = relationship("User")
+
+class ConversationAuditLog(Base):
+    __tablename__ = "conversation_audit_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    actor_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    action = Column(String(50), nullable=False)  # CREATE_CONVERSATION, ADD_MEMBER, REMOVE_MEMBER, PIN_MESSAGE, EDIT_MESSAGE, DELETE_MESSAGE, CONFIRM_ACTION
+    details = Column(Text, nullable=True)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+    conversation = relationship("Conversation")
+    actor = relationship("User")

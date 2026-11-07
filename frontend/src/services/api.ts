@@ -100,7 +100,12 @@ import {
   NotificationSummary,
   NotificationPreference,
   CalendarEventItem,
-  TodayScheduleData
+  TodayScheduleData,
+  ConversationItem,
+  MessageItem,
+  ConversationAISummary,
+  UnreadCountData,
+  UserSearchItem
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -4052,6 +4057,119 @@ export const api = {
 
   getTodaySchedule: async (): Promise<TodayScheduleData> => {
     return await request<TodayScheduleData>('/calendar/today-schedule');
+  },
+
+  // ============================================================================
+  // ONE-TO-ONE MESSAGING, GROUP CHAT & DISCUSSION INTELLIGENCE
+  // ============================================================================
+
+  getConversations: async (params: {
+    tab?: string;
+    project_id?: number;
+    search?: string;
+  } = {}): Promise<ConversationItem[]> => {
+    const q = new URLSearchParams();
+    if (params.tab && params.tab !== 'ALL') q.append('tab', params.tab);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<ConversationItem[]>(`/messaging/conversations${qs}`);
+  },
+
+  getConversationDetail: async (id: number): Promise<ConversationItem> => {
+    return await request<ConversationItem>(`/messaging/conversations/${id}`);
+  },
+
+  createConversation: async (payload: {
+    conversation_type: string;
+    title: string;
+    description?: string;
+    category?: string;
+    related_project_id?: number;
+    related_record_type?: string;
+    related_record_id?: string;
+    participant_user_ids: number[];
+  }): Promise<ConversationItem> => {
+    return await request<ConversationItem>('/messaging/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getConversationMessages: async (conversationId: number, limit: number = 50, offset: number = 0): Promise<MessageItem[]> => {
+    return await request<MessageItem[]>(`/messaging/conversations/${conversationId}/messages?limit=${limit}&offset=${offset}`);
+  },
+
+  sendMessage: async (conversationId: number, payload: {
+    content: string;
+    message_type?: string;
+    reply_to_message_id?: number;
+    priority?: string;
+    related_entity_type?: string;
+    related_entity_id?: string;
+    attachments?: any[];
+  }): Promise<MessageItem> => {
+    return await request<MessageItem>(`/messaging/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  editMessage: async (messageId: number, content: string): Promise<MessageItem> => {
+    return await request<MessageItem>(`/messaging/messages/${messageId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    });
+  },
+
+  deleteMessage: async (messageId: number): Promise<{ status: string; id: number; is_deleted: boolean }> => {
+    return await request<{ status: string; id: number; is_deleted: boolean }>(`/messaging/messages/${messageId}`, {
+      method: 'DELETE'
+    });
+  },
+
+  markConversationRead: async (conversationId: number): Promise<any> => {
+    return await request<any>(`/messaging/conversations/${conversationId}/read`, { method: 'POST' });
+  },
+
+  togglePinConversation: async (conversationId: number): Promise<{ status: string; is_pinned: boolean }> => {
+    return await request<{ status: string; is_pinned: boolean }>(`/messaging/conversations/${conversationId}/pin`, { method: 'POST' });
+  },
+
+  toggleMuteConversation: async (conversationId: number): Promise<{ status: string; is_muted: boolean }> => {
+    return await request<{ status: string; is_muted: boolean }>(`/messaging/conversations/${conversationId}/mute`, { method: 'POST' });
+  },
+
+  getMessagingUnreadCount: async (): Promise<UnreadCountData> => {
+    return await request<UnreadCountData>('/messaging/unread-count');
+  },
+
+  getConversationAISummary: async (conversationId: number): Promise<ConversationAISummary> => {
+    return await request<ConversationAISummary>(`/messaging/conversations/${conversationId}/ai-summary`);
+  },
+
+  confirmActionSuggestion: async (conversationId: number, payload: {
+    action_suggestion_id: number;
+    assigned_user_id: number;
+    due_date: string;
+    priority?: string;
+  }): Promise<any> => {
+    return await request<any>(`/messaging/conversations/${conversationId}/confirm-action`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  searchDirectoryUsers: async (query?: string, department?: string): Promise<UserSearchItem[]> => {
+    const q = new URLSearchParams();
+    if (query) q.append('query', query);
+    if (department) q.append('department', department);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<UserSearchItem[]>(`/messaging/search-users${qs}`);
   }
 };
 

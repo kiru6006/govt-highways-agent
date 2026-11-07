@@ -41,3 +41,4 @@ TN-HDOS categorizes notifications into 15 domain-specific streams:
 13. `DOCUMENT`: Issued Government Orders (G.O.), Gazette notifications, circulars.
 14. `AI_INTELLIGENCE`: Forensic anomaly detection, pavement roughness indices, contractor risk scoring.
 15. `SYSTEM`: User role assignments, authentication audits, GIS sync logs.
+

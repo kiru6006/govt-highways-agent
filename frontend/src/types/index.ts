@@ -2483,3 +2483,122 @@ export interface TodayScheduleData {
   }[];
 }
 
+// ============================================================================
+// PHASE 19: MESSAGING & GROUP CHAT TYPES
+// ============================================================================
+
+export interface ConversationParticipantInfo {
+  id: number;
+  user_id: number;
+  full_name: string;
+  designation: string;
+  department_name?: string;
+  role_in_conversation: string;
+  is_pinned: boolean;
+  is_muted: boolean;
+  is_archived: boolean;
+  joined_at: string;
+}
+
+export interface MessageAttachmentInfo {
+  id: number;
+  message_id: number;
+  file_name: string;
+  file_type: string;
+  file_size_bytes: number;
+  storage_path?: string;
+  security_scan_status: string;
+  created_at: string;
+}
+
+export interface MessageActionSuggestionInfo {
+  id: number;
+  conversation_id: number;
+  message_id?: number;
+  title: string;
+  suggested_assignee_name?: string;
+  suggested_assignee_id?: number;
+  suggested_due_date?: string;
+  priority: string;
+  is_confirmed: boolean;
+  confirmed_action_code?: string;
+  created_at: string;
+}
+
+export interface MessageItem {
+  id: number;
+  conversation_id: number;
+  sender_user_id: number;
+  sender_name: string;
+  sender_role: string;
+  sender_department?: string;
+  content: string;
+  message_type: string;
+  reply_to_message_id?: number;
+  reply_to_content?: string;
+  reply_to_sender?: string;
+  is_edited: boolean;
+  is_deleted: boolean;
+  is_pinned: boolean;
+  priority: string;
+  related_entity_type?: string;
+  related_entity_id?: string;
+  ai_priority_reason?: string;
+  attachments: MessageAttachmentInfo[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationItem {
+  id: number;
+  conversation_code: string;
+  conversation_type: 'DIRECT' | 'GROUP' | 'PROJECT_LINKED';
+  title: string;
+  description?: string;
+  category: string;
+  related_project_id?: number;
+  related_project_name?: string;
+  related_record_type?: string;
+  related_record_id?: string;
+  is_archived: boolean;
+  is_pinned: boolean;
+  is_muted: boolean;
+  unread_count: number;
+  last_message_preview?: string;
+  last_message_at: string;
+  created_at: string;
+  participants: ConversationParticipantInfo[];
+  action_suggestions: MessageActionSuggestionInfo[];
+}
+
+export interface ConversationAISummary {
+  conversation_id: number;
+  summary_text: string;
+  key_decisions_discussed: string[];
+  unresolved_issues: string[];
+  identified_risks: string[];
+  suggested_actions: { title: string; officer?: string }[];
+  source_message_count: number;
+  ai_confidence: number;
+  generated_at: string;
+}
+
+export interface UnreadCountData {
+  total_unread_conversations: number;
+  total_unread_messages: number;
+  display_badge: string;
+}
+
+export interface UserSearchItem {
+  id: number;
+  username: string;
+  full_name: string;
+  role_name: string;
+  department_name: string;
+  email: string;
+  zone_name?: string;
+  circle_name?: string;
+  division_name?: string;
+}
+
+

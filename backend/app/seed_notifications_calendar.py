@@ -841,3 +841,4 @@ def seed_notifications_calendar_data(db: Session = None):
     finally:
         if should_close:
             db.close()
+

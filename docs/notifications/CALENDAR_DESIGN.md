@@ -45,3 +45,4 @@ The Unified Calendar module (`#/calendar`) serves as the central operational sch
 | `QUALITY_INSPECTION` | Quality Inspection | Emerald `#059669`| QA Engineer (HRS Guindy) |
 | `GRIEVANCE_REVIEW` | Grievance Review | Rose `#F43F5E` | Citizen Grievance Officer |
 | `OFFICE_ACTION_DEADLINE`| Action Deadline | Violet `#7C3AED` | Section Officer / Admin |
+

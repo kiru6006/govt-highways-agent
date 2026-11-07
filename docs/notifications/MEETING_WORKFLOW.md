@@ -40,3 +40,4 @@ sequenceDiagram
   - Action items mandate: assigned officer, responsible department, priority tier, and SLA due date.
   - Generates automatic alert in the assignee's Notification Centre and Calendar.
 - **Automated SLA Escalation**: If an assigned meeting action item is overdue by $>3$ days, an automated escalation alert is dispatched to the reporting Chief Engineer or Principal Secretary.
+

@@ -190,3 +190,4 @@ def generate_ai_priority_briefings(
         briefings.append(briefing)
 
     return briefings
+

@@ -1605,4 +1605,157 @@ class MeetingMinutesUpdate(BaseModel):
     action_items: Optional[List[dict]] = None
 
 
+# --- Phase 19: One-to-One Messaging, Group Chat & Discussion Intelligence Schemas ---
+
+class ConversationParticipantOut(BaseModel):
+    id: int
+    user_id: int
+    full_name: str
+    designation: str
+    department_name: Optional[str] = None
+    role_in_conversation: str = "MEMBER"
+    is_pinned: bool = False
+    is_muted: bool = False
+    is_archived: bool = False
+    joined_at: str
+
+    class Config:
+        from_attributes = True
+
+class MessageAttachmentOut(BaseModel):
+    id: int
+    message_id: int
+    file_name: str
+    file_type: str
+    file_size_bytes: int
+    storage_path: Optional[str] = None
+    security_scan_status: str = "VERIFIED_CLEAN"
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class MessageActionSuggestionOut(BaseModel):
+    id: int
+    conversation_id: int
+    message_id: Optional[int] = None
+    title: str
+    suggested_assignee_name: Optional[str] = None
+    suggested_assignee_id: Optional[int] = None
+    suggested_due_date: Optional[str] = None
+    priority: str = "HIGH"
+    is_confirmed: bool = False
+    confirmed_action_code: Optional[str] = None
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class MessageOut(BaseModel):
+    id: int
+    conversation_id: int
+    sender_user_id: int
+    sender_name: str
+    sender_role: str
+    sender_department: Optional[str] = None
+    content: str
+    message_type: str = "TEXT"
+    reply_to_message_id: Optional[int] = None
+    reply_to_content: Optional[str] = None
+    reply_to_sender: Optional[str] = None
+    is_edited: bool = False
+    is_deleted: bool = False
+    is_pinned: bool = False
+    priority: str = "NORMAL"
+    related_entity_type: Optional[str] = None
+    related_entity_id: Optional[str] = None
+    ai_priority_reason: Optional[str] = None
+    attachments: List[MessageAttachmentOut] = []
+    created_at: str
+    updated_at: str
+
+    class Config:
+        from_attributes = True
+
+class ConversationOut(BaseModel):
+    id: int
+    conversation_code: str
+    conversation_type: str
+    title: str
+    description: Optional[str] = None
+    category: str
+    related_project_id: Optional[int] = None
+    related_project_name: Optional[str] = None
+    related_record_type: Optional[str] = None
+    related_record_id: Optional[str] = None
+    is_archived: bool = False
+    is_pinned: bool = False
+    is_muted: bool = False
+    unread_count: int = 0
+    last_message_preview: Optional[str] = None
+    last_message_at: str
+    created_at: str
+    participants: List[ConversationParticipantOut] = []
+    action_suggestions: List[MessageActionSuggestionOut] = []
+
+    class Config:
+        from_attributes = True
+
+class ConversationCreate(BaseModel):
+    conversation_type: str = "DIRECT"  # DIRECT, GROUP, PROJECT_LINKED
+    title: str
+    description: Optional[str] = None
+    category: str = "GENERAL"
+    related_project_id: Optional[int] = None
+    related_record_type: Optional[str] = None
+    related_record_id: Optional[str] = None
+    participant_user_ids: List[int] = []
+
+class MessageCreate(BaseModel):
+    content: str
+    message_type: str = "TEXT"
+    reply_to_message_id: Optional[int] = None
+    priority: str = "NORMAL"
+    related_entity_type: Optional[str] = None
+    related_entity_id: Optional[str] = None
+    attachments: Optional[List[dict]] = None
+
+class MessageEdit(BaseModel):
+    content: str
+
+class ActionConfirmPayload(BaseModel):
+    action_suggestion_id: int
+    assigned_user_id: int
+    due_date: str
+    priority: str = "HIGH"
+
+class ConversationAISummaryOut(BaseModel):
+    conversation_id: int
+    summary_text: str
+    key_decisions_discussed: List[str]
+    unresolved_issues: List[str]
+    identified_risks: List[str]
+    suggested_actions: List[dict]
+    source_message_count: int
+    ai_confidence: float = 0.94
+    generated_at: str
+
+class UnreadCountOut(BaseModel):
+    total_unread_conversations: int
+    total_unread_messages: int
+    display_badge: str
+
+class UserSearchItemOut(BaseModel):
+    id: int
+    username: str
+    full_name: str
+    role_name: str
+    department_name: str
+    email: str
+    zone_name: Optional[str] = None
+    circle_name: Optional[str] = None
+    division_name: Optional[str] = None
+
+
+
 
