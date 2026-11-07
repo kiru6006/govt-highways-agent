@@ -502,14 +502,140 @@ class WorkflowTask(Base):
 class Notification(Base):
     __tablename__ = "notifications"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     title = Column(String(200), nullable=False)
     message = Column(Text, nullable=False)
-    notification_type = Column(String(50), default="INFO")  # ALERT, APPROVAL, DEPENDENCY, TASK
+    notification_type = Column(String(50), default="INFO")  # Legacy support: ALERT, APPROVAL, DEPENDENCY, TASK, INFO
+    priority = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW, INFO
+    category = Column(String(50), default="PROJECT_UPDATE")  # PROJECT_UPDATE, ADMIN_DECISION, APPROVAL, LAND_ACQUISITION, UTILITY_SHIFTING, FINANCE, CONTRACTOR, QUALITY, FIELD_OPS, LEGAL, CITIZEN_GRIEVANCE, MEETING, DOCUMENT, AI_INTELLIGENCE, SYSTEM
+    source_module = Column(String(50), nullable=True)  # projects, quality, land_utility, digital_office, etc.
+    source_record_id = Column(String(100), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    project_name = Column(String(250), nullable=True)
+    department_id = Column(Integer, nullable=True)
+    department_name = Column(String(150), nullable=True)
+    responsible_officer_name = Column(String(150), nullable=True)
+    target_route = Column(String(250), nullable=True)  # Deep-link route (e.g., #/project-360?id=1)
     is_read = Column(Boolean, default=False)
+    is_saved = Column(Boolean, default=False)
+    is_acknowledged = Column(Boolean, default=False)
+    acknowledged_at = Column(DateTime, nullable=True)
+    is_statutory_mandatory = Column(Boolean, default=False)  # Statutory alert cannot be deleted
+    due_date = Column(DateTime, nullable=True)
+    ai_importance_score = Column(Float, nullable=True)  # 0.0 - 100.0 explainable score
+    ai_is_priority_briefing = Column(Boolean, default=False)
+    ai_reasoning = Column(Text, nullable=True)  # Why this is important
+    ai_potential_impact = Column(Text, nullable=True)
+    ai_required_action = Column(Text, nullable=True)
+    ai_evidence_citation = Column(String(250), nullable=True)
+    ai_confidence_score = Column(Float, default=0.95)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
     reference_url = Column(String(250), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
+    user = relationship("User")
+    project = relationship("Project")
+
+class NotificationPreference(Base):
+    __tablename__ = "notification_preferences"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    enable_in_app = Column(Boolean, default=True)
+    enable_email_digest = Column(Boolean, default=False)
+    min_priority_alert = Column(String(20), default="LOW")
+    quiet_hours_enabled = Column(Boolean, default=False)
+    quiet_hours_start = Column(String(10), default="22:00")
+    quiet_hours_end = Column(String(10), default="06:00")
+    category_filters_json = Column(Text, default="[]")  # Disabled categories as JSON array
+    daily_briefing_enabled = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    user = relationship("User")
+
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
+    id = Column(Integer, primary_key=True, index=True)
+    event_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    event_category = Column(String(100), nullable=False)  # MINISTERIAL_REVIEW, SECRETARY_COORDINATION, DEPARTMENTAL_REVIEW, CHIEF_ENGINEER_MEETING, CIRCLE_DIVISIONAL_MEETING, PROJECT_REVIEW, SITE_INSPECTION, FIELD_VISIT, CONTRACTOR_MEETING, PROGRAMME_REVIEW, TENDER_DEADLINE, BID_DEADLINE, LAND_ACQUISITION_DEADLINE, UTILITY_COORDINATION, COURT_HEARING, STATUTORY_DEADLINE, BILL_DEADLINE, QUALITY_INSPECTION, REINSPECTION, GRIEVANCE_REVIEW, TRAINING_EVENT, OFFICE_ACTION_DEADLINE
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    time_zone = Column(String(50), default="Asia/Kolkata")
+    venue_or_url = Column(String(250), nullable=False)
+    is_virtual = Column(Boolean, default=False)
+    organiser_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    organiser_name = Column(String(150), nullable=False)
+    organiser_role = Column(String(100), nullable=False)
+    related_project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    related_project_name = Column(String(250), nullable=True)
+    related_department_name = Column(String(150), nullable=True)
+    agenda = Column(Text, nullable=False)
+    preparation_notes = Column(Text, nullable=True)
+    required_documents_json = Column(Text, nullable=True)
+    previous_meeting_ref = Column(String(100), nullable=True)
+    priority = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    status = Column(String(50), default="SCHEDULED")  # SCHEDULED, IN_PROGRESS, CONCLUDED, RESCHEDULED, CANCELLED
+    source_module = Column(String(50), nullable=True)
+    source_record_id = Column(String(100), nullable=True)
+    minutes_of_meeting = Column(Text, nullable=True)
+    decisions_summary = Column(Text, nullable=True)
+    action_items_json = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="mock")
+    data_status = Column(String(50), default="Seeded Demo")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    organiser = relationship("User", foreign_keys=[organiser_user_id])
+    project = relationship("Project")
+    participants = relationship("CalendarParticipant", back_populates="event", cascade="all, delete-orphan")
+    action_items = relationship("MeetingActionItem", back_populates="event", cascade="all, delete-orphan")
+
+class CalendarParticipant(Base):
+    __tablename__ = "calendar_participants"
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("calendar_events.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    official_name = Column(String(150), nullable=False)
+    official_role = Column(String(100), nullable=False)
+    department_name = Column(String(150), nullable=False)
+    invitation_status = Column(String(50), default="INVITED")  # INVITED, ACCEPTED, DECLINED, TENTATIVE
+    attendance_status = Column(String(50), default="PENDING")  # ATTENDED, ABSENT, EXCUSED, PENDING
+    notes = Column(Text, nullable=True)
+
+    event = relationship("CalendarEvent", back_populates="participants")
+    user = relationship("User")
+
+class MeetingActionItem(Base):
+    __tablename__ = "meeting_action_items"
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("calendar_events.id"), nullable=False)
+    action_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    description = Column(Text, nullable=False)
+    responsible_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    responsible_officer_name = Column(String(150), nullable=False)
+    responsible_department_name = Column(String(150), nullable=False)
+    priority = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    due_date = Column(DateTime, nullable=False)
+    status = Column(String(50), default="PENDING")  # PENDING, IN_PROGRESS, COMPLETED, OVERDUE, ESCALATED
+    escalation_level = Column(String(50), default="NONE")  # NONE, SE, CE, HOD, SECRETARY, MINISTER
+    closure_remarks = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    event = relationship("CalendarEvent", back_populates="action_items")
+    responsible_user = relationship("User")
+
+class NotificationAuditEvent(Base):
+    __tablename__ = "notification_audit_events"
+    id = Column(Integer, primary_key=True, index=True)
+    notification_id = Column(Integer, ForeignKey("notifications.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    action = Column(String(50), nullable=False)  # DELIVERED, READ, UNREAD, ACKNOWLEDGED, CALENDAR_ADDED, SAVED
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    details = Column(Text, nullable=True)
+
+    notification = relationship("Notification")
     user = relationship("User")
 
 class AuditEvent(Base):

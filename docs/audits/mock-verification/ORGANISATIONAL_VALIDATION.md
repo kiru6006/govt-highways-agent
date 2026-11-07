@@ -92,3 +92,4 @@ graph TD
 1. **Hierarchy Integrity:** FULLY COMPLIANT with official Tamil Nadu administrative structures.
 2. **Temporal Traceability:** All transfers of officers or project jurisdictions retain immutable audit logs.
 3. **Restructuring Readiness:** The database schema natively accommodates future GOs through dynamic zone/circle foreign keys without requiring breaking schema migrations.
+

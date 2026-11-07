@@ -120,3 +120,4 @@ def seed_mock_personas(db: Session = None):
 
 if __name__ == "__main__":
     seed_mock_personas()
+

@@ -79,3 +79,4 @@ Permissions are enforced at three distinct layers:
 5. **Contractor Roles (`CONTRACTOR`)**:
    - Filter: `Project.contractor_id == user.contractor_id`.
    - Any query attempting to access `contractor_id != user.contractor_id` is aborted with HTTP 403.
+

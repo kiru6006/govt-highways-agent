@@ -83,3 +83,4 @@ All mock personas operate in a sandboxed, isolated test database (`data_mode: mo
 - Elevated System Password (`admin`, `it_sec_admin`): `admin123`
 - Session Lifespan: 1440 minutes (JWT standard HMAC-SHA256)
 - Salt Mechanism: BCrypt with 12 rounds
+

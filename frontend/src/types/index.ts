@@ -2312,3 +2312,174 @@ export interface GovernmentFileDetail {
   action_items: GovernmentActionItem[];
   linked_documents: DigitalDocumentItem[];
 }
+
+// ============================================================================
+// NOTIFICATIONS & UNIFIED CALENDAR TYPES
+// ============================================================================
+
+export interface NotificationItem {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  notification_type: string;
+  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  category: string;
+  source_module?: string;
+  source_record_id?: string;
+  project_id?: number;
+  project_name?: string;
+  department_id?: number;
+  department_name?: string;
+  responsible_officer_name?: string;
+  target_route?: string;
+  is_read: boolean;
+  is_saved: boolean;
+  is_acknowledged: boolean;
+  acknowledged_at?: string;
+  is_statutory_mandatory: boolean;
+  due_date?: string;
+  ai_importance_score?: number;
+  ai_is_priority_briefing: boolean;
+  ai_reasoning?: string;
+  ai_potential_impact?: string;
+  ai_required_action?: string;
+  ai_evidence_citation?: string;
+  ai_confidence_score?: number;
+  data_mode: string;
+  data_status: string;
+  reference_url?: string;
+  created_at: string;
+}
+
+export interface AIPriorityBriefingItem {
+  id: number;
+  priority: string;
+  title: string;
+  short_explanation: string;
+  project_id?: number;
+  project_name?: string;
+  department_name?: string;
+  responsible_officer?: string;
+  why_important: string;
+  potential_impact: string;
+  required_action: string;
+  deadline?: string;
+  evidence_source?: string;
+  confidence_score: number;
+  last_updated: string;
+  target_route: string;
+  is_statutory_mandatory: boolean;
+  is_read: boolean;
+  is_acknowledged: boolean;
+}
+
+export interface NotificationSummary {
+  total_notifications: number;
+  unread_notifications: number;
+  critical_alerts: number;
+  high_priority_alerts: number;
+  pending_actions: number;
+  upcoming_meetings: number;
+  overdue_tasks: number;
+  recently_updated_projects: number;
+}
+
+export interface NotificationPreference {
+  id?: number;
+  user_id: number;
+  enable_in_app: boolean;
+  enable_email_digest: boolean;
+  min_priority_alert: string;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: string;
+  quiet_hours_end: string;
+  category_filters: string[];
+  daily_briefing_enabled: boolean;
+}
+
+export interface CalendarParticipantItem {
+  id: number;
+  user_id?: number;
+  official_name: string;
+  official_role: string;
+  department_name: string;
+  invitation_status: string;
+  attendance_status: string;
+  notes?: string;
+}
+
+export interface MeetingActionItemDetail {
+  id: number;
+  event_id: number;
+  action_code: string;
+  title: string;
+  description: string;
+  responsible_user_id?: number;
+  responsible_officer_name: string;
+  responsible_department_name: string;
+  priority: string;
+  due_date: string;
+  status: string;
+  escalation_level: string;
+  closure_remarks?: string;
+  created_at: string;
+}
+
+export interface CalendarEventItem {
+  id: number;
+  event_code: string;
+  title: string;
+  event_category: string;
+  start_time: string;
+  end_time: string;
+  time_zone: string;
+  venue_or_url: string;
+  is_virtual: boolean;
+  organiser_user_id?: number;
+  organiser_name: string;
+  organiser_role: string;
+  related_project_id?: number;
+  related_project_name?: string;
+  related_department_name?: string;
+  agenda: string;
+  preparation_notes?: string;
+  required_documents: string[];
+  previous_meeting_ref?: string;
+  priority: string;
+  status: string;
+  source_module?: string;
+  source_record_id?: string;
+  minutes_of_meeting?: string;
+  decisions_summary?: string;
+  data_mode: string;
+  data_status: string;
+  created_at: string;
+  participants: CalendarParticipantItem[];
+  action_items: MeetingActionItemDetail[];
+}
+
+export interface TodayScheduleData {
+  today_date: string;
+  total_events_today: number;
+  events: {
+    id: number;
+    event_code: string;
+    title: string;
+    category: string;
+    time: string;
+    venue: string;
+    is_virtual: boolean;
+    priority: string;
+    status: string;
+    project_name?: string;
+  }[];
+  overdue_action_items_count: number;
+  overdue_action_items: {
+    action_code: string;
+    title: string;
+    responsible_officer: string;
+    due_date: string;
+  }[];
+}
+

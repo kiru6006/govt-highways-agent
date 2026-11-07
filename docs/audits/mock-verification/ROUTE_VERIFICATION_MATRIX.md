@@ -61,3 +61,4 @@ All automated and manual tests passed with zero broken links, zero unhandled pro
    - Standard font sizes: 10px-11px for metadata/labels, 12px for body, 14px-16px for card titles
    - Numbers formatted with Indian numeric standard (e.g. ₹245.30 Cr) using monospace font (`font-mono`)
    - High contrast status pills (Emerald for Normal, Amber for Warning, Red for Critical)
+

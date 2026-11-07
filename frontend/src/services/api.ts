@@ -94,7 +94,13 @@ import {
   GovernmentActionItem,
   DigitalDocumentItem,
   DigitalOfficeAIFindingItem,
-  GovernmentFileDetail
+  GovernmentFileDetail,
+  NotificationItem,
+  AIPriorityBriefingItem,
+  NotificationSummary,
+  NotificationPreference,
+  CalendarEventItem,
+  TodayScheduleData
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -3917,6 +3923,135 @@ export const api = {
   getDigitalOfficeAIIntelligence: async (projectId?: number): Promise<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }> => {
     const q = projectId ? `?project_id=${projectId}` : '';
     return await request<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }>(`/digital-office/ai-intelligence${q}`);
+  },
+
+  // ============================================================================
+  // NOTIFICATIONS, ROLE-BASED ALERTS & UNIFIED CALENDAR
+  // ============================================================================
+
+  getNotifications: async (params: {
+    category?: string;
+    priority?: string;
+    is_read?: boolean;
+    is_saved?: boolean;
+    project_id?: number;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<NotificationItem[]> => {
+    const q = new URLSearchParams();
+    if (params.category && params.category !== 'ALL') q.append('category', params.category);
+    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+    if (params.is_read !== undefined) q.append('is_read', String(params.is_read));
+    if (params.is_saved !== undefined) q.append('is_saved', String(params.is_saved));
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.search) q.append('search', params.search);
+    if (params.limit) q.append('limit', String(params.limit));
+    if (params.offset) q.append('offset', String(params.offset));
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<NotificationItem[]>(`/notifications${qs}`);
+  },
+
+  getNotificationSummary: async (): Promise<NotificationSummary> => {
+    return await request<NotificationSummary>('/notifications/summary');
+  },
+
+  getAIPriorityBriefing: async (): Promise<AIPriorityBriefingItem[]> => {
+    return await request<AIPriorityBriefingItem[]>('/notifications/ai-priority-briefing');
+  },
+
+  markNotificationRead: async (id: number): Promise<{ status: string; id: number; is_read: boolean }> => {
+    return await request<{ status: string; id: number; is_read: boolean }>(`/notifications/${id}/read`, { method: 'POST' });
+  },
+
+  markNotificationUnread: async (id: number): Promise<{ status: string; id: number; is_read: boolean }> => {
+    return await request<{ status: string; id: number; is_read: boolean }>(`/notifications/${id}/unread`, { method: 'POST' });
+  },
+
+  toggleSaveNotification: async (id: number): Promise<{ status: string; id: number; is_saved: boolean }> => {
+    return await request<{ status: string; id: number; is_saved: boolean }>(`/notifications/${id}/save`, { method: 'POST' });
+  },
+
+  acknowledgeNotification: async (id: number): Promise<{ status: string; id: number; is_acknowledged: boolean }> => {
+    return await request<{ status: string; id: number; is_acknowledged: boolean }>(`/notifications/${id}/acknowledge`, { method: 'POST' });
+  },
+
+  addNotificationToCalendar: async (id: number): Promise<{ status: string; event_code: string; notification_id: number }> => {
+    return await request<{ status: string; event_code: string; notification_id: number }>(`/notifications/${id}/add-to-calendar`, { method: 'POST' });
+  },
+
+  markAllNotificationsRead: async (): Promise<{ status: string; message: string }> => {
+    return await request<{ status: string; message: string }>('/notifications/mark-all-read', { method: 'POST' });
+  },
+
+  getNotificationPreferences: async (): Promise<NotificationPreference> => {
+    return await request<NotificationPreference>('/notifications/preferences');
+  },
+
+  updateNotificationPreferences: async (payload: Partial<NotificationPreference>): Promise<NotificationPreference> => {
+    return await request<NotificationPreference>('/notifications/preferences', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getCalendarEvents: async (params: {
+    category?: string;
+    priority?: string;
+    project_id?: number;
+    department?: string;
+    my_calendar?: boolean;
+    start_date?: string;
+    end_date?: string;
+    search?: string;
+  } = {}): Promise<CalendarEventItem[]> => {
+    const q = new URLSearchParams();
+    if (params.category && params.category !== 'ALL') q.append('category', params.category);
+    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+    if (params.project_id) q.append('project_id', String(params.project_id));
+    if (params.department) q.append('department', params.department);
+    if (params.my_calendar) q.append('my_calendar', 'true');
+    if (params.start_date) q.append('start_date', params.start_date);
+    if (params.end_date) q.append('end_date', params.end_date);
+    if (params.search) q.append('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<CalendarEventItem[]>(`/calendar/events${qs}`);
+  },
+
+  getCalendarEventDetail: async (id: number): Promise<CalendarEventItem> => {
+    return await request<CalendarEventItem>(`/calendar/events/${id}`);
+  },
+
+  createCalendarEvent: async (payload: any): Promise<CalendarEventItem> => {
+    return await request<CalendarEventItem>('/calendar/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateEventRSVP: async (id: number, status: 'ACCEPTED' | 'DECLINED' | 'TENTATIVE', notes?: string): Promise<any> => {
+    const q = new URLSearchParams({ status_choice: status });
+    if (notes) q.append('notes', notes);
+    return await request<any>(`/calendar/events/${id}/rsvp?${q.toString()}`, { method: 'POST' });
+  },
+
+  recordMeetingMinutes: async (id: number, payload: {
+    minutes_of_meeting: string;
+    decisions_summary?: string;
+    status?: string;
+    action_items?: any[];
+  }): Promise<CalendarEventItem> => {
+    return await request<CalendarEventItem>(`/calendar/events/${id}/minutes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getTodaySchedule: async (): Promise<TodayScheduleData> => {
+    return await request<TodayScheduleData>('/calendar/today-schedule');
   }
 };
 

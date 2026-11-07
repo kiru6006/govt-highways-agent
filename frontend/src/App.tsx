@@ -21,6 +21,8 @@ import { AssetsPage } from './pages/AssetsPage';
 import { DepartmentsPage } from './pages/DepartmentsPage';
 import { LandUtilityPage } from './pages/LandUtilityPage';
 import { DigitalOfficePage } from './pages/DigitalOfficePage';
+import { NotificationsPage } from './pages/NotificationsPage';
+import { CalendarPage } from './pages/CalendarPage';
 import { PlaceholderModule } from './pages/PlaceholderModule';
 import { DemoBanner } from './components/DemoBanner';
 
@@ -93,6 +95,8 @@ const AppLayout: React.FC = () => {
             <Route path="/assets" element={<AssetsPage />} />
             <Route path="/digital-office" element={<DigitalOfficePage />} />
             <Route path="/land-utility" element={<LandUtilityPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/compliance" element={<GovernanceRegistryPage />} />
             <Route path="/governance" element={<GovernanceRegistryPage />} />
             <Route path="/citizen-services" element={<PlaceholderModule />} />

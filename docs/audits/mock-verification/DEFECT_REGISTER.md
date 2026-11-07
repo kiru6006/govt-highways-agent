@@ -98,3 +98,4 @@ This register records all defects, anomalies, and usability bugs identified duri
 - **Root Cause**: Sub-optimal Tailwind color class selection.
 - **Fix Applied**: Replaced `text-slate-400` with `text-slate-500` ($4.8:1$ contrast ratio, passing WCAG AA).
 - **Status**: **RESOLVED & VERIFIED**.
+

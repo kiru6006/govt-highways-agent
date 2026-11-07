@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle, Menu, Palette, Check, X } from 'lucide-react';
+import { Search, Bell, Shield, ChevronDown, UserCheck, RefreshCw, AlertCircle, Menu, Palette, Check, X, Calendar } from 'lucide-react';
 
 interface HeaderProps {
   currentModuleName: string;
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSidebar, isSidebarCollapsed }) => {
+  const navigate = useNavigate();
   const { user, switchPersona } = useAuth();
   const { theme, setTheme, isNavyGov } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -249,14 +251,29 @@ export const Header: React.FC<HeaderProps> = ({ currentModuleName, onToggleSideb
             <span>Demo Data</span>
           </div>
 
-          {/* Notifications Icon */}
+          {/* Calendar Quick Icon */}
           <button
+            onClick={() => navigate('/calendar')}
             className={`relative p-2 rounded-lg transition-colors flex-shrink-0 ${
               isNavyGov
                 ? 'text-slate-300 hover:text-white hover:bg-[#14355B]'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
-            title="3 Active statutory alerts"
+            title="Unified Highways Calendar & Reviews"
+            aria-label="View calendar"
+          >
+            <Calendar className="w-4 h-4" />
+          </button>
+
+          {/* Notifications Icon with Route Navigation */}
+          <button
+            onClick={() => navigate('/notifications')}
+            className={`relative p-2 rounded-lg transition-colors flex-shrink-0 ${
+              isNavyGov
+                ? 'text-slate-300 hover:text-white hover:bg-[#14355B]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+            title="Intelligent Notification & Alert Centre"
             aria-label="View notifications"
           >
             <Bell className="w-4 h-4" />

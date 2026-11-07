@@ -66,3 +66,4 @@ All AI-generated insights, anomalies, risk indices, and briefings must adhere to
 ## 5. Certification & Compliance
 - **Compliance Status**: Fully compliant with **National Strategy for Artificial Intelligence (NITI Aayog)** and **Tamil Nadu State AI Governance Guidelines**.
 - **Sign-off**: Recommended for full production rollout with mandatory advisory badges permanently locked.
+

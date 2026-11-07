@@ -10,15 +10,30 @@ from app.seed_synthetic_foundation import seed_synthetic_foundation_data
 from app.seed_engineering_quality_assets import seed_engineering_quality_assets_data
 from app.seed_department_land_utility import seed_department_land_utility_data
 from app.seed_digital_office import seed_digital_office_data
+from app.seed_notifications_calendar import seed_notifications_calendar_data
 from app.models import Project, Issue, DepartmentDependency, WorkflowTask, Road
 from app.routers import (
     auth, users, roles, departments, organisations, projects,
     officials, contractors, dependencies, issues, workflows,
     documents, audit, ai, executive, programmes, leakage, reports,
-    engineering_quality_assets, land_utility, digital_office
+    engineering_quality_assets, land_utility, digital_office,
+    notifications, calendar
 )
 
 # Initialize schema tables
+with engine.connect() as conn:
+    # Check if notifications table needs schema upgrade
+    try:
+        from sqlalchemy import text
+        res = conn.execute(text("PRAGMA table_info(notifications)"))
+        cols = [r[1] for r in res.fetchall()]
+        if cols and "priority" not in cols:
+            conn.execute(text("DROP TABLE IF EXISTS notification_audit_events"))
+            conn.execute(text("DROP TABLE IF EXISTS notifications"))
+            conn.commit()
+    except Exception:
+        pass
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -49,6 +64,7 @@ def on_startup():
     seed_engineering_quality_assets_data()
     seed_department_land_utility_data()
     seed_digital_office_data()
+    seed_notifications_calendar_data()
 
 # Include versioned API routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -72,6 +88,8 @@ app.include_router(programmes.router, prefix=settings.API_V1_STR)
 app.include_router(leakage.router, prefix=settings.API_V1_STR)
 app.include_router(reports.router, prefix=settings.API_V1_STR)
 app.include_router(engineering_quality_assets.router, prefix=settings.API_V1_STR)
+app.include_router(notifications.router, prefix=settings.API_V1_STR)
+app.include_router(calendar.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

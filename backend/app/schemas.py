@@ -1423,3 +1423,186 @@ class MinisterialDecisionUpdate(BaseModel):
     due_date: Optional[str] = None
 
 
+# --- Phase 18: Notification & Unified Calendar Schemas ---
+
+class NotificationOut(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    message: str
+    notification_type: str = "INFO"
+    priority: str = "MEDIUM"
+    category: str = "PROJECT_UPDATE"
+    source_module: Optional[str] = None
+    source_record_id: Optional[str] = None
+    project_id: Optional[int] = None
+    project_name: Optional[str] = None
+    department_id: Optional[int] = None
+    department_name: Optional[str] = None
+    responsible_officer_name: Optional[str] = None
+    target_route: Optional[str] = None
+    is_read: bool = False
+    is_saved: bool = False
+    is_acknowledged: bool = False
+    acknowledged_at: Optional[str] = None
+    is_statutory_mandatory: bool = False
+    due_date: Optional[str] = None
+    ai_importance_score: Optional[float] = None
+    ai_is_priority_briefing: bool = False
+    ai_reasoning: Optional[str] = None
+    ai_potential_impact: Optional[str] = None
+    ai_required_action: Optional[str] = None
+    ai_evidence_citation: Optional[str] = None
+    ai_confidence_score: Optional[float] = None
+    data_mode: str = "mock"
+    data_status: str = "Seeded Demo"
+    reference_url: Optional[str] = None
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class AIPriorityBriefingItem(BaseModel):
+    id: int
+    priority: str
+    title: str
+    short_explanation: str
+    project_id: Optional[int] = None
+    project_name: Optional[str] = None
+    department_name: Optional[str] = None
+    responsible_officer: Optional[str] = None
+    why_important: str
+    potential_impact: str
+    required_action: str
+    deadline: Optional[str] = None
+    evidence_source: Optional[str] = None
+    confidence_score: float = 0.95
+    last_updated: str
+    target_route: str
+    is_statutory_mandatory: bool = False
+    is_read: bool = False
+    is_acknowledged: bool = False
+
+class NotificationSummaryOut(BaseModel):
+    total_notifications: int
+    unread_notifications: int
+    critical_alerts: int
+    high_priority_alerts: int
+    pending_actions: int
+    upcoming_meetings: int
+    overdue_tasks: int
+    recently_updated_projects: int
+
+class NotificationPreferenceOut(BaseModel):
+    id: Optional[int] = None
+    user_id: int
+    enable_in_app: bool = True
+    enable_email_digest: bool = False
+    min_priority_alert: str = "LOW"
+    quiet_hours_enabled: bool = False
+    quiet_hours_start: str = "22:00"
+    quiet_hours_end: str = "06:00"
+    category_filters: List[str] = []
+    daily_briefing_enabled: bool = True
+
+class NotificationPreferenceUpdate(BaseModel):
+    enable_in_app: Optional[bool] = None
+    enable_email_digest: Optional[bool] = None
+    min_priority_alert: Optional[str] = None
+    quiet_hours_enabled: Optional[bool] = None
+    quiet_hours_start: Optional[str] = None
+    quiet_hours_end: Optional[str] = None
+    category_filters: Optional[List[str]] = None
+    daily_briefing_enabled: Optional[bool] = None
+
+class CalendarParticipantOut(BaseModel):
+    id: int
+    user_id: Optional[int] = None
+    official_name: str
+    official_role: str
+    department_name: str
+    invitation_status: str
+    attendance_status: str
+    notes: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class MeetingActionItemOut(BaseModel):
+    id: int
+    event_id: int
+    action_code: str
+    title: str
+    description: str
+    responsible_user_id: Optional[int] = None
+    responsible_officer_name: str
+    responsible_department_name: str
+    priority: str
+    due_date: str
+    status: str
+    escalation_level: str
+    closure_remarks: Optional[str] = None
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class CalendarEventOut(BaseModel):
+    id: int
+    event_code: str
+    title: str
+    event_category: str
+    start_time: str
+    end_time: str
+    time_zone: str = "Asia/Kolkata"
+    venue_or_url: str
+    is_virtual: bool = False
+    organiser_user_id: Optional[int] = None
+    organiser_name: str
+    organiser_role: str
+    related_project_id: Optional[int] = None
+    related_project_name: Optional[str] = None
+    related_department_name: Optional[str] = None
+    agenda: str
+    preparation_notes: Optional[str] = None
+    required_documents: List[str] = []
+    previous_meeting_ref: Optional[str] = None
+    priority: str = "HIGH"
+    status: str = "SCHEDULED"
+    source_module: Optional[str] = None
+    source_record_id: Optional[str] = None
+    minutes_of_meeting: Optional[str] = None
+    decisions_summary: Optional[str] = None
+    data_mode: str = "mock"
+    data_status: str = "Seeded Demo"
+    created_at: str
+    participants: List[CalendarParticipantOut] = []
+    action_items: List[MeetingActionItemOut] = []
+
+    class Config:
+        from_attributes = True
+
+class CalendarEventCreate(BaseModel):
+    title: str
+    event_category: str
+    start_time: str
+    end_time: str
+    venue_or_url: str
+    is_virtual: bool = False
+    agenda: str
+    preparation_notes: Optional[str] = None
+    required_documents: Optional[List[str]] = None
+    previous_meeting_ref: Optional[str] = None
+    priority: str = "HIGH"
+    related_project_id: Optional[int] = None
+    related_department_name: Optional[str] = None
+    participants: Optional[List[dict]] = None
+
+class MeetingMinutesUpdate(BaseModel):
+    minutes_of_meeting: str
+    decisions_summary: Optional[str] = None
+    status: str = "CONCLUDED"
+    action_items: Optional[List[dict]] = None
+
+
+
