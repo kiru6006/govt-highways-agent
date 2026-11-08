@@ -33,3 +33,4 @@ Government administrative communication requires strict compliance with hierarch
 ## 3. Sandboxing & Cross-Boundary Enforcement
 - **Contractor Segregation**: Any attempt by a contractor user to query conversation endpoints referencing projects outside their contracted scope returns an HTTP 403 Forbidden.
 - **Audit Logging**: Every message post, edit, soft-deletion, attachment download, and action directive confirmation generates an immutable entry in `ConversationAuditLog`.
+

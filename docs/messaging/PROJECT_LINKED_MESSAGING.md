@@ -19,3 +19,4 @@ In standard communication platforms, discussions are orphaned from the physical 
    - Non-Conformance Reports (NCRs) generated in the Quality module attach directly to the corresponding quality working group.
 3. **Digital Office File Movement**:
    - Government e-files and office notes can refer to discussion summaries, attaching extracted action directives as formal draft proceedings.
+

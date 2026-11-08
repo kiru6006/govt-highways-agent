@@ -37,3 +37,4 @@ Participants in any discussion group are tagged with one of four formal conversa
 - **Message Edit & Deletion Protocol**:
   - Message editing is permitted within 15 minutes of transmission and flags the message as `is_edited=true`.
   - Hard deletions are forbidden by government records policy. Deleted messages are marked `is_deleted=true` and their full text retained in `ConversationAuditLog` for statutory transparency.
+

@@ -34,3 +34,4 @@ Framework: `pytest 9.2.0` with `fastapi.testclient` and `sqlite3` in-memory test
   - `tsc`: 0 errors
   - `vite build`: 2040 modules transformed and bundled into `dist/`
   - Exit Code: 0
+

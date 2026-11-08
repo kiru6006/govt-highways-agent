@@ -198,3 +198,4 @@ def test_user_search_for_direct_messaging():
     results = resp.json()
     assert len(results) > 0
     assert any("Palanivel" in u["full_name"] for u in results)
+

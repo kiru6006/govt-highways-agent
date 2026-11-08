@@ -25,3 +25,4 @@ AI in government decision systems must act exclusively as an advisory assistant 
   - Clicks **"Confirm & Schedule Action Directive"**.
   - System generates an official `confirmed_action_code` (e.g. `DIR-2026-MSG-0012`).
   - Registers the action item in the Unified Calendar and Department Task Registry.
+

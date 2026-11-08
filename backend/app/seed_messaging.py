@@ -388,3 +388,4 @@ def seed_messaging_data(db: Session = None):
     finally:
         if should_close:
             db.close()
+
