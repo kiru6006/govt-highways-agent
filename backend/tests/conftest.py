@@ -11,6 +11,7 @@ from app.seed_ckicp_tnrsp import seed_ckicp_tnrsp
 from app.seed_project_360 import seed_project_360
 from app.seed_mock_personas import seed_mock_personas
 from app.seed_universal_connectivity import seed_universal_connectivity
+from app.seed_digital_office import seed_digital_office_data
 
 # Use in-memory or dedicated test database
 TEST_DATABASE_URL = "sqlite:///./test_tn_hdos.db"
@@ -28,6 +29,7 @@ def setup_test_db():
     seed_project_360(db_session=db)
     seed_mock_personas(db)
     seed_universal_connectivity(db)
+    seed_digital_office_data(db_session=db)
     db.close()
     yield
     Base.metadata.drop_all(bind=test_engine)

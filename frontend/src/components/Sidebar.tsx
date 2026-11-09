@@ -51,67 +51,74 @@ export interface NavGroup {
 }
 
 export const navigationItems: NavItem[] = [
-  // Group 1: Executive & Strategic
-  { id: 'cm_dashboard', name: "CM Highways Smartboard", path: '/cm-dashboard', icon: Crown, badge: 'CMO', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-500/50', groupId: 'executive' },
-  { id: '1a', name: "1a. Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-900/60 text-amber-200 border border-amber-700/50', groupId: 'executive' },
-  { id: '1b', name: "1b. Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'executive' },
-  { id: '1', name: '1c. Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'executive' },
-  { id: 'notifications', name: 'Notifications & Alerts', path: '/notifications', icon: Bell, badge: 'Live', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'executive' },
-  { id: 'calendar', name: 'Unified Calendar', path: '/calendar', icon: Calendar, groupId: 'executive' },
-  { id: 'messages', name: 'Discussions & Chat', path: '/messages', icon: MessageSquare, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'executive' },
-  { id: '2', name: '2. Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'executive' },
-  { id: '16', name: '16. Reports and Analytics', path: '/reports', icon: BarChart3, groupId: 'executive' },
+  // Domain 1: Strategic Command (Apex Layer)
+  { id: 'cm_dashboard', name: 'CM Highways Smartboard', path: '/cm-dashboard', icon: Crown, badge: 'CMO', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-500/50', groupId: 'strategic' },
+  { id: '1a', name: "Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-900/60 text-amber-200 border border-amber-700/50', groupId: 'strategic' },
+  { id: '1b', name: "Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'strategic' },
+  { id: '1', name: 'Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'strategic' },
+  { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 
-  // Group 2: Projects & Engineering
+  // Domain 2: Project Intelligence (Core Layer)
+  { id: '3', name: 'Project Portfolio Grid', path: '/projects', icon: FolderGit2, groupId: 'projects' },
+  { id: '4', name: 'Project 360° Dossier', path: '/project-360', icon: View, groupId: 'projects' },
   { id: 'ckicp', name: 'CKICP Intelligence', path: '/ckicp', icon: Globe, badge: 'ADB', badgeColor: 'bg-sky-900/60 text-sky-200 border border-sky-700/50', groupId: 'projects' },
   { id: 'tnrsp', name: 'TNRSP-II Intelligence', path: '/tnrsp', icon: Milestone, badge: 'World Bank', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'projects' },
-  { id: '3', name: '3. Project Management', path: '/projects', icon: FolderGit2, groupId: 'projects' },
-  { id: '4', name: '4. Project 360°', path: '/project-360', icon: View, groupId: 'projects' },
-  { id: '7', name: '7. Engineering Quality', path: '/quality', icon: Award, groupId: 'projects' },
-  { id: '11', name: '11. Road & Bridge Assets', path: '/assets', icon: Milestone, groupId: 'projects' },
 
-  // Group 3: Inter-Agency & Coordination
-  { id: '5', name: '5. People & Directory', path: '/directory', icon: Users, groupId: 'interagency' },
-  { id: '6', name: '6. Department Connections', path: '/departments', icon: Network, badge: 'Inter-agency', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'interagency' },
-  { id: '13', name: '13. Land & Utility Coord', path: '/land-utility', icon: MapPin, groupId: 'interagency' },
+  // Domain 3: Engineering & Field Ops (Operational Layer)
+  { id: '10', name: 'Field Operations', path: '/field-ops', icon: HardHat, groupId: 'engineering' },
+  { id: '7', name: 'Engineering Quality', path: '/quality', icon: Award, groupId: 'engineering' },
+  { id: '11', name: 'Road & Bridge Assets', path: '/assets', icon: Milestone, groupId: 'engineering' },
 
-  // Group 4: Commercial, Contractors & Field
-  { id: '8', name: '8. Finance & Procurement', path: '/finance', icon: CircleDollarSign, groupId: 'commercial' },
-  { id: '9', name: '9. Contractor Intelligence', path: '/contractors', icon: Briefcase, groupId: 'commercial' },
-  { id: '10', name: '10. Field Operations', path: '/field-ops', icon: HardHat, groupId: 'commercial' },
+  // Domain 4: Commercial & Resource Mgmt (Support Layer)
+  { id: '8', name: 'Finance & Procurement', path: '/finance', icon: CircleDollarSign, groupId: 'commercial' },
+  { id: '9', name: 'Contractor Intelligence', path: '/contractors', icon: Briefcase, groupId: 'commercial' },
+  { id: '5', name: 'People & Directory', path: '/directory', icon: Users, groupId: 'commercial' },
 
-  // Group 5: Governance & Administration
-  { id: '12', name: '12. Digital Office', path: '/digital-office', icon: FileText, groupId: 'governance' },
-  { id: '14', name: '14. Governance & Legal Registry', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
-  { id: '15', name: '15. Citizen Services', path: '/citizen-services', icon: HeartHandshake, groupId: 'governance' },
-  { id: '17', name: '17. Administration', path: '/admin', icon: Settings, groupId: 'governance' },
+  // Domain 5: Governance & Coordination (Control Layer)
+  { id: '6', name: 'Dept. Connections', path: '/departments', icon: Network, badge: 'Inter-agency', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'governance' },
+  { id: '13', name: 'Land & Utility Coord', path: '/land-utility', icon: MapPin, groupId: 'governance' },
+  { id: '14', name: 'Governance & Legal', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
+  { id: '15', name: 'Citizen Services', path: '/citizen-services', icon: HeartHandshake, groupId: 'governance' },
+  { id: '2', name: 'Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'governance' },
+
+  // Domain 6: Digital Office & Utilities (Utility Layer)
+  { id: '12', name: 'Digital Office', path: '/digital-office', icon: FileText, groupId: 'digital_office' },
+  { id: 'calendar', name: 'Unified Calendar', path: '/calendar', icon: Calendar, groupId: 'digital_office' },
+  { id: 'messages', name: 'Discussions & Chat', path: '/messages', icon: MessageSquare, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'digital_office' },
+  { id: 'notifications', name: 'Notifications & Alerts', path: '/notifications', icon: Bell, badge: 'Live', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'digital_office' },
+  { id: '17', name: 'System Administration', path: '/admin', icon: Settings, groupId: 'digital_office' },
 ];
 
 export const navigationGroups: NavGroup[] = [
   {
-    id: 'executive',
-    title: 'Executive & Strategic',
-    items: navigationItems.filter((i) => i.groupId === 'executive'),
+    id: 'strategic',
+    title: '🏛️ Strategic Command',
+    items: navigationItems.filter((i) => i.groupId === 'strategic'),
   },
   {
     id: 'projects',
-    title: 'Projects & Engineering',
+    title: '🏗️ Project Intelligence',
     items: navigationItems.filter((i) => i.groupId === 'projects'),
   },
   {
-    id: 'interagency',
-    title: 'Inter-Agency & Coordination',
-    items: navigationItems.filter((i) => i.groupId === 'interagency'),
+    id: 'engineering',
+    title: '🛠️ Engineering & Field',
+    items: navigationItems.filter((i) => i.groupId === 'engineering'),
   },
   {
     id: 'commercial',
-    title: 'Commercial & Field',
+    title: '💰 Commercial & Resource',
     items: navigationItems.filter((i) => i.groupId === 'commercial'),
   },
   {
     id: 'governance',
-    title: 'Governance & Public',
+    title: '⚖️ Governance & Control',
     items: navigationItems.filter((i) => i.groupId === 'governance'),
+  },
+  {
+    id: 'digital_office',
+    title: '📁 Digital Office & Tools',
+    items: navigationItems.filter((i) => i.groupId === 'digital_office'),
   },
 ];
 
@@ -150,13 +157,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // Group expand/collapse accordion state
+  // Group expand/collapse accordion state (6 Domains)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    executive: true,
+    strategic: true,
     projects: true,
-    interagency: true,
+    engineering: true,
     commercial: true,
     governance: true,
+    digital_office: true,
   });
 
   // Auto-expand the group of the currently active path
@@ -272,7 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {(!isCollapsed || isMobileOpen) && (
           <div className="px-3 py-2 border-b border-slate-800/60 bg-slate-900/60 flex items-center justify-between text-[11px]">
             <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-              Modules (17)
+              Domains (6) • Modules (22)
             </span>
             <button
               onClick={toggleAllGroups}

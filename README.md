@@ -56,40 +56,49 @@ TN-HDOS delivers connected operational workspaces designed specifically for the 
 
 ## 🗺️ Complete Menu Structure, Operational Guide & Data Availability
 
-The platform is structured into **5 Navigation Groups (22 Workspaces)** plus a **Compact Top Header Utility Bar**:
+The platform is structured into **6 Functional Enterprise Domains (22 Connected Workspaces)** plus a **Compact Top Header Utility Bar**:
 
 ```
-SIDEBAR NAVIGATION
-├── 1. Executive & Strategic (9 items)
+SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
+├── 🏛️ Domain 1: Strategic Command (Apex Layer - 5 items)
 │   ├── CM Highways Smartboard [CMO]          → /cm-dashboard
-│   ├── 1a. Minister's Command Centre [Cabinet]→ /leadership/minister
-│   ├── 1b. Secretary's Command Centre [Govt] → /leadership/secretary
-│   ├── 1c. Executive Smartboard              → /
-│   ├── Notifications & Alerts [Live]         → /notifications
-│   ├── Unified Calendar                      → /calendar
-│   ├── Discussions & Chat [Govt]             → /messages
-│   ├── 2. Leakage Intelligence [Vigilance]   → /leakage
-│   └── 16. Reports and Analytics             → /reports
-├── 2. Projects & Engineering (6 items)
+│   ├── Minister's Command Centre [Cabinet]   → /leadership/minister
+│   ├── Secretary's Command Centre [Govt]     → /leadership/secretary
+│   ├── Executive Smartboard                  → /
+│   └── Reports & Analytics                   → /reports
+├── 🏗️ Domain 2: Project Intelligence (Core Layer - 4 items)
+│   ├── Project Portfolio Grid                → /projects
+│   ├── Project 360° Dossier                  → /project-360
 │   ├── CKICP Intelligence [ADB]              → /ckicp
-│   ├── TNRSP-II Intelligence [World Bank]    → /tnrsp
-│   ├── 3. Project Management                 → /projects
-│   ├── 4. Project 360°                       → /project-360
-│   ├── 7. Engineering Quality                → /quality
-│   └── 11. Road & Bridge Assets              → /assets
-├── 3. Inter-Agency & Coordination (3 items)
-│   ├── 5. People & Directory                 → /directory
-│   ├── 6. Department Connections [Inter-agency]→ /departments
-│   └── 13. Land & Utility Coord              → /land-utility
-├── 4. Commercial & Field (3 items)
-│   ├── 8. Finance & Procurement              → /finance
-│   ├── 9. Contractor Intelligence            → /contractors
-│   └── 10. Field Operations                  → /field-ops
-└── 5. Governance & Public (4 items)
-    ├── 12. Digital Office                    → /digital-office
-    ├── 14. Governance & Legal Registry [Statutory]→ /compliance
-    ├── 15. Citizen Services                  → /citizen-services
-    └── 17. Administration                    → /admin
+│   └── TNRSP-II Intelligence [World Bank]    → /tnrsp
+├── 🛠️ Domain 3: Engineering & Field Ops (Operational Layer - 3 items)
+│   ├── Field Operations                      → /field-ops
+│   ├── Engineering Quality                   → /quality
+│   └── Road & Bridge Assets                  → /assets
+├── 💰 Domain 4: Commercial & Resource Mgmt (Support Layer - 3 items)
+│   ├── Finance & Procurement                 → /finance
+│   ├── Contractor Intelligence               → /contractors
+│   └── People & Directory                    → /directory
+├── ⚖️ Domain 5: Governance & Coordination (Control Layer - 5 items)
+│   ├── Dept. Connections [Inter-agency]      → /departments
+│   ├── Land & Utility Coord                  → /land-utility
+│   ├── Governance & Legal [Statutory]        → /compliance
+│   ├── Citizen Services                      → /citizen-services
+│   └── Leakage Intelligence [Vigilance]      → /leakage
+└── 📁 Domain 6: Digital Office & Utilities (Utility Layer - 5 items)
+    ├── Digital Office                        → /digital-office
+    ├── Unified Calendar                      → /calendar
+    ├── Discussions & Chat [Govt]             → /messages
+    ├── Notifications & Alerts [Live]         → /notifications
+    └── System Administration                 → /admin
+
+TOP HEADER UTILITY BAR
+├── Universal Cross-Entity Search (Cmd/Ctrl + K)
+├── Notification Center (Drawer)
+├── Unified Calendar Quick-Link
+├── Secure Chat & Discussion Counter
+├── Theme Palette Switcher (Navy Gov vs. Forest Green)
+└── Role Persona Switcher (CM, Minister, Secretary, CE, SE, DE, Contractor)
 
 TOP HEADER UTILITY BAR
 ├── Universal Cross-Entity Search (Cmd/Ctrl + K)

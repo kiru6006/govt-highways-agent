@@ -18,9 +18,14 @@ from app.models import (
     DigitalOfficeAIFinding
 )
 
-def seed_digital_office_data():
-    Base.metadata.create_all(bind=engine)
-    db: Session = SessionLocal()
+def seed_digital_office_data(db_session: Session = None):
+    should_close = False
+    if db_session is not None:
+        db = db_session
+    else:
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        should_close = True
 
     try:
         # Check departments
@@ -80,6 +85,7 @@ def seed_digital_office_data():
             demo_file.project_id = 4
             demo_file.current_workflow_stage = "MINISTER_DECISION"
             demo_file.is_closed = False
+            demo_file.closure_date = None
             db.commit()
 
         file_categories = [
@@ -96,10 +102,6 @@ def seed_digital_office_data():
         file_objs = [demo_file]
         for i in range(1, 20):
             f_num = f"FILE-HDOS-2026-{i:03d}"
-            if f_num in existing_files:
-                file_objs.append(existing_files[f_num])
-                continue
-
             cat_tuple = file_categories[(i - 1) % len(file_categories)]
             p_assigned = p_ids[(i - 1) % len(p_ids)]
             pkg_assigned = pkg_ids[(i - 1) % len(pkg_ids)]
@@ -109,6 +111,14 @@ def seed_digital_office_data():
                 "MINISTER_DECISION", "APPROVED", "ACTION_ISSUED", "RETURNED_FOR_CLARIFICATION"
             ]
             stage = stages[(i - 1) % len(stages)]
+
+            if f_num in existing_files:
+                gf = existing_files[f_num]
+                gf.current_workflow_stage = stage
+                gf.is_closed = (stage in ["APPROVED", "CLOSED"])
+                gf.closure_date = datetime.datetime(2026, 2, 1) if stage in ["APPROVED", "CLOSED"] else None
+                file_objs.append(gf)
+                continue
 
             gf = GovernmentFileRecord(
                 file_number=f_num,
@@ -678,7 +688,8 @@ def seed_digital_office_data():
         print(f"Error seeding digital office data: {e}")
         raise e
     finally:
-        db.close()
+        if should_close:
+            db.close()
 
 if __name__ == "__main__":
     seed_digital_office_data()
