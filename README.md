@@ -32,67 +32,285 @@ Spanning over **73,000+ kilometres** of road infrastructure across 4 Administrat
 
 ## 🚀 Active & Completed Operational Workspaces
 
-TN-HDOS delivers connected operational workspaces designed specifically for the hierarchy of the Tamil Nadu Highways Department:
+TN-HDOS delivers connected operational workspaces designed specifically for the hierarchy of the Tamil Nadu Highways and Minor Ports Department:
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                TAMIL NADU HIGHWAYS DIGITAL OPERATING SYSTEM                   │
 ├───────────────────────────────┬───────────────────────────────┬───────────────────────────────┤
 │    EXECUTIVE COMMAND CENTRE   │     PROJECT 360° INTELLIGENCE │   MULTILATERAL PROGRAMMES     │
-│  • Executive Smartboard (/#/) │  • Standalone Dossier Engine  │  • CKICP Intelligence (ADB)   │
-│  • Minister Cabinet Suite     │  • 17 Comprehensive Facets    │  • TNRSP-II Intelligence (WB) │
+│  • CM Highways Smartboard     │  • Standalone Dossier Engine  │  • CKICP Intelligence (ADB)   │
+│  • Minister Cabinet Suite     │  • 16 Connected Facets        │  • TNRSP-II Intelligence (WB) │
 │  • Principal Secretary Suite  │  • EVM Variance (CPI / SPI)   │  • 206.29 Ha Land Parcels     │
-│  • 16 Statewide Core KPIs     │  • Chainage & MORTH Specs     │  • High Court Stay Injunctions│
+│  • Executive Smartboard (/#/) │  • Universal Graph Explorer   │  • High Court Stay Injunctions│
 ├───────────────────────────────┼───────────────────────────────┼───────────────────────────────┤
-│   ORGANISATION & CADRE        │   GOVERNANCE & COMPLIANCE     │   RESPONSIVE DATA CONSOLES    │
-│  • 4-Zone Command Hierarchy   │  • 8 Statutory Committees     │  • Responsive Portfolio Table │
-│  • 8 Statewide Wings          │  • High Court Writ Register   │  • Horizontal Screen Scroller │
-│  • G.O. Ms. No. 75 Powers     │  • Neutral AI Risk Findings   │  • MORTH Cube Test Approvals  │
+│   ORGANISATION & CADRE        │   GOVERNANCE & DIGITAL OFFICE │   COMMERCIAL & FIELD CONSOLES │
+│  • 4-Zone Command Hierarchy   │  • Digital Office E-Files     │  • Responsive Portfolio Table │
+│  • 8 Statewide Wings          │  • 8 Statutory Committees     │  • Material Lab QA & NCRs     │
+│  • G.O. Ms. No. 75 Powers     │  • High Court Writ Register   │  • Field Daily Progress Logs  │
 │  • External Agency SPOCs      │  • Immutable Audit Trail      │  • Multi-tenant Contractor App│
 └───────────────────────────────┴───────────────────────────────┴───────────────────────────────┘
 ```
 
-### 1. 🌟 Executive Smartboard (`/#/`)
-Real-time statewide pulse of Tamil Nadu highways:
-* **16 Core KPIs**: Total sanctioned capital outlay, expenditure-to-date, active road length (km), EVM variance, and delayed package indices.
-* **4-Zone Benchmarking**: Comparative progress analysis across **Chennai, Coimbatore, Madurai, and Trichy** C&M Zones.
-* **Critical Issues & External Clearances**: Real-time tracking of inter-departmental blockers (Revenue, Forest, TANGEDCO, TWAD, Southern Railway) with designated SPOCs.
+---
 
-### 2. 🏛️ Hon'ble Minister's Cabinet Suite (`/#/leadership/minister`)
-Tailored for executive review by the **Minister for Public Works, Highways & Minor Ports (Thiru E.V. Velu)**:
-* **Constituency Impact Matrix**: Tracking road network enhancements by legislative constituency and district.
-* **Chief Minister's Announcements**: Progress monitoring of special flagship infrastructure commitments.
-* **Inauguration-Ready Assets**: Packages completed with commercial operations readiness certification.
+## 🗺️ Complete Menu Structure, Operational Guide & Data Availability
 
-### 3. 📋 Principal Secretary Workspace (`/#/leadership/secretary`)
-Designed for **Additional Chief Secretary / Principal Secretary (Thiru Pradeep Yadav, IAS)**:
-* **Budget Tracking (BE / RE)**: Real-time comparison of Budget Estimates, Revised Estimates, and actual expenditure.
-* **Statutory Committee Actions**: Pending decisions before the Board of Engineers (BOE), Committee of Terms (COT), and Standing Finance Committee (SFC).
-* **Contractor Performance Scorecards**: Multi-criteria performance ratings, liquidity tracking, and default warnings.
+The platform is structured into **5 Navigation Groups (22 Workspaces)** plus a **Compact Top Header Utility Bar**:
 
-### 4. 🔍 Project 360° Unified Intelligence (`/#/project-360`)
-An exhaustive single-pane asset passport replacing physical registers with **17 connected operational facets**:
-* **Administrative & Technical Sanctions**: G.O. references, sanction dates, and revised estimates.
-* **Earned Value Management (EVM)**: Mathematical variance calculations ($CV = EV - AC$, $SV = EV - PV$, $CPI$, $SPI$) with zero-division safety.
-* **Cadastral Land Acquisition**: Village-level survey numbers, Sec 15(2), 15(1), and 19(1) gazette notifications, and compensation disbursements.
-* **Utility Shifting Tracking**: Pole shifting (TANGEDCO), pipeline relocations (TWAD), and tree felling permissions (Forest).
-* **Litigation & Stay Tracking**: High Court writ petitions, stay orders, counter-affidavits, and vacation petition tracking.
+```
+SIDEBAR NAVIGATION
+├── 1. Executive & Strategic (9 items)
+│   ├── CM Highways Smartboard [CMO]          → /cm-dashboard
+│   ├── 1a. Minister's Command Centre [Cabinet]→ /leadership/minister
+│   ├── 1b. Secretary's Command Centre [Govt] → /leadership/secretary
+│   ├── 1c. Executive Smartboard              → /
+│   ├── Notifications & Alerts [Live]         → /notifications
+│   ├── Unified Calendar                      → /calendar
+│   ├── Discussions & Chat [Govt]             → /messages
+│   ├── 2. Leakage Intelligence [Vigilance]   → /leakage
+│   └── 16. Reports and Analytics             → /reports
+├── 2. Projects & Engineering (6 items)
+│   ├── CKICP Intelligence [ADB]              → /ckicp
+│   ├── TNRSP-II Intelligence [World Bank]    → /tnrsp
+│   ├── 3. Project Management                 → /projects
+│   ├── 4. Project 360°                       → /project-360
+│   ├── 7. Engineering Quality                → /quality
+│   └── 11. Road & Bridge Assets              → /assets
+├── 3. Inter-Agency & Coordination (3 items)
+│   ├── 5. People & Directory                 → /directory
+│   ├── 6. Department Connections [Inter-agency]→ /departments
+│   └── 13. Land & Utility Coord              → /land-utility
+├── 4. Commercial & Field (3 items)
+│   ├── 8. Finance & Procurement              → /finance
+│   ├── 9. Contractor Intelligence            → /contractors
+│   └── 10. Field Operations                  → /field-ops
+└── 5. Governance & Public (4 items)
+    ├── 12. Digital Office                    → /digital-office
+    ├── 14. Governance & Legal Registry [Statutory]→ /compliance
+    ├── 15. Citizen Services                  → /citizen-services
+    └── 17. Administration                    → /admin
 
-### 5. 🌐 CKICP & TNRSP-II Multilateral Programme Intelligence (`/#/ckicp`, `/#/tnrsp`)
-Dedicated intelligence modules for Asian Development Bank (ADB) and World Bank assisted mega-corridors:
-* **CKICP (ADB-assisted ₹6,448 Cr Outlay)**: Real-time package monitoring across 16 EPC packages, supervision consultant tracking, and official e-tenders.
-* **TNRSP-II (World Bank-assisted)**: Audited register of **206.29 Hectares** of acquired land, environmental clearances, and corridor GeoJSON alignments.
+TOP HEADER UTILITY BAR
+├── Universal Cross-Entity Search (Cmd/Ctrl + K)
+├── Notification Center (Drawer)
+├── Unified Calendar Quick-Link
+├── Secure Chat & Discussion Counter
+├── Theme Palette Switcher (Navy Gov vs. Forest Green)
+└── Role Persona Switcher (CM, Minister, Secretary, CE, SE, DE, Contractor)
+```
 
-### 6. 👥 4-Zone Command & Statewide Directory (`/#/directory`)
-* **Statewide Leadership & TN-HES Cadre**: Minister, Principal Secretary, Director General, and Chief Engineers across all 8 specialized wings.
-* **4 C&M Administrative Command Zones**: Interactive tree explorer across Chennai, Coimbatore, Madurai, and Trichy circles and divisions.
-* **Delegations of Authority**: Financial and technical sanction powers codified under **G.O. Ms. No. 75**.
-* **Inter-Agency Governance Matrix**: Designated single points of contact (SPOCs) across utility and regulatory departments.
+---
 
-### 7. ⚖️ Governance, Compliance & Audit Registry (`/#/compliance`)
-* **High Court Legal Register**: Comprehensive case status, interim stays, and legal counter-affidavit tracking.
-* **Public Accounts Committee (PAC) Audit Paras**: Tracking compliance to AG and departmental audit queries.
-* **Neutral AI Risk Signals**: Early-warning anomaly detection using statutory neutral language (grounded in the Tamil Nadu Transparency in Tenders Act 1998 and RFCTLARR Act 2013).
+### Group 1: Executive & Strategic Workspaces
+
+#### 1. CM Highways Smartboard (`#/cm-dashboard`)
+* **Target Audience**: Hon'ble Chief Minister (**Thiru C. Joseph Vijay**), CMO Principal Secretaries, Cabinet Observers.
+* **Key Capabilities & How to Use**:
+  * **17 Apex KPIs**: Total outlay (₹ Cr), active road length (km), EVM variance ($CPI, SPI$), critical delays, pending statutory clearances.
+  * **8-Zone State Pulse Map**: Comparative delivery index across Chennai, Coimbatore, Madurai, Trichy, Salem, Tirunelveli, Villupuram, and Thanjavur.
+  * **Delay Root-Cause Breakdown**: Critical path vs. non-critical parallel delays (prevents double-counting).
+  * **CM Directions Queue**: Track formal directives issued to Principal Secretary and Chief Engineers with compliance status.
+  * **Grounded AI Daily Brief**: Neutral ministerial summary generated from live project and dispute registers with cited statutory sources.
+* **Data Availability & Seed Records**:
+  * Seeded with 12 state projects + 4 canonical governance archetypes (`backend/app/seed_universal_connectivity.py`).
+  * Endpoints: `GET /api/v1/cm/overview`, `GET /api/v1/cm/delays/analysis/{id}`, `GET /api/v1/cm/directions`, `GET /api/v1/cm/ai-daily-brief`.
+
+#### 2. Minister's Command Centre (`#/leadership/minister`)
+* **Target Audience**: Hon'ble Minister for Public Works & Highways (**Thiru Aadhav Arjuna**).
+* **Key Capabilities & How to Use**:
+  * **Constituency Delivery Radar**: Filter projects by Assembly Constituency and District to verify localized progress.
+  * **CM Flagship Announcements**: Monitor progress on special infrastructural corridor announcements.
+  * **Inauguration Readiness Register**: Identifies packages reaching 100% physical completion for public dedication.
+* **Data Availability & Seed Records**:
+  * Seeded projects mapped to real Tamil Nadu districts (Kancheepuram, Tiruvallur, Salem, Ariyalur, Vellore).
+  * Endpoints: `GET /api/v1/executive/minister`.
+
+#### 3. Secretary's Command Centre (`#/leadership/secretary`)
+* **Target Audience**: Principal Secretary to Government (**Thiru Shunchonngam Jatak Chiru, IAS**).
+* **Key Capabilities & How to Use**:
+  * **Budget Tracking (BE / RE)**: Real-time analysis of Budget Estimates (BE), Revised Estimates (RE), and actual expenditure run-rate.
+  * **Statutory Committee Approvals**: Agenda items and pending clearances before the Board of Engineers (BOE), Committee of Terms (COT), and Standing Finance Committee (SFC).
+  * **Contractor Performance Scorecards**: Multi-criteria contractor risk metrics, liquidity ratios, and lagging package alerts.
+* **Data Availability & Seed Records**:
+  * Financial records linked with BE/RE allocation dockets across all active packages.
+  * Endpoints: `GET /api/v1/executive/secretary`.
+
+#### 4. Executive Smartboard (`#/`)
+* **Target Audience**: Departmental Leadership, Chief Engineers, Planning Directors.
+* **Key Capabilities & How to Use**:
+  * Real-time statewide pulse: 16 core KPIs, 4 C&M Administrative Zone benchmarks, inter-agency blocker summaries.
+* **Data Availability & Seed Records**:
+  * 73,000+ km network aggregates, ₹14,000+ Cr capital expenditure portfolio.
+  * Endpoints: `GET /api/v1/executive/overview`.
+
+#### 5. Notifications & Alerts (`#/notifications`)
+* **Target Audience**: All Officers & Engineers.
+* **Key Capabilities & How to Use**: Role-filtered notifications sorted by severity (`CRITICAL`, `WARNING`, `INFO`). Actionable links directly open the blocked package or statutory file.
+* **Data Availability & Seed Records**: 12 seeded real-time notification streams with timestamped statutory audit trails.
+* **Endpoints**: `GET /api/v1/notifications/`, `POST /api/v1/notifications/{id}/read`.
+
+#### 6. Unified Calendar (`#/calendar`)
+* **Target Audience**: Executive Cadre, Project Directors, Legal Officers.
+* **Key Capabilities & How to Use**: Month, week, and list views of tender opening dates, High Court stay hearings, PAC audit submissions, and site review milestones.
+* **Data Availability & Seed Records**: 25+ calendar milestones linked with project foreign keys.
+* **Endpoints**: `GET /api/v1/calendar/events`.
+
+#### 7. Discussions & Chat (`#/messages`)
+* **Target Audience**: Authorized Departmental Officers, Project Teams, External Line Agency SPOCs.
+* **Key Capabilities & How to Use**: 1-to-1 official messaging, group channels by project or committee, document attachment sharing, and automated AI action-point extraction.
+* **Data Availability & Seed Records**: 8 pre-seeded official threads (e.g., CPRR Section-2 Coordination, Palar Bridge Land Compensation).
+* **Endpoints**: `GET /api/v1/messaging/conversations`, `POST /api/v1/messaging/send`.
+
+#### 8. Leakage Intelligence (`#/leakage`)
+* **Target Audience**: Departmental Vigilance Officers, State Quality Council, Financial Auditors.
+* **Key Capabilities & How to Use**: Automated anomaly detection flagging asphalt volume inflation, ghost billing, contractor bid clustering, and PAC audit paras.
+* **Data Availability & Seed Records**: 12 seeded anomaly categories with risk ratings and monetary recovery tracking.
+* **Endpoints**: `GET /api/v1/leakage/anomalies`.
+
+#### 9. Reports & Analytics (`#/reports`)
+* **Target Audience**: Planning Officers, Statistical Officers, Ministerial Staff.
+* **Key Capabilities & How to Use**: Generate formatted PDF/CSV reports, G.O. compliance summaries, and interactive 5-question AI executive briefings.
+* **Data Availability & Seed Records**: Department-wide analytics engine synthesizing physical and financial progress.
+* **Endpoints**: `GET /api/v1/reports/`.
+
+---
+
+### Group 2: Projects & Engineering Workspaces
+
+#### 10. CKICP Intelligence (`#/ckicp`)
+* **Target Audience**: Project Director (CKICP), Asian Development Bank (ADB) Mission Teams.
+* **Key Capabilities & How to Use**: Multilateral corridor intelligence monitoring 16 EPC packages, supervision consultant performance, e-tender stages, and corridor GeoJSON alignments.
+* **Data Availability & Seed Records**: 4 major ADB corridors (`PRJ-CKICP-001` through `004`) with ₹6,448 Cr outlay.
+* **Endpoints**: `GET /api/v1/ckicp/packages`.
+
+#### 11. TNRSP-II Intelligence (`#/tnrsp`)
+* **Target Audience**: Project Director (TNRSP-II), World Bank Review Teams.
+* **Key Capabilities & How to Use**: Audited register of **206.29 Hectares** of acquired land, environmental clearances, and social safeguards compliance across 16 EPC packages.
+* **Data Availability & Seed Records**: 3 World Bank corridor packages (`PRJ-TNRSP-001` through `003`) with verified cadastral data.
+* **Endpoints**: `GET /api/v1/tnrsp/corridors`.
+
+#### 12. Project Management (`#/projects`)
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers.
+* **Key Capabilities & How to Use**: Statewide responsive table with horizontal scroller, multi-column search, dual progress bars (physical vs. financial), and direct links to Project 360°.
+* **Data Availability & Seed Records**: 12 core highway projects covering SH, NH, MDR, and ODR road categories.
+* **Endpoints**: `GET /api/v1/projects/`.
+
+#### 13. Project 360° Unified Intelligence (`#/project-360`)
+* **Target Audience**: All Engineering and Administrative Officers.
+* **Key Capabilities & How to Use**: 16 connected tabs including:
+  * *Tab 1: Project Overview & Scope*
+  * *Tab 2: Financial Sanctions & Contracts*
+  * *Tab 3: EVM Mathematical Engine* ($CV = EV - AC, SV = EV - PV, CPI = EV/AC, SPI = EV/PV$)
+  * *Tab 4: Cadastral Land Acquisition* (Survey numbers, Sec 15(2), compensation status)
+  * *Tab 5: Utility Shifting* (TANGEDCO poles, TWAD pipelines, Forest felling)
+  * *Tab 6: Engineering Quality Audits* (Lab cube tests, MORTH specs, NCRs)
+  * *Tab 7: Legal Cases & High Court Stays*
+  * *Tab 16: Universal Connectivity Graph Explorer* (Interactive visual node-link topology)
+* **Data Availability & Seed Records**: Detailed dossiers for all projects (`/project-360?id=1` to `id=12`).
+* **Endpoints**: `GET /api/v1/projects/{id}/360`, `GET /api/v1/connectivity/entities/PROJECT/{id}/relationships`.
+
+#### 14. Engineering Quality Assurance (`#/quality`)
+* **Target Audience**: Superintending Engineer (Quality Control), Lab Directors, Independent Consultants.
+* **Key Capabilities & How to Use**: Monitor 7-day and 28-day concrete cube compressive strengths, bitumen penetration and ductility results, and track open Non-Conformance Reports (NCR).
+* **Data Availability & Seed Records**: 34 lab audits and 25 NCRs across active road packages.
+* **Endpoints**: `GET /api/v1/quality/audits`, `POST /api/v1/quality/ncr`.
+
+#### 15. Road & Bridge Asset Management (`#/assets`)
+* **Target Audience**: Pavement Management Engineers, Bridge Inspection Units.
+* **Key Capabilities & How to Use**: Road Asset Management System (RAMS) tracking Pavement Condition Index (PCI), bridge structural distress, culvert status, and routine maintenance work orders.
+* **Data Availability & Seed Records**: 40 geo-located asset records with condition ratings and photographic evidence links.
+* **Endpoints**: `GET /api/v1/assets/`.
+
+---
+
+### Group 3: Inter-Agency & Coordination Workspaces
+
+#### 16. People & Organisation Directory (`#/directory`)
+* **Target Audience**: Departmental Officers, Secretariat Staff, External Agencies.
+* **Key Capabilities & How to Use**: Interactive organizational tree spanning Minister $\rightarrow$ Principal Secretary $\rightarrow$ DG $\rightarrow$ CE $\rightarrow$ SE $\rightarrow$ DE. Codified financial delegation thresholds under **G.O. Ms. No. 75**.
+* **Data Availability & Seed Records**: Complete TN-HES cadre hierarchy with phone, email, and designated external agency SPOCs.
+* **Endpoints**: `GET /api/v1/directory/officers`.
+
+#### 17. Departmental Coordination & Clearances (`#/departments`)
+* **Target Audience**: Departmental Nodal Officers, Secretariat Coordinators.
+* **Key Capabilities & How to Use**: Track statutory clearances across 10 line departments (Revenue, TANGEDCO, TWAD, Forest, Southern Railway), SLA countdowns, and escalation matrices.
+* **Data Availability & Seed Records**: 28 active interdepartmental dependencies and 40 approval records.
+* **Endpoints**: `GET /api/v1/departments/`.
+
+#### 18. Land Acquisition & Utility Intelligence (`#/land-utility`)
+* **Target Audience**: Special DROs (LA), Tahsildars, Executive Engineers.
+* **Key Capabilities & How to Use**: Cadastral parcel maps, village-level survey numbers, notification stages under TN Highways Act 2001 (Act 34/2002), compensation disbursements, and utility pole/pipeline shifting status.
+* **Data Availability & Seed Records**: 50 cadastral land parcels and 25 utility shifting records.
+* **Endpoints**: `GET /api/v1/land-utility/`.
+
+---
+
+### Group 4: Commercial, Contractors & Field Workspaces
+
+#### 19. Finance & Procurement (`#/finance`)
+* **Target Audience**: Accounts Officers, Financial Advisers, Tender Scrutiny Committees.
+* **Key Capabilities & How to Use**: Track Administrative Sanctions (AS), Technical Sanctions (TS), contractor running account (RA) bills, retention money, and Bank Guarantee (BG) expiry alerts.
+* **Data Availability & Seed Records**: Sanction records, contract agreements, and bill processing logs.
+* **Endpoints**: `GET /api/v1/finance/`.
+
+#### 20. Contractor Intelligence (`#/contractors`)
+* **Target Audience**: Chief Engineers, Tender Award Committees.
+* **Key Capabilities & How to Use**: Multi-criteria performance ratings, capacity utilization, workload concentration risk, active package lists, and liquidity warnings.
+* **Data Availability & Seed Records**: 8 registered A-class EPC contractors (L&T, SPK Infra, PST, Tamil Construction Co, etc.).
+* **Endpoints**: `GET /api/v1/contractors/`.
+
+#### 21. Field Operations (`#/field-ops`)
+* **Target Audience**: Assistant Engineers, Site Supervisors, Field Quality Monitors.
+* **Key Capabilities & How to Use**: Review daily site progress reports (DPR), geo-tagged photo submissions, plant and machinery deployment (pavers, rollers, batching plants), and weather impact logs.
+* **Data Availability & Seed Records**: 30 daily site entries with chainage stamps.
+* **Endpoints**: `GET /api/v1/field-ops/`.
+
+---
+
+### Group 5: Governance & Public Administration Workspaces
+
+#### 22. Digital Office & E-File Intelligence (`#/digital-office`)
+* **Target Audience**: Secretariat Officers, Chief Engineers, Administrative Clerks.
+* **Key Capabilities & How to Use**:
+  * **Correspondence (Tapal)**: Register incoming and outgoing communications with dispatch tracking.
+  * **E-File Movement**: Track physical and digital file transit across desks with idle-time warnings.
+  * **Office Notes**: Draft, endorse, and submit structured notes with precedent references.
+  * **Proceedings & Decisions**: Generate draft proceedings with automatic G.O. citation linking.
+  * **Action Items & Compliance**: Monitor compliance with meeting minutes and ministerial instructions.
+* **Data Availability & Seed Records**: 54 communications, 20 files, 64 file movements, 31 office notes, 15 decisions, 34 action items (`backend/app/seed_digital_office.py`).
+* **Endpoints**: `GET /api/v1/digital-office/`.
+
+#### 23. Governance, Compliance & Legal Registry (`#/compliance`)
+* **Target Audience**: Legal Officers, Government Pleaders, Audit Officers.
+* **Key Capabilities & How to Use**: Track High Court writ petitions (Principal Seat at Chennai & Madurai Bench), interim stay orders, counter-affidavit filing deadlines, and Public Accounts Committee (PAC) audit paras.
+* **Data Availability & Seed Records**: Real-world writ petitions, court stay statuses, and statutory committee registers.
+* **Endpoints**: `GET /api/v1/compliance/`.
+
+#### 24. Citizen Services & Grievance Portal (`#/citizen-services`)
+* **Target Audience**: Citizen Grievance Officers, Divisional Engineers.
+* **Key Capabilities & How to Use**: Review public complaints, pothole reports, road safety grievances, and track resolution SLA times.
+* **Data Availability & Seed Records**: 50 citizen grievance tickets across districts.
+* **Endpoints**: `GET /api/v1/citizen-services/`.
+
+#### 25. System Administration & RBAC (`#/admin`)
+* **Target Audience**: State IT Administrator.
+* **Key Capabilities & How to Use**: Manage user accounts, assign hierarchical roles, inspect the immutable audit log, and monitor platform health.
+* **Data Availability & Seed Records**: Full RBAC matrix for 12 official personas and system security audit trail.
+* **Endpoints**: `GET /api/v1/admin/`.
+
+---
+
+### 🧪 Canonical Governance Archetype Datasets (For Testing & Validation)
+
+To simulate authentic field realities, the system includes four distinct engineering and governance test scenarios:
+
+| Scenario | Project Name | Road & Scheme | Key Governance Dynamic | EVM Indices | Blocker Status | UI Alert Behavior |
+|:---:|:---|:---:|:---|:---:|:---:|:---|
+| **#1001** | **Widening of Chennai-Mamallapuram Road** (km 30/0 - 32/5) | SH (CRIDP) | **Golden Path**: 100% physically completed, commercial operations ready | $\text{CPI}=1.01$<br>$\text{SPI}=1.00$ | Clean (No blockers) | Certified Production Ready (Green) |
+| **#1002** | **Construction of High Level Bridge across Palar River** (km 0/4) | MDR (State Funded) | **Land Acquisition Blocker**: Physical progress capped at 25% due to 12 pending parcels in Village A | $\text{CPI}=0.95$<br>$\text{SPI}=0.55$ | Land Acquisition (Pending compensation) | Administrative Delay Warning (Amber) |
+| **#1003** | **CPRR Section-2 New Six Lane Road** (Package EPC 01) | NH (CPRR) | **Utility Shifting Blocker**: TANGEDCO high-tension line relocation delayed at Ch 32+864 | $\text{CPI}=0.94$<br>$\text{SPI}=0.82$ | Utility Shifting (TANGEDCO pending) | High Capital Risk Warning (Amber) |
+| **#1004** | **Upgradation of Kilkothur to Kumbal kottai Road** (km 0/0 - 3/7) | ODR (Panchayat Roads) | **Legal Blocker**: Interim stay granted by Madras High Court (WP No. 1234/2026); work suspended at 0% | $\text{CPI}=0.00$<br>$\text{SPI}=0.00$ | Legal Stay (Madras High Court) | Critical Legal Alert (Red) |
 
 ---
 
@@ -159,8 +377,7 @@ The platform maintains an automated test suite executed against live API endpoin
 # Run the complete test suite:
 cd backend
 ./venv/bin/python3 -m pytest tests/
-
----
+```
 
 ## 🎨 Highways Department Design System
 

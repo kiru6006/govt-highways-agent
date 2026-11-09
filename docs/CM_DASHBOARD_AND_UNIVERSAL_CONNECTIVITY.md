@@ -110,3 +110,4 @@ When a project experiences concurrent delay events on both critical and non-crit
 - `backend/tests/test_executive_phase2.py`: **16 / 16 tests passed** (100%).
 - Full regression test suite: **148 / 148 tests passed** (100%).
 - Frontend production build (`tsc && vite build`): **0 compilation errors**, built in 8.12s.
+
