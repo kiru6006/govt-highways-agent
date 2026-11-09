@@ -202,6 +202,25 @@ export const LandLitigationPage: React.FC = () => {
     fetchAllData();
   }, []);
 
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['overview_parcels', 'litigation', 'revenue', 'advocate', 'blockers', 'financial', 'resolutions'].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+    }
+    const prjParam = searchParams.get('project_id');
+    if (prjParam) {
+      const pId = parseInt(prjParam, 10);
+      if (!isNaN(pId)) {
+        // Find matching project title if parcels loaded
+        const matched = parcels.find(p => p.project_id === pId);
+        if (matched?.project_title) {
+          setParcelSearch(matched.project_title.substring(0, 15));
+          setLitigationSearch(matched.project_title.substring(0, 15));
+        }
+      }
+    }
+  }, [searchParams, parcels]);
+
   // Fetch Parcel 360 when selected
   useEffect(() => {
     if (selectedParcelId) {
