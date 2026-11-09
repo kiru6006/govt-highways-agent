@@ -429,6 +429,23 @@ All engineering blueprints, architectural decisions, and audit registers are ava
 
 ## 🛠️ Quickstart & Deployment Guide
 
+---
+
+## 🏗️ Major Works ₹50 Cr+ Portfolio & Blocker Mitigation Intelligence
+
+A dedicated governance and risk-containment module integrated into TN-HDOS for high-value infrastructure works:
+
+1. **Source Document Integration**: Grounded in `More than 50Cr works details as on 21.09.2026.pdf` (Chennai C&M Region, 31 listed works, prepared for the Minister's review on 22 September 2026).
+2. **Canonical Benchmark Scenario (Project 5566)**: ROB at LC-13, Thirunindravur–Veppampattu (Physical: 78.0%, Exp: ₹38.36 Cr, Agmt completion: 20 March 2026, Forecast completion: 31 January 2027, Delay variance: 317 days). Non-accusatory delay investigation; unquantified financial exposure guard; joint EOT and CPM programme required.
+3. **Project Blocker Register**: Real-time causal analysis across 17 statutory and operational categories (Railway coordination, land acquisition, utility shifting, High Court stay orders, CRZ/environmental clearance, defence land exchange, contractor distress, quarry permits).
+4. **Delay Investigation Engine**: Baseline vs approved revised vs current forecast completion analysis. Identifies critical-path blockages, milestone health verdicts, and physical-financial variances.
+5. **Loss Prevention Ledger (12 Accounts)**: Statutory accounting guard with strict zero double-counting. Distinguishes verified actual additional expenditure from forecast incremental loss, admitted claims, price escalation (Clause 10CA), idle plant/machinery, and legal costs.
+6. **Mitigation Recommendation Engine**: Actionable mitigation plans identifying stopping causes, supporting evidence, resolving authorities, lawful alternatives, and intervention costs vs avoidable losses with 1-click human approval workflows.
+7. **Pre-Construction Risk Gates**: Pre-tender, pre-mobilisation, and pre-handover verification gates. Statutory prohibition guard blocks administrative bypass of active High Court injunctions (`HTTP 403 Forbidden`).
+8. **Universal Connected Entity Graph**: Cross-navigates from any blocker, project, contractor, official, or court case to all associated records.
+
+---
+
 ### Option 1: Live Interactive Demo
 Access the hosted application directly without any local installation:  
 🌐 **[https://kiru6006.github.io/govt-highways-agent/](https://kiru6006.github.io/govt-highways-agent/)**
