@@ -2015,12 +2015,12 @@ export const ReportsPage: React.FC = () => {
               {/* Government Signature Blocks */}
               <div className="pt-8 border-t border-slate-200 grid grid-cols-2 gap-8 text-xs text-slate-600">
                 <div className="border-t border-slate-300 pt-2">
-                  <div className="font-bold text-slate-800">Thiru Pradeep Yadav, IAS</div>
-                  <div>Additional Chief Secretary to Government</div>
+                  <div className="font-bold text-slate-800">Thiru Shunchonngam Jatak Chiru, IAS</div>
+                  <div>Principal Secretary to Government</div>
                   <div>Highways &amp; Minor Ports Department</div>
                 </div>
                 <div className="border-t border-slate-300 pt-2 text-right">
-                  <div className="font-bold text-slate-800">Thiru E.V. Velu</div>
+                  <div className="font-bold text-slate-800">Thiru Aadhav Arjuna</div>
                   <div>Hon&apos;ble Minister for Public Works, Highways &amp; Minor Ports</div>
                   <div>Government of Tamil Nadu</div>
                 </div>

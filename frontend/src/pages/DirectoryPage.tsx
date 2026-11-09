@@ -773,29 +773,79 @@ export const DirectoryPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Level 1: Apex Political & Administrative */}
+            {/* Level 0: Apex State Executive (Chief Minister) */}
+            <div className="bg-gradient-to-r from-red-700 via-rose-800 to-slate-900 text-white p-4 rounded-xl shadow-sm border border-rose-600/30">
+              <div className="flex items-center justify-between">
+                <span className="bg-white/20 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-wider">
+                  Apex Constitutional Authority • Chief Minister of Tamil Nadu
+                </span>
+                <span className="bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 text-[9px] font-bold px-2 py-0.5 rounded">
+                  VERIFIED OFFICIAL
+                </span>
+              </div>
+              <h5 className="font-black text-lg mt-1.5 flex items-center gap-2">
+                Thiru C. Joseph Vijay
+              </h5>
+              <p className="text-xs text-rose-100 font-semibold">Hon&apos;ble Chief Minister of Tamil Nadu • Chief Minister&apos;s Office (CMO)</p>
+              <div className="text-[11px] text-white/90 mt-2 pt-2 border-t border-rose-500/40 flex flex-wrap items-center justify-between gap-2">
+                <span>Secretariat, Fort St. George, Chennai • Statewide Infrastructure Directive &amp; Escalation Authority</span>
+                <span className="text-[10px] text-rose-200 font-mono">Portfolio: Public Administration, Highways Oversight (G.O. Ms No. 01/2026)</span>
+              </div>
+            </div>
+
+            {/* Connecting Bar */}
+            <div className="flex justify-center my-1">
+              <div className="h-4 w-0.5 bg-slate-300" />
+            </div>
+
+            {/* Level 1: Apex Departmental Leadership */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-4 rounded-xl shadow-xs">
-                <span className="bg-white/20 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded">
-                  Apex Political Leadership
-                </span>
-                <h5 className="font-black text-base mt-1.5">Thiru E.V. Velu</h5>
+                <div className="flex items-center justify-between">
+                  <span className="bg-white/20 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded">
+                    Department Political Leadership
+                  </span>
+                  <span className="bg-emerald-500/30 text-white border border-emerald-400/40 text-[9px] font-bold px-2 py-0.5 rounded">
+                    VERIFIED OFFICIAL
+                  </span>
+                </div>
+                <h5 className="font-black text-base mt-1.5">Thiru Aadhav Arjuna</h5>
                 <p className="text-xs text-amber-100 font-semibold">Hon&apos;ble Minister for Public Works, Highways &amp; Minor Ports</p>
-                <div className="text-[11px] text-white/90 mt-2 pt-2 border-t border-amber-400/40">
-                  Secretariat, Fort St. George, Chennai • Cabinet Policy &amp; Public Works Portfolio
+                <div className="text-[11px] text-white/90 mt-2 pt-2 border-t border-amber-400/40 flex justify-between">
+                  <span>Secretariat, Fort St. George • Cabinet Policy &amp; Highways Sanctions</span>
+                  <span className="text-[10px] text-amber-200 font-mono">Effective: May 2026</span>
                 </div>
               </div>
 
               <div className="bg-gradient-to-r from-[#004B87] to-blue-900 text-white p-4 rounded-xl shadow-xs">
-                <span className="bg-white/20 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded">
-                  Apex Administrative Command (IAS)
-                </span>
-                <h5 className="font-black text-base mt-1.5">Thiru Pradeep Yadav, IAS</h5>
-                <p className="text-xs text-blue-200 font-semibold">Additional Chief Secretary / Principal Secretary to Government</p>
-                <div className="text-[11px] text-white/90 mt-2 pt-2 border-t border-blue-700/50">
-                  Administrative Sanctions (AS) • Statutory Oversight • Inter-Departmental Coordination
+                <div className="flex items-center justify-between">
+                  <span className="bg-white/20 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded">
+                    Apex Administrative Command (IAS)
+                  </span>
+                  <span className="bg-emerald-500/30 text-white border border-emerald-400/40 text-[9px] font-bold px-2 py-0.5 rounded">
+                    VERIFIED OFFICIAL
+                  </span>
+                </div>
+                <h5 className="font-black text-base mt-1.5">Thiru Shunchonngam Jatak Chiru, IAS</h5>
+                <p className="text-xs text-blue-200 font-semibold">Principal Secretary to Government (Highways &amp; Minor Ports)</p>
+                <div className="text-[11px] text-white/90 mt-2 pt-2 border-t border-blue-700/50 flex justify-between">
+                  <span>Administrative Sanctions (AS) • Statutory Oversight • Inter-Departmental Lead</span>
+                  <span className="text-[10px] text-blue-200 font-mono">G.O. Rt. No. 89</span>
                 </div>
               </div>
+            </div>
+
+            {/* Historical Officeholders Banner */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-bold">
+                  HISTORICAL RECORD
+                </span>
+                <span className="text-slate-600 dark:text-slate-400">
+                  Previous Minister for Public Works, Highways &amp; Minor Ports: <strong className="text-slate-800 dark:text-slate-200">Thiru E.V. Velu</strong> (Tenure: May 2021 – May 2026 • G.O. Ms No. 01/2026 Archive)
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-mono">Archived Tenure Record</span>
             </div>
 
             {/* Connecting Bar */}

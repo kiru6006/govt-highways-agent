@@ -276,10 +276,13 @@ def test_verified_organisation_structure(client: TestClient):
     assert res.status_code == 200
     data = res.json()
 
-    assert data["minister"]["name"] == "Thiru E.V. Velu"
+    assert data["chief_minister"]["name"] == "Thiru C. Joseph Vijay"
+    assert data["chief_minister"]["designation"] == "Hon'ble Chief Minister of Tamil Nadu"
+    assert data["minister"]["name"] == "Thiru Aadhav Arjuna"
     assert data["minister"]["designation"] == "Minister for Public Works, Highways and Minor Ports"
-    assert data["principal_secretary"]["name"] == "Thiru Pradeep Yadav, IAS"
+    assert data["principal_secretary"]["name"] == "Thiru Shunchonngam Jatak Chiru, IAS"
     assert data["principal_secretary"]["email"] == "hwaysec@tn.gov.in"
+    assert any(h["name"] == "Thiru E.V. Velu" for h in data.get("historical_leadership", []))
     assert "statutory_committees" in data
     assert any(c["code"] == "BOE" for c in data["statutory_committees"])
     assert any(c["code"] == "COT" for c in data["statutory_committees"])

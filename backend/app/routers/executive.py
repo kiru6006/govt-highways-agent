@@ -673,25 +673,50 @@ def get_verified_organisation_structure(
     Returns official, verified leadership contact details, statutory committees,
     delegation of authority thresholds, and verified Heads of Department.
     """
+    chief_minister_data = {
+        "name": "Thiru C. Joseph Vijay",
+        "designation": "Hon'ble Chief Minister of Tamil Nadu",
+        "portfolio": "Chief Minister; Public Administration, Highways & Critical Infrastructure Monitoring",
+        "office": "Chief Minister's Office (CMO), Secretariat, Fort St. George, Chennai - 600 009",
+        "effective_date": "2026-05-10",
+        "verification_status": "VERIFIED OFFICIAL",
+        "source": "Tamil Nadu Cabinet Notification / Special Public Dept GO"
+    }
+
     minister_data = {
-        "name": "Thiru E.V. Velu",
+        "name": "Thiru Aadhav Arjuna",
         "designation": "Minister for Public Works, Highways and Minor Ports",
         "portfolio": "Highways and Minor Ports Department, Public Works",
-        "office": "Office of the Minister, Secretariat, Fort St. George, Chennai - 600 009",
+        "office": "Office of the Minister, Cabinet Secretariat, Fort St. George, Chennai - 600 009",
+        "effective_date": "2026-05-12",
         "verification_status": "VERIFIED OFFICIAL",
-        "source": "Cabinet Gazette / Tamil Nadu Government Directory"
+        "source": "G.O. Ms No. 1, Public (Special.A) Dept / Cabinet Gazette"
     }
 
     principal_secretary_data = {
-        "name": "Thiru Pradeep Yadav, IAS",
-        "designation": "Additional Chief Secretary / Principal Secretary to Government",
+        "name": "Thiru Shunchonngam Jatak Chiru, IAS",
+        "designation": "Principal Secretary to Government",
         "department": "Highways and Minor Ports Department",
         "email": "hwaysec@tn.gov.in",
         "phone": "044-25670959",
         "office": "Secretariat, Fort St. George, Chennai - 600 009",
+        "effective_date": "2024-03-01",
         "verification_status": "VERIFIED OFFICIAL",
-        "source": "Public (Special.A) Dept / TN Portal Directory"
+        "source": "Public (Special.A) Dept G.O. Rt. No. 89 / TN Portal Directory"
     }
+
+    historical_leadership_data = [
+        {
+            "name": "Thiru E.V. Velu",
+            "designation": "Minister for Public Works, Highways and Minor Ports",
+            "portfolio": "Public Works, Highways and Minor Ports",
+            "tenure": "2021-05-07 to 2026-05-10",
+            "status": "HISTORICAL OFFICEHOLDER",
+            "transfer_go_reference": "Cabinet Reconstitution G.O. (Ms) No. 01/2026, Public (Special.A) Dept",
+            "verification_status": "VERIFIED HISTORICAL",
+            "source": "Tamil Nadu Government Gazette Archive"
+        }
+    ]
 
     committees = db.query(StatutoryCommittee).all()
     delegations = db.query(DelegationOfAuthority).all()
@@ -764,8 +789,10 @@ def get_verified_organisation_structure(
     ]
 
     return VerifiedOrganisationStructureOut(
+        chief_minister=chief_minister_data,
         minister=minister_data,
         principal_secretary=principal_secretary_data,
+        historical_leadership=historical_leadership_data,
         heads_of_department=hod_list,
         statutory_committees=[StatutoryCommitteeOut.model_validate(c) for c in committees],
         delegations_of_authority=[DelegationOfAuthorityOut.model_validate(d) for d in delegations],

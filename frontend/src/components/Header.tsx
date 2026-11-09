@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Search, Bell, HelpCircle, Palette, ChevronDown, Check, 
-  MessageSquare, Calendar, Menu, X
+  MessageSquare, Calendar, Menu, X, Network, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme, THEME_CONFIGS, ThemeMode } from '../context/ThemeContext';
 import { api } from '../services/api';
+import { UniversalSearchResultItem } from '../types';
 
 interface HeaderProps {
   currentModuleName?: string;
@@ -28,6 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   const [helpModalOpen, setHelpModalOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<UniversalSearchResultItem[]>([]);
+  const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
   const [unreadNotifications] = useState<number>(3);
   const [unreadMessages, setUnreadMessages] = useState<number>(4);
   const [displayBadge, setDisplayBadge] = useState<string>('4');
@@ -36,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   const themeRef = useRef<HTMLDivElement>(null);
 
   const personas = [
+    { username: 'cm', label: "Hon'ble Chief Minister (Thiru C. Joseph Vijay)", role: 'Chief Minister of Tamil Nadu' },
     { username: 'minister', label: "Hon'ble Minister (Thiru Aadhav Arjuna)", role: 'Minister for Public Works & Sports Dev' },
     { username: 'secretary', label: 'Principal Secretary (Thiru Shunchonngam Jatak Chiru, IAS)', role: 'Principal Secretary to Government' },
     { username: 'admin', label: 'System Admin (Statewide)', role: 'State Administrator' },
@@ -81,6 +85,24 @@ export const Header: React.FC<HeaderProps> = ({
       clearInterval(interval);
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length >= 2) {
+      const timer = setTimeout(async () => {
+        try {
+          const res = await api.universalSearch(searchQuery.trim());
+          setSearchResults(res.results || []);
+          setSearchDropdownOpen(true);
+        } catch {
+          setSearchResults([]);
+        }
+      }, 250);
+      return () => clearTimeout(timer);
+    } else {
+      setSearchResults([]);
+      setSearchDropdownOpen(false);
+    }
+  }, [searchQuery]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,6 +178,46 @@ export const Header: React.FC<HeaderProps> = ({
             <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-200/50 dark:bg-slate-700 rounded">
               ⌘K
             </kbd>
+
+            {/* Universal Cross-Entity Search Results Dropdown */}
+            {searchDropdownOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 max-h-96 overflow-y-auto z-50 p-2 divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Universal Entity Matches ({searchResults.length})</span>
+                  <span className="text-emerald-600 font-semibold">Everything Connected</span>
+                </div>
+                {searchResults.map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      navigate(item.route);
+                      setSearchQuery('');
+                      setSearchDropdownOpen(false);
+                    }}
+                    className="p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/80 cursor-pointer transition-colors flex items-center justify-between gap-3"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {item.entity_type}
+                        </span>
+                        <span className="font-mono text-[10px] text-slate-400">{item.code}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                          {item.connection_count} links
+                        </span>
+                      </div>
+                      <div className="text-xs font-semibold text-slate-900 dark:text-white mt-1">
+                        {item.title}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {item.subtitle}
+                      </div>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                  </div>
+                ))}
+              </div>
+            )}
           </form>
         </div>
 

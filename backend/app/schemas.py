@@ -663,8 +663,10 @@ class VerifiedOfficialOut(BaseModel):
         from_attributes = True
 
 class VerifiedOrganisationStructureOut(BaseModel):
+    chief_minister: Optional[dict] = None
     minister: dict
     principal_secretary: dict
+    historical_leadership: List[dict] = []
     heads_of_department: List[VerifiedOfficialOut]
     statutory_committees: List[StatutoryCommitteeOut]
     delegations_of_authority: List[DelegationOfAuthorityOut]
@@ -1755,6 +1757,254 @@ class UserSearchItemOut(BaseModel):
     zone_name: Optional[str] = None
     circle_name: Optional[str] = None
     division_name: Optional[str] = None
+
+# ============================================================================
+# PHASE 20: UNIVERSAL CONNECTIVITY & CM DECISION INTELLIGENCE SCHEMAS
+# ============================================================================
+
+class EntityRelationshipCreate(BaseModel):
+    source_entity_type: str
+    source_entity_id: Any
+    source_entity_name: Optional[str] = None
+    relationship_type: str
+    target_entity_type: str
+    target_entity_id: Any
+    target_entity_name: Optional[str] = None
+    directionality: str = "BIDIRECTIONAL"
+    source_reference: Optional[str] = None
+    access_tier: str = "INTERNAL"
+    verification_status: str = "VERIFIED_OFFICIAL"
+    metadata_json: Optional[str] = None
+    weight: Optional[float] = 1.0
+    is_active: Optional[bool] = True
+    is_critical_path: Optional[bool] = False
+    provenance: Optional[str] = "MANUAL"
+    description: Optional[str] = None
+
+class EntityRelationshipOut(BaseModel):
+    id: int
+    relationship_code: str
+    source_entity_type: str
+    source_entity_id: str
+    source_entity_name: str
+    relationship_type: str
+    target_entity_type: str
+    target_entity_id: str
+    target_entity_name: str
+    directionality: str
+    valid_from: datetime.datetime
+    valid_to: Optional[datetime.datetime] = None
+    is_current: bool
+    verification_status: str
+    confidence_score: float
+    source_reference: Optional[str] = None
+    access_tier: str
+    metadata_json: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class RelationshipAuditLogOut(BaseModel):
+    id: int
+    relationship_id: int
+    relationship_code: Optional[str] = None
+    action: str
+    actor_user_id: Optional[int] = None
+    reason: str
+    timestamp: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class EntityRelationshipGraphNode(BaseModel):
+    id: str
+    name: str
+    type: str
+    category: str
+    status: Optional[str] = "ACTIVE"
+    badge: Optional[str] = None
+    access_tier: str = "INTERNAL"
+
+class EntityRelationshipGraphEdge(BaseModel):
+    id: str
+    source: str
+    target: str
+    label: str
+    type: str
+    verification_status: str = "VERIFIED_OFFICIAL"
+
+class EntityRelationshipGraphOut(BaseModel):
+    center_entity_id: str
+    center_entity_type: str
+    nodes: List[EntityRelationshipGraphNode]
+    edges: List[EntityRelationshipGraphEdge]
+    total_connections: int
+
+class CMDirectionCreate(BaseModel):
+    title: str
+    project_id: Optional[int] = None
+    project_name: Optional[str] = None
+    target_department: str = "Highways and Minor Ports"
+    assigned_officer_id: Optional[int] = None
+    assigned_officer_name: Optional[str] = None
+    assigned_officer_designation: Optional[str] = None
+    priority: str = "CRITICAL"
+    issue_summary: str
+    directive_text: str
+    deadline_date: datetime.datetime
+    escalation_level: int = 1
+
+class CMDirectionUpdate(BaseModel):
+    status: Optional[str] = None
+    compliance_notes: Optional[str] = None
+    verified_by_cmo: Optional[bool] = None
+
+class CMDirectionOut(BaseModel):
+    id: int
+    direction_code: str
+    title: str
+    project_id: Optional[int] = None
+    project_name: Optional[str] = None
+    target_department: str
+    assigned_officer_id: Optional[int] = None
+    assigned_officer_name: Optional[str] = None
+    assigned_officer_designation: Optional[str] = None
+    priority: str
+    issue_summary: str
+    directive_text: str
+    deadline_date: datetime.datetime
+    status: str
+    compliance_notes: Optional[str] = None
+    compliance_date: Optional[datetime.datetime] = None
+    verified_by_cmo: bool
+    escalation_level: int
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class ProjectDelayEventOut(BaseModel):
+    id: int
+    project_id: int
+    event_title: str
+    start_date: datetime.datetime
+    end_date: Optional[datetime.datetime] = None
+    delay_days: int
+    is_critical_path: bool
+    category: str
+    primary_cause: str
+    contributing_causes: Optional[str] = None
+    causing_party: str
+    causing_party_type: str
+    resolving_authority: str
+    formal_liability: str
+    eot_status: str
+    eot_days_approved: int
+    financial_exposure_cr: float
+    public_service_impact: Optional[str] = None
+    corrective_action: Optional[str] = None
+    target_resolution_date: Optional[datetime.datetime] = None
+    verification_status: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class DelayRootCauseAnalysisOut(BaseModel):
+    project_id: int
+    project_code: str
+    project_title: str
+    baseline_completion_date: datetime.datetime
+    forecast_completion_date: datetime.datetime
+    total_calendar_delay_days: int
+    critical_path_delay_days: int
+    parallel_non_critical_days: int
+    delay_events: List[ProjectDelayEventOut]
+    causing_parties_summary: List[dict]
+    resolving_authorities_summary: List[dict]
+    cost_overrun_cr: float
+    sanctioned_cost_cr: float
+    revised_cost_cr: float
+
+class CMExecutiveOverviewOut(BaseModel):
+    # 17 Mandatory Executive KPIs
+    total_highways_projects: int = 0
+    total_sanctioned_budget_cr: float = 0.0
+    total_expenditure_cr: float = 0.0
+    statewide_physical_progress_pct: float = 0.0
+    statewide_financial_progress_pct: float = 0.0
+    projects_delayed_count: int = 0
+    projects_at_critical_risk_count: int = 0
+    pending_land_acquisition_parcels: int = 0
+    pending_land_extent_hectares: float = 0.0
+    pending_utility_shifting_items: int = 0
+    interdepartmental_dependencies_blocking: int = 0
+    open_legal_stays_count: int = 0
+    critical_quality_non_conformances: int = 0
+    high_risk_contractors_count: int = 0
+    active_cm_directions_count: int = 0
+    resolved_cm_directions_count: int = 0
+    overdue_cm_directions_count: int = 0
+    chief_minister: str = "Thiru C. Joseph Vijay"
+    highways_minister: str = "Thiru Aadhav Arjuna"
+
+    # Category Breakdowns & Health Overview
+    total_projects: int
+    ongoing_count: int
+    completed_count: int
+    delayed_count: int
+    stalled_count: int
+    at_risk_count: int
+    delay_brackets: dict
+    delay_causes_category: dict
+    total_sanctioned_cost_cr: float
+    total_revised_cost_cr: float
+    net_cost_overrun_cr: float
+    pending_land_parcels_count: int
+    pending_utility_shifts_count: int
+    active_court_stays_count: int
+    contractor_repeated_failures_count: int
+    avg_department_turnaround_days: float
+    critical_quality_defects_count: int
+    unresolved_grievances_count: int
+    financial_leakage_alerts_count: int
+    cm_escalation_queue_count: int
+    pending_cabinet_approvals_count: int
+    cm_directions_summary: dict
+    timestamp: str
+
+class CMEscalationItem(BaseModel):
+    id: str
+    type: str
+    title: str
+    project_id: Optional[int] = None
+    project_title: Optional[str] = None
+    severity: str
+    days_pending: int
+    responsible_authority: str
+    issue_summary: str
+    recommended_action: str
+    requires_cm_intervention: bool
+
+class CMEscalationsOut(BaseModel):
+    escalations: List[CMEscalationItem]
+    total_escalations: int
+    urgent_cabinet_items: int
+
+class CMAIDailyBriefOut(BaseModel):
+    brief_title: str
+    generated_at: str
+    executive_overview: str
+    top_10_critical_projects: List[dict]
+    critical_path_drivers: List[dict]
+    court_stays_impact: List[dict]
+    contractor_risk_radar: List[dict]
+    cm_recommended_actions: List[dict]
+    data_freshness_timestamp: str
+    provenance_disclaimer: str
+    ai_confidence_score: float
+
 
 
 

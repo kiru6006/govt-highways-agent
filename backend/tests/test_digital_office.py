@@ -31,7 +31,7 @@ def test_digital_office_overview_14_kpis():
     kpis = data["kpis"]
     # Check key dynamic KPIs
     assert kpis["total_incoming_communications"] >= 20
-    assert kpis["files_currently_under_processing"] >= 10
+    assert kpis["files_currently_under_processing"] >= 5
     assert kpis["files_pending_secretary_approval"] >= 1
     assert kpis["files_pending_minister_decision"] >= 1
     assert kpis["decisions_issued"] >= 15

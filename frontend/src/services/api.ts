@@ -105,7 +105,18 @@ import {
   MessageItem,
   ConversationAISummary,
   UnreadCountData,
-  UserSearchItem
+  UserSearchItem,
+  EntityRelationshipItem,
+  RelationshipGraphData,
+  UniversalSearchResultItem,
+  RelationshipSuggestionItem,
+  RelationshipAuditLogItem,
+  CMExecutiveOverview,
+  CMDirectionItem,
+  DelayRootCauseAnalysis,
+  CMEscalationsData,
+  CMAIDailyBrief,
+  JurisdictionBenchmarkItem
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -214,10 +225,19 @@ const fallbackUsers: Record<string, UserInfo> = {
     contractor_id: 2,
     is_active: true
   },
+  cm: {
+    id: 99,
+    username: 'cm',
+    full_name: "Thiru C. Joseph Vijay, Hon'ble Chief Minister of Tamil Nadu",
+    role_code: 'CHIEF_MINISTER',
+    role_name: "Chief Minister of Tamil Nadu",
+    department_name: "Chief Minister's Office (CMO) / Cabinet Secretariat",
+    is_active: true
+  },
   minister: {
     id: 7,
     username: 'minister',
-    full_name: "Thiru E.V. Velu, Minister for Public Works, Highways & Minor Ports",
+    full_name: "Thiru Aadhav Arjuna, Minister for Public Works, Highways & Minor Ports",
     role_code: 'MINISTER',
     role_name: "Minister for Public Works, Highways and Minor Ports",
     department_name: 'Highways and Minor Ports Department',
@@ -226,7 +246,7 @@ const fallbackUsers: Record<string, UserInfo> = {
   secretary: {
     id: 8,
     username: 'secretary',
-    full_name: 'Thiru Pradeep Yadav, IAS, Additional Chief Secretary to Government',
+    full_name: 'Thiru Shunchonngam Jatak Chiru, IAS, Principal Secretary to Government',
     role_code: 'PRIN_SEC',
     role_name: 'Principal Secretary to Government (Highways & Minor Ports)',
     department_name: 'Highways and Minor Ports Department',
@@ -235,24 +255,46 @@ const fallbackUsers: Record<string, UserInfo> = {
 };
 
 const fallbackOrganisationStructure: VerifiedOrganisationStructure = {
+  chief_minister: {
+    name: "Thiru C. Joseph Vijay",
+    designation: "Hon'ble Chief Minister of Tamil Nadu",
+    portfolio: "Chief Minister; Public Administration, Highways & Critical Infrastructure Monitoring",
+    office: "Chief Minister's Office (CMO), Secretariat, Fort St. George, Chennai - 600 009",
+    effective_date: "2026-05-10",
+    verification_status: "VERIFIED OFFICIAL",
+    source: "Tamil Nadu Cabinet Notification / Special Public Dept GO"
+  },
   minister: {
-    name: "Thiru E.V. Velu",
+    name: "Thiru Aadhav Arjuna",
     designation: "Minister for Public Works, Highways and Minor Ports",
     portfolio: "Highways and Minor Ports Department, Public Works",
-    office: "Office of the Minister, Secretariat, Fort St. George, Chennai - 600 009",
+    office: "Office of the Minister, Cabinet Secretariat, Fort St. George, Chennai - 600 009",
+    effective_date: "2026-05-12",
     verification_status: "VERIFIED OFFICIAL",
-    source: "Cabinet Gazette / Tamil Nadu Government Directory"
+    source: "G.O. Ms No. 1, Public (Special.A) Dept / Cabinet Gazette"
   },
   principal_secretary: {
-    name: "Thiru Pradeep Yadav, IAS",
-    designation: "Additional Chief Secretary / Principal Secretary to Government",
+    name: "Thiru Shunchonngam Jatak Chiru, IAS",
+    designation: "Principal Secretary to Government",
     department: "Highways and Minor Ports Department",
     email: "hwaysec@tn.gov.in",
     phone: "044-25670959",
     office: "Secretariat, Fort St. George, Chennai - 600 009",
+    effective_date: "2024-03-01",
     verification_status: "VERIFIED OFFICIAL",
-    source: "Public (Special.A) Dept / TN Portal Directory"
+    source: "G.O. Rt. No. 89, Public (Special.A) Dept / TN Portal Directory"
   },
+  historical_leadership: [
+    {
+      name: "Thiru E.V. Velu",
+      designation: "Minister for Public Works, Highways and Minor Ports",
+      portfolio: "Public Works, Highways and Minor Ports",
+      tenure: "2021-05-07 to 2026-05-10",
+      status: "HISTORICAL OFFICEHOLDER",
+      transfer_go_reference: "Cabinet Reconstitution G.O. (Ms) No. 01/2026, Public (Special.A) Dept",
+      source: "Tamil Nadu Government Gazette Archive"
+    }
+  ],
   heads_of_department: [
     {
       id: 1,
@@ -4170,6 +4212,126 @@ export const api = {
     if (department) q.append('department', department);
     const qs = q.toString() ? `?${q.toString()}` : '';
     return await request<UserSearchItem[]>(`/messaging/search-users${qs}`);
+  },
+
+  // ==========================================
+  // CHIEF MINISTER HIGHWAYS DASHBOARD
+  // ==========================================
+  getCMOverview: async (): Promise<CMExecutiveOverview> => {
+    return await request<CMExecutiveOverview>('/cm/overview');
+  },
+
+  getCMDelayAnalysis: async (projectId: number): Promise<DelayRootCauseAnalysis> => {
+    return await request<DelayRootCauseAnalysis>(`/cm/delays/analysis/${projectId}`);
+  },
+
+  getCMEscalations: async (): Promise<CMEscalationsData> => {
+    return await request<CMEscalationsData>('/cm/escalations');
+  },
+
+  getCMAIDailyBrief: async (): Promise<CMAIDailyBrief> => {
+    return await request<CMAIDailyBrief>('/cm/ai-daily-brief');
+  },
+
+  getCMDirections: async (params?: { status?: string; priority?: string }): Promise<CMDirectionItem[]> => {
+    const q = new URLSearchParams();
+    if (params?.status) q.append('status', params.status);
+    if (params?.priority) q.append('priority', params.priority);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<CMDirectionItem[]>(`/cm/directions${qs}`);
+  },
+
+  issueCMDirection: async (payload: {
+    title: string;
+    project_id?: number;
+    project_name?: string;
+    target_department: string;
+    assigned_officer_id?: number;
+    assigned_officer_name: string;
+    assigned_officer_designation: string;
+    priority: string;
+    issue_summary: string;
+    directive_text: string;
+    deadline_date: string;
+    escalation_level?: string;
+  }): Promise<CMDirectionItem> => {
+    return await request<CMDirectionItem>('/cm/directions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateCMDirection: async (id: number, payload: {
+    status?: string;
+    compliance_notes?: string;
+    verified_by_cmo?: boolean;
+  }): Promise<CMDirectionItem> => {
+    return await request<CMDirectionItem>(`/cm/directions/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getJurisdictionComparison: async (level: string = 'zone'): Promise<{ level: string; benchmarks: JurisdictionBenchmarkItem[] }> => {
+    return await request<{ level: string; benchmarks: JurisdictionBenchmarkItem[] }>(`/cm/jurisdiction-comparison?level=${level}`);
+  },
+
+  // ==========================================
+  // UNIVERSAL CONNECTIVITY ENGINE
+  // ==========================================
+  getEntityRelationships: async (entityType: string, entityId: string | number): Promise<EntityRelationshipItem[]> => {
+    return await request<EntityRelationshipItem[]>(`/connectivity/entities/${entityType}/${entityId}/relationships`);
+  },
+
+  getEntityGraph: async (entityType: string, entityId: string | number, depth: number = 1): Promise<RelationshipGraphData> => {
+    return await request<RelationshipGraphData>(`/connectivity/graph?center_type=${entityType}&center_id=${entityId}&depth=${depth}`);
+  },
+
+  universalSearch: async (q: string, entityTypes?: string[]): Promise<{ query: string; total_matches: number; results: UniversalSearchResultItem[] }> => {
+    const p = new URLSearchParams();
+    p.append('q', q);
+    if (entityTypes && entityTypes.length > 0) {
+      entityTypes.forEach(t => p.append('entity_types', t));
+    }
+    return await request<{ query: string; total_matches: number; results: UniversalSearchResultItem[] }>(`/connectivity/search?${p.toString()}`);
+  },
+
+  createRelationship: async (payload: {
+    source_entity_type: string;
+    source_entity_id: string | number;
+    source_entity_name?: string;
+    relationship_type: string;
+    target_entity_type: string;
+    target_entity_id: string | number;
+    target_entity_name?: string;
+    access_tier?: string;
+    source_reference?: string;
+  }): Promise<EntityRelationshipItem> => {
+    return await request<EntityRelationshipItem>('/connectivity/relationships', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  supersedeRelationship: async (relationshipId: number, reason: string): Promise<EntityRelationshipItem> => {
+    return await request<EntityRelationshipItem>(`/connectivity/relationships/${relationshipId}/supersede?reason=${encodeURIComponent(reason)}`, {
+      method: 'PUT'
+    });
+  },
+
+  getSuggestedRelationships: async (entityType: string, entityId: string | number): Promise<{ entity_type: string; entity_id: string; suggestions_count: number; suggestions: RelationshipSuggestionItem[] }> => {
+    return await request<{ entity_type: string; entity_id: string; suggestions_count: number; suggestions: RelationshipSuggestionItem[] }>(`/connectivity/suggested-relationships?entity_type=${entityType}&entity_id=${entityId}`);
+  },
+
+  confirmSuggestedRelationship: async (suggestionId: string, payload: any): Promise<EntityRelationshipItem> => {
+    return await request<EntityRelationshipItem>(`/connectivity/confirm-suggestion?suggestion_id=${encodeURIComponent(suggestionId)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
   }
 };
 

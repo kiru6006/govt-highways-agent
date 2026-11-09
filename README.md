@@ -159,17 +159,6 @@ The platform maintains an automated test suite executed against live API endpoin
 # Run the complete test suite:
 cd backend
 ./venv/bin/python3 -m pytest tests/
-```
-.venv/bin/pytest -v
-
-# Output:
-# tests/test_auth_and_rbac.py ........ PASSED [ 15%]
-# tests/test_ckicp_tnrsp.py .......... PASSED [ 30%]
-# tests/test_executive_phase2.py ...... PASSED [ 71%]
-# tests/test_phase17_audit.py ......... PASSED [ 84%]
-# tests/test_project_360.py ........... PASSED [100%]
-# ======================== 39 passed in 1.85s ========================
-```
 
 ---
 

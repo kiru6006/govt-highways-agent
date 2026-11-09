@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { Sidebar, navigationItems } from './components/Sidebar';
 import { AskAIPanel } from './components/AskAIPanel';
 import { Dashboard } from './pages/Dashboard';
+import { CMDashboard } from './pages/CMDashboard';
 import { MinisterDashboard } from './pages/MinisterDashboard';
 import { SecretaryDashboard } from './pages/SecretaryDashboard';
 import { ProjectsPage } from './pages/ProjectsPage';
@@ -80,6 +81,8 @@ const AppLayout: React.FC = () => {
         <main className="flex-1 overflow-y-auto pb-16">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/cm-dashboard" element={<CMDashboard />} />
+            <Route path="/leadership/cm" element={<CMDashboard />} />
             <Route path="/leadership/minister" element={<MinisterDashboard />} />
             <Route path="/leadership/secretary" element={<SecretaryDashboard />} />
             <Route path="/ckicp" element={<ProgrammeIntelligencePage />} />

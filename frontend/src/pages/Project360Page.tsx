@@ -53,8 +53,10 @@ import {
   Wrench,
   Cpu,
   FolderOpen,
-  ClipboardList
+  ClipboardList,
+  Network
 } from 'lucide-react';
+import { ConnectedEntityPanel } from '../components/connectivity/ConnectedEntityPanel';
 
 export type Project360TabKey =
   | 'overview'
@@ -71,7 +73,8 @@ export type Project360TabKey =
   | 'grievances'
   | 'ai_findings'
   | 'documents'
-  | 'actions_history';
+  | 'actions_history'
+  | 'connectivity';
 
 interface TabDefinition {
   key: Project360TabKey;
@@ -308,7 +311,8 @@ export const Project360Page: React.FC = () => {
       { key: 'grievances', label: '12. Citizen Grievances', shortLabel: 'Grievances', icon: MessageSquare, badge: grievanceCount > 0 ? grievanceCount : undefined },
       { key: 'ai_findings', label: '13. AI Findings', shortLabel: 'AI Findings', icon: Sparkles, badge: aiCount > 0 ? aiCount : undefined },
       { key: 'documents', label: '14. Documents', shortLabel: 'Documents', icon: FileText, badge: docCount },
-      { key: 'actions_history', label: '15. Actions & History', shortLabel: 'Actions & Trail', icon: History, badge: actionCount > 0 ? actionCount : undefined }
+      { key: 'actions_history', label: '15. Actions & History', shortLabel: 'Actions & Trail', icon: History, badge: actionCount > 0 ? actionCount : undefined },
+      { key: 'connectivity', label: '16. Universal Connectivity', shortLabel: 'Entity Web', icon: Network, badge: 'Live' }
     ];
   }, [selectedProject]);
 
@@ -2305,6 +2309,17 @@ export const Project360Page: React.FC = () => {
                       ))}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* TAB 16: UNIVERSAL CONNECTIVITY & ENTITY RELATIONSHIP WEB */}
+              {activeTab === 'connectivity' && selectedProject && (
+                <div className="space-y-4">
+                  <ConnectedEntityPanel
+                    entityType="PROJECT"
+                    entityId={selectedProject.id || selectedProject.project?.id || 1}
+                    entityTitle={selectedProject.title}
+                  />
                 </div>
               )}
             </div>

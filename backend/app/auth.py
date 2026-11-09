@@ -76,7 +76,7 @@ def check_project_jurisdiction(user: User, project: Project) -> bool:
     role_code = user.role.code if user.role else ""
     
     # State-level leadership and Admins
-    if role_code in ["ADMIN", "MINISTER", "PRIN_SEC", "SEC", "CHIEF_ENG"]:
+    if role_code in ["ADMIN", "CHIEF_MINISTER", "MINISTER", "PRIN_SEC", "SEC", "CHIEF_ENG"]:
         return True
         
     # Contractor strict isolation

@@ -1929,3 +1929,105 @@ class ConversationAuditLog(Base):
 
     conversation = relationship("Conversation")
     actor = relationship("User")
+
+# ============================================================================
+# PHASE 20: UNIVERSAL CONNECTIVITY & CHIEF MINISTER DECISION PLATFORM
+# ============================================================================
+
+class EntityRelationship(Base):
+    __tablename__ = "entity_relationships"
+    id = Column(Integer, primary_key=True, index=True)
+    relationship_code = Column(String(64), unique=True, index=True, nullable=False)
+    source_entity_type = Column(String(50), nullable=False, index=True)
+    source_entity_id = Column(String(64), nullable=False, index=True)
+    source_entity_name = Column(String(250), nullable=False)
+    relationship_type = Column(String(64), nullable=False, index=True)
+    target_entity_type = Column(String(50), nullable=False, index=True)
+    target_entity_id = Column(String(64), nullable=False, index=True)
+    target_entity_name = Column(String(250), nullable=False)
+    directionality = Column(String(20), default="BIDIRECTIONAL")
+    valid_from = Column(DateTime, default=datetime.datetime.utcnow)
+    valid_to = Column(DateTime, nullable=True)
+    is_current = Column(Boolean, default=True, index=True)
+    verification_status = Column(String(50), default="VERIFIED_OFFICIAL", index=True)
+    confidence_score = Column(Float, default=1.0)
+    source_reference = Column(String(250), nullable=True)
+    access_tier = Column(String(50), default="INTERNAL", index=True)
+    metadata_json = Column(Text, nullable=True)
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    created_by = relationship("User")
+
+class RelationshipAuditLog(Base):
+    __tablename__ = "relationship_audit_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    relationship_id = Column(Integer, index=True, nullable=False)
+    relationship_code = Column(String(64), nullable=True)
+    action = Column(String(50), nullable=False)
+    actor_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reason = Column(Text, nullable=False)
+    previous_state_json = Column(Text, nullable=True)
+    new_state_json = Column(Text, nullable=True)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+    actor = relationship("User")
+
+class CMDirection(Base):
+    __tablename__ = "cm_directions"
+    id = Column(Integer, primary_key=True, index=True)
+    direction_code = Column(String(64), unique=True, index=True, nullable=False)
+    title = Column(String(250), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    project_name = Column(String(250), nullable=True)
+    target_department = Column(String(100), default="Highways and Minor Ports")
+    assigned_officer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    assigned_officer_name = Column(String(150), nullable=True)
+    assigned_officer_designation = Column(String(150), nullable=True)
+    priority = Column(String(20), default="CRITICAL", index=True)
+    issue_summary = Column(Text, nullable=False)
+    directive_text = Column(Text, nullable=False)
+    deadline_date = Column(DateTime, nullable=False)
+    status = Column(String(50), default="PENDING_ACK", index=True)
+    compliance_notes = Column(Text, nullable=True)
+    compliance_date = Column(DateTime, nullable=True)
+    verified_by_cmo = Column(Boolean, default=False)
+    escalation_level = Column(Integer, default=1)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    assigned_officer = relationship("User", foreign_keys=[assigned_officer_id])
+    creator = relationship("User", foreign_keys=[created_by_id])
+
+class ProjectDelayEvent(Base):
+    __tablename__ = "project_delay_events"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    event_title = Column(String(250), nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=True)
+    delay_days = Column(Integer, default=0)
+    is_critical_path = Column(Boolean, default=True, index=True)
+    category = Column(String(50), nullable=False, index=True)
+    primary_cause = Column(Text, nullable=False)
+    contributing_causes = Column(Text, nullable=True)
+    causing_party = Column(String(150), nullable=False)
+    causing_party_type = Column(String(50), default="GOVT_DEPARTMENT")
+    resolving_authority = Column(String(150), nullable=False)
+    resolving_officer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    formal_liability = Column(String(50), default="UNDER_VERIFICATION")
+    eot_status = Column(String(50), default="UNDER_REVIEW")
+    eot_days_approved = Column(Integer, default=0)
+    financial_exposure_cr = Column(Float, default=0.0)
+    public_service_impact = Column(Text, nullable=True)
+    corrective_action = Column(Text, nullable=True)
+    target_resolution_date = Column(DateTime, nullable=True)
+    verification_status = Column(String(50), default="VERIFIED_OFFICIAL")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    resolving_officer = relationship("User")
+

@@ -10,7 +10,8 @@ from app.auth import get_password_hash
 from app.models import Role, User, Department, Zone, Circle, Division, Contractor, Organisation
 
 PERSONA_SPECS = [
-    # A. Administrative
+    # A. Administrative & Cabinet Leadership
+    {"username": "cm", "full_name": "Thiru C. Joseph Vijay", "role_code": "CHIEF_MINISTER", "role_name": "Hon'ble Chief Minister of Tamil Nadu", "tier": "CABINET_APEX", "dept": "HIGHWAYS"},
     {"username": "minister", "full_name": "Thiru Aadhav Arjuna", "role_code": "MINISTER", "role_name": "Minister for Public Works & Highways", "tier": "LEADERSHIP", "dept": "HIGHWAYS"},
     {"username": "secretary", "full_name": "Thiru Shunchonngam Jatak Chiru, IAS", "role_code": "PRIN_SEC", "role_name": "Principal Secretary to Government", "tier": "LEADERSHIP", "dept": "HIGHWAYS"},
     {"username": "dir_gen", "full_name": "Er. V. Senthil Nathan", "role_code": "DIR_GEN", "role_name": "Director General (Highways)", "tier": "EXECUTIVE", "dept": "HIGHWAYS"},

@@ -498,11 +498,21 @@ export interface ZoneHierarchyItem {
 }
 
 export interface VerifiedOrganisationStructure {
+  chief_minister?: {
+    name: string;
+    designation: string;
+    portfolio: string;
+    office: string;
+    effective_date?: string;
+    verification_status: string;
+    source: string;
+  };
   minister: {
     name: string;
     designation: string;
     portfolio: string;
     office: string;
+    effective_date?: string;
     verification_status: string;
     source: string;
   };
@@ -513,9 +523,19 @@ export interface VerifiedOrganisationStructure {
     email: string;
     phone: string;
     office: string;
+    effective_date?: string;
     verification_status: string;
     source: string;
   };
+  historical_leadership?: Array<{
+    name: string;
+    designation: string;
+    portfolio: string;
+    tenure: string;
+    status: string;
+    transfer_go_reference?: string;
+    source: string;
+  }>;
   heads_of_department: VerifiedOfficialItem[];
   statutory_committees: StatutoryCommitteeItem[];
   delegations_of_authority: DelegationOfAuthorityItem[];
@@ -2599,6 +2619,291 @@ export interface UserSearchItem {
   zone_name?: string;
   circle_name?: string;
   division_name?: string;
+}
+
+// Universal Connectivity Types
+export interface EntityRelationshipItem {
+  id: number;
+  relationship_code: string;
+  source_entity_type: string;
+  source_entity_id: string;
+  source_entity_name: string;
+  relationship_type: string;
+  target_entity_type: string;
+  target_entity_id: string;
+  target_entity_name: string;
+  directionality: string;
+  valid_from: string;
+  valid_to?: string;
+  is_current: boolean;
+  verification_status: string;
+  confidence_score: number;
+  source_reference?: string;
+  access_tier: string;
+  metadata_json?: string;
+  created_at: string;
+}
+
+export interface RelationshipGraphNode {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  status?: string;
+  badge?: string;
+  access_tier: string;
+}
+
+export interface RelationshipGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  label: string;
+  type: string;
+  verification_status: string;
+}
+
+export interface RelationshipGraphData {
+  center_entity_id: string;
+  center_entity_type: string;
+  nodes: RelationshipGraphNode[];
+  edges: RelationshipGraphEdge[];
+  total_connections: number;
+}
+
+export interface UniversalSearchResultItem {
+  entity_type: string;
+  entity_id: string;
+  code: string;
+  title: string;
+  subtitle: string;
+  route: string;
+  connection_count: number;
+  badge: string;
+}
+
+export interface RelationshipSuggestionItem {
+  suggestion_id: string;
+  source_entity_type: string;
+  source_entity_id: string;
+  source_entity_name: string;
+  suggested_relationship: string;
+  target_entity_type: string;
+  target_entity_id: string;
+  target_entity_name: string;
+  ai_reason: string;
+  confidence_score: number;
+  requires_human_confirmation: boolean;
+}
+
+export interface RelationshipAuditLogItem {
+  id: number;
+  relationship_id: number;
+  relationship_code: string;
+  action: string;
+  actor_user_id: number;
+  reason: string;
+  previous_state_json?: string;
+  new_state_json?: string;
+  timestamp: string;
+}
+
+// CM Dashboard Types
+export interface CMExecutiveOverview {
+  total_highways_projects: number;
+  total_sanctioned_budget_cr: number;
+  total_expenditure_cr: number;
+  statewide_physical_progress_pct: number;
+  statewide_financial_progress_pct: number;
+  projects_delayed_count: number;
+  projects_at_critical_risk_count: number;
+  pending_land_acquisition_parcels: number;
+  pending_land_extent_hectares: number;
+  pending_utility_shifting_items: number;
+  interdepartmental_dependencies_blocking: number;
+  open_legal_stays_count: number;
+  critical_quality_non_conformances: number;
+  high_risk_contractors_count: number;
+  active_cm_directions_count: number;
+  resolved_cm_directions_count: number;
+  overdue_cm_directions_count: number;
+  chief_minister: string;
+  highways_minister: string;
+
+  total_projects: number;
+  ongoing_count: number;
+  completed_count: number;
+  delayed_count: number;
+  stalled_count: number;
+  at_risk_count: number;
+  delay_brackets: {
+    days_30_to_59: number;
+    days_60_to_89: number;
+    days_90_to_179: number;
+    days_180_plus: number;
+    total_delayed_projects: number;
+  };
+  delay_causes_category: Record<string, number>;
+  total_sanctioned_cost_cr: number;
+  total_revised_cost_cr: number;
+  net_cost_overrun_cr: number;
+  pending_land_parcels_count: number;
+  pending_utility_shifts_count: number;
+  active_court_stays_count: number;
+  contractor_repeated_failures_count: number;
+  avg_department_turnaround_days: number;
+  critical_quality_defects_count: number;
+  unresolved_grievances_count: number;
+  financial_leakage_alerts_count: number;
+  cm_escalation_queue_count: number;
+  pending_cabinet_approvals_count: number;
+  cm_directions_summary: {
+    total_issued: number;
+    in_progress: number;
+    pending_acknowledgment: number;
+    complied: number;
+    overdue: number;
+    closure_rate_pct: number;
+  };
+  timestamp: string;
+}
+
+export interface CMDirectionItem {
+  id: number;
+  direction_code: string;
+  title: string;
+  project_id?: number;
+  project_name?: string;
+  target_department: string;
+  assigned_officer_id?: number;
+  assigned_officer_name: string;
+  assigned_officer_designation: string;
+  priority: string;
+  issue_summary: string;
+  directive_text: string;
+  deadline_date: string;
+  compliance_date?: string;
+  status: string;
+  compliance_notes?: string;
+  verified_by_cmo: boolean;
+  escalation_level: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectDelayEventItem {
+  id: number;
+  project_id: number;
+  event_title: string;
+  start_date: string;
+  end_date?: string;
+  delay_days: number;
+  is_critical_path: boolean;
+  category: string;
+  primary_cause: string;
+  contributing_causes?: string;
+  causing_party: string;
+  causing_party_type: string;
+  resolving_authority: string;
+  formal_liability: string;
+  eot_status: string;
+  eot_days_approved: number;
+  financial_exposure_cr: number;
+  public_service_impact?: string;
+  corrective_action?: string;
+  target_resolution_date?: string;
+  verification_status: string;
+  created_at: string;
+}
+
+export interface DelayRootCauseAnalysis {
+  project_id: number;
+  project_code: string;
+  project_title: string;
+  baseline_completion_date: string;
+  forecast_completion_date: string;
+  total_calendar_delay_days: number;
+  critical_path_delay_days: number;
+  parallel_non_critical_days: number;
+  delay_events: ProjectDelayEventItem[];
+  causing_parties_summary: { causing_party: string; delay_days: number }[];
+  resolving_authorities_summary: { resolving_authority: string; count: number }[];
+  cost_overrun_cr: number;
+  sanctioned_cost_cr: number;
+  revised_cost_cr: number;
+}
+
+export interface CMEscalationItem {
+  id: string;
+  type: string;
+  title: string;
+  project_id?: number;
+  project_title?: string;
+  severity: string;
+  days_pending: number;
+  responsible_authority: string;
+  issue_summary: string;
+  recommended_action: string;
+}
+
+export interface CMEscalationsData {
+  total_escalations: number;
+  urgent_cabinet_items: number;
+  escalations: CMEscalationItem[];
+}
+
+export interface CMAIDailyBrief {
+  brief_title: string;
+  generated_at: string;
+  executive_overview: string;
+  top_10_critical_projects: {
+    id: number;
+    title: string;
+    status: string;
+    sanctioned_cost_cr: number;
+    physical_progress_pct: number;
+    financial_progress_pct: number;
+    delay_days: number;
+    primary_bottleneck: string;
+  }[];
+  critical_path_drivers: {
+    driver: string;
+    impacted_projects: number;
+    total_delay_days: number;
+    primary_agency: string;
+  }[];
+  court_stays_impact: {
+    case_ref: string;
+    project: string;
+    financial_exposure_cr: number;
+    next_hearing: string;
+  }[];
+  contractor_risk_radar: {
+    contractor: string;
+    risk_level: string;
+    delayed_packages_count: number;
+  }[];
+  cm_recommended_actions: {
+    priority: string;
+    target_entity: string;
+    action_text: string;
+    statutory_rationale: string;
+  }[];
+  data_freshness_timestamp: string;
+  provenance_disclaimer: string;
+  ai_confidence_score: number;
+}
+
+export interface JurisdictionBenchmarkItem {
+  id: number;
+  name: string;
+  code?: string;
+  headquarters?: string;
+  total_projects: number;
+  delayed_projects: number;
+  avg_physical_progress_pct: number;
+  total_sanctioned_cost_cr: number;
+  health_rating: string;
 }
 
 
