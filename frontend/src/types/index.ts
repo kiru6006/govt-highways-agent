@@ -2907,3 +2907,334 @@ export interface JurisdictionBenchmarkItem {
 }
 
 
+
+// ============================================================================
+// LAND ACQUISITION & LITIGATION INTELLIGENCE COMMAND CENTRE
+// ============================================================================
+
+export interface LandLitigationOverview {
+  total_parcels_required: number;
+  parcels_acquired: number;
+  parcels_pending_acquisition: number;
+  parcels_under_litigation: number;
+  parcels_with_court_restrictions: number;
+  revenue_dept_responses_overdue: number;
+  forest_statutory_clearances_pending: number;
+  projects_blocked_by_land: number;
+  projects_blocked_on_critical_path: number;
+  actual_additional_expenditure_cr: number;
+  estimated_future_financial_exposure_cr: number;
+  sites_requiring_stop_work_or_readiness_review: number;
+  simulated_data_badge: string;
+  data_freshness_timestamp: string;
+}
+
+export interface LandLitigationParcelItem {
+  id: number;
+  project_id: number;
+  project_title?: string;
+  parcel_reference: string;
+  survey_number: string;
+  subdivision_number?: string;
+  village_name: string;
+  taluk_name: string;
+  district_name: string;
+  classification: string;
+  extent_hectares: number;
+  extent_sq_meters: number;
+  chainage_start_km: number;
+  chainage_end_km: number;
+  acquisition_stage: string;
+  possession_taken: boolean;
+  possession_date?: string;
+  compensation_determined_cr?: number;
+  compensation_deposited_cr?: number;
+  compensation_disbursed_cr?: number;
+  solatium_pct?: number;
+  site_handed_over_to_contractor: boolean;
+  handover_date?: string;
+  is_critical_path: boolean;
+  is_under_litigation: boolean;
+  has_work_restriction: boolean;
+  active_stay_injunction: boolean;
+  revenue_request_pending: boolean;
+  data_mode: string;
+  simulated_data_badge?: string;
+}
+
+export interface Parcel360Dossier {
+  parcel: LandLitigationParcelItem;
+  workflow_milestones: Array<{
+    id: number;
+    milestone_name: string;
+    stage_category: string;
+    planned_date?: string;
+    actual_date?: string;
+    is_completed: boolean;
+    remarks?: string;
+  }>;
+  linked_litigation_cases: Array<{
+    id: number;
+    case_code: string;
+    court_case_number: string;
+    court_name: string;
+    case_type: string;
+    dispute_nature: string;
+    work_restricted: boolean;
+    active_stay: boolean;
+    disposition_type: string;
+    financial_claim_cr?: number;
+  }>;
+  revenue_requests: Array<{
+    id: number;
+    request_reference: string;
+    request_type: string;
+    subdivision_target: string;
+    request_status: string;
+    days_overdue: number;
+  }>;
+  site_blockers: Array<{
+    id: number;
+    blocker_code: string;
+    title: string;
+    category: string;
+    readiness_gate: string;
+    current_status: string;
+    is_critical_path: boolean;
+  }>;
+  universal_relationships: Array<{
+    source_entity: string;
+    target_entity: string;
+    relation_type: string;
+    details: string;
+  }>;
+}
+
+export interface LitigationCaseItem {
+  id: number;
+  case_code: string;
+  court_case_number: string;
+  cnr_number?: string;
+  court_name: string;
+  court_bench?: string;
+  case_type: string;
+  project_id: number;
+  project_title?: string;
+  parcel_id?: number;
+  parcel_reference?: string;
+  petitioners: string;
+  respondents: string;
+  dispute_nature: string;
+  highways_officer_responsible: string;
+  assigned_counsel_name?: string;
+  govt_legal_coordinator?: string;
+  work_restricted: boolean;
+  active_stay: boolean;
+  interim_stay_details?: string;
+  vacate_stay_petition_filed: boolean;
+  vacate_stay_filed_date?: string;
+  counter_affidavit_status: string;
+  counter_affidavit_filed_date?: string;
+  last_hearing_date?: string;
+  next_hearing_date?: string;
+  disposition_type: string;
+  disposition_date?: string;
+  appeal_status?: string;
+  financial_claim_cr?: number;
+  potential_liability_cr?: number;
+  simulated_data_badge?: string;
+}
+
+export interface RevenueCoordinationItem {
+  id: number;
+  request_reference: string;
+  project_id: number;
+  project_title?: string;
+  parcel_id?: number;
+  parcel_reference?: string;
+  request_type: string;
+  district: string;
+  taluk: string;
+  village: string;
+  subdivision_target: string;
+  subdivision_survey_number?: string;
+  revenue_officer_designation: string;
+  revenue_office_location: string;
+  date_initiated: string;
+  statutory_due_date: string;
+  date_fulfilled?: string;
+  request_status: string;
+  is_overdue: boolean;
+  days_overdue: number;
+  escalation_level: string;
+  joint_inspection_held: boolean;
+  joint_inspection_date?: string;
+  joint_inspection_officers?: string;
+  field_measurement_book_updated: boolean;
+  chitta_tslr_updated: boolean;
+  remarks?: string;
+  simulated_data_badge?: string;
+}
+
+export interface AdvocateMonitoringRecord {
+  case_id: number;
+  case_code: string;
+  court_case_number: string;
+  cnr_number?: string;
+  court_name: string;
+  project_title: string;
+  assigned_counsel_name: string;
+  counsel_contact: string;
+  govt_legal_coordinator: string;
+  instructions_sent_status: string;
+  instructions_sent_date?: string;
+  documents_supplied_status: string;
+  counter_affidavit_status: string;
+  counter_affidavit_filed_date?: string;
+  filing_compliance_deadline?: string;
+  hearing_attendance_record: string;
+  last_counsel_update?: string;
+  procedural_alert: boolean;
+  human_performance_review_notes: string;
+  simulated_data_badge: string;
+}
+
+export interface SiteBlockerItem {
+  id: number;
+  blocker_code: string;
+  project_id: number;
+  project_title?: string;
+  parcel_id?: number;
+  litigation_case_id?: number;
+  title: string;
+  description: string;
+  category: string;
+  chainage_start_km?: number;
+  chainage_end_km?: number;
+  readiness_gate: 'RED' | 'AMBER' | 'GREEN';
+  is_critical_path: boolean;
+  contractor_mobilised_on_blocked_site: boolean;
+  idle_resources_reported: boolean;
+  resolution_owner_name: string;
+  supporting_department?: string;
+  start_date: string;
+  target_resolution_date?: string;
+  resolved_date?: string;
+  current_status: string;
+  days_blocked: number;
+  simulated_data_badge?: string;
+}
+
+export interface FinancialExposureItem {
+  id: number;
+  project_id: number;
+  project_title?: string;
+  parcel_id?: number;
+  litigation_case_id?: number;
+  project_value_affected_cr: number;
+  actual_incremental_expenditure_cr: number;
+  contractor_claims_submitted_cr: number;
+  claims_admitted_cr: number;
+  claims_disputed_cr: number;
+  idle_resource_cost_cr: number;
+  contractual_price_escalation_cr: number;
+  additional_financing_cost_cr: number;
+  legal_expenses_cr: number;
+  potentially_avoidable_future_cost_cr: number;
+  confirmed_recoverable_cr: number;
+  public_benefit_delay_days: number;
+  basis_of_estimate: string;
+  data_mode: string;
+  simulated_data_badge?: string;
+}
+
+export interface FinancialExposureDashboard {
+  summary: {
+    total_project_value_affected_cr: number;
+    total_actual_incremental_expenditure_cr: number;
+    total_contractor_claims_submitted_cr: number;
+    total_claims_admitted_cr: number;
+    total_claims_disputed_cr: number;
+    total_idle_resource_cost_cr: number;
+    total_contractual_price_escalation_cr: number;
+    total_additional_financing_cost_cr: number;
+    total_legal_expenses_cr: number;
+    total_forecast_incremental_cost_cr: number;
+    total_potentially_avoidable_future_cost_cr: number;
+    total_confirmed_recoverable_cr: number;
+    total_public_benefit_delay_days: number;
+    double_counting_protection: string;
+  };
+  items: FinancialExposureItem[];
+  simulated_data_badge: string;
+}
+
+export interface PreConstructionRiskAssessmentItem {
+  id: number;
+  project_id: number;
+  project_title?: string;
+  stage: string;
+  unencumbered_land_pct: number;
+  statutory_clearances_cleared: boolean;
+  pending_high_risk_litigation_count: number;
+  has_binding_legal_prohibition: boolean;
+  prohibition_details?: string;
+  readiness_verdict: 'CLEAR' | 'CONDITIONAL' | 'BLOCKED';
+  gatekeeper_officer: string;
+  is_overridden: boolean;
+  override_authority?: string;
+  override_justification?: string;
+  override_date?: string;
+  simulated_data_badge?: string;
+}
+
+export interface LandLitigationResolutionActionItem {
+  id: number;
+  action_code: string;
+  project_id: number;
+  project_title?: string;
+  parcel_id?: number;
+  litigation_case_id?: number;
+  blocker_id?: number;
+  title: string;
+  action_type: string;
+  assigned_to_officer: string;
+  assigned_to_role: string;
+  escalation_level: string;
+  target_date: string;
+  completed_date?: string;
+  status: string;
+  resolution_evidence_url?: string;
+  evidence_description?: string;
+  notes?: string;
+  simulated_data_badge?: string;
+}
+
+export interface LandLitigationCMSummary {
+  total_projects_blocked: number;
+  total_critical_path_blockers: number;
+  active_court_stays: number;
+  overdue_revenue_requests: number;
+  financial_exposure_cr: number;
+  high_risk_projects: Array<{
+    project_id: number;
+    project_title: string;
+    readiness_verdict: string;
+    critical_blockers_count: number;
+    exposure_cr: number;
+    binding_prohibition: boolean;
+  }>;
+  simulated_data_badge: string;
+}
+
+export interface LandLitigationAIResponse {
+  query: string;
+  verified_facts: string[];
+  missing_information: string[];
+  evidence_references: string[];
+  statutory_governance_authority: string[];
+  recommended_next_actions: string[];
+  urgency_level: 'ROUTINE' | 'ELEVATED' | 'CRITICAL';
+  limitations_disclaimer: string;
+  simulated_data_badge: string;
+}

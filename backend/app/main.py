@@ -19,7 +19,8 @@ from app.routers import (
     officials, contractors, dependencies, issues, workflows,
     documents, audit, ai, executive, programmes, leakage, reports,
     engineering_quality_assets, land_utility, digital_office,
-    notifications, calendar, messaging, connectivity, cm_dashboard
+    notifications, calendar, messaging, connectivity, cm_dashboard,
+    land_litigation
 )
 
 # Initialize schema tables
@@ -97,6 +98,7 @@ app.include_router(calendar.router, prefix=settings.API_V1_STR)
 app.include_router(messaging.router, prefix=settings.API_V1_STR)
 app.include_router(connectivity.router, prefix=settings.API_V1_STR)
 app.include_router(cm_dashboard.router, prefix=settings.API_V1_STR)
+app.include_router(land_litigation.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

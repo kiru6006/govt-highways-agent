@@ -22,6 +22,7 @@ import { AssetsPage } from './pages/AssetsPage';
 import { DepartmentsPage } from './pages/DepartmentsPage';
 import { LandUtilityPage } from './pages/LandUtilityPage';
 import { DigitalOfficePage } from './pages/DigitalOfficePage';
+import { LandLitigationPage } from './pages/LandLitigationPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -98,6 +99,7 @@ const AppLayout: React.FC = () => {
             <Route path="/field-ops" element={<FieldOpsPage />} />
             <Route path="/assets" element={<AssetsPage />} />
             <Route path="/digital-office" element={<DigitalOfficePage />} />
+            <Route path="/land-litigation" element={<LandLitigationPage />} />
             <Route path="/land-utility" element={<LandUtilityPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />

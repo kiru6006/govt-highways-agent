@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Crown,
   TrendingUp,
@@ -36,17 +37,20 @@ import {
   DelayRootCauseAnalysis,
   CMEscalationsData,
   CMAIDailyBrief,
-  JurisdictionBenchmarkItem
+  JurisdictionBenchmarkItem,
+  LandLitigationCMSummary
 } from '../types';
 import { ConnectedEntityPanel } from '../components/connectivity/ConnectedEntityPanel';
 
 export const CMDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [overview, setOverview] = useState<CMExecutiveOverview | null>(null);
   const [delayAnalysis, setDelayAnalysis] = useState<DelayRootCauseAnalysis | null>(null);
   const [escalations, setEscalations] = useState<CMEscalationsData | null>(null);
   const [aiBrief, setAiBrief] = useState<CMAIDailyBrief | null>(null);
   const [directions, setDirections] = useState<CMDirectionItem[]>([]);
   const [benchmarks, setBenchmarks] = useState<JurisdictionBenchmarkItem[]>([]);
+  const [landSummary, setLandSummary] = useState<LandLitigationCMSummary | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Filter States
@@ -75,12 +79,13 @@ export const CMDashboard: React.FC = () => {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [ov, esc, brief, dirs, bmarks] = await Promise.all([
+      const [ov, esc, brief, dirs, bmarks, landSum] = await Promise.all([
         api.getCMOverview().catch(() => null),
         api.getCMEscalations().catch(() => null),
         api.getCMAIDailyBrief().catch(() => null),
         api.getCMDirections().catch(() => []),
-        api.getJurisdictionComparison(benchmarkLevel).catch(() => ({ level: 'zone', benchmarks: [] }))
+        api.getJurisdictionComparison(benchmarkLevel).catch(() => ({ level: 'zone', benchmarks: [] })),
+        api.getLandLitigationCMSummary().catch(() => null)
       ]);
 
       setOverview(ov);
@@ -88,6 +93,7 @@ export const CMDashboard: React.FC = () => {
       setAiBrief(brief);
       setDirections(dirs || []);
       setBenchmarks(bmarks?.benchmarks || []);
+      setLandSummary(landSum);
 
       // Load delay analysis for selected project
       if (selectedProjectId) {
@@ -324,14 +330,17 @@ export const CMDashboard: React.FC = () => {
 
             {/* KPI 8 */}
             <div
-              onClick={() => setConnectedEntity({ type: 'LAND_PARCEL', id: 1, title: 'Land Acquisition Roster' })}
+              onClick={() => navigate('/land-litigation')}
               className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-sm hover:border-emerald-400 cursor-pointer"
             >
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pending Land (LA)</div>
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                <span>Pending Land (LA)</span>
+                <ExternalLink className="w-3 h-3 text-emerald-600" />
+              </div>
               <div className="text-xl font-extrabold text-slate-900 mt-1">
                 {overview?.pending_land_acquisition_parcels || 14} <span className="text-xs font-bold text-slate-500">parcels</span>
               </div>
-              <div className="text-[10px] text-slate-500 mt-1 font-medium">{overview?.pending_land_extent_hectares || 48.75} Hectares pending</div>
+              <div className="text-[10px] text-slate-500 mt-1 font-medium">{overview?.pending_land_extent_hectares || 48.75} Ha • Land Intelligence →</div>
             </div>
 
             {/* KPI 9 */}
@@ -357,7 +366,7 @@ export const CMDashboard: React.FC = () => {
 
             {/* KPI 11 */}
             <div
-              onClick={() => setConnectedEntity({ type: 'LEGAL_CASE', id: 1, title: 'Salem ROB Stay Order' })}
+              onClick={() => navigate('/land-litigation')}
               className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 shadow-sm hover:border-rose-400 cursor-pointer"
             >
               <div className="text-[11px] font-bold text-rose-800 uppercase tracking-wider flex items-center justify-between">
@@ -367,7 +376,7 @@ export const CMDashboard: React.FC = () => {
               <div className="text-xl font-extrabold text-rose-900 mt-1">
                 {overview?.open_legal_stays_count || 3}
               </div>
-              <div className="text-[10px] text-rose-700 mt-1">High Court Madras writs</div>
+              <div className="text-[10px] text-rose-700 mt-1">High Court writs • View Stays →</div>
             </div>
 
             {/* KPI 12 */}
@@ -779,6 +788,88 @@ export const CMDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* 5B. LAND ACQUISITION & COURT LITIGATION RISKS (CM EXECUTIVE CARD) */}
+        {landSummary && (
+          <section className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 border border-slate-700 shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-700/80">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    Land Acquisition & Court Litigation Risks
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                      SIMULATED
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    Statutory oversight of High Court stays, Revenue Department SLAs, and critical-path site handovers.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/land-litigation')}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition"
+              >
+                Open Command Centre <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Projects Blocked</span>
+                <div className="text-xl font-extrabold text-rose-400 mt-1">{landSummary.total_projects_blocked}</div>
+                <span className="text-[10px] text-slate-400">Land or stay hold</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Critical Path Blockers</span>
+                <div className="text-xl font-extrabold text-amber-400 mt-1">{landSummary.total_critical_path_blockers}</div>
+                <span className="text-[10px] text-slate-400">Impacting completion date</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Court Stays</span>
+                <div className="text-xl font-extrabold text-rose-400 mt-1">{landSummary.active_court_stays}</div>
+                <span className="text-[10px] text-slate-400">High Court / Sub-Courts</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Revenue Requests Overdue</span>
+                <div className="text-xl font-extrabold text-orange-400 mt-1">{landSummary.overdue_revenue_requests}</div>
+                <span className="text-[10px] text-slate-400">Exceeded statutory SLA</span>
+              </div>
+            </div>
+
+            {landSummary.high_risk_projects?.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                  High-Exposure Corridors Requiring Cabinet / DRO Intervention
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {landSummary.high_risk_projects.slice(0, 4).map((p) => (
+                    <div
+                      key={p.project_id}
+                      onClick={() => navigate(`/land-litigation?project_id=${p.project_id}`)}
+                      className="p-2.5 rounded-lg bg-slate-800/90 border border-slate-700 flex items-center justify-between hover:border-emerald-400 cursor-pointer transition text-xs"
+                    >
+                      <div className="truncate max-w-[70%]">
+                        <span className="font-bold text-white block truncate">{p.project_title}</span>
+                        <span className="text-[10px] text-slate-400">
+                          {p.critical_blockers_count} critical blockers • ₹{p.exposure_cr} Cr exposure
+                        </span>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        p.binding_prohibition ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      }`}>
+                        {p.binding_prohibition ? 'COURT STAY' : p.readiness_verdict}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* 6. ZONAL & DISTRICT SCORECARDS */}
         <section className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">

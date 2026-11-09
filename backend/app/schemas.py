@@ -2006,6 +2006,302 @@ class CMAIDailyBriefOut(BaseModel):
     ai_confidence_score: float
 
 
+# -------------------------------------------------------------
+# LAND ACQUISITION & LITIGATION INTELLIGENCE SCHEMAS
+# -------------------------------------------------------------
+
+class RevenueCoordinationRequestOut(BaseModel):
+    id: int
+    request_code: str
+    project_id: int
+    project_title: Optional[str] = None
+    parcel_id: Optional[int] = None
+    parcel_reference: Optional[str] = None
+    work_package_id: Optional[int] = None
+    district: str
+    taluk: Optional[str] = None
+    village: Optional[str] = None
+    survey_number: Optional[str] = None
+    requesting_highways_officer: str
+    receiving_revenue_authority: str
+    request_type: str
+    request_details: str
+    request_date: datetime.datetime
+    acknowledgment_date: Optional[datetime.datetime] = None
+    due_date: datetime.datetime
+    response_status: str
+    days_overdue: int
+    documents_received: Optional[str] = None
+    documents_missing: Optional[str] = None
+    clarification_required: Optional[str] = None
+    escalation_level: str
+    last_followup_date: Optional[datetime.datetime] = None
+    next_action: Optional[str] = None
+    resolution_evidence: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class RevenueCoordinationRequestIn(BaseModel):
+    project_id: int
+    parcel_id: Optional[int] = None
+    work_package_id: Optional[int] = None
+    district: str
+    taluk: Optional[str] = None
+    village: Optional[str] = None
+    survey_number: Optional[str] = None
+    requesting_highways_officer: str
+    receiving_revenue_authority: str
+    request_type: str
+    request_details: str
+    due_date: datetime.datetime
+    documents_missing: Optional[str] = None
+    escalation_level: Optional[str] = "NONE"
+
+class LitigationCaseDetailOut(BaseModel):
+    id: int
+    case_code: str
+    court_case_number: str
+    cnr_number: Optional[str] = None
+    court_name: str
+    jurisdiction: str
+    case_type: str
+    project_id: int
+    project_title: Optional[str] = None
+    parcel_id: Optional[int] = None
+    parcel_reference: Optional[str] = None
+    work_package_id: Optional[int] = None
+    petitioners: str
+    respondents: str
+    statutory_provisions: Optional[str] = None
+    dispute_nature: str
+    relief_sought: Optional[str] = None
+    interim_order_status: str
+    interim_order_details: Optional[str] = None
+    work_restricted: bool
+    restriction_scope: Optional[str] = None
+    latest_hearing_date: Optional[datetime.datetime] = None
+    next_hearing_date: Optional[datetime.datetime] = None
+    filing_compliance_deadline: Optional[datetime.datetime] = None
+    assigned_counsel_name: Optional[str] = None
+    counsel_contact: Optional[str] = None
+    govt_legal_coordinator: Optional[str] = None
+    instructions_sent_status: str
+    instructions_sent_date: Optional[datetime.datetime] = None
+    documents_supplied_status: str
+    counter_affidavit_status: str
+    counter_affidavit_filed_date: Optional[datetime.datetime] = None
+    hearing_attendance_record: Optional[str] = None
+    last_counsel_update: Optional[str] = None
+    last_update_date: Optional[datetime.datetime] = None
+    procedural_alert: Optional[str] = None
+    human_performance_review_notes: Optional[str] = None
+    disposition_type: str
+    recommended_action: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class SiteBlockerRecordOut(BaseModel):
+    id: int
+    blocker_code: str
+    project_id: int
+    project_title: Optional[str] = None
+    work_package_id: Optional[int] = None
+    chainage_start_km: float
+    chainage_end_km: float
+    chainage_display: str
+    category: str
+    cause_description: str
+    start_date: datetime.datetime
+    is_critical_path: bool
+    readiness_gate: str
+    resolution_owner: str
+    supporting_department: Optional[str] = None
+    action_required: str
+    target_resolution_date: datetime.datetime
+    current_status: str
+    financial_impact_cr: float
+    evidence_attachment: Optional[str] = None
+    escalation_history: Optional[str] = None
+    days_blocked: int = 0
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class FinancialExposureAssessmentOut(BaseModel):
+    id: int
+    project_id: int
+    project_title: Optional[str] = None
+    parcel_id: Optional[int] = None
+    case_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    project_value_affected_cr: float
+    actual_incremental_expenditure_cr: float
+    contractor_claims_submitted_cr: float
+    claims_admitted_cr: float
+    claims_disputed_cr: float
+    idle_resource_cost_cr: float
+    contractual_price_escalation_cr: float
+    additional_financing_cost_cr: float
+    legal_expenses_cr: float
+    forecast_incremental_cost_cr: float
+    potentially_avoidable_future_cost_cr: float
+    confirmed_recoverable_cr: float
+    public_benefit_delay_days: int
+    calculation_formula: Optional[str] = None
+    assumptions_and_sources: Optional[str] = None
+    confidence_score_pct: float
+    evidence_reference: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class PreConstructionRiskAssessmentOut(BaseModel):
+    id: int
+    assessment_code: str
+    project_id: int
+    project_title: Optional[str] = None
+    work_package_id: Optional[int] = None
+    assessment_stage: str
+    readiness_status: str
+    survey_title_status: str
+    acquisition_route_status: str
+    objections_proceedings_status: str
+    compensation_possession_status: str
+    active_legal_restrictions_status: str
+    has_binding_legal_prohibition: bool
+    forest_statutory_approvals_status: str
+    utility_dependencies_status: str
+    site_access_contractor_status: str
+    required_signoffs_status: str
+    missing_evidence_notes: Optional[str] = None
+    identified_risks_severity: Optional[str] = None
+    recommended_mitigations: Optional[str] = None
+    assigned_resolution_owner: str
+    authorized_override_granted: bool
+    override_justification: Optional[str] = None
+    override_officer_name: Optional[str] = None
+    override_timestamp: Optional[datetime.datetime] = None
+    override_denied_reason: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class PreConstructionOverrideIn(BaseModel):
+    justification: str
+    officer_name: str
+
+class LandLitigationResolutionActionOut(BaseModel):
+    id: int
+    action_code: str
+    project_id: int
+    project_title: Optional[str] = None
+    blocker_id: Optional[int] = None
+    case_id: Optional[int] = None
+    parcel_id: Optional[int] = None
+    action_title: str
+    action_description: str
+    action_type: str
+    assigned_department: str
+    assigned_officer: str
+    target_date: datetime.datetime
+    status: str
+    meeting_id: Optional[str] = None
+    meeting_decisions: Optional[str] = None
+    evidence_file_reference: Optional[str] = None
+    closure_remarks: Optional[str] = None
+    is_closed: bool
+    escalation_level: str
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+class LandLitigationResolutionActionIn(BaseModel):
+    project_id: int
+    blocker_id: Optional[int] = None
+    case_id: Optional[int] = None
+    parcel_id: Optional[int] = None
+    action_title: str
+    action_description: str
+    action_type: Optional[str] = "ASSIGN_ACTION"
+    assigned_department: str
+    assigned_officer: str
+    target_date: datetime.datetime
+    escalation_level: Optional[str] = "OFFICER"
+
+class LandLitigationOverviewOut(BaseModel):
+    # 12 Executive KPIs
+    total_parcels_required: int
+    parcels_acquired: int
+    parcels_pending_acquisition: int
+    parcels_under_litigation: int
+    parcels_with_court_restrictions: int
+    revenue_dept_responses_overdue: int
+    forest_statutory_clearances_pending: int
+    projects_blocked_by_land: int
+    projects_blocked_on_critical_path: int
+    actual_additional_expenditure_cr: float
+    estimated_future_financial_exposure_cr: float
+    sites_requiring_stop_work_or_readiness_review: int
+
+    # Summary Breakdowns
+    readiness_breakdown: dict
+    litigation_disposition_breakdown: dict
+    revenue_requests_by_district: dict
+    blockers_by_category: dict
+    top_blocked_projects: List[dict]
+    counsel_alerts_summary: List[dict]
+    data_mode: str = "SIMULATED"
+    provenance_notice: str = "SIMULATED GOVERNMENT RESEARCH DATASET - PRODUCED UNDER TN HIGHWAYS & REVENUE STANDARDS"
+    timestamp: str
+
+class LandLitigationCMSummaryOut(BaseModel):
+    top_10_blocked_projects: List[dict]
+    critical_court_restrictions: List[dict]
+    highest_financial_exposure_cases: List[dict]
+    revenue_responses_overdue: List[dict]
+    districts_with_recurring_blockers: List[dict]
+    pending_interdepartmental_decisions: List[dict]
+    upcoming_legal_deadlines: List[dict]
+    cases_requiring_senior_coordination: List[dict]
+    total_active_court_stays: int
+    total_financial_exposure_cr: float
+
+class LandLitigationAIQueryIn(BaseModel):
+    question_key: Optional[str] = None
+    custom_question: Optional[str] = None
+    project_id: Optional[int] = None
+    parcel_id: Optional[int] = None
+    case_id: Optional[int] = None
+
+class LandLitigationAIQueryOut(BaseModel):
+    question: str
+    verified_facts: List[str]
+    missing_information: List[str]
+    relevant_evidence: List[str]
+    responsible_resolution_authority: str
+    recommended_next_action: str
+    urgency_level: str
+    financial_exposure_cr: float
+    uncertainty_and_limitations: str
+    confidence_score: float
+    provenance: str = "SIMULATED"
+
+
+
 
 
 

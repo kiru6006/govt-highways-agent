@@ -1431,7 +1431,13 @@ export const Project360Page: React.FC = () => {
                     >
                       Utility Shifting (48 Poles & Waterlines)
                     </button>
-                    <div className="flex-1 text-right">
+                    <div className="flex-1 text-right flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => navigate(project?.id ? `/land-litigation?project_id=${project.id}` : '/land-litigation')}
+                        className="text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 hover:bg-emerald-100 inline-flex items-center gap-1 font-semibold"
+                      >
+                        <Scale className="w-3.5 h-3.5" /> Land & Litigation Intelligence
+                      </button>
                       <button
                         onClick={() => navigate('/land-utility')}
                         className="text-xs text-indigo-600 hover:underline inline-flex items-center gap-1 font-semibold"

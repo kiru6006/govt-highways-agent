@@ -116,7 +116,19 @@ import {
   DelayRootCauseAnalysis,
   CMEscalationsData,
   CMAIDailyBrief,
-  JurisdictionBenchmarkItem
+  JurisdictionBenchmarkItem,
+  LandLitigationOverview,
+  LandLitigationParcelItem,
+  Parcel360Dossier,
+  LitigationCaseItem,
+  RevenueCoordinationItem,
+  AdvocateMonitoringRecord,
+  SiteBlockerItem,
+  FinancialExposureDashboard,
+  PreConstructionRiskAssessmentItem,
+  LandLitigationResolutionActionItem,
+  LandLitigationCMSummary,
+  LandLitigationAIResponse
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -4331,6 +4343,166 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
+    });
+  },
+
+  // ============================================================================
+  // LAND ACQUISITION & LITIGATION INTELLIGENCE COMMAND CENTRE
+  // ============================================================================
+  getLandLitigationOverview: async (): Promise<LandLitigationOverview> => {
+    return await request<LandLitigationOverview>('/land-litigation/overview');
+  },
+
+  getLandLitigationParcels: async (params?: {
+    project_id?: number;
+    district?: string;
+    stage?: string;
+    critical_only?: boolean;
+    litigation_only?: boolean;
+    work_restricted_only?: boolean;
+    search?: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<{ total: number; skip: number; limit: number; items: LandLitigationParcelItem[]; simulated_data_badge: string }> => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', String(params.project_id));
+    if (params?.district) q.set('district', params.district);
+    if (params?.stage) q.set('stage', params.stage);
+    if (params?.critical_only !== undefined) q.set('critical_only', String(params.critical_only));
+    if (params?.litigation_only !== undefined) q.set('litigation_only', String(params.litigation_only));
+    if (params?.work_restricted_only !== undefined) q.set('work_restricted_only', String(params.work_restricted_only));
+    if (params?.search) q.set('search', params.search);
+    if (params?.skip !== undefined) q.set('skip', String(params.skip));
+    if (params?.limit !== undefined) q.set('limit', String(params.limit));
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<{ total: number; skip: number; limit: number; items: LandLitigationParcelItem[]; simulated_data_badge: string }>(`/land-litigation/parcels${qs}`);
+  },
+
+  getParcel360: async (parcelId: number): Promise<Parcel360Dossier> => {
+    return await request<Parcel360Dossier>(`/land-litigation/parcels/${parcelId}`);
+  },
+
+  getLitigationCases: async (params?: {
+    project_id?: number;
+    case_type?: string;
+    work_restricted?: boolean;
+    disposition_type?: string;
+    search?: string;
+  }): Promise<LitigationCaseItem[]> => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', String(params.project_id));
+    if (params?.case_type) q.set('case_type', params.case_type);
+    if (params?.work_restricted !== undefined) q.set('work_restricted', String(params.work_restricted));
+    if (params?.disposition_type) q.set('disposition_type', params.disposition_type);
+    if (params?.search) q.set('search', params.search);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<LitigationCaseItem[]>(`/land-litigation/litigation${qs}`);
+  },
+
+  getRevenueCoordination: async (params?: {
+    project_id?: number;
+    district?: string;
+    request_type?: string;
+    status?: string;
+    overdue_only?: boolean;
+  }): Promise<RevenueCoordinationItem[]> => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', String(params.project_id));
+    if (params?.district) q.set('district', params.district);
+    if (params?.request_type) q.set('request_type', params.request_type);
+    if (params?.status) q.set('status', params.status);
+    if (params?.overdue_only !== undefined) q.set('overdue_only', String(params.overdue_only));
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<RevenueCoordinationItem[]>(`/land-litigation/revenue-coordination${qs}`);
+  },
+
+  createRevenueCoordination: async (payload: any): Promise<RevenueCoordinationItem> => {
+    return await request<RevenueCoordinationItem>('/land-litigation/revenue-coordination', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getAdvocateMonitoring: async (alerts_only: boolean = false): Promise<AdvocateMonitoringRecord[]> => {
+    return await request<AdvocateMonitoringRecord[]>(`/land-litigation/advocate-monitoring?alerts_only=${alerts_only}`);
+  },
+
+  getSiteBlockers: async (params?: {
+    project_id?: number;
+    category?: string;
+    readiness_gate?: string;
+    is_critical_path?: boolean;
+    current_status?: string;
+  }): Promise<SiteBlockerItem[]> => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', String(params.project_id));
+    if (params?.category) q.set('category', params.category);
+    if (params?.readiness_gate) q.set('readiness_gate', params.readiness_gate);
+    if (params?.is_critical_path !== undefined) q.set('is_critical_path', String(params.is_critical_path));
+    if (params?.current_status) q.set('current_status', params.current_status);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<SiteBlockerItem[]>(`/land-litigation/site-blockers${qs}`);
+  },
+
+  getFinancialExposure: async (project_id?: number): Promise<FinancialExposureDashboard> => {
+    const qs = project_id ? `?project_id=${project_id}` : '';
+    return await request<FinancialExposureDashboard>(`/land-litigation/financial-exposure${qs}`);
+  },
+
+  getLandLitigationResolutions: async (params?: {
+    project_id?: number;
+    status?: string;
+    escalation_level?: string;
+  }): Promise<LandLitigationResolutionActionItem[]> => {
+    const q = new URLSearchParams();
+    if (params?.project_id) q.set('project_id', String(params.project_id));
+    if (params?.status) q.set('status', params.status);
+    if (params?.escalation_level) q.set('escalation_level', params.escalation_level);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return await request<LandLitigationResolutionActionItem[]>(`/land-litigation/resolutions${qs}`);
+  },
+
+  createResolutionAction: async (payload: any): Promise<LandLitigationResolutionActionItem> => {
+    return await request<LandLitigationResolutionActionItem>('/land-litigation/resolutions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  updateResolutionStatus: async (actionId: number, status: string, notes?: string, evidenceUrl?: string): Promise<LandLitigationResolutionActionItem> => {
+    const q = new URLSearchParams();
+    q.set('status', status);
+    if (notes) q.set('notes', notes);
+    if (evidenceUrl) q.set('resolution_evidence_url', evidenceUrl);
+    return await request<LandLitigationResolutionActionItem>(`/land-litigation/resolutions/${actionId}/status?${q.toString()}`, {
+      method: 'PUT'
+    });
+  },
+
+  getPreConstructionRiskAssessments: async (projectId?: number): Promise<PreConstructionRiskAssessmentItem[]> => {
+    const qs = projectId ? `?project_id=${projectId}` : '';
+    return await request<PreConstructionRiskAssessmentItem[]>(`/land-litigation/pre-construction-risk-assessment${qs}`);
+  },
+
+  overridePreConstructionAssessment: async (assessmentId: number, payload: { override_authority: string; justification: string }): Promise<PreConstructionRiskAssessmentItem> => {
+    return await request<PreConstructionRiskAssessmentItem>(`/land-litigation/pre-construction-risk-assessment/${assessmentId}/override`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getLandLitigationCMSummary: async (): Promise<LandLitigationCMSummary> => {
+    return await request<LandLitigationCMSummary>('/land-litigation/cm-summary');
+  },
+
+  queryLandLitigationAI: async (query: string, project_id?: number): Promise<LandLitigationAIResponse> => {
+    return await request<LandLitigationAIResponse>('/land-litigation/ai-ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, project_id })
     });
   }
 };

@@ -76,6 +76,7 @@ export const navigationItems: NavItem[] = [
 
   // Domain 5: Governance & Coordination (Control Layer)
   { id: '6', name: 'Dept. Connections', path: '/departments', icon: Network, badge: 'Inter-agency', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'governance' },
+  { id: 'land_litigation', name: 'Land & Litigation Intelligence', path: '/land-litigation', icon: Scale, badge: 'Control', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
   { id: '13', name: 'Land & Utility Coord', path: '/land-utility', icon: MapPin, groupId: 'governance' },
   { id: '14', name: 'Governance & Legal', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
   { id: '15', name: 'Citizen Services', path: '/citizen-services', icon: HeartHandshake, groupId: 'governance' },
