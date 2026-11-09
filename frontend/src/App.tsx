@@ -23,6 +23,7 @@ import { DepartmentsPage } from './pages/DepartmentsPage';
 import { LandUtilityPage } from './pages/LandUtilityPage';
 import { DigitalOfficePage } from './pages/DigitalOfficePage';
 import { LandLitigationPage } from './pages/LandLitigationPage';
+import { MajorWorksPortfolioPage } from './pages/MajorWorksPortfolioPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -89,6 +90,7 @@ const AppLayout: React.FC = () => {
             <Route path="/ckicp" element={<ProgrammeIntelligencePage />} />
             <Route path="/tnrsp" element={<ProgrammeIntelligencePage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/major-works" element={<MajorWorksPortfolioPage />} />
             <Route path="/leakage" element={<LeakageIntelligencePage />} />
             <Route path="/project-360" element={<Project360Page />} />
             <Route path="/directory" element={<DirectoryPage />} />

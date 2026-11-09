@@ -2305,3 +2305,313 @@ class LandLitigationAIQueryOut(BaseModel):
 
 
 
+
+
+# ============================================================================
+# MAJOR WORKS ₹50 CR+ & PROJECT BLOCKER SCHEMAS
+# ============================================================================
+
+class MajorWorksProjectReviewOut(BaseModel):
+    id: int
+    source_project_id: str
+    canonical_project_id: Optional[int] = None
+    project_name: str
+    portfolio_category: str
+    scheme_name: str
+    circle_name: str
+    division_name: str
+    road_or_bridge_details: Optional[str] = None
+    start_chainage_km: float = 0.0
+    end_chainage_km: float = 0.0
+    total_length_km: float = 0.0
+    contractor_name: Optional[str] = None
+    technical_sanction_cr: float
+    contract_value_cr: float
+    work_commencement_date: Optional[datetime.datetime] = None
+    agreement_completion_date: Optional[datetime.datetime] = None
+    estimated_completion_date: Optional[datetime.datetime] = None
+    completion_delay_days: int
+    physical_progress_pct: float
+    financial_progress_pct: float
+    expenditure_cr: float
+    agreement_milestones: Optional[str] = None
+    actual_milestone_status: Optional[str] = None
+    work_remarks: Optional[str] = None
+    land_acquisition_remarks: Optional[str] = None
+    forest_clearance_remarks: Optional[str] = None
+    court_case_remarks: Optional[str] = None
+    railway_approval_remarks: Optional[str] = None
+    utility_shifting_remarks: Optional[str] = None
+    source_document: str
+    source_page_number: int
+    review_reporting_date: datetime.datetime
+    verification_status: str
+    risk_level: str
+    data_mode: str = "SIMULATED"
+    active_blockers_count: Optional[int] = 0
+    critical_blockers_count: Optional[int] = 0
+    financial_exposure_cr: Optional[float] = 0.0
+
+    class Config:
+        from_attributes = True
+
+
+class MajorWorksPortfolioOverviewOut(BaseModel):
+    total_major_works_count: int
+    total_sanctioned_value_cr: float
+    total_contract_value_cr: float
+    total_expenditure_cr: float
+    avg_physical_progress_pct: float
+    avg_financial_progress_pct: float
+    projects_with_critical_blockers_count: int
+    projects_delayed_over_180_days_count: int
+    total_completion_delay_days: int
+    total_verified_actual_additional_cost_cr: float
+    total_forecast_financial_exposure_cr: float
+    total_potentially_avoidable_cost_cr: float
+    unresolved_interdepartmental_issues_count: int
+    data_freshness_timestamp: str
+    simulated_data_badge: str = "SIMULATED"
+    items: List[MajorWorksProjectReviewOut]
+
+
+class ProjectBlockerIn(BaseModel):
+    project_id: int
+    major_work_id: Optional[int] = None
+    work_package_id: Optional[int] = None
+    chainage_location: Optional[str] = None
+    category: str
+    subcategory: Optional[str] = None
+    description: str
+    affected_milestone: Optional[str] = None
+    is_critical_path: bool = True
+    primary_cause: str
+    contributing_causes: Optional[str] = None
+    responsible_resolution_authority: str
+    assigned_action_owner: str
+    external_department_or_contractor: Optional[str] = None
+    supporting_evidence: Optional[str] = None
+    financial_exposure_cr: Optional[float] = None
+    is_financial_exposure_quantified: bool = False
+    required_mitigation: Optional[str] = None
+    target_resolution_date: Optional[datetime.datetime] = None
+    escalation_level: Optional[str] = "DIVISION"
+
+
+class ProjectBlockerStatusUpdateIn(BaseModel):
+    status: str
+    closure_remarks: Optional[str] = None
+    closure_evidence: Optional[str] = None
+
+
+class ProjectBlockerOut(BaseModel):
+    id: int
+    blocker_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    major_work_id: Optional[int] = None
+    work_package_id: Optional[int] = None
+    chainage_location: Optional[str] = None
+    category: str
+    subcategory: Optional[str] = None
+    description: str
+    date_identified: datetime.datetime
+    blocker_start_date: datetime.datetime
+    current_status: str
+    affected_milestone: Optional[str] = None
+    is_critical_path: bool
+    primary_cause: str
+    contributing_causes: Optional[str] = None
+    responsible_resolution_authority: str
+    assigned_action_owner: str
+    external_department_or_contractor: Optional[str] = None
+    supporting_evidence: Optional[str] = None
+    supporting_evidence_url: Optional[str] = None
+    days_affected: int
+    financial_exposure_cr: Optional[float] = None
+    is_financial_exposure_quantified: bool
+    required_mitigation: Optional[str] = None
+    target_resolution_date: Optional[datetime.datetime] = None
+    escalation_level: str
+    last_update: datetime.datetime
+    closure_evidence: Optional[str] = None
+    closure_remarks: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DelayInvestigationOut(BaseModel):
+    id: int
+    investigation_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    major_work_id: Optional[int] = None
+    baseline_completion_date: datetime.datetime
+    approved_revised_completion_date: Optional[datetime.datetime] = None
+    current_forecast_completion_date: datetime.datetime
+    delay_days_from_baseline: int
+    delay_days_from_revised: int
+    milestone_health_verdict: str
+    physical_vs_financial_variance_pct: float
+    unanswered_interdept_requests_count: int
+    unanswered_days_max: int
+    critical_path_assessment: str
+    preliminary_findings: str
+    unverified_assumptions: Optional[str] = None
+    evidence_checklist_pending: Optional[str] = None
+    responsible_investigator_name: str
+    investigation_status: str
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class LossPreventionLedgerRecordOut(BaseModel):
+    id: int
+    ledger_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    major_work_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    account_name: str
+    amount_cr: Optional[float] = None
+    is_quantified: bool
+    formula_description: str
+    input_parameters_json: Optional[str] = None
+    source_reference: str
+    assumptions_text: Optional[str] = None
+    applicable_period: Optional[str] = None
+    data_confidence: str
+    is_verified: bool
+    responsible_reviewer_name: str
+    action_created_for_unquantified: bool
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class LossPreventionLedgerDashboardOut(BaseModel):
+    summary: dict
+    records: List[LossPreventionLedgerRecordOut]
+    simulated_data_badge: str = "SIMULATED"
+
+
+class MitigationRecommendationOut(BaseModel):
+    id: int
+    mitigation_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    major_work_id: Optional[int] = None
+    blocker_id: int
+    blocker_code: Optional[str] = None
+    stopping_what: str
+    stopping_why: str
+    supporting_evidence: str
+    missing_information: Optional[str] = None
+    resolving_authority: str
+    lawful_actions_available: str
+    expected_resolution_timeline_days: int
+    estimated_intervention_cost_cr: float
+    avoidable_delay_days: int
+    avoidable_cost_cr: float
+    approval_authority: str
+    verification_criteria: str
+    human_approval_status: str
+    approved_by_officer: Optional[str] = None
+    approval_date: Optional[datetime.datetime] = None
+    approval_notes: Optional[str] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class MitigationApproveIn(BaseModel):
+    approved: bool
+    approval_notes: Optional[str] = None
+    approving_officer: Optional[str] = None
+
+
+class PreConstructionGateCheckOut(BaseModel):
+    id: int
+    gate_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    major_work_id: Optional[int] = None
+    stage: str
+    chainage_km_start: float
+    chainage_km_end: float
+    land_survey_readiness_pct: float
+    acquisition_possession_cleared: bool
+    court_restrictions_active: bool
+    operative_stay_details: Optional[str] = None
+    forest_clearance_cleared: bool
+    environmental_approval_cleared: bool
+    railway_coordination_cleared: bool
+    utility_shifting_cleared: bool
+    design_technical_approved: bool
+    site_access_cleared: bool
+    contractual_readiness_cleared: bool
+    safety_requirements_cleared: bool
+    readiness_state: str  # RED, AMBER, GREEN
+    restriction_summary: str
+    lawful_resolution_required: str
+    authorized_override_status: str
+    override_justification: Optional[str] = None
+    override_authority: Optional[str] = None
+    override_date: Optional[datetime.datetime] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class PreConstructionGateOverrideIn(BaseModel):
+    override_authority: str
+    justification: str
+
+
+class MajorWorksCMSummaryOut(BaseModel):
+    total_major_works_reviewed: int
+    projects_with_critical_blockers: int
+    projects_with_completion_extensions: int
+    top_interdepartmental_dependencies: List[dict]
+    railway_coordination_risks: List[dict]
+    land_and_litigation_risks: List[dict]
+    actual_additional_expenditure_cr: float
+    forecast_incremental_expenditure_cr: float
+    potentially_avoidable_cost_cr: float
+    unresolved_corrective_actions_count: int
+    projects_requiring_senior_intervention: List[dict]
+    reference_case_5566: dict
+    simulated_data_badge: str = "SIMULATED"
+
+
+class MajorWorksAIQueryIn(BaseModel):
+    query: str
+    project_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+
+
+class MajorWorksAIQueryOut(BaseModel):
+    query: str
+    verified_facts: List[str]
+    missing_information: List[str]
+    evidence_references: List[str]
+    resolving_authority: str
+    recommended_next_action: str
+    lawful_options_available: List[str]
+    avoidable_exposure_cr: float
+    urgency_level: str
+    uncertainty_and_limitations: str
+    confidence_score: float
+    simulated_data_badge: str = "SIMULATED"

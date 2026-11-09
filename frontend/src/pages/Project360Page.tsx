@@ -54,7 +54,9 @@ import {
   Cpu,
   FolderOpen,
   ClipboardList,
-  Network
+  Network,
+  ShieldAlert,
+  Lock
 } from 'lucide-react';
 import { ConnectedEntityPanel } from '../components/connectivity/ConnectedEntityPanel';
 
@@ -74,7 +76,8 @@ export type Project360TabKey =
   | 'ai_findings'
   | 'documents'
   | 'actions_history'
-  | 'connectivity';
+  | 'connectivity'
+  | 'blockers_mitigation';
 
 interface TabDefinition {
   key: Project360TabKey;
@@ -130,6 +133,12 @@ export const Project360Page: React.FC = () => {
   const [selectedDocPreview, setSelectedDocPreview] = useState<any | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
+  // Major Works Blocker & Mitigation Intelligence State
+  const [projectBlockers, setProjectBlockers] = useState<any[]>([]);
+  const [projectInvestigation, setProjectInvestigation] = useState<any | null>(null);
+  const [projectLedgerRecords, setProjectLedgerRecords] = useState<any[]>([]);
+  const [projectGates, setProjectGates] = useState<any[]>([]);
+
   // Load project portfolio list
   useEffect(() => {
     loadPortfolio();
@@ -167,6 +176,22 @@ export const Project360Page: React.FC = () => {
       const detail = await api.getProject360(projectId);
       setSelectedProject(detail);
       setSearchParams({ id: String(projectId) });
+
+      // Load project blocker & loss mitigation data
+      try {
+        const [blks, inv, led, gts] = await Promise.all([
+          api.getBlockers({ project_id: projectId }),
+          api.getDelayInvestigation(projectId),
+          api.getFinancialLossLedger({ project_id: projectId }),
+          api.getPreConstructionGates({ project_id: projectId })
+        ]);
+        setProjectBlockers(blks || []);
+        setProjectInvestigation(inv || null);
+        setProjectLedgerRecords(led?.records || []);
+        setProjectGates(gts || []);
+      } catch (err) {
+        console.warn('Blocker intelligence fetch fallback:', err);
+      }
     } catch (err) {
       console.error('Failed to load project 360 detail', err);
     } finally {
@@ -312,9 +337,10 @@ export const Project360Page: React.FC = () => {
       { key: 'ai_findings', label: '13. AI Findings', shortLabel: 'AI Findings', icon: Sparkles, badge: aiCount > 0 ? aiCount : undefined },
       { key: 'documents', label: '14. Documents', shortLabel: 'Documents', icon: FileText, badge: docCount },
       { key: 'actions_history', label: '15. Actions & History', shortLabel: 'Actions & Trail', icon: History, badge: actionCount > 0 ? actionCount : undefined },
-      { key: 'connectivity', label: '16. Universal Connectivity', shortLabel: 'Entity Web', icon: Network, badge: 'Live' }
+      { key: 'connectivity', label: '16. Universal Connectivity', shortLabel: 'Entity Web', icon: Network, badge: 'Live' },
+      { key: 'blockers_mitigation', label: '17. Blockers & Mitigation', shortLabel: 'Blockers & Risk', icon: ShieldAlert, badge: projectBlockers.length > 0 ? projectBlockers.length : undefined }
     ];
-  }, [selectedProject]);
+  }, [selectedProject, projectBlockers]);
 
   // Derived KPI calculations for executive summary
   const project = selectedProject?.project;
@@ -2326,6 +2352,202 @@ export const Project360Page: React.FC = () => {
                     entityId={selectedProject.id || selectedProject.project?.id || 1}
                     entityTitle={selectedProject.title}
                   />
+                </div>
+              )}
+
+              {/* TAB 17: BLOCKERS & MITIGATION INTELLIGENCE */}
+              {activeTab === 'blockers_mitigation' && (
+                <div className="space-y-6">
+                  {/* Executive Header Banner */}
+                  <div className="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold uppercase tracking-wider">
+                          PROJECT INTELLIGENCE COMMAND
+                        </span>
+                        <span className="text-xs text-slate-300 font-mono">
+                          ID: {selectedProject?.id || selectedProject?.project?.id}
+                        </span>
+                      </div>
+                      <h4 className="text-base font-bold text-white flex items-center gap-2">
+                        <ShieldAlert className="w-5 h-5 text-indigo-400" />
+                        Project Blocker, Delay Investigation & Loss Prevention Dossier
+                      </h4>
+                      <p className="text-xs text-slate-300 max-w-2xl">
+                        Integrated root-cause tracking across 17 categories, non-double-counted financial exposure ledger, and pre-construction risk gates.
+                      </p>
+                    </div>
+
+                    <a
+                      href="#/major-works"
+                      className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
+                    >
+                      Statewide ₹50 Cr+ Portfolio <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+
+                  {/* Delay Investigation Card */}
+                  {projectInvestigation && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-indigo-700">{projectInvestigation.investigation_code}</span>
+                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-red-100 text-red-800 border border-red-200">
+                            {projectInvestigation.milestone_health_verdict.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <span className="text-xs text-slate-500">
+                          Investigator: <strong>{projectInvestigation.responsible_investigator_name}</strong>
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Baseline Completion</span>
+                          <div className="text-xs font-bold text-slate-800 mt-0.5">
+                            {new Date(projectInvestigation.baseline_completion_date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Current Forecast</span>
+                          <div className="text-xs font-bold text-amber-700 mt-0.5">
+                            {new Date(projectInvestigation.current_forecast_completion_date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Delay from Baseline</span>
+                          <div className="text-xs font-bold text-red-700 mt-0.5">
+                            +{projectInvestigation.delay_days_from_baseline} days
+                          </div>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Physical vs Financial Gap</span>
+                          <div className="text-xs font-bold text-indigo-700 mt-0.5">
+                            {projectInvestigation.physical_vs_financial_variance_pct}% variance
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div>
+                          <strong className="text-slate-700">Critical Path Assessment:</strong>
+                          <p className="text-slate-600 mt-0.5 bg-white p-2 rounded border border-slate-200">
+                            {projectInvestigation.critical_path_assessment}
+                          </p>
+                        </div>
+                        <div>
+                          <strong className="text-slate-700">Preliminary Findings:</strong>
+                          <p className="text-slate-600 mt-0.5 bg-white p-2 rounded border border-slate-200">
+                            {projectInvestigation.preliminary_findings}
+                          </p>
+                        </div>
+                        {projectInvestigation.unverified_assumptions && (
+                          <div>
+                            <strong className="text-amber-800">Unverified Assumptions (Requires Evidence):</strong>
+                            <p className="text-amber-900 mt-0.5 bg-amber-50 p-2 rounded border border-amber-200">
+                              {projectInvestigation.unverified_assumptions}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Active Blockers List */}
+                  <div className="space-y-3">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2 border-b border-slate-200 pb-2">
+                      <ShieldAlert className="w-4 h-4 text-red-600" />
+                      Active Site & Statutory Blockers ({projectBlockers.length})
+                    </h5>
+
+                    {projectBlockers.length === 0 ? (
+                      <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center text-xs text-slate-500">
+                        No unresolved critical path blockers recorded for this project.
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {projectBlockers.map(b => (
+                          <div key={b.id} className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 shadow-sm">
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-mono text-xs font-bold text-blue-700">{b.blocker_code}</span>
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 border border-slate-200">
+                                    {b.category.replace(/_/g, ' ')}
+                                  </span>
+                                  {b.is_critical_path && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-100 text-red-700 border border-red-200 font-bold">
+                                      CRITICAL
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <span className="text-[11px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
+                                {b.current_status.replace(/_/g, ' ')}
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-700">{b.description}</p>
+
+                            <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-200">
+                              <div>
+                                <span className="text-slate-500">Authority:</span>
+                                <div className="font-medium text-slate-800 truncate">{b.responsible_resolution_authority}</div>
+                              </div>
+                              <div>
+                                <span className="text-slate-500">Days Affected:</span>
+                                <div className="font-medium text-amber-700">{b.days_affected} days</div>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-slate-500">Financial Exposure:</span>
+                                <div>
+                                  {b.is_financial_exposure_quantified && b.financial_exposure_cr ? (
+                                    <span className="font-bold text-red-700">₹{b.financial_exposure_cr.toFixed(2)} Cr</span>
+                                  ) : (
+                                    <span className="text-slate-500 italic font-mono text-[10px]">Financial exposure not yet quantified</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pre-Construction Risk Gates */}
+                  {projectGates.length > 0 && (
+                    <div className="space-y-3">
+                      <h5 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <Lock className="w-4 h-4 text-slate-700" />
+                        Pre-Construction Statutory Risk Gates
+                      </h5>
+                      <div className="space-y-2">
+                        {projectGates.map(g => (
+                          <div key={g.id} className="p-3 bg-white border border-slate-200 rounded-lg space-y-1.5 text-xs">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono font-bold text-slate-800">{g.gate_code}</span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                                g.readiness_state === 'RED'
+                                  ? 'bg-red-100 text-red-700 border-red-300'
+                                  : g.readiness_state === 'AMBER'
+                                  ? 'bg-amber-100 text-amber-700 border-amber-300'
+                                  : 'bg-emerald-100 text-emerald-700 border-emerald-300'
+                              }`}>
+                                {g.readiness_state}
+                              </span>
+                            </div>
+                            <p className="text-slate-600">{g.restriction_summary}</p>
+                            {g.court_restrictions_active && (
+                              <div className="p-2 bg-red-50 border border-red-200 rounded text-[11px] text-red-800 font-semibold flex items-center gap-1.5">
+                                <Lock className="w-3.5 h-3.5" /> BINDING COURT STAY: {g.operative_stay_details}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

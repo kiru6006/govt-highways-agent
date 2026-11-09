@@ -2240,3 +2240,216 @@ class LandLitigationResolutionAction(Base):
     project = relationship("Project")
 
 
+
+
+# ============================================================================
+# MAJOR WORKS ₹50 CR+ & PROJECT BLOCKER MITIGATION INTELLIGENCE
+# ============================================================================
+
+class MajorWorksProjectReviewSnapshot(Base):
+    __tablename__ = "major_works_review_snapshots"
+    id = Column(Integer, primary_key=True, index=True)
+    source_project_id = Column(String(50), index=True, nullable=False)  # e.g., "5566"
+    canonical_project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    project_name = Column(String(300), nullable=False)
+    portfolio_category = Column(String(50), default="MAJOR_WORKS_50CR", index=True)
+    scheme_name = Column(String(150), nullable=False)  # e.g., "CRIDP", "Railway Works Programme", "State Funds"
+    circle_name = Column(String(100), nullable=False)
+    division_name = Column(String(100), nullable=False)
+    road_or_bridge_details = Column(String(250), nullable=True)
+    start_chainage_km = Column(Float, default=0.0)
+    end_chainage_km = Column(Float, default=0.0)
+    total_length_km = Column(Float, default=0.0)
+    contractor_name = Column(String(200), nullable=True)
+    technical_sanction_cr = Column(Float, default=0.0)
+    contract_value_cr = Column(Float, default=0.0)
+    work_commencement_date = Column(DateTime, nullable=True)
+    agreement_completion_date = Column(DateTime, nullable=True)
+    estimated_completion_date = Column(DateTime, nullable=True)
+    completion_delay_days = Column(Integer, default=0)
+    physical_progress_pct = Column(Float, default=0.0)
+    financial_progress_pct = Column(Float, default=0.0)
+    expenditure_cr = Column(Float, default=0.0)
+    agreement_milestones = Column(Text, nullable=True)
+    actual_milestone_status = Column(Text, nullable=True)
+    work_remarks = Column(Text, nullable=True)
+    land_acquisition_remarks = Column(Text, nullable=True)
+    forest_clearance_remarks = Column(Text, nullable=True)
+    court_case_remarks = Column(Text, nullable=True)
+    railway_approval_remarks = Column(Text, nullable=True)
+    utility_shifting_remarks = Column(Text, nullable=True)
+    source_document = Column(String(200), default="More than 50Cr works details as on 21.09.2026.pdf")
+    source_page_number = Column(Integer, default=1)
+    review_reporting_date = Column(DateTime, default=datetime.datetime(2026, 9, 21, tzinfo=datetime.timezone.utc))
+    verification_status = Column(String(100), default="OFFICIAL_MINISTERIAL_REVIEW")
+    risk_level = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    canonical_project = relationship("Project")
+
+
+class ProjectBlocker(Base):
+    __tablename__ = "project_blockers"
+    id = Column(Integer, primary_key=True, index=True)
+    blocker_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    chainage_location = Column(String(100), nullable=True)  # e.g., "km 1/200 to 1/800"
+    category = Column(String(100), nullable=False, index=True)  # 17 standard categories
+    subcategory = Column(String(150), nullable=True)
+    description = Column(Text, nullable=False)
+    date_identified = Column(DateTime, default=datetime.datetime.utcnow)
+    blocker_start_date = Column(DateTime, default=datetime.datetime.utcnow)
+    current_status = Column(String(50), default="ACTIVE_BLOCKER", index=True)  # ACTIVE_BLOCKER, INVESTIGATION_ONGOING, ESCALATED, RESOLVED, CLOSED
+    affected_milestone = Column(String(200), nullable=True)
+    is_critical_path = Column(Boolean, default=True, index=True)
+    primary_cause = Column(Text, nullable=False)
+    contributing_causes = Column(Text, nullable=True)
+    responsible_resolution_authority = Column(String(200), nullable=False)  # e.g. "Southern Railway (DRM/GOC)"
+    assigned_action_owner = Column(String(200), nullable=False)  # e.g. "Divisional Engineer (Highways)"
+    external_department_or_contractor = Column(String(200), nullable=True)
+    supporting_evidence = Column(Text, nullable=True)
+    supporting_evidence_url = Column(String(300), nullable=True)
+    days_affected = Column(Integer, default=0)
+    financial_exposure_cr = Column(Float, nullable=True)
+    is_financial_exposure_quantified = Column(Boolean, default=False)
+    required_mitigation = Column(Text, nullable=True)
+    target_resolution_date = Column(DateTime, nullable=True)
+    escalation_level = Column(String(50), default="DIVISION")  # DIVISION, CIRCLE, CHIEF_ENGINEER, SECRETARY, MINISTER_CM
+    last_update = Column(DateTime, default=datetime.datetime.utcnow)
+    closure_evidence = Column(Text, nullable=True)
+    closure_remarks = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    major_work = relationship("MajorWorksProjectReviewSnapshot")
+
+
+class DelayInvestigation(Base):
+    __tablename__ = "delay_investigations"
+    id = Column(Integer, primary_key=True, index=True)
+    investigation_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    baseline_completion_date = Column(DateTime, nullable=False)
+    approved_revised_completion_date = Column(DateTime, nullable=True)
+    current_forecast_completion_date = Column(DateTime, nullable=False)
+    delay_days_from_baseline = Column(Integer, default=0)
+    delay_days_from_revised = Column(Integer, default=0)
+    milestone_health_verdict = Column(String(50), default="CRITICAL_PATH_BLOCKED")  # ON_TRACK, UNEXPLAINED_EXTENSION, PROGRESS_CONFLICT, CRITICAL_PATH_BLOCKED
+    physical_vs_financial_variance_pct = Column(Float, default=0.0)
+    unanswered_interdept_requests_count = Column(Integer, default=0)
+    unanswered_days_max = Column(Integer, default=0)
+    critical_path_assessment = Column(Text, nullable=False)
+    preliminary_findings = Column(Text, nullable=False)
+    unverified_assumptions = Column(Text, nullable=True)
+    evidence_checklist_pending = Column(Text, nullable=True)
+    responsible_investigator_name = Column(String(150), default="State Project Audit Cell")
+    investigation_status = Column(String(50), default="IN_PROGRESS")
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    major_work = relationship("MajorWorksProjectReviewSnapshot")
+
+
+class LossPreventionLedgerRecord(Base):
+    __tablename__ = "loss_prevention_ledger_records"
+    id = Column(Integer, primary_key=True, index=True)
+    ledger_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    blocker_id = Column(Integer, ForeignKey("project_blockers.id"), nullable=True, index=True)
+    account_name = Column(String(100), nullable=False, index=True)  # 12 itemized accounts
+    amount_cr = Column(Float, nullable=True)
+    is_quantified = Column(Boolean, default=True)
+    formula_description = Column(Text, nullable=False)
+    input_parameters_json = Column(Text, nullable=True)
+    source_reference = Column(String(250), nullable=False)
+    assumptions_text = Column(Text, nullable=True)
+    applicable_period = Column(String(100), nullable=True)
+    data_confidence = Column(String(50), default="HIGH")  # HIGH, MEDIUM, LOW_PRELIMINARY, UNQUANTIFIED
+    is_verified = Column(Boolean, default=False)
+    responsible_reviewer_name = Column(String(150), nullable=False)
+    action_created_for_unquantified = Column(Boolean, default=False)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    major_work = relationship("MajorWorksProjectReviewSnapshot")
+    blocker = relationship("ProjectBlocker")
+
+
+class MitigationRecommendation(Base):
+    __tablename__ = "mitigation_recommendations"
+    id = Column(Integer, primary_key=True, index=True)
+    mitigation_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    blocker_id = Column(Integer, ForeignKey("project_blockers.id"), nullable=False, index=True)
+    stopping_what = Column(Text, nullable=False)
+    stopping_why = Column(Text, nullable=False)
+    supporting_evidence = Column(Text, nullable=False)
+    missing_information = Column(Text, nullable=True)
+    resolving_authority = Column(String(200), nullable=False)
+    lawful_actions_available = Column(Text, nullable=False)
+    expected_resolution_timeline_days = Column(Integer, default=30)
+    estimated_intervention_cost_cr = Column(Float, default=0.0)
+    avoidable_delay_days = Column(Integer, default=0)
+    avoidable_cost_cr = Column(Float, default=0.0)
+    approval_authority = Column(String(200), nullable=False)
+    verification_criteria = Column(Text, nullable=False)
+    human_approval_status = Column(String(50), default="PENDING_APPROVAL")  # PENDING_APPROVAL, APPROVED, REJECTED, SUPERSEDED
+    approved_by_officer = Column(String(150), nullable=True)
+    approval_date = Column(DateTime, nullable=True)
+    approval_notes = Column(Text, nullable=True)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    major_work = relationship("MajorWorksProjectReviewSnapshot")
+    blocker = relationship("ProjectBlocker")
+
+
+class PreConstructionGateCheck(Base):
+    __tablename__ = "pre_construction_gate_checks"
+    id = Column(Integer, primary_key=True, index=True)
+    gate_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    stage = Column(String(50), nullable=False)  # PRE_TENDER, PRE_MOBILISATION, PRE_HANDOVER_AT_CHAINAGE
+    chainage_km_start = Column(Float, default=0.0)
+    chainage_km_end = Column(Float, default=0.0)
+    land_survey_readiness_pct = Column(Float, default=0.0)
+    acquisition_possession_cleared = Column(Boolean, default=False)
+    court_restrictions_active = Column(Boolean, default=False)
+    operative_stay_details = Column(Text, nullable=True)
+    forest_clearance_cleared = Column(Boolean, default=False)
+    environmental_approval_cleared = Column(Boolean, default=False)
+    railway_coordination_cleared = Column(Boolean, default=False)
+    utility_shifting_cleared = Column(Boolean, default=False)
+    design_technical_approved = Column(Boolean, default=False)
+    site_access_cleared = Column(Boolean, default=False)
+    contractual_readiness_cleared = Column(Boolean, default=False)
+    safety_requirements_cleared = Column(Boolean, default=False)
+    readiness_state = Column(String(20), default="RED")  # RED, AMBER, GREEN
+    restriction_summary = Column(Text, nullable=False)
+    lawful_resolution_required = Column(Text, nullable=False)
+    authorized_override_status = Column(String(50), default="NONE")  # NONE, REVIEWED_AND_PERMITTED, STRICTLY_BLOCKED_BY_INJUNCTION
+    override_justification = Column(Text, nullable=True)
+    override_authority = Column(String(150), nullable=True)
+    override_date = Column(DateTime, nullable=True)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    major_work = relationship("MajorWorksProjectReviewSnapshot")

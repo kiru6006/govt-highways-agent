@@ -788,3 +788,4 @@ export function getFallbackLandLitigationAI(query: string): LandLitigationAIResp
     simulated_data_badge: 'SIMULATED'
   };
 }
+

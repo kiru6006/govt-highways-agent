@@ -3238,3 +3238,300 @@ export interface LandLitigationAIResponse {
   limitations_disclaimer: string;
   simulated_data_badge: string;
 }
+
+// ============================================================
+// MAJOR WORKS ₹50 CR+ & BLOCKER MITIGATION INTELLIGENCE TYPES
+// ============================================================
+
+export interface MajorWorksProjectItem {
+  id: number;
+  source_project_id: string; // e.g. "5566"
+  canonical_project_id?: number;
+  project_name: string;
+  portfolio_category: string;
+  scheme_name: string;
+  circle_name: string;
+  division_name: string;
+  road_or_bridge_details?: string;
+  start_chainage_km: number;
+  end_chainage_km: number;
+  total_length_km: number;
+  contractor_name?: string;
+  technical_sanction_cr: number;
+  contract_value_cr: number;
+  work_commencement_date?: string;
+  agreement_completion_date?: string;
+  estimated_completion_date?: string;
+  completion_delay_days: number;
+  physical_progress_pct: number;
+  financial_progress_pct: number;
+  expenditure_cr: number;
+  agreement_milestones?: string;
+  actual_milestone_status?: string;
+  work_remarks?: string;
+  land_acquisition_remarks?: string;
+  forest_clearance_remarks?: string;
+  court_case_remarks?: string;
+  railway_approval_remarks?: string;
+  utility_shifting_remarks?: string;
+  source_document: string;
+  source_page_number: number;
+  review_reporting_date: string;
+  verification_status: string;
+  risk_level: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  active_blockers_count?: number;
+  critical_blockers_count?: number;
+  financial_exposure_cr?: number;
+  simulated_data_badge?: string;
+}
+
+export interface MajorWorksPortfolioOverview {
+  total_major_works_count: number;
+  total_sanctioned_value_cr: number;
+  total_contract_value_cr: number;
+  total_expenditure_cr: number;
+  avg_physical_progress_pct: number;
+  avg_financial_progress_pct: number;
+  projects_with_critical_blockers_count: number;
+  projects_delayed_over_180_days_count: number;
+  total_completion_delay_days: number;
+  total_verified_actual_additional_cost_cr: number;
+  total_forecast_financial_exposure_cr: number;
+  total_potentially_avoidable_cost_cr: number;
+  unresolved_interdepartmental_issues_count: number;
+  data_freshness_timestamp: string;
+  simulated_data_badge: string;
+  items: MajorWorksProjectItem[];
+}
+
+export interface ProjectBlockerItem {
+  id: number;
+  blocker_code: string;
+  project_id: number;
+  project_name?: string;
+  major_work_id?: number;
+  major_work_source_id?: string;
+  work_package_id?: number;
+  chainage_location?: string;
+  category: string;
+  subcategory?: string;
+  description: string;
+  date_identified: string;
+  blocker_start_date: string;
+  current_status: 'ACTIVE_BLOCKER' | 'INVESTIGATION_ONGOING' | 'ESCALATED' | 'RESOLVED' | 'CLOSED';
+  affected_milestone?: string;
+  is_critical_path: boolean;
+  primary_cause: string;
+  contributing_causes?: string;
+  responsible_resolution_authority: string;
+  assigned_action_owner: string;
+  external_department_or_contractor?: string;
+  supporting_evidence?: string;
+  supporting_evidence_url?: string;
+  days_affected: number;
+  financial_exposure_cr?: number;
+  is_financial_exposure_quantified: boolean;
+  required_mitigation?: string;
+  target_resolution_date?: string;
+  escalation_level: 'DIVISION' | 'CIRCLE' | 'CHIEF_ENGINEER' | 'SECRETARY' | 'MINISTER_CM';
+  last_update: string;
+  closure_evidence?: string;
+  closure_remarks?: string;
+  simulated_data_badge?: string;
+}
+
+export interface DelayInvestigationItem {
+  id: number;
+  investigation_code: string;
+  project_id: number;
+  project_name?: string;
+  major_work_id?: number;
+  major_work_source_id?: string;
+  baseline_completion_date: string;
+  approved_revised_completion_date?: string;
+  current_forecast_completion_date: string;
+  delay_days_from_baseline: number;
+  delay_days_from_revised: number;
+  milestone_health_verdict: 'ON_TRACK' | 'UNEXPLAINED_EXTENSION' | 'PROGRESS_CONFLICT' | 'CRITICAL_PATH_BLOCKED';
+  physical_vs_financial_variance_pct: number;
+  unanswered_interdept_requests_count: number;
+  unanswered_days_max: number;
+  critical_path_assessment: string;
+  preliminary_findings: string;
+  unverified_assumptions?: string;
+  evidence_checklist_pending?: string;
+  responsible_investigator_name: string;
+  investigation_status: 'IN_PROGRESS' | 'COMPLETED' | 'ESCALATED_TO_CABINET';
+  simulated_data_badge?: string;
+}
+
+export interface LossPreventionLedgerRecordItem {
+  id: number;
+  ledger_code: string;
+  project_id: number;
+  project_name?: string;
+  major_work_id?: number;
+  major_work_source_id?: string;
+  blocker_id?: number;
+  blocker_code?: string;
+  account_name: string;
+  amount_cr?: number;
+  is_quantified: boolean;
+  formula_description: string;
+  input_parameters_json?: string;
+  source_reference: string;
+  assumptions_text?: string;
+  applicable_period?: string;
+  data_confidence: 'HIGH' | 'MEDIUM' | 'LOW_PRELIMINARY' | 'UNQUANTIFIED';
+  is_verified: boolean;
+  responsible_reviewer_name: string;
+  action_created_for_unquantified: boolean;
+  simulated_data_badge?: string;
+}
+
+export interface LossPreventionLedgerDashboard {
+  summary: {
+    actual_additional_expenditure_cr: number;
+    contractor_claims_submitted_cr: number;
+    claims_admitted_cr: number;
+    claims_disputed_cr: number;
+    idle_resource_expenditure_cr: number;
+    contractual_escalation_10ca_cr: number;
+    additional_financing_costs_cr: number;
+    legal_expenses_cr: number;
+    forecast_incremental_expenditure_cr: number;
+    potentially_avoidable_future_expenditure_cr: number;
+    confirmed_recoverable_amounts_cr: number;
+    delayed_public_service_benefits_days: number;
+    accounting_guard_statement: string;
+  };
+  records: LossPreventionLedgerRecordItem[];
+  simulated_data_badge: string;
+}
+
+export interface MitigationRecommendationItem {
+  id: number;
+  mitigation_code: string;
+  project_id: number;
+  project_name?: string;
+  major_work_id?: number;
+  major_work_source_id?: string;
+  blocker_id: number;
+  blocker_code?: string;
+  stopping_what: string;
+  stopping_why: string;
+  supporting_evidence: string;
+  missing_information?: string;
+  resolving_authority: string;
+  lawful_actions_available: string;
+  expected_resolution_timeline_days: number;
+  estimated_intervention_cost_cr: number;
+  avoidable_delay_days: number;
+  avoidable_cost_cr: number;
+  approval_authority: string;
+  verification_criteria: string;
+  human_approval_status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'SUPERSEDED';
+  approved_by_officer?: string;
+  approval_date?: string;
+  approval_notes?: string;
+  simulated_data_badge?: string;
+}
+
+export interface PreConstructionGateCheckItem {
+  id: number;
+  gate_code: string;
+  project_id: number;
+  project_name?: string;
+  major_work_id?: number;
+  stage: 'PRE_TENDER' | 'PRE_MOBILISATION' | 'PRE_HANDOVER_AT_CHAINAGE';
+  chainage_km_start: number;
+  chainage_km_end: number;
+  land_survey_readiness_pct: number;
+  acquisition_possession_cleared: boolean;
+  court_restrictions_active: boolean;
+  operative_stay_details?: string;
+  forest_clearance_cleared: boolean;
+  environmental_approval_cleared: boolean;
+  railway_coordination_cleared: boolean;
+  utility_shifting_cleared: boolean;
+  design_technical_approved: boolean;
+  site_access_cleared: boolean;
+  contractual_readiness_cleared: boolean;
+  safety_requirements_cleared: boolean;
+  readiness_state: 'RED' | 'AMBER' | 'GREEN';
+  restriction_summary: string;
+  lawful_resolution_required: string;
+  authorized_override_status: 'NONE' | 'REVIEWED_AND_PERMITTED' | 'STRICTLY_BLOCKED_BY_INJUNCTION';
+  override_justification?: string;
+  override_authority?: string;
+  override_date?: string;
+  simulated_data_badge?: string;
+}
+
+export interface MajorWorksCMSummary {
+  total_major_works_reviewed: number;
+  projects_with_critical_blockers: number;
+  projects_with_completion_extensions: number;
+  top_interdepartmental_dependencies: Array<{
+    department: string;
+    open_blockers: number;
+    impacted_projects_count: number;
+    lead_authority: string;
+    urgency: string;
+  }>;
+  railway_coordination_risks: Array<{
+    project_name: string;
+    source_id: string;
+    delay_days: number;
+    railway_issue: string;
+    expenditure_cr: number;
+    physical_pct: number;
+    status: string;
+  }>;
+  land_and_litigation_risks: Array<{
+    project_name: string;
+    court_stay_active: boolean;
+    stay_details: string;
+    exposure_cr: number;
+    status: string;
+  }>;
+  actual_additional_expenditure_cr: number;
+  forecast_incremental_expenditure_cr: number;
+  potentially_avoidable_cost_cr: number;
+  unresolved_corrective_actions_count: number;
+  projects_requiring_senior_intervention: Array<{
+    project_name: string;
+    source_id: string;
+    reason: string;
+    urgency: string;
+  }>;
+  reference_case_5566: {
+    project_id: string;
+    title: string;
+    physical_progress_pct: number;
+    expenditure_cr: number;
+    agreement_completion_date: string;
+    estimated_completion_date: string;
+    delay_days: number;
+    verified_facts: string[];
+    unverified_assumptions: string[];
+    evidence_required: string[];
+    recommended_next_action: string;
+  };
+  simulated_data_badge: string;
+}
+
+export interface MajorWorksAIResponse {
+  query: string;
+  verified_facts: string[];
+  missing_information: string[];
+  evidence_references: string[];
+  resolving_authority: string;
+  recommended_next_action: string;
+  lawful_options_available: string[];
+  avoidable_exposure_cr: number;
+  urgency_level: string;
+  uncertainty_and_limitations: string;
+  confidence_score: number;
+  simulated_data_badge: string;
+}

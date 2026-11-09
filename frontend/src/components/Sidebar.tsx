@@ -59,6 +59,7 @@ export const navigationItems: NavItem[] = [
   { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 
   // Domain 2: Project Intelligence (Core Layer)
+  { id: 'major_works', name: 'Major Works ₹50 Cr+', path: '/major-works', icon: Building2, badge: 'Chennai 31', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'projects' },
   { id: '3', name: 'Project Portfolio Grid', path: '/projects', icon: FolderGit2, groupId: 'projects' },
   { id: '4', name: 'Project 360° Dossier', path: '/project-360', icon: View, groupId: 'projects' },
   { id: 'ckicp', name: 'CKICP Intelligence', path: '/ckicp', icon: Globe, badge: 'ADB', badgeColor: 'bg-sky-900/60 text-sky-200 border border-sky-700/50', groupId: 'projects' },

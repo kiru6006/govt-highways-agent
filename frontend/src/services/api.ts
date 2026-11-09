@@ -128,7 +128,16 @@ import {
   PreConstructionRiskAssessmentItem,
   LandLitigationResolutionActionItem,
   LandLitigationCMSummary,
-  LandLitigationAIResponse
+  LandLitigationAIResponse,
+  MajorWorksProjectItem,
+  MajorWorksPortfolioOverview,
+  ProjectBlockerItem,
+  DelayInvestigationItem,
+  LossPreventionLedgerDashboard,
+  MitigationRecommendationItem,
+  PreConstructionGateCheckItem,
+  MajorWorksCMSummary,
+  MajorWorksAIResponse
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -167,6 +176,17 @@ import {
   getFallbackParcel360,
   getFallbackLandLitigationAI
 } from '../data/fallbackLandLitigation';
+import {
+  fallbackMajorWorksList,
+  fallbackMajorWorksOverview,
+  fallbackBlockersList,
+  fallbackDelayInvestigations,
+  fallbackLossPreventionLedger,
+  fallbackMitigationsList,
+  fallbackPreConstructionGatesList,
+  fallbackMajorWorksCMSummary,
+  fallbackMajorWorksAIResponse
+} from '../data/fallbackMajorWorks';
 
 const API_BASE = '/api/v1';
 
@@ -4696,6 +4716,316 @@ export const api = {
       });
     } catch {
       return getFallbackLandLitigationAI(query);
+    }
+  },
+
+  // ============================================================================
+  // MAJOR WORKS ₹50 CR+ & PROJECT BLOCKER MITIGATION INTELLIGENCE
+  // ============================================================================
+  getMajorWorksPortfolio: async (params?: {
+    circle?: string;
+    division?: string;
+    risk_level?: string;
+    delayed_only?: boolean;
+    critical_blockers_only?: boolean;
+    search?: string;
+  }): Promise<MajorWorksPortfolioOverview> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.circle) q.set('circle', params.circle);
+      if (params?.division) q.set('division', params.division);
+      if (params?.risk_level) q.set('risk_level', params.risk_level);
+      if (params?.delayed_only !== undefined) q.set('delayed_only', String(params.delayed_only));
+      if (params?.critical_blockers_only !== undefined) q.set('critical_blockers_only', String(params.critical_blockers_only));
+      if (params?.search) q.set('search', params.search);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<MajorWorksPortfolioOverview>(`/major-works/portfolio${qs}`);
+    } catch {
+      let filtered = [...fallbackMajorWorksList];
+      if (params?.circle) filtered = filtered.filter(w => w.circle_name.toLowerCase().includes(params.circle!.toLowerCase()));
+      if (params?.division) filtered = filtered.filter(w => w.division_name.toLowerCase().includes(params.division!.toLowerCase()));
+      if (params?.risk_level) filtered = filtered.filter(w => w.risk_level === params.risk_level);
+      if (params?.delayed_only) filtered = filtered.filter(w => w.completion_delay_days > 0);
+      if (params?.critical_blockers_only) filtered = filtered.filter(w => (w.critical_blockers_count || 0) > 0);
+      if (params?.search) {
+        const s = params.search.toLowerCase();
+        filtered = filtered.filter(w =>
+          w.project_name.toLowerCase().includes(s) ||
+          w.source_project_id.toLowerCase().includes(s) ||
+          (w.contractor_name || '').toLowerCase().includes(s)
+        );
+      }
+      return {
+        ...fallbackMajorWorksOverview,
+        total_major_works_count: filtered.length,
+        items: filtered
+      };
+    }
+  },
+
+  getMajorWorkDetail: async (id: string | number): Promise<{
+    work: MajorWorksProjectItem;
+    blockers: ProjectBlockerItem[];
+    delay_investigation?: DelayInvestigationItem;
+    financial_ledger: any[];
+    mitigations: MitigationRecommendationItem[];
+    pre_construction_gates: PreConstructionGateCheckItem[];
+  }> => {
+    try {
+      return await request<{
+        work: MajorWorksProjectItem;
+        blockers: ProjectBlockerItem[];
+        delay_investigation?: DelayInvestigationItem;
+        financial_ledger: any[];
+        mitigations: MitigationRecommendationItem[];
+        pre_construction_gates: PreConstructionGateCheckItem[];
+      }>(`/major-works/portfolio/${id}`);
+    } catch {
+      const idStr = String(id);
+      const work = fallbackMajorWorksList.find(w => w.id === Number(id) || w.source_project_id === idStr) || fallbackMajorWorksList[0];
+      const blockers = fallbackBlockersList.filter(b => b.major_work_id === work.id || b.major_work_source_id === work.source_project_id);
+      const delay_investigation = fallbackDelayInvestigations.find(i => i.major_work_id === work.id || i.major_work_source_id === work.source_project_id);
+      const financial_ledger = fallbackLossPreventionLedger.records.filter(r => r.major_work_id === work.id || r.major_work_source_id === work.source_project_id);
+      const mitigations = fallbackMitigationsList.filter(m => m.major_work_id === work.id || m.major_work_source_id === work.source_project_id);
+      const pre_construction_gates = fallbackPreConstructionGatesList.filter(g => g.major_work_id === work.id);
+      return {
+        work,
+        blockers,
+        delay_investigation,
+        financial_ledger,
+        mitigations,
+        pre_construction_gates
+      };
+    }
+  },
+
+  getBlockers: async (params?: {
+    project_id?: number;
+    major_work_id?: number;
+    category?: string;
+    status?: string;
+    is_critical_path?: boolean;
+  }): Promise<ProjectBlockerItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.major_work_id) q.set('major_work_id', String(params.major_work_id));
+      if (params?.category) q.set('category', params.category);
+      if (params?.status) q.set('status', params.status);
+      if (params?.is_critical_path !== undefined) q.set('is_critical_path', String(params.is_critical_path));
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<ProjectBlockerItem[]>(`/major-works/blockers${qs}`);
+    } catch {
+      let filtered = [...fallbackBlockersList];
+      if (params?.project_id) filtered = filtered.filter(b => b.project_id === params.project_id);
+      if (params?.major_work_id) filtered = filtered.filter(b => b.major_work_id === params.major_work_id);
+      if (params?.category) filtered = filtered.filter(b => b.category === params.category);
+      if (params?.status) filtered = filtered.filter(b => b.current_status === params.status);
+      if (params?.is_critical_path !== undefined) filtered = filtered.filter(b => b.is_critical_path === params.is_critical_path);
+      return filtered;
+    }
+  },
+
+  createBlocker: async (payload: any): Promise<ProjectBlockerItem> => {
+    try {
+      return await request<ProjectBlockerItem>('/major-works/blockers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const newBlocker: ProjectBlockerItem = {
+        id: fallbackBlockersList.length + 1,
+        blocker_code: `BLK-${Date.now().toString().slice(-4)}`,
+        project_id: payload.project_id,
+        project_name: 'Identified Project',
+        major_work_id: payload.major_work_id,
+        category: payload.category,
+        description: payload.description,
+        date_identified: new Date().toISOString(),
+        blocker_start_date: new Date().toISOString(),
+        current_status: 'ACTIVE_BLOCKER',
+        is_critical_path: payload.is_critical_path ?? true,
+        primary_cause: payload.primary_cause,
+        responsible_resolution_authority: payload.responsible_resolution_authority,
+        assigned_action_owner: payload.assigned_action_owner,
+        days_affected: 0,
+        financial_exposure_cr: payload.financial_exposure_cr,
+        is_financial_exposure_quantified: !!payload.financial_exposure_cr,
+        escalation_level: payload.escalation_level || 'DIVISION',
+        last_update: new Date().toISOString(),
+        simulated_data_badge: 'SIMULATED'
+      };
+      return newBlocker;
+    }
+  },
+
+  updateBlockerStatus: async (
+    id: number,
+    payload: { status: string; closure_remarks?: string; closure_evidence?: string }
+  ): Promise<ProjectBlockerItem> => {
+    try {
+      return await request<ProjectBlockerItem>(`/major-works/blockers/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const b = fallbackBlockersList.find(item => item.id === id);
+      if (b) {
+        b.current_status = payload.status as any;
+        if (payload.closure_remarks) b.closure_remarks = payload.closure_remarks;
+        if (payload.closure_evidence) b.closure_evidence = payload.closure_evidence;
+        b.last_update = new Date().toISOString();
+        return { ...b };
+      }
+      return fallbackBlockersList[0];
+    }
+  },
+
+  getDelayInvestigation: async (projectId: number): Promise<DelayInvestigationItem> => {
+    try {
+      return await request<DelayInvestigationItem>(`/major-works/investigations/${projectId}`);
+    } catch {
+      const inv = fallbackDelayInvestigations.find(i => i.project_id === projectId) || fallbackDelayInvestigations[0];
+      return inv;
+    }
+  },
+
+  getFinancialLossLedger: async (params?: {
+    project_id?: number;
+    major_work_id?: number;
+  }): Promise<LossPreventionLedgerDashboard> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.major_work_id) q.set('major_work_id', String(params.major_work_id));
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<LossPreventionLedgerDashboard>(`/major-works/financial-ledger${qs}`);
+    } catch {
+      let recs = [...fallbackLossPreventionLedger.records];
+      if (params?.project_id) recs = recs.filter(r => r.project_id === params.project_id);
+      if (params?.major_work_id) recs = recs.filter(r => r.major_work_id === params.major_work_id);
+      return {
+        summary: fallbackLossPreventionLedger.summary,
+        records: recs,
+        simulated_data_badge: 'SIMULATED'
+      };
+    }
+  },
+
+  getMitigations: async (params?: {
+    project_id?: number;
+    major_work_id?: number;
+    blocker_id?: number;
+    approval_status?: string;
+  }): Promise<MitigationRecommendationItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.major_work_id) q.set('major_work_id', String(params.major_work_id));
+      if (params?.blocker_id) q.set('blocker_id', String(params.blocker_id));
+      if (params?.approval_status) q.set('approval_status', params.approval_status);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<MitigationRecommendationItem[]>(`/major-works/mitigations${qs}`);
+    } catch {
+      let filtered = [...fallbackMitigationsList];
+      if (params?.project_id) filtered = filtered.filter(m => m.project_id === params.project_id);
+      if (params?.major_work_id) filtered = filtered.filter(m => m.major_work_id === params.major_work_id);
+      if (params?.blocker_id) filtered = filtered.filter(m => m.blocker_id === params.blocker_id);
+      if (params?.approval_status) filtered = filtered.filter(m => m.human_approval_status === params.approval_status);
+      return filtered;
+    }
+  },
+
+  approveMitigation: async (
+    id: number,
+    payload: { approved: boolean; approving_officer?: string; approval_notes?: string }
+  ): Promise<MitigationRecommendationItem> => {
+    try {
+      return await request<MitigationRecommendationItem>(`/major-works/mitigations/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const mit = fallbackMitigationsList.find(m => m.id === id);
+      if (mit) {
+        mit.human_approval_status = payload.approved ? 'APPROVED' : 'REJECTED';
+        mit.approved_by_officer = payload.approving_officer || 'Superintending Engineer (Highways)';
+        mit.approval_date = new Date().toISOString();
+        mit.approval_notes = payload.approval_notes;
+        return { ...mit };
+      }
+      return fallbackMitigationsList[0];
+    }
+  },
+
+  getPreConstructionGates: async (params?: {
+    project_id?: number;
+    major_work_id?: number;
+    readiness_state?: string;
+  }): Promise<PreConstructionGateCheckItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.major_work_id) q.set('major_work_id', String(params.major_work_id));
+      if (params?.readiness_state) q.set('readiness_state', params.readiness_state);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<PreConstructionGateCheckItem[]>(`/major-works/pre-construction-gates${qs}`);
+    } catch {
+      let filtered = [...fallbackPreConstructionGatesList];
+      if (params?.project_id) filtered = filtered.filter(g => g.project_id === params.project_id);
+      if (params?.major_work_id) filtered = filtered.filter(g => g.major_work_id === params.major_work_id);
+      if (params?.readiness_state) filtered = filtered.filter(g => g.readiness_state === params.readiness_state);
+      return filtered;
+    }
+  },
+
+  overridePreConstructionGate: async (
+    id: number,
+    payload: { override_authority: string; justification: string }
+  ): Promise<PreConstructionGateCheckItem> => {
+    try {
+      return await request<PreConstructionGateCheckItem>(`/major-works/pre-construction-gates/${id}/override`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const gate = fallbackPreConstructionGatesList.find(g => g.id === id);
+      if (gate) {
+        if (gate.court_restrictions_active) {
+          throw new Error('STATUTORY PROHIBITION: Binding judicial order/injunction in force. Administrative override strictly barred under High Court jurisdiction.');
+        }
+        gate.authorized_override_status = 'REVIEWED_AND_PERMITTED';
+        gate.override_authority = payload.override_authority;
+        gate.override_justification = payload.justification;
+        gate.override_date = new Date().toISOString();
+        gate.readiness_state = 'AMBER';
+        return { ...gate };
+      }
+      return fallbackPreConstructionGatesList[0];
+    }
+  },
+
+  getMajorWorksCMSummary: async (): Promise<MajorWorksCMSummary> => {
+    try {
+      return await request<MajorWorksCMSummary>('/major-works/cm-summary');
+    } catch {
+      return fallbackMajorWorksCMSummary;
+    }
+  },
+
+  queryMajorWorksAI: async (query: string, project_id?: number, blocker_id?: number): Promise<MajorWorksAIResponse> => {
+    try {
+      return await request<MajorWorksAIResponse>('/major-works/ai-ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, project_id, blocker_id })
+      });
+    } catch {
+      return fallbackMajorWorksAIResponse;
     }
   }
 };

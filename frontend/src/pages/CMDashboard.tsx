@@ -38,7 +38,8 @@ import {
   CMEscalationsData,
   CMAIDailyBrief,
   JurisdictionBenchmarkItem,
-  LandLitigationCMSummary
+  LandLitigationCMSummary,
+  MajorWorksCMSummary
 } from '../types';
 import { ConnectedEntityPanel } from '../components/connectivity/ConnectedEntityPanel';
 
@@ -51,6 +52,7 @@ export const CMDashboard: React.FC = () => {
   const [directions, setDirections] = useState<CMDirectionItem[]>([]);
   const [benchmarks, setBenchmarks] = useState<JurisdictionBenchmarkItem[]>([]);
   const [landSummary, setLandSummary] = useState<LandLitigationCMSummary | null>(null);
+  const [majorWorksSummary, setMajorWorksSummary] = useState<MajorWorksCMSummary | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Filter States
@@ -79,13 +81,14 @@ export const CMDashboard: React.FC = () => {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [ov, esc, brief, dirs, bmarks, landSum] = await Promise.all([
+      const [ov, esc, brief, dirs, bmarks, landSum, mwSum] = await Promise.all([
         api.getCMOverview().catch(() => null),
         api.getCMEscalations().catch(() => null),
         api.getCMAIDailyBrief().catch(() => null),
         api.getCMDirections().catch(() => []),
         api.getJurisdictionComparison(benchmarkLevel).catch(() => ({ level: 'zone', benchmarks: [] })),
-        api.getLandLitigationCMSummary().catch(() => null)
+        api.getLandLitigationCMSummary().catch(() => null),
+        api.getMajorWorksCMSummary().catch(() => null)
       ]);
 
       setOverview(ov);
@@ -94,6 +97,7 @@ export const CMDashboard: React.FC = () => {
       setDirections(dirs || []);
       setBenchmarks(bmarks?.benchmarks || []);
       setLandSummary(landSum);
+      setMajorWorksSummary(mwSum);
 
       // Load delay analysis for selected project
       if (selectedProjectId) {
@@ -868,6 +872,122 @@ export const CMDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+          </section>
+        )}
+
+        {/* 5C. MAJOR WORKS: FINANCIAL RISK & INTERVENTION */}
+        {majorWorksSummary && (
+          <section className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 border border-indigo-700/60 shadow-lg space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-indigo-700/80">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300">
+                  <Building className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-white">
+                      Major Works ₹50 Cr+ Financial Risk & Mitigation Command
+                    </h3>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                      Chennai C&M Region (31 Works)
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Source: <code className="text-blue-300">More than 50Cr works details as on 21.09.2026.pdf</code> | Minister Review Snapshot
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/major-works')}
+                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow"
+                >
+                  Portfolio & Loss Ledger <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* 4 KPI Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div
+                onClick={() => navigate('/major-works')}
+                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-blue-400 cursor-pointer transition"
+              >
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Critical Blockers</span>
+                <div className="text-xl font-extrabold text-rose-400 mt-1">{majorWorksSummary.projects_with_critical_blockers}</div>
+                <span className="text-[10px] text-slate-400">Impacting project critical path</span>
+              </div>
+              <div
+                onClick={() => navigate('/major-works')}
+                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-blue-400 cursor-pointer transition"
+              >
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Completion Extensions</span>
+                <div className="text-xl font-extrabold text-amber-400 mt-1">{majorWorksSummary.projects_with_completion_extensions}</div>
+                <span className="text-[10px] text-slate-400">Works delayed past agreement</span>
+              </div>
+              <div
+                onClick={() => navigate('/major-works')}
+                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-blue-400 cursor-pointer transition"
+              >
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Verified Addl Exp</span>
+                <div className="text-xl font-extrabold text-emerald-400 mt-1">₹{majorWorksSummary.actual_additional_expenditure_cr} Cr</div>
+                <span className="text-[10px] text-slate-400">Statutory zero double-count</span>
+              </div>
+              <div
+                onClick={() => navigate('/major-works')}
+                className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-blue-400 cursor-pointer transition"
+              >
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Potentially Avoidable</span>
+                <div className="text-xl font-extrabold text-indigo-400 mt-1">₹{majorWorksSummary.potentially_avoidable_cost_cr} Cr</div>
+                <span className="text-[10px] text-slate-400">Via timely interdept review</span>
+              </div>
+            </div>
+
+            {/* Senior Intervention & Reference Case 5566 Callout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div
+                onClick={() => navigate('/major-works')}
+                className="p-3.5 rounded-xl bg-slate-800/90 border border-blue-500/30 hover:border-blue-400 cursor-pointer transition space-y-1.5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5 text-blue-400" />
+                    Reference Case: Project 5566 (LC-13)
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                    +317 Days Delay
+                  </span>
+                </div>
+                <div className="text-xs font-semibold text-white">ROB at LC-13, Thirunindravur–Veppampattu</div>
+                <p className="text-[11px] text-slate-300">
+                  Physical: 78% | Exp: ₹38.36 Cr. Railway-side work reported. Exact critical-path blocker unestablished; no litigation reported. EOT & joint CPM required.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                  Corridors Requiring Chief Minister / Cabinet Intervention
+                </span>
+                <div className="space-y-1.5">
+                  {majorWorksSummary.projects_requiring_senior_intervention?.slice(0, 2).map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => navigate('/major-works')}
+                      className="p-2 rounded-lg bg-slate-800/90 border border-slate-700 flex items-center justify-between hover:border-indigo-400 cursor-pointer transition text-xs"
+                    >
+                      <div className="truncate mr-2">
+                        <span className="font-semibold text-white block truncate">{item.project_name}</span>
+                        <span className="text-[10px] text-slate-400">{item.reason}</span>
+                      </div>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 shrink-0">
+                        {item.urgency}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </section>
         )}
 
