@@ -7,7 +7,10 @@ import {
   MitigationRecommendationItem,
   PreConstructionGateCheckItem,
   MajorWorksCMSummary,
-  MajorWorksAIResponse
+  MajorWorksAIResponse,
+  ObligationItem,
+  EvidenceRequestItem,
+  ReconciliationReport
 } from '../types';
 
 export const fallbackMajorWorksList: MajorWorksProjectItem[] = [
@@ -1628,3 +1631,125 @@ export const fallbackMajorWorksAIResponse: MajorWorksAIResponse = {
   confidence_score: 0.92,
   simulated_data_badge: "SIMULATED"
 };
+
+export const fallbackReconciliationReport: ReconciliationReport = {
+  total_staged_records: 31,
+  verified_records_count: 1,
+  pending_verification_count: 30,
+  conflicting_records_count: 0,
+  discrepancy_records_count: 6,
+  missing_fields_inventory: [
+    {
+      source_project_id: "5566",
+      project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+      source_page: 1,
+      unreported_fields: ["court_case_records (Not reported / Nil)", "cpm_schedule_network (Not reported)"]
+    },
+    {
+      source_project_id: "5102",
+      project_name: "Widening to 4-Lanes of SH-49 (ECR)",
+      source_page: 2,
+      unreported_fields: ["railway_coordination (Not applicable)", "chainage_limits (Not reported in PDF)"]
+    },
+    {
+      source_project_id: "5655",
+      project_name: "Widening & Reconstruction of Bridge on MDR-640",
+      source_page: 5,
+      unreported_fields: ["forest_clearance (Not reported / NA)"]
+    }
+  ],
+  provenance_summary: "All 31 staged records sourced from 'More than 50Cr works details as on 21.09.2026.pdf'. Fields lacking source reporting marked explicitly as 'Not reported'.",
+  simulated_data_badge: "SIMULATED"
+};
+
+export const fallbackObligationsList: ObligationItem[] = [
+  {
+    id: 1,
+    obligation_code: "OBL-5566-01",
+    project_id: 1,
+    project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+    blocker_id: 1,
+    blocker_code: "BLK-5566-01",
+    owner_party: "Southern Railway (DRM Chennai / Chief Bridge Engineer)",
+    deliverable: "Safety Clearance & 4-Hour Track Power Block for Composite Girder Launching",
+    due_date: "2026-10-31T00:00:00Z",
+    acceptance_criteria: "Written safety sanction from Commissioner of Railway Safety (CRS) and official traffic block slot order",
+    status: "PENDING",
+    verification_status: "UNVERIFIED",
+    provenance_note: "SEEDED DEMO - Not yet verified",
+    created_at: "2026-09-22T00:00:00Z",
+    updated_at: "2026-09-22T00:00:00Z"
+  },
+  {
+    id: 2,
+    obligation_code: "OBL-5566-02",
+    project_id: 1,
+    project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+    blocker_id: 1,
+    blocker_code: "BLK-5566-01",
+    owner_party: "M/s Sri Balaji Infra Projects Pvt Ltd (Contractor)",
+    deliverable: "Revised Resource Deployment Programme & CPM Network for Balance Work",
+    due_date: "2026-09-30T00:00:00Z",
+    acceptance_criteria: "Submission of Primavera P6 / MS Project schedule showing critical path with resource histogram, approved by SE (Highways)",
+    status: "OVERDUE",
+    verification_status: "UNVERIFIED",
+    provenance_note: "SEEDED DEMO - Not yet verified",
+    created_at: "2026-09-22T00:00:00Z",
+    updated_at: "2026-09-22T00:00:00Z"
+  }
+];
+
+export const fallbackEvidenceRequestsList: EvidenceRequestItem[] = [
+  {
+    id: 1,
+    request_code: "EVR-5566-01",
+    project_id: 1,
+    project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+    blocker_id: 1,
+    blocker_code: "BLK-5566-01",
+    delay_event_id: 1,
+    item_requested: "Joint Inspection Minutes and CRS Safety Approval Letter",
+    requested_from_party: "Southern Railway Bridge Branch",
+    due_date: "2026-10-15T00:00:00Z",
+    status: "OPEN",
+    verification_status: "UNVERIFIED",
+    provenance_note: "SEEDED DEMO - Not yet verified",
+    created_at: "2026-09-22T00:00:00Z",
+    updated_at: "2026-09-22T00:00:00Z"
+  },
+  {
+    id: 2,
+    request_code: "EVR-5566-02",
+    project_id: 1,
+    project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+    blocker_id: 1,
+    blocker_code: "BLK-5566-01",
+    delay_event_id: 1,
+    item_requested: "Detailed Delay Justification, Daily Plant Log & EOT Application under Clause 5",
+    requested_from_party: "M/s Sri Balaji Infra Projects Pvt Ltd",
+    due_date: "2026-10-05T00:00:00Z",
+    status: "OPEN",
+    verification_status: "UNVERIFIED",
+    provenance_note: "SEEDED DEMO - Not yet verified",
+    created_at: "2026-09-22T00:00:00Z",
+    updated_at: "2026-09-22T00:00:00Z"
+  },
+  {
+    id: 3,
+    request_code: "EVR-5566-03",
+    project_id: 1,
+    project_name: "ROB at LC-13, Thirunindravur–Veppampattu",
+    blocker_id: 1,
+    blocker_code: "BLK-5566-01",
+    delay_event_id: 1,
+    item_requested: "Certified Milestone Completion Record for Substructure and Approaches",
+    requested_from_party: "Divisional Engineer (Highways), Projects Division",
+    due_date: "2026-10-10T00:00:00Z",
+    status: "SUBMITTED",
+    verification_status: "VERIFIED",
+    provenance_note: "SEEDED DEMO - Verified against Divisional M-Book",
+    created_at: "2026-09-22T00:00:00Z",
+    updated_at: "2026-09-22T00:00:00Z"
+  }
+];
+

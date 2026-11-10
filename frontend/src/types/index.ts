@@ -3277,12 +3277,90 @@ export interface MajorWorksProjectItem {
   source_document: string;
   source_page_number: number;
   review_reporting_date: string;
+  extraction_confidence?: number;
   verification_status: string;
+  sanction_vs_contract_discrepancy?: boolean;
+  discrepancy_details?: string;
+  raw_extracted_text?: string;
+  raw_extracted_json?: string;
+  verified_by_officer?: string;
+  verified_at?: string;
   risk_level: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   active_blockers_count?: number;
   critical_blockers_count?: number;
   financial_exposure_cr?: number;
   simulated_data_badge?: string;
+}
+
+export interface SnapshotVerifyPayload {
+  verified: boolean;
+  verification_status?: 'VERIFIED' | 'CONFLICTING';
+  verified_by_officer: string;
+  notes?: string;
+  update_canonical?: boolean;
+  corrected_contract_value_cr?: number;
+  corrected_technical_sanction_cr?: number;
+  corrected_physical_progress_pct?: number;
+  corrected_financial_progress_pct?: number;
+  corrected_estimated_completion_date?: string;
+}
+
+export interface ReconciliationReport {
+  total_staged_records: number;
+  verified_records_count: number;
+  pending_verification_count: number;
+  conflicting_records_count: number;
+  discrepancy_records_count: number;
+  missing_fields_inventory: Array<{
+    source_project_id: string;
+    project_name: string;
+    source_page: number;
+    unreported_fields: string[];
+  }>;
+  provenance_summary: string;
+  simulated_data_badge: string;
+}
+
+export interface ObligationItem {
+  id: number;
+  obligation_code: string;
+  project_id: number;
+  project_name?: string;
+  work_package_id?: number;
+  blocker_id?: number;
+  blocker_code?: string;
+  owner_party: string;
+  deliverable: string;
+  due_date?: string;
+  acceptance_criteria: string;
+  status: 'PENDING' | 'FULFILLED' | 'OVERDUE' | 'DISPUTED';
+  verification_status: 'UNVERIFIED' | 'VERIFIED';
+  provenance_note: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EvidenceRequestItem {
+  id: number;
+  request_code: string;
+  project_id: number;
+  project_name?: string;
+  work_package_id?: number;
+  blocker_id?: number;
+  blocker_code?: string;
+  delay_event_id?: number;
+  item_requested: string;
+  requested_from_party: string;
+  due_date?: string;
+  status: 'OPEN' | 'SUBMITTED' | 'VERIFIED' | 'CANCELLED';
+  verification_status: 'UNVERIFIED' | 'VERIFIED';
+  provenance_note: string;
+  submission_notes?: string;
+  submission_evidence_url?: string;
+  verified_by_officer?: string;
+  verified_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface MajorWorksPortfolioOverview {
@@ -3311,6 +3389,7 @@ export interface ProjectBlockerItem {
   project_name?: string;
   major_work_id?: number;
   major_work_source_id?: string;
+  delay_event_id?: number;
   work_package_id?: number;
   chainage_location?: string;
   category: string;
@@ -3323,11 +3402,15 @@ export interface ProjectBlockerItem {
   is_critical_path: boolean;
   primary_cause: string;
   contributing_causes?: string;
+  is_litigation_pending?: boolean;
+  has_operative_stay_order?: boolean;
+  court_order_details?: string;
   responsible_resolution_authority: string;
   assigned_action_owner: string;
   external_department_or_contractor?: string;
   supporting_evidence?: string;
   supporting_evidence_url?: string;
+  provenance_note?: string;
   days_affected: number;
   financial_exposure_cr?: number;
   is_financial_exposure_quantified: boolean;

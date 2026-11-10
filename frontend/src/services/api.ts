@@ -137,7 +137,11 @@ import {
   MitigationRecommendationItem,
   PreConstructionGateCheckItem,
   MajorWorksCMSummary,
-  MajorWorksAIResponse
+  MajorWorksAIResponse,
+  ReconciliationReport,
+  SnapshotVerifyPayload,
+  ObligationItem,
+  EvidenceRequestItem
 } from '../types';
 import {
   SYNTHETIC_ANOMALIES,
@@ -185,7 +189,10 @@ import {
   fallbackMitigationsList,
   fallbackPreConstructionGatesList,
   fallbackMajorWorksCMSummary,
-  fallbackMajorWorksAIResponse
+  fallbackMajorWorksAIResponse,
+  fallbackReconciliationReport,
+  fallbackObligationsList,
+  fallbackEvidenceRequestsList
 } from '../data/fallbackMajorWorks';
 
 const API_BASE = '/api/v1';
@@ -5026,6 +5033,125 @@ export const api = {
       });
     } catch {
       return fallbackMajorWorksAIResponse;
+    }
+  },
+
+  getReconciliationReport: async (): Promise<ReconciliationReport> => {
+    try {
+      return await request<ReconciliationReport>('/major-works/reconciliation-report');
+    } catch {
+      return fallbackReconciliationReport;
+    }
+  },
+
+  verifySnapshot: async (id: number, payload: SnapshotVerifyPayload): Promise<MajorWorksProjectItem> => {
+    try {
+      return await request<MajorWorksProjectItem>(`/major-works/snapshots/${id}/verify`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const snap = fallbackMajorWorksList.find(w => w.id === id);
+      if (snap) {
+        snap.verification_status = payload.verification_status || 'VERIFIED';
+        snap.verified_by_officer = payload.verified_by_officer;
+        snap.verified_at = new Date().toISOString();
+        if (payload.corrected_contract_value_cr !== undefined) snap.contract_value_cr = payload.corrected_contract_value_cr;
+        if (payload.corrected_technical_sanction_cr !== undefined) snap.technical_sanction_cr = payload.corrected_technical_sanction_cr;
+        if (payload.corrected_physical_progress_pct !== undefined) snap.physical_progress_pct = payload.corrected_physical_progress_pct;
+        if (payload.corrected_financial_progress_pct !== undefined) snap.financial_progress_pct = payload.corrected_financial_progress_pct;
+        return { ...snap };
+      }
+      return fallbackMajorWorksList[0];
+    }
+  },
+
+  getObligations: async (params?: { project_id?: number; blocker_id?: number; status?: string }): Promise<ObligationItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.blocker_id) q.set('blocker_id', String(params.blocker_id));
+      if (params?.status) q.set('status', params.status);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<ObligationItem[]>(`/major-works/obligations${qs}`);
+    } catch {
+      let filtered = [...fallbackObligationsList];
+      if (params?.project_id) filtered = filtered.filter(o => o.project_id === params.project_id);
+      if (params?.blocker_id) filtered = filtered.filter(o => o.blocker_id === params.blocker_id);
+      if (params?.status) filtered = filtered.filter(o => o.status === params.status);
+      return filtered;
+    }
+  },
+
+  createObligation: async (payload: Partial<ObligationItem>): Promise<ObligationItem> => {
+    try {
+      return await request<ObligationItem>('/major-works/obligations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const newOb: ObligationItem = {
+        id: fallbackObligationsList.length + 1,
+        obligation_code: `OBL-${payload.project_id || 1}-${Date.now().toString().slice(-4)}`,
+        project_id: payload.project_id || 1,
+        owner_party: payload.owner_party || 'Southern Railway',
+        deliverable: payload.deliverable || 'Required Statutory Sanction',
+        due_date: payload.due_date,
+        acceptance_criteria: payload.acceptance_criteria || 'Official Sanction Order',
+        status: payload.status || 'PENDING',
+        verification_status: 'UNVERIFIED',
+        provenance_note: 'SEEDED DEMO - Not yet verified',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      fallbackObligationsList.unshift(newOb);
+      return newOb;
+    }
+  },
+
+  getEvidenceRequests: async (params?: { project_id?: number; blocker_id?: number; delay_event_id?: number; status?: string }): Promise<EvidenceRequestItem[]> => {
+    try {
+      const q = new URLSearchParams();
+      if (params?.project_id) q.set('project_id', String(params.project_id));
+      if (params?.blocker_id) q.set('blocker_id', String(params.blocker_id));
+      if (params?.delay_event_id) q.set('delay_event_id', String(params.delay_event_id));
+      if (params?.status) q.set('status', params.status);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<EvidenceRequestItem[]>(`/major-works/evidence-requests${qs}`);
+    } catch {
+      let filtered = [...fallbackEvidenceRequestsList];
+      if (params?.project_id) filtered = filtered.filter(r => r.project_id === params.project_id);
+      if (params?.blocker_id) filtered = filtered.filter(r => r.blocker_id === params.blocker_id);
+      if (params?.status) filtered = filtered.filter(r => r.status === params.status);
+      return filtered;
+    }
+  },
+
+  createEvidenceRequest: async (payload: Partial<EvidenceRequestItem>): Promise<EvidenceRequestItem> => {
+    try {
+      return await request<EvidenceRequestItem>('/major-works/evidence-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const newEv: EvidenceRequestItem = {
+        id: fallbackEvidenceRequestsList.length + 1,
+        request_code: `EVR-${payload.project_id || 1}-${Date.now().toString().slice(-4)}`,
+        project_id: payload.project_id || 1,
+        item_requested: payload.item_requested || 'Supporting Evidence Document',
+        requested_from_party: payload.requested_from_party || 'Concerned Authority',
+        due_date: payload.due_date,
+        status: payload.status || 'OPEN',
+        verification_status: 'UNVERIFIED',
+        provenance_note: 'SEEDED DEMO - Not yet verified',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      fallbackEvidenceRequestsList.unshift(newEv);
+      return newEv;
     }
   }
 };

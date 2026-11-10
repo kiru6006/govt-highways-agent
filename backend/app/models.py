@@ -2012,6 +2012,7 @@ class ProjectDelayEvent(Base):
     delay_days = Column(Integer, default=0)
     is_critical_path = Column(Boolean, default=True, index=True)
     category = Column(String(50), nullable=False, index=True)
+    affected_milestone = Column(String(200), nullable=True)
     primary_cause = Column(Text, nullable=False)
     contributing_causes = Column(Text, nullable=True)
     causing_party = Column(String(150), nullable=False)
@@ -2025,7 +2026,10 @@ class ProjectDelayEvent(Base):
     public_service_impact = Column(Text, nullable=True)
     corrective_action = Column(Text, nullable=True)
     target_resolution_date = Column(DateTime, nullable=True)
+    event_status = Column(String(50), default="ACTIVE")
+    supporting_evidence_url = Column(String(300), nullable=True)
     verification_status = Column(String(50), default="VERIFIED_OFFICIAL")
+    provenance_note = Column(String(250), default="SEEDED DEMO - Not yet verified")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     project = relationship("Project")
@@ -2281,7 +2285,14 @@ class MajorWorksProjectReviewSnapshot(Base):
     source_document = Column(String(200), default="More than 50Cr works details as on 21.09.2026.pdf")
     source_page_number = Column(Integer, default=1)
     review_reporting_date = Column(DateTime, default=datetime.datetime(2026, 9, 21, tzinfo=datetime.timezone.utc))
-    verification_status = Column(String(100), default="OFFICIAL_MINISTERIAL_REVIEW")
+    extraction_confidence = Column(Float, default=0.95)
+    verification_status = Column(String(100), default="EXTRACTED")  # EXTRACTED, VERIFIED, CONFLICTING
+    sanction_vs_contract_discrepancy = Column(Boolean, default=False)
+    discrepancy_details = Column(String(250), nullable=True)
+    raw_extracted_text = Column(Text, nullable=True)
+    raw_extracted_json = Column(Text, nullable=True)
+    verified_by_officer = Column(String(150), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
     risk_level = Column(String(20), default="HIGH")  # CRITICAL, HIGH, MEDIUM, LOW
     data_mode = Column(String(20), default="SIMULATED")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
@@ -2296,6 +2307,7 @@ class ProjectBlocker(Base):
     blocker_code = Column(String(64), unique=True, index=True, nullable=False)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
     major_work_id = Column(Integer, ForeignKey("major_works_review_snapshots.id"), nullable=True, index=True)
+    delay_event_id = Column(Integer, ForeignKey("project_delay_events.id"), nullable=True, index=True)
     work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
     chainage_location = Column(String(100), nullable=True)  # e.g., "km 1/200 to 1/800"
     category = Column(String(100), nullable=False, index=True)  # 17 standard categories
@@ -2308,11 +2320,15 @@ class ProjectBlocker(Base):
     is_critical_path = Column(Boolean, default=True, index=True)
     primary_cause = Column(Text, nullable=False)
     contributing_causes = Column(Text, nullable=True)
+    is_litigation_pending = Column(Boolean, default=False)
+    has_operative_stay_order = Column(Boolean, default=False)
+    court_order_details = Column(Text, nullable=True)
     responsible_resolution_authority = Column(String(200), nullable=False)  # e.g. "Southern Railway (DRM/GOC)"
     assigned_action_owner = Column(String(200), nullable=False)  # e.g. "Divisional Engineer (Highways)"
     external_department_or_contractor = Column(String(200), nullable=True)
     supporting_evidence = Column(Text, nullable=True)
     supporting_evidence_url = Column(String(300), nullable=True)
+    provenance_note = Column(String(250), default="SEEDED DEMO - Not yet verified")
     days_affected = Column(Integer, default=0)
     financial_exposure_cr = Column(Float, nullable=True)
     is_financial_exposure_quantified = Column(Boolean, default=False)
@@ -2328,6 +2344,56 @@ class ProjectBlocker(Base):
 
     project = relationship("Project")
     major_work = relationship("MajorWorksProjectReviewSnapshot")
+    delay_event = relationship("ProjectDelayEvent")
+
+
+class Obligation(Base):
+    __tablename__ = "project_obligations"
+    id = Column(Integer, primary_key=True, index=True)
+    obligation_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    blocker_id = Column(Integer, ForeignKey("project_blockers.id"), nullable=True, index=True)
+    owner_party = Column(String(200), nullable=False)  # e.g. "Southern Railway", "Contractor", "Revenue Dept"
+    deliverable = Column(Text, nullable=False)
+    due_date = Column(DateTime, nullable=True)
+    acceptance_criteria = Column(Text, nullable=False)
+    status = Column(String(50), default="PENDING", index=True)  # PENDING, FULFILLED, OVERDUE, DISPUTED
+    verification_status = Column(String(50), default="UNVERIFIED")  # UNVERIFIED, VERIFIED
+    provenance_note = Column(String(250), default="SEEDED DEMO - Not yet verified")
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    blocker = relationship("ProjectBlocker")
+
+
+class EvidenceRequest(Base):
+    __tablename__ = "project_evidence_requests"
+    id = Column(Integer, primary_key=True, index=True)
+    request_code = Column(String(64), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
+    work_package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True)
+    blocker_id = Column(Integer, ForeignKey("project_blockers.id"), nullable=True, index=True)
+    delay_event_id = Column(Integer, ForeignKey("project_delay_events.id"), nullable=True, index=True)
+    item_requested = Column(Text, nullable=False)  # What is missing
+    requested_from_party = Column(String(200), nullable=False)  # From whom
+    due_date = Column(DateTime, nullable=True)
+    status = Column(String(50), default="OPEN", index=True)  # OPEN, SUBMITTED, VERIFIED, CANCELLED
+    verification_status = Column(String(50), default="UNVERIFIED")  # UNVERIFIED, VERIFIED
+    provenance_note = Column(String(250), default="SEEDED DEMO - Not yet verified")
+    submission_notes = Column(Text, nullable=True)
+    submission_evidence_url = Column(String(300), nullable=True)
+    verified_by_officer = Column(String(150), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    blocker = relationship("ProjectBlocker")
+    delay_event = relationship("ProjectDelayEvent")
 
 
 class DelayInvestigation(Base):

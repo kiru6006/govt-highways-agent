@@ -2345,7 +2345,14 @@ class MajorWorksProjectReviewOut(BaseModel):
     source_document: str
     source_page_number: int
     review_reporting_date: datetime.datetime
+    extraction_confidence: float = 0.95
     verification_status: str
+    sanction_vs_contract_discrepancy: bool = False
+    discrepancy_details: Optional[str] = None
+    raw_extracted_text: Optional[str] = None
+    raw_extracted_json: Optional[str] = None
+    verified_by_officer: Optional[str] = None
+    verified_at: Optional[datetime.datetime] = None
     risk_level: str
     data_mode: str = "SIMULATED"
     active_blockers_count: Optional[int] = 0
@@ -2354,6 +2361,30 @@ class MajorWorksProjectReviewOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class SnapshotVerifyIn(BaseModel):
+    verified: bool = True
+    verification_status: Optional[str] = "VERIFIED"  # VERIFIED, CONFLICTING
+    verified_by_officer: str
+    notes: Optional[str] = None
+    update_canonical: bool = True
+    corrected_contract_value_cr: Optional[float] = None
+    corrected_technical_sanction_cr: Optional[float] = None
+    corrected_physical_progress_pct: Optional[float] = None
+    corrected_financial_progress_pct: Optional[float] = None
+    corrected_estimated_completion_date: Optional[datetime.datetime] = None
+
+
+class ReconciliationReportOut(BaseModel):
+    total_staged_records: int
+    verified_records_count: int
+    pending_verification_count: int
+    conflicting_records_count: int
+    discrepancy_records_count: int
+    missing_fields_inventory: List[dict]
+    provenance_summary: str
+    simulated_data_badge: str = "SIMULATED"
 
 
 class MajorWorksPortfolioOverviewOut(BaseModel):
@@ -2378,6 +2409,7 @@ class MajorWorksPortfolioOverviewOut(BaseModel):
 class ProjectBlockerIn(BaseModel):
     project_id: int
     major_work_id: Optional[int] = None
+    delay_event_id: Optional[int] = None
     work_package_id: Optional[int] = None
     chainage_location: Optional[str] = None
     category: str
@@ -2387,6 +2419,9 @@ class ProjectBlockerIn(BaseModel):
     is_critical_path: bool = True
     primary_cause: str
     contributing_causes: Optional[str] = None
+    is_litigation_pending: bool = False
+    has_operative_stay_order: bool = False
+    court_order_details: Optional[str] = None
     responsible_resolution_authority: str
     assigned_action_owner: str
     external_department_or_contractor: Optional[str] = None
@@ -2410,6 +2445,7 @@ class ProjectBlockerOut(BaseModel):
     project_id: int
     project_name: Optional[str] = None
     major_work_id: Optional[int] = None
+    delay_event_id: Optional[int] = None
     work_package_id: Optional[int] = None
     chainage_location: Optional[str] = None
     category: str
@@ -2422,11 +2458,15 @@ class ProjectBlockerOut(BaseModel):
     is_critical_path: bool
     primary_cause: str
     contributing_causes: Optional[str] = None
+    is_litigation_pending: bool = False
+    has_operative_stay_order: bool = False
+    court_order_details: Optional[str] = None
     responsible_resolution_authority: str
     assigned_action_owner: str
     external_department_or_contractor: Optional[str] = None
     supporting_evidence: Optional[str] = None
     supporting_evidence_url: Optional[str] = None
+    provenance_note: Optional[str] = "SEEDED DEMO - Not yet verified"
     days_affected: int
     financial_exposure_cr: Optional[float] = None
     is_financial_exposure_quantified: bool
@@ -2438,6 +2478,78 @@ class ProjectBlockerOut(BaseModel):
     closure_remarks: Optional[str] = None
     data_mode: str = "SIMULATED"
     created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ObligationIn(BaseModel):
+    project_id: int
+    work_package_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    owner_party: str
+    deliverable: str
+    due_date: Optional[datetime.datetime] = None
+    acceptance_criteria: str
+    status: Optional[str] = "PENDING"
+
+
+class ObligationOut(BaseModel):
+    id: int
+    obligation_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    work_package_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    blocker_code: Optional[str] = None
+    owner_party: str
+    deliverable: str
+    due_date: Optional[datetime.datetime] = None
+    acceptance_criteria: str
+    status: str
+    verification_status: str
+    provenance_note: str = "SEEDED DEMO - Not yet verified"
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class EvidenceRequestIn(BaseModel):
+    project_id: int
+    work_package_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    delay_event_id: Optional[int] = None
+    item_requested: str
+    requested_from_party: str
+    due_date: Optional[datetime.datetime] = None
+    status: Optional[str] = "OPEN"
+
+
+class EvidenceRequestOut(BaseModel):
+    id: int
+    request_code: str
+    project_id: int
+    project_name: Optional[str] = None
+    work_package_id: Optional[int] = None
+    blocker_id: Optional[int] = None
+    blocker_code: Optional[str] = None
+    delay_event_id: Optional[int] = None
+    item_requested: str
+    requested_from_party: str
+    due_date: Optional[datetime.datetime] = None
+    status: str
+    verification_status: str
+    provenance_note: str = "SEEDED DEMO - Not yet verified"
+    submission_notes: Optional[str] = None
+    submission_evidence_url: Optional[str] = None
+    verified_by_officer: Optional[str] = None
+    verified_at: Optional[datetime.datetime] = None
+    data_mode: str = "SIMULATED"
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
     class Config:
         from_attributes = True

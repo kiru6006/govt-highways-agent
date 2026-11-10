@@ -1,10 +1,11 @@
 import datetime
+import json
 from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal, Base
 from app.models import (
     Project, MajorWorksProjectReviewSnapshot, ProjectBlocker,
     DelayInvestigation, LossPreventionLedgerRecord, MitigationRecommendation,
-    PreConstructionGateCheck
+    PreConstructionGateCheck, ProjectDelayEvent, Obligation, EvidenceRequest
 )
 
 def seed_major_works_blockers_data(db_session: Session = None):
@@ -616,16 +617,59 @@ def seed_major_works_blockers_data(db_session: Session = None):
                 "risk_level": r_level
             })
 
-        # Insert or update 31 snapshots
+        # Insert or update 31 snapshots with Staging Metadata & Canonical Matching
         db_snapshots = {}
         for row in major_works_raw:
+            # Match canonical project by project_code (Zero Duplicates Rule)
+            proj_code = f"PRJ-TN-{row['source_project_id']}"
+            canonical_p = db.query(Project).filter(Project.project_code == proj_code).first()
+            if not canonical_p:
+                canonical_p = Project(
+                    project_code=proj_code,
+                    title=row["project_name"],
+                    sanctioned_cost_cr=row["technical_sanction_cr"],
+                    estimated_cost_cr=row["technical_sanction_cr"],
+                    expenditure_to_date_cr=row["expenditure_cr"],
+                    physical_progress_pct=row["physical_progress_pct"],
+                    financial_progress_pct=row["financial_progress_pct"],
+                    status="IN_PROGRESS" if row["completion_delay_days"] == 0 else "DELAYED",
+                    road_type="SH" if "SH" in row["project_name"] else "MDR",
+                    funding_source=row["scheme_name"],
+                    total_length_km=row["total_length_km"],
+                    verification_status="SEEDED_DEMO",
+                    zone_id=ref_p.zone_id if ref_p else 1,
+                    circle_id=ref_p.circle_id if ref_p else 1,
+                    division_id=ref_p.division_id if ref_p else 1,
+                    executing_department_id=ref_p.executing_department_id if ref_p else 1,
+                    created_at=now,
+                    updated_at=now
+                )
+                db.add(canonical_p)
+                db.commit()
+                db.refresh(canonical_p)
+
+            # Determine ₹50 Cr basis discrepancy (Contract Value vs Sanction)
+            ts = row["technical_sanction_cr"]
+            cv = row["contract_value_cr"]
+            has_discrepancy = False
+            disc_details = None
+            if (ts >= 50.0 and cv < 50.0) or (cv >= 50.0 and ts < 50.0):
+                has_discrepancy = True
+                disc_details = f"TS (₹{ts:.2f} Cr) vs Contract (₹{cv:.2f} Cr) causes ₹50 Cr membership criteria discrepancy"
+            elif ts < 50.0 and cv < 50.0:
+                has_discrepancy = True
+                disc_details = f"Listed in ₹50 Cr+ portfolio but both TS (₹{ts:.2f} Cr) and Contract (₹{cv:.2f} Cr) are under ₹50 Cr (scheme/contingency basis)"
+
+            raw_txt = f"Work: {row['project_name']} | TS: ₹{ts:.2f} Cr | Contract: ₹{cv:.2f} Cr | Length: {row['total_length_km']} km | Progress: {row['physical_progress_pct']}% | Source: Page {row['source_page_number']}"
+            raw_js = json.dumps({k: str(v) if isinstance(v, (datetime.datetime, datetime.date)) else v for k, v in row.items()})
+
             existing = db.query(MajorWorksProjectReviewSnapshot).filter(
                 MajorWorksProjectReviewSnapshot.source_project_id == row["source_project_id"]
             ).first()
             if not existing:
                 snap = MajorWorksProjectReviewSnapshot(
                     source_project_id=row["source_project_id"],
-                    canonical_project_id=row["canonical_project_id"],
+                    canonical_project_id=canonical_p.id,
                     project_name=row["project_name"],
                     portfolio_category="MAJOR_WORKS_50CR",
                     scheme_name=row["scheme_name"],
@@ -636,8 +680,8 @@ def seed_major_works_blockers_data(db_session: Session = None):
                     end_chainage_km=row["end_chainage_km"],
                     total_length_km=row["total_length_km"],
                     contractor_name=row["contractor_name"],
-                    technical_sanction_cr=row["technical_sanction_cr"],
-                    contract_value_cr=row["contract_value_cr"],
+                    technical_sanction_cr=ts,
+                    contract_value_cr=cv,
                     work_commencement_date=row["work_commencement_date"],
                     agreement_completion_date=row["agreement_completion_date"],
                     estimated_completion_date=row["estimated_completion_date"],
@@ -656,7 +700,12 @@ def seed_major_works_blockers_data(db_session: Session = None):
                     source_document="More than 50Cr works details as on 21.09.2026.pdf",
                     source_page_number=row["source_page_number"],
                     review_reporting_date=review_date,
-                    verification_status="OFFICIAL_MINISTERIAL_REVIEW",
+                    extraction_confidence=0.95,
+                    verification_status="EXTRACTED",
+                    sanction_vs_contract_discrepancy=has_discrepancy,
+                    discrepancy_details=disc_details,
+                    raw_extracted_text=raw_txt,
+                    raw_extracted_json=raw_js,
                     risk_level=row["risk_level"],
                     data_mode="SIMULATED",
                     created_at=now,
@@ -667,11 +716,56 @@ def seed_major_works_blockers_data(db_session: Session = None):
                 db.refresh(snap)
                 db_snapshots[row["source_project_id"]] = snap
             else:
+                existing.canonical_project_id = canonical_p.id
+                existing.extraction_confidence = 0.95
+                existing.sanction_vs_contract_discrepancy = has_discrepancy
+                existing.discrepancy_details = disc_details
+                existing.raw_extracted_text = raw_txt
+                existing.raw_extracted_json = raw_js
+                db.commit()
+                db.refresh(existing)
                 db_snapshots[row["source_project_id"]] = existing
 
         # -----------------------------------------------------------------
-        # 3. SEED PROJECT BLOCKERS (17 Standard Categories)
+        # 3. SEED PROJECT BLOCKERS & EVIDENCE SPINE
         # -----------------------------------------------------------------
+        # Seed ProjectDelayEvent for Reference Case 5566
+        delay_event_5566 = db.query(ProjectDelayEvent).filter(
+            ProjectDelayEvent.project_id == ref_proj_id,
+            ProjectDelayEvent.event_title.ilike("%LC-13%")
+        ).first()
+        if not delay_event_5566:
+            delay_event_5566 = ProjectDelayEvent(
+                project_id=ref_proj_id,
+                event_title="LC-13 ROB Superstructure Launching & CRS Clearance Delay",
+                start_date=datetime.datetime(2026, 3, 20, tzinfo=datetime.timezone.utc),
+                end_date=datetime.datetime(2027, 1, 31, tzinfo=datetime.timezone.utc),
+                delay_days=317,
+                is_critical_path=True,
+                category="RAILWAY_APPROVAL",
+                affected_milestone="Milestone-3: Railway Composite Girder Launching",
+                primary_cause="Coordination latency with Southern Railway Bridge Branch and pending joint safety inspection",
+                contributing_causes="Contractor delayed submission of revised launching scheme; track power block scheduling",
+                causing_party="Southern Railway & Contractor",
+                causing_party_type="JOINT_STAKEHOLDER",
+                resolving_authority="Southern Railway (DRM Chennai / Chief Bridge Engineer)",
+                formal_liability="UNDER_VERIFICATION",
+                eot_status="UNDER_REVIEW",
+                eot_days_approved=0,
+                financial_exposure_cr=0.0,
+                public_service_impact="Severe bottleneck at level crossing LC-13 causing 45-minute peak hour traffic queues",
+                corrective_action="Secretary level inter-departmental coordination and submission of revised launching scheme",
+                target_resolution_date=datetime.datetime(2026, 10, 31, tzinfo=datetime.timezone.utc),
+                event_status="ACTIVE",
+                supporting_evidence_url="/api/v1/documents/LC13_SR_Joint_Inspection.pdf",
+                verification_status="EXTRACTED",
+                provenance_note="SEEDED DEMO - Not yet verified",
+                created_at=now
+            )
+            db.add(delay_event_5566)
+            db.commit()
+            db.refresh(delay_event_5566)
+
         blockers_data = [
             # Blocker 1: Canonical 5566 Railway Coordination
             {
@@ -866,11 +960,17 @@ def seed_major_works_blockers_data(db_session: Session = None):
             m_fk = snap.id if snap else None
 
             existing_b = db.query(ProjectBlocker).filter(ProjectBlocker.blocker_code == b_raw["blocker_code"]).first()
+            d_ev_id = delay_event_5566.id if b_raw["blocker_code"] == "BLK-5566-01" and delay_event_5566 else None
+            is_lit = b_raw.get("is_litigation_pending", False) or ("COURT" in b_raw["category"])
+            has_stay = b_raw.get("has_operative_stay_order", False) or (b_raw["blocker_code"] == "BLK-5655-01")
+            stay_det = b_raw.get("court_order_details") or ("Madras High Court interim injunction in WMP No. 31204/2026" if has_stay else None)
+
             if not existing_b:
                 blk = ProjectBlocker(
                     blocker_code=b_raw["blocker_code"],
                     project_id=p_fk,
                     major_work_id=m_fk,
+                    delay_event_id=d_ev_id,
                     chainage_location=b_raw["chainage_location"],
                     category=b_raw["category"],
                     subcategory=b_raw["subcategory"],
@@ -879,10 +979,14 @@ def seed_major_works_blockers_data(db_session: Session = None):
                     is_critical_path=b_raw["is_critical_path"],
                     primary_cause=b_raw["primary_cause"],
                     contributing_causes=b_raw["contributing_causes"],
+                    is_litigation_pending=is_lit,
+                    has_operative_stay_order=has_stay,
+                    court_order_details=stay_det,
                     responsible_resolution_authority=b_raw["responsible_resolution_authority"],
                     assigned_action_owner=b_raw["assigned_action_owner"],
                     external_department_or_contractor=b_raw["external_department_or_contractor"],
                     supporting_evidence=b_raw["supporting_evidence"],
+                    provenance_note="SEEDED DEMO - Not yet verified",
                     days_affected=b_raw["days_affected"],
                     financial_exposure_cr=b_raw["financial_exposure_cr"],
                     is_financial_exposure_quantified=b_raw["is_financial_exposure_quantified"],
@@ -898,7 +1002,107 @@ def seed_major_works_blockers_data(db_session: Session = None):
                 db.refresh(blk)
                 db_blockers[b_raw["blocker_code"]] = blk
             else:
+                existing_b.delay_event_id = d_ev_id
+                existing_b.is_litigation_pending = is_lit
+                existing_b.has_operative_stay_order = has_stay
+                existing_b.court_order_details = stay_det
+                db.commit()
+                db.refresh(existing_b)
                 db_blockers[b_raw["blocker_code"]] = existing_b
+
+        # -----------------------------------------------------------------
+        # 3B. SEED EVIDENCE SPINE (Obligations & Evidence Requests)
+        # -----------------------------------------------------------------
+        b_5566 = db_blockers.get("BLK-5566-01")
+        if b_5566:
+            ob1 = db.query(Obligation).filter(Obligation.obligation_code == "OBL-5566-01").first()
+            if not ob1:
+                db.add(Obligation(
+                    obligation_code="OBL-5566-01",
+                    project_id=ref_proj_id,
+                    blocker_id=b_5566.id,
+                    owner_party="Southern Railway (DRM Chennai / Chief Bridge Engineer)",
+                    deliverable="Safety Clearance & 4-Hour Track Power Block for Composite Girder Launching",
+                    due_date=datetime.datetime(2026, 10, 31, tzinfo=datetime.timezone.utc),
+                    acceptance_criteria="Written safety sanction from Commissioner of Railway Safety (CRS) and official traffic block slot order",
+                    status="PENDING",
+                    verification_status="UNVERIFIED",
+                    provenance_note="SEEDED DEMO - Not yet verified",
+                    data_mode="SIMULATED",
+                    created_at=now,
+                    updated_at=now
+                ))
+            ob2 = db.query(Obligation).filter(Obligation.obligation_code == "OBL-5566-02").first()
+            if not ob2:
+                db.add(Obligation(
+                    obligation_code="OBL-5566-02",
+                    project_id=ref_proj_id,
+                    blocker_id=b_5566.id,
+                    owner_party="M/s Sri Balaji Infra Projects Pvt Ltd (Contractor)",
+                    deliverable="Revised Resource Deployment Programme & CPM Network for Balance Work",
+                    due_date=datetime.datetime(2026, 9, 30, tzinfo=datetime.timezone.utc),
+                    acceptance_criteria="Submission of Primavera P6 / MS Project schedule showing critical path with resource histogram, approved by SE (Highways)",
+                    status="OVERDUE",
+                    verification_status="UNVERIFIED",
+                    provenance_note="SEEDED DEMO - Not yet verified",
+                    data_mode="SIMULATED",
+                    created_at=now,
+                    updated_at=now
+                ))
+
+            # Seed Evidence Requests for 5566
+            ev1 = db.query(EvidenceRequest).filter(EvidenceRequest.request_code == "EVR-5566-01").first()
+            if not ev1:
+                db.add(EvidenceRequest(
+                    request_code="EVR-5566-01",
+                    project_id=ref_proj_id,
+                    blocker_id=b_5566.id,
+                    delay_event_id=delay_event_5566.id if delay_event_5566 else None,
+                    item_requested="Joint Inspection Minutes and CRS Safety Approval Letter",
+                    requested_from_party="Southern Railway Bridge Branch",
+                    due_date=datetime.datetime(2026, 10, 15, tzinfo=datetime.timezone.utc),
+                    status="OPEN",
+                    verification_status="UNVERIFIED",
+                    provenance_note="SEEDED DEMO - Not yet verified",
+                    data_mode="SIMULATED",
+                    created_at=now,
+                    updated_at=now
+                ))
+            ev2 = db.query(EvidenceRequest).filter(EvidenceRequest.request_code == "EVR-5566-02").first()
+            if not ev2:
+                db.add(EvidenceRequest(
+                    request_code="EVR-5566-02",
+                    project_id=ref_proj_id,
+                    blocker_id=b_5566.id,
+                    delay_event_id=delay_event_5566.id if delay_event_5566 else None,
+                    item_requested="Detailed Delay Justification, Daily Plant Log & EOT Application under Clause 5",
+                    requested_from_party="M/s Sri Balaji Infra Projects Pvt Ltd",
+                    due_date=datetime.datetime(2026, 10, 5, tzinfo=datetime.timezone.utc),
+                    status="OPEN",
+                    verification_status="UNVERIFIED",
+                    provenance_note="SEEDED DEMO - Not yet verified",
+                    data_mode="SIMULATED",
+                    created_at=now,
+                    updated_at=now
+                ))
+            ev3 = db.query(EvidenceRequest).filter(EvidenceRequest.request_code == "EVR-5566-03").first()
+            if not ev3:
+                db.add(EvidenceRequest(
+                    request_code="EVR-5566-03",
+                    project_id=ref_proj_id,
+                    blocker_id=b_5566.id,
+                    delay_event_id=delay_event_5566.id if delay_event_5566 else None,
+                    item_requested="Certified Milestone Completion Record for Substructure and Approaches",
+                    requested_from_party="Divisional Engineer (Highways), Projects Division",
+                    due_date=datetime.datetime(2026, 10, 10, tzinfo=datetime.timezone.utc),
+                    status="SUBMITTED",
+                    verification_status="VERIFIED",
+                    provenance_note="SEEDED DEMO - Verified against Divisional M-Book",
+                    data_mode="SIMULATED",
+                    created_at=now,
+                    updated_at=now
+                ))
+            db.commit()
 
         # -----------------------------------------------------------------
         # 4. SEED DELAY INVESTIGATIONS (Baseline vs Forecast vs Blocker)

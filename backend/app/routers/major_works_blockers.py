@@ -9,11 +9,14 @@ from app.auth import get_current_user
 from app.models import (
     User, Project, MajorWorksProjectReviewSnapshot, ProjectBlocker,
     DelayInvestigation, LossPreventionLedgerRecord, MitigationRecommendation,
-    PreConstructionGateCheck, EntityRelationship
+    PreConstructionGateCheck, EntityRelationship, Obligation, EvidenceRequest,
+    ProjectDelayEvent
 )
 from app.schemas import (
     MajorWorksProjectReviewOut, MajorWorksPortfolioOverviewOut,
+    SnapshotVerifyIn, ReconciliationReportOut,
     ProjectBlockerIn, ProjectBlockerOut, ProjectBlockerStatusUpdateIn,
+    ObligationIn, ObligationOut, EvidenceRequestIn, EvidenceRequestOut,
     DelayInvestigationOut, LossPreventionLedgerRecordOut, LossPreventionLedgerDashboardOut,
     MitigationRecommendationOut, MitigationApproveIn,
     PreConstructionGateCheckOut, PreConstructionGateOverrideIn,
@@ -188,6 +191,92 @@ def get_major_work_detail(
     }
 
 
+@router.get("/reconciliation-report", response_model=ReconciliationReportOut)
+def get_reconciliation_report(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    snapshots = db.query(MajorWorksProjectReviewSnapshot).all()
+    total = len(snapshots)
+    verified = sum(1 for s in snapshots if s.verification_status == "VERIFIED")
+    conflicting = sum(1 for s in snapshots if s.verification_status == "CONFLICTING")
+    pending = total - verified - conflicting
+    discrepancies = sum(1 for s in snapshots if s.sanction_vs_contract_discrepancy)
+
+    missing_fields = []
+    for s in snapshots:
+        missing_in_snap = []
+        if not s.start_chainage_km and not s.end_chainage_km:
+            missing_in_snap.append("chainage_limits (Not reported in PDF)")
+        if not s.agreement_milestones:
+            missing_in_snap.append("agreement_milestones (Not reported in PDF)")
+        if not s.court_case_remarks or s.court_case_remarks.strip().lower() in ["nil", "not reported"]:
+            missing_in_snap.append("court_case_records (Not reported / Nil)")
+        if not s.railway_approval_remarks or s.railway_approval_remarks.strip().lower() in ["nil", "not applicable"]:
+            missing_in_snap.append("railway_coordination (Not applicable / Not reported)")
+        if missing_in_snap:
+            missing_fields.append({
+                "source_project_id": s.source_project_id,
+                "project_name": s.project_name,
+                "source_page": s.source_page_number,
+                "unreported_fields": missing_in_snap
+            })
+
+    return ReconciliationReportOut(
+        total_staged_records=total,
+        verified_records_count=verified,
+        pending_verification_count=pending,
+        conflicting_records_count=conflicting,
+        discrepancy_records_count=discrepancies,
+        missing_fields_inventory=missing_fields,
+        provenance_summary="All 31 staged records sourced from 'More than 50Cr works details as on 21.09.2026.pdf'. Fields lacking source reporting marked explicitly as 'Not reported'.",
+        simulated_data_badge="SIMULATED"
+    )
+
+
+@router.put("/snapshots/{id}/verify", response_model=MajorWorksProjectReviewOut)
+def verify_snapshot(
+    id: int,
+    payload: SnapshotVerifyIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    snap = db.query(MajorWorksProjectReviewSnapshot).filter(MajorWorksProjectReviewSnapshot.id == id).first()
+    if not snap:
+        raise HTTPException(status_code=404, detail="Major Works Snapshot not found")
+
+    snap.verification_status = payload.verification_status or "VERIFIED"
+    snap.verified_by_officer = payload.verified_by_officer or current_user.full_name
+    snap.verified_at = datetime.datetime.now(datetime.UTC)
+
+    if payload.corrected_contract_value_cr is not None:
+        snap.contract_value_cr = payload.corrected_contract_value_cr
+    if payload.corrected_technical_sanction_cr is not None:
+        snap.technical_sanction_cr = payload.corrected_technical_sanction_cr
+    if payload.corrected_physical_progress_pct is not None:
+        snap.physical_progress_pct = payload.corrected_physical_progress_pct
+    if payload.corrected_financial_progress_pct is not None:
+        snap.financial_progress_pct = payload.corrected_financial_progress_pct
+    if payload.corrected_estimated_completion_date is not None:
+        snap.estimated_completion_date = payload.corrected_estimated_completion_date
+
+    # Only update canonical project if officer verifies and requests update
+    if payload.update_canonical and snap.canonical_project_id:
+        p = db.query(Project).filter(Project.id == snap.canonical_project_id).first()
+        if p:
+            p.estimated_cost_cr = snap.technical_sanction_cr
+            p.sanctioned_cost_cr = snap.technical_sanction_cr
+            p.expenditure_to_date_cr = snap.expenditure_cr
+            p.physical_progress_pct = snap.physical_progress_pct
+            p.financial_progress_pct = snap.financial_progress_pct
+            p.verification_status = "VERIFIED_OFFICIAL"
+            p.updated_at = datetime.datetime.now(datetime.UTC)
+
+    db.commit()
+    db.refresh(snap)
+    return MajorWorksProjectReviewOut.model_validate(snap)
+
+
 # -------------------------------------------------------------
 # 2. PROJECT BLOCKER REGISTER (17 CATEGORIES)
 # -------------------------------------------------------------
@@ -331,6 +420,139 @@ def update_blocker_status(
     out = ProjectBlockerOut.model_validate(blocker)
     proj = db.query(Project).filter(Project.id == blocker.project_id).first()
     out.project_name = proj.title if proj else "Project"
+    return out
+
+
+# -------------------------------------------------------------
+# 2B. EVIDENCE SPINE: OBLIGATIONS & EVIDENCE REQUESTS
+# -------------------------------------------------------------
+
+@router.get("/obligations", response_model=List[ObligationOut])
+def list_obligations(
+    project_id: Optional[int] = None,
+    blocker_id: Optional[int] = None,
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    query = db.query(Obligation)
+    if project_id:
+        query = query.filter(Obligation.project_id == project_id)
+    if blocker_id:
+        query = query.filter(Obligation.blocker_id == blocker_id)
+    if status:
+        query = query.filter(Obligation.status == status)
+
+    obs = query.order_by(desc(Obligation.created_at)).all()
+    results = []
+    for o in obs:
+        out = ObligationOut.model_validate(o)
+        if o.project:
+            out.project_name = o.project.title
+        if o.blocker:
+            out.blocker_code = o.blocker.blocker_code
+        results.append(out)
+    return results
+
+
+@router.post("/obligations", response_model=ObligationOut, status_code=status.HTTP_201_CREATED)
+def create_obligation(
+    payload: ObligationIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    now = datetime.datetime.now(datetime.UTC)
+    code = f"OBL-{payload.project_id}-{int(now.timestamp())}"
+    ob = Obligation(
+        obligation_code=code,
+        project_id=payload.project_id,
+        work_package_id=payload.work_package_id,
+        blocker_id=payload.blocker_id,
+        owner_party=payload.owner_party,
+        deliverable=payload.deliverable,
+        due_date=payload.due_date,
+        acceptance_criteria=payload.acceptance_criteria,
+        status=payload.status or "PENDING",
+        verification_status="UNVERIFIED",
+        provenance_note="SEEDED DEMO - Not yet verified",
+        data_mode="SIMULATED",
+        created_at=now,
+        updated_at=now
+    )
+    db.add(ob)
+    db.commit()
+    db.refresh(ob)
+    out = ObligationOut.model_validate(ob)
+    if ob.project:
+        out.project_name = ob.project.title
+    if ob.blocker:
+        out.blocker_code = ob.blocker.blocker_code
+    return out
+
+
+@router.get("/evidence-requests", response_model=List[EvidenceRequestOut])
+def list_evidence_requests(
+    project_id: Optional[int] = None,
+    blocker_id: Optional[int] = None,
+    delay_event_id: Optional[int] = None,
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    query = db.query(EvidenceRequest)
+    if project_id:
+        query = query.filter(EvidenceRequest.project_id == project_id)
+    if blocker_id:
+        query = query.filter(EvidenceRequest.blocker_id == blocker_id)
+    if delay_event_id:
+        query = query.filter(EvidenceRequest.delay_event_id == delay_event_id)
+    if status:
+        query = query.filter(EvidenceRequest.status == status)
+
+    reqs = query.order_by(desc(EvidenceRequest.created_at)).all()
+    results = []
+    for r in reqs:
+        out = EvidenceRequestOut.model_validate(r)
+        if r.project:
+            out.project_name = r.project.title
+        if r.blocker:
+            out.blocker_code = r.blocker.blocker_code
+        results.append(out)
+    return results
+
+
+@router.post("/evidence-requests", response_model=EvidenceRequestOut, status_code=status.HTTP_201_CREATED)
+def create_evidence_request(
+    payload: EvidenceRequestIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    now = datetime.datetime.now(datetime.UTC)
+    code = f"EVR-{payload.project_id}-{int(now.timestamp())}"
+    ev = EvidenceRequest(
+        request_code=code,
+        project_id=payload.project_id,
+        work_package_id=payload.work_package_id,
+        blocker_id=payload.blocker_id,
+        delay_event_id=payload.delay_event_id,
+        item_requested=payload.item_requested,
+        requested_from_party=payload.requested_from_party,
+        due_date=payload.due_date,
+        status=payload.status or "OPEN",
+        verification_status="UNVERIFIED",
+        provenance_note="SEEDED DEMO - Not yet verified",
+        data_mode="SIMULATED",
+        created_at=now,
+        updated_at=now
+    )
+    db.add(ev)
+    db.commit()
+    db.refresh(ev)
+    out = EvidenceRequestOut.model_validate(ev)
+    if ev.project:
+        out.project_name = ev.project.title
+    if ev.blocker:
+        out.blocker_code = ev.blocker.blocker_code
     return out
 
 

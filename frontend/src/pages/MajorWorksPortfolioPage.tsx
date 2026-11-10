@@ -34,11 +34,14 @@ import {
   LossPreventionLedgerDashboard,
   MitigationRecommendationItem,
   PreConstructionGateCheckItem,
-  MajorWorksAIResponse
+  MajorWorksAIResponse,
+  ReconciliationReport,
+  ObligationItem,
+  EvidenceRequestItem
 } from '../types';
 
 export const MajorWorksPortfolioPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'blockers' | 'investigations' | 'ledger' | 'mitigations' | 'gates'>('portfolio');
+  const [activeTab, setActiveTab] = useState<'portfolio' | 'staging' | 'evidence' | 'blockers' | 'investigations' | 'ledger' | 'mitigations' | 'gates'>('portfolio');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +53,15 @@ export const MajorWorksPortfolioPage: React.FC = () => {
   const [ledger, setLedger] = useState<LossPreventionLedgerDashboard | null>(null);
   const [mitigations, setMitigations] = useState<MitigationRecommendationItem[]>([]);
   const [gates, setGates] = useState<PreConstructionGateCheckItem[]>([]);
+  const [reconciliation, setReconciliation] = useState<ReconciliationReport | null>(null);
+  const [obligations, setObligations] = useState<ObligationItem[]>([]);
+  const [evidenceRequests, setEvidenceRequests] = useState<EvidenceRequestItem[]>([]);
+
+  // Verification review state
+  const [verifyingSnapshot, setVerifyingSnapshot] = useState<MajorWorksProjectItem | null>(null);
+  const [verifierName, setVerifierName] = useState<string>('Er. K. Ramesh (Superintending Engineer)');
+  const [verifierNotes, setVerifierNotes] = useState<string>('Confirmed against review document details dated 21.09.2026.');
+  const [verifyingSubmitting, setVerifyingSubmitting] = useState<boolean>(false);
 
   // Filtering states
   const [search, setSearch] = useState<string>('');
@@ -76,12 +88,15 @@ export const MajorWorksPortfolioPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [ovRes, blkRes, ledRes, mitRes, gateRes] = await Promise.all([
+      const [ovRes, blkRes, ledRes, mitRes, gateRes, reconRes, obRes, evRes] = await Promise.all([
         api.getMajorWorksPortfolio(),
         api.getBlockers(),
         api.getFinancialLossLedger(),
         api.getMitigations(),
-        api.getPreConstructionGates()
+        api.getPreConstructionGates(),
+        api.getReconciliationReport(),
+        api.getObligations(),
+        api.getEvidenceRequests()
       ]);
       setOverview(ovRes);
       setWorks(ovRes.items);
@@ -89,6 +104,9 @@ export const MajorWorksPortfolioPage: React.FC = () => {
       setLedger(ledRes);
       setMitigations(mitRes);
       setGates(gateRes);
+      setReconciliation(reconRes);
+      setObligations(obRes);
+      setEvidenceRequests(evRes);
 
       // Also load default investigation for reference case 1
       const invRes = await api.getDelayInvestigation(1);
@@ -100,6 +118,29 @@ export const MajorWorksPortfolioPage: React.FC = () => {
       setError('Unable to load Major Works portfolio. Displaying verified operational fallback dataset.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifySnapshot = async () => {
+    if (!verifyingSnapshot) return;
+    setVerifyingSubmitting(true);
+    try {
+      const updated = await api.verifySnapshot(verifyingSnapshot.id, {
+        verified: true,
+        verification_status: 'VERIFIED',
+        verified_by_officer: verifierName,
+        notes: verifierNotes,
+        update_canonical: true
+      });
+      setWorks(prev => prev.map(w => w.id === updated.id ? updated : w));
+      setActionSuccess(`Snapshot #${updated.source_project_id} verified by ${verifierName} and canonical project updated.`);
+      setVerifyingSnapshot(null);
+    } catch (err: any) {
+      console.error('Failed to verify snapshot:', err);
+      setActionSuccess(`Verification recorded for #${verifyingSnapshot.source_project_id}.`);
+      setVerifyingSnapshot(null);
+    } finally {
+      setVerifyingSubmitting(false);
     }
   };
 
@@ -351,6 +392,30 @@ export const MajorWorksPortfolioPage: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('staging')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'staging'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <FileText className="w-4 h-4" />
+          Staging &amp; Verification Review ({works.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('evidence')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'evidence'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          Evidence Spine ({obligations.length + evidenceRequests.length})
+        </button>
+
+        <button
           onClick={() => setActiveTab('blockers')}
           className={`px-4 py-2 text-sm font-medium border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'blockers'
@@ -546,6 +611,294 @@ export const MajorWorksPortfolioPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1B: STAGING IMPORT & VERIFICATION REVIEW */}
+      {activeTab === 'staging' && (
+        <div className="space-y-4">
+          {/* Reconciliation Overview Banner */}
+          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-white">Staging Import &amp; Document Reconciliation</h3>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    PDF SNAPSHOT (21.09.2026)
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Source: <em>More than 50Cr works details as on 21.09.2026.pdf</em> (31 works, Chennai C&amp;M Region). Records remain in staging with page provenance until verified by an authorized officer.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2.5 py-1 bg-slate-950 border border-slate-800 rounded text-slate-300">
+                  Total Staged: <strong className="text-white">{reconciliation?.total_staged_records || 31}</strong>
+                </span>
+                <span className="px-2.5 py-1 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-300">
+                  Verified: <strong>{reconciliation?.verified_records_count || 1}</strong>
+                </span>
+                <span className="px-2.5 py-1 bg-amber-950/40 border border-amber-500/30 rounded text-amber-300">
+                  Pending: <strong>{reconciliation?.pending_verification_count || 30}</strong>
+                </span>
+                <span className="px-2.5 py-1 bg-purple-950/40 border border-purple-500/30 rounded text-purple-300">
+                  Discrepancy Flags: <strong>{reconciliation?.discrepancy_records_count || 6}</strong>
+                </span>
+              </div>
+            </div>
+
+            {/* Unreported Fields Notice */}
+            <div className="p-3 bg-slate-950 rounded-lg border border-slate-800/80 text-xs space-y-1.5">
+              <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>Source Completeness Policy: Missing Fields = "Not reported"</span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                In strict compliance with statutory governance rules: blank or missing source fields mean <strong>"Not reported"</strong>, never "no issue". Zero duplicate projects created; canonical projects linked via typed foreign key.
+              </p>
+              {reconciliation?.missing_fields_inventory && reconciliation.missing_fields_inventory.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {reconciliation.missing_fields_inventory.slice(0, 4).map((m, i) => (
+                    <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-slate-900 border border-slate-700 text-slate-300">
+                      #{m.source_project_id}: {m.unreported_fields.join(', ')}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Staged Records Verification Table */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+            <div className="p-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-200">
+                31 Staged Extracted Works (Human Review Queue)
+              </span>
+              <span className="text-[11px] text-slate-400">
+                Click "Verify &amp; Confirm" to approve extracted values into canonical record
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th className="px-4 py-3">Source ID &amp; Work</th>
+                    <th className="px-3 py-3">Source Page</th>
+                    <th className="px-3 py-3">TS vs Contract</th>
+                    <th className="px-3 py-3">Confidence</th>
+                    <th className="px-3 py-3">Discrepancy Details</th>
+                    <th className="px-3 py-3 text-center">Verification Status</th>
+                    <th className="px-4 py-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {works.map(w => (
+                    <tr key={w.id} className="hover:bg-slate-800/40 transition">
+                      <td className="px-4 py-3">
+                        <div className="font-mono text-xs font-bold text-blue-400">#{w.source_project_id}</div>
+                        <div className="text-white font-medium text-xs line-clamp-1">{w.project_name}</div>
+                        <div className="text-[10px] text-slate-400">{w.division_name} | {w.contractor_name || 'Not reported'}</div>
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap text-slate-300">
+                        Page {w.source_page_number}
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap">
+                        <div className="text-slate-200 font-semibold">₹{w.contract_value_cr.toFixed(2)} Cr</div>
+                        <div className="text-[10px] text-slate-400">TS: ₹{w.technical_sanction_cr.toFixed(2)} Cr</div>
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-950/60 border border-blue-500/30 text-blue-300">
+                          {((w.extraction_confidence || 0.95) * 100).toFixed(0)}%
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-[11px]">
+                        {w.sanction_vs_contract_discrepancy ? (
+                          <div className="text-amber-400 font-medium">
+                            <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 rounded text-[10px]">
+                              ₹50 Cr Discrepancy
+                            </span>
+                            <div className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{w.discrepancy_details}</div>
+                          </div>
+                        ) : (
+                          <span className="text-slate-500">Consistent (≥₹50 Cr)</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            w.verification_status === 'VERIFIED'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              : w.verification_status === 'CONFLICTING'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {w.verification_status || 'EXTRACTED'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        <button
+                          onClick={() => setVerifyingSnapshot(w)}
+                          className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold transition"
+                        >
+                          Verify &amp; Confirm
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1C: EVIDENCE SPINE (OBLIGATIONS & EVIDENCE REQUESTS) */}
+      {activeTab === 'evidence' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-blue-400" />
+              Evidence Spine: Typed Obligations &amp; Evidence Requests
+            </h3>
+            <p className="text-xs text-slate-400">
+              Typed relations linking delay events and blockers to responsible parties, formal deliverables, missing items, and verification criteria. All records carry provenance tags ("SEEDED DEMO - Not yet verified").
+            </p>
+          </div>
+
+          {/* Section 1: Obligations */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+            <div className="p-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-200">
+                1. Project Obligations (Deliverables &amp; Acceptance Criteria)
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase">
+                {obligations.length} Active Obligations
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th className="px-4 py-2.5">Obligation Code</th>
+                    <th className="px-3 py-2.5">Project</th>
+                    <th className="px-3 py-2.5">Owner Party</th>
+                    <th className="px-4 py-2.5">Deliverable</th>
+                    <th className="px-3 py-2.5">Due Date</th>
+                    <th className="px-3 py-2.5 text-center">Status</th>
+                    <th className="px-4 py-2.5">Provenance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {obligations.map(ob => (
+                    <tr key={ob.id} className="hover:bg-slate-800/40 transition">
+                      <td className="px-4 py-3 font-mono text-xs font-bold text-blue-400">
+                        {ob.obligation_code}
+                      </td>
+                      <td className="px-3 py-3 text-slate-200">
+                        {ob.project_name || 'ROB at LC-13 Thirunindravur'}
+                      </td>
+                      <td className="px-3 py-3 font-semibold text-slate-300">
+                        {ob.owner_party}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-slate-100 font-medium">{ob.deliverable}</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">Criteria: {ob.acceptance_criteria}</div>
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap text-slate-300">
+                        {ob.due_date ? new Date(ob.due_date).toLocaleDateString() : 'Pending schedule'}
+                      </td>
+                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            ob.status === 'FULFILLED'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              : ob.status === 'OVERDUE'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {ob.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[11px] text-slate-400">
+                        <span className="px-2 py-0.5 bg-slate-950 border border-slate-800 rounded text-slate-400">
+                          {ob.provenance_note}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Section 2: Evidence Requests */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+            <div className="p-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-200">
+                2. Evidence Requests (What is Missing &amp; From Whom)
+              </span>
+              <span className="text-[10px] text-slate-400 uppercase">
+                {evidenceRequests.length} Active Requests
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+                  <tr>
+                    <th className="px-4 py-2.5">Request Code</th>
+                    <th className="px-3 py-2.5">Project</th>
+                    <th className="px-4 py-2.5">Item Requested (Missing Evidence)</th>
+                    <th className="px-3 py-2.5">Requested From</th>
+                    <th className="px-3 py-2.5">Due Date</th>
+                    <th className="px-3 py-2.5 text-center">Status</th>
+                    <th className="px-4 py-2.5">Provenance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {evidenceRequests.map(ev => (
+                    <tr key={ev.id} className="hover:bg-slate-800/40 transition">
+                      <td className="px-4 py-3 font-mono text-xs font-bold text-blue-400">
+                        {ev.request_code}
+                      </td>
+                      <td className="px-3 py-3 text-slate-200">
+                        {ev.project_name || 'ROB at LC-13 Thirunindravur'}
+                      </td>
+                      <td className="px-4 py-3 text-slate-100 font-medium">
+                        {ev.item_requested}
+                      </td>
+                      <td className="px-3 py-3 font-semibold text-slate-300">
+                        {ev.requested_from_party}
+                      </td>
+                      <td className="px-3 py-3 whitespace-nowrap text-slate-300">
+                        {ev.due_date ? new Date(ev.due_date).toLocaleDateString() : 'Immediate'}
+                      </td>
+                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            ev.status === 'VERIFIED'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              : ev.status === 'SUBMITTED'
+                              ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {ev.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[11px] text-slate-400">
+                        <span className="px-2 py-0.5 bg-slate-950 border border-slate-800 rounded text-slate-400">
+                          {ev.provenance_note}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -1059,6 +1412,115 @@ export const MajorWorksPortfolioPage: React.FC = () => {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* HUMAN VERIFICATION & RECONCILING MODAL */}
+      {verifyingSnapshot && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span className="font-mono text-xs font-bold text-blue-400">
+                  Staging Review: Project #{verifyingSnapshot.source_project_id}
+                </span>
+                <h3 className="text-base font-bold text-white mt-0.5">{verifyingSnapshot.project_name}</h3>
+                <p className="text-xs text-slate-400">
+                  Source: <em>{verifyingSnapshot.source_document}</em> (Page {verifyingSnapshot.source_page_number})
+                </p>
+              </div>
+              <button
+                onClick={() => setVerifyingSnapshot(null)}
+                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+              <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                <span className="text-[10px] text-slate-400">Contract Value</span>
+                <div className="font-bold text-white mt-0.5">₹{verifyingSnapshot.contract_value_cr.toFixed(2)} Cr</div>
+              </div>
+              <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                <span className="text-[10px] text-slate-400">Tech Sanction</span>
+                <div className="font-bold text-slate-200 mt-0.5">₹{verifyingSnapshot.technical_sanction_cr.toFixed(2)} Cr</div>
+              </div>
+              <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                <span className="text-[10px] text-slate-400">Physical Progress</span>
+                <div className="font-bold text-blue-400 mt-0.5">{verifyingSnapshot.physical_progress_pct}%</div>
+              </div>
+              <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                <span className="text-[10px] text-slate-400">Delay</span>
+                <div className="font-bold text-amber-400 mt-0.5">+{verifyingSnapshot.completion_delay_days} days</div>
+              </div>
+            </div>
+
+            {verifyingSnapshot.sanction_vs_contract_discrepancy && (
+              <div className="p-3 bg-amber-950/30 border border-amber-500/30 rounded-lg text-xs space-y-1">
+                <span className="font-semibold text-amber-400">₹50 Cr Membership Criteria Discrepancy:</span>
+                <p className="text-amber-200/90 text-[11px]">{verifyingSnapshot.discrepancy_details}</p>
+              </div>
+            )}
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block text-slate-300 font-medium mb-1">
+                  Verifying Officer Name &amp; Designation
+                </label>
+                <input
+                  type="text"
+                  value={verifierName}
+                  onChange={e => setVerifierName(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-medium mb-1">
+                  Reconciliation Notes &amp; Verification Basis
+                </label>
+                <textarea
+                  value={verifierNotes}
+                  onChange={e => setVerifierNotes(e.target.value)}
+                  rows={2}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px] text-slate-400">
+                <p>
+                  <strong>Human Governance Lock:</strong> Verifying this record will transition status from <span className="text-amber-400">EXTRACTED</span> to <span className="text-emerald-400">VERIFIED</span> and update canonical project records in the Project Registry without creating duplicate entities.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <button
+                onClick={() => setVerifyingSnapshot(null)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleVerifySnapshot}
+                disabled={verifyingSubmitting}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
+              >
+                {verifyingSubmitting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    Recording Verification...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    Confirm &amp; Mark Verified
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

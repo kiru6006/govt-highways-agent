@@ -162,3 +162,102 @@ def test_cm_summary_and_ai_ask(client: TestClient):
     ans = ai_resp.json()
     assert any("5566" in fact or "Thirunindravur" in fact for fact in ans["verified_facts"])
     assert len(ans["evidence_references"]) >= 1
+
+
+def test_zero_duplicate_projects_and_staging_provenance(client: TestClient):
+    token = get_auth_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. Check Reconciliation Report
+    recon_resp = client.get("/api/v1/major-works/reconciliation-report", headers=headers)
+    assert recon_resp.status_code == 200, recon_resp.text
+    recon = recon_resp.json()
+    assert recon["total_staged_records"] == 31
+    assert recon["pending_verification_count"] >= 1
+    assert len(recon["missing_fields_inventory"]) >= 1
+    assert "More than 50Cr works details" in recon["provenance_summary"]
+
+    # 2. Check 31 snapshots for provenance and zero duplicate source IDs
+    port_resp = client.get("/api/v1/major-works/portfolio", headers=headers)
+    assert port_resp.status_code == 200
+    items = port_resp.json()["items"]
+    assert len(items) == 31
+
+    source_ids = [item["source_project_id"] for item in items]
+    assert len(source_ids) == len(set(source_ids)), "Duplicate source_project_id found in snapshots!"
+
+    for item in items:
+        assert item["source_document"] == "More than 50Cr works details as on 21.09.2026.pdf"
+        assert 1 <= item["source_page_number"] <= 35
+        assert item["extraction_confidence"] == 0.95
+        assert item["verification_status"] in ["EXTRACTED", "VERIFIED", "CONFLICTING"]
+
+
+def test_snapshot_human_verification_and_canonical_immutability(client: TestClient):
+    token = get_auth_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Fetch snapshot 5566
+    ref_resp = client.get("/api/v1/major-works/portfolio/5566", headers=headers)
+    assert ref_resp.status_code == 200
+    snap = ref_resp.json()["work"]
+    snap_id = snap["id"]
+
+    # Verify snapshot via officer human verification endpoint
+    verify_resp = client.put(
+        f"/api/v1/major-works/snapshots/{snap_id}/verify",
+        headers=headers,
+        json={
+            "verified": True,
+            "verification_status": "VERIFIED",
+            "verified_by_officer": "Er. K. Ramesh (Superintending Engineer)",
+            "update_canonical": True,
+            "notes": "Verified against physical review minutes of 22.09.2026."
+        }
+    )
+    assert verify_resp.status_code == 200, verify_resp.text
+    verified_data = verify_resp.json()
+    assert verified_data["verification_status"] == "VERIFIED"
+    assert verified_data["verified_by_officer"] == "Er. K. Ramesh (Superintending Engineer)"
+    assert verified_data["verified_at"] is not None
+
+
+def test_evidence_spine_obligations_and_evidence_requests(client: TestClient):
+    token = get_auth_token(client)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. Test Obligations listing
+    ob_resp = client.get("/api/v1/major-works/obligations", headers=headers)
+    assert ob_resp.status_code == 200
+    obligations = ob_resp.json()
+    assert len(obligations) >= 2
+    assert any("Southern Railway" in o["owner_party"] for o in obligations)
+    assert any("SEEDED DEMO - Not yet verified" in o["provenance_note"] for o in obligations)
+
+    # 2. Test Evidence Requests listing
+    ev_resp = client.get("/api/v1/major-works/evidence-requests", headers=headers)
+    assert ev_resp.status_code == 200
+    evidence_requests = ev_resp.json()
+    assert len(evidence_requests) >= 3
+    assert any("Joint Inspection" in r["item_requested"] for r in evidence_requests)
+    assert any("SEEDED DEMO" in r["provenance_note"] for r in evidence_requests)
+
+    # 3. Create a new Evidence Request
+    ref_resp = client.get("/api/v1/major-works/portfolio/5566", headers=headers)
+    proj_id = ref_resp.json()["work"]["canonical_project_id"]
+    new_ev = client.post(
+        "/api/v1/major-works/evidence-requests",
+        headers=headers,
+        json={
+            "project_id": proj_id,
+            "item_requested": "Contractor revised launching methodology statement",
+            "requested_from_party": "M/s Sri Balaji Infra Projects Pvt Ltd",
+            "due_date": "2026-10-25T00:00:00Z"
+        }
+    )
+    assert new_ev.status_code == 201
+    created = new_ev.json()
+    assert created["request_code"].startswith("EVR-")
+    assert created["status"] == "OPEN"
+    assert created["verification_status"] == "UNVERIFIED"
+    assert "SEEDED DEMO - Not yet verified" in created["provenance_note"]
