@@ -347,7 +347,7 @@ export const DigitalOfficePage: React.FC = () => {
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+                <h1 className="text-2xl font-bold text-gray-900  tracking-tight">
                   Secretariat Digital Office & E-File Intelligence
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
@@ -421,7 +421,7 @@ export const DigitalOfficePage: React.FC = () => {
               <span>Incoming Comms</span>
               <Inbox className="w-4 h-4 text-blue-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            <div className="text-2xl font-bold text-gray-900  mt-1">
               {overview.kpis.total_incoming_communications}
             </div>
             <div className="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5">
@@ -434,7 +434,7 @@ export const DigitalOfficePage: React.FC = () => {
               <span>Active Files</span>
               <FolderOpen className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            <div className="text-2xl font-bold text-gray-900  mt-1">
               {overview.kpis.files_currently_under_processing}
             </div>
             <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
@@ -519,7 +519,7 @@ export const DigitalOfficePage: React.FC = () => {
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-sm font-semibold text-gray-900 ">
                     AI Secretariat Intelligence (Advisory Oversight)
                   </h3>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
@@ -549,7 +549,7 @@ export const DigitalOfficePage: React.FC = () => {
                           {finding.severity}
                         </span>
                       </div>
-                      <div className="font-semibold text-gray-900 dark:text-white mt-1 line-clamp-1">
+                      <div className="font-semibold text-gray-900  mt-1 line-clamp-1">
                         {finding.title}
                       </div>
                       <p className="text-gray-600 dark:text-gray-300 mt-0.5 line-clamp-2">
@@ -726,7 +726,7 @@ export const DigitalOfficePage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-700 dark:text-gray-300">
-                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900  uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
                   <tr>
                     <th className="px-4 py-3">File Number</th>
                     <th className="px-4 py-3">Subject & Category</th>
@@ -753,7 +753,7 @@ export const DigitalOfficePage: React.FC = () => {
                         )}
                       </td>
                       <td className="px-4 py-3.5 max-w-sm">
-                        <div className="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                        <div className="font-semibold text-gray-900  line-clamp-1">
                           {file.subject}
                         </div>
                         <div className="text-gray-500 dark:text-gray-400 text-[11px] mt-0.5 flex items-center gap-1.5">
@@ -817,7 +817,7 @@ export const DigitalOfficePage: React.FC = () => {
       {activeTab === 'correspondence' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-sm font-semibold text-gray-900 ">
               Official Correspondence Register ({filteredCorrespondences.length} communications)
             </h2>
             <button
@@ -832,7 +832,7 @@ export const DigitalOfficePage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-700 dark:text-gray-300">
-                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900  uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
                   <tr>
                     <th className="px-4 py-3">Code / Ref</th>
                     <th className="px-4 py-3">Type</th>
@@ -847,7 +847,7 @@ export const DigitalOfficePage: React.FC = () => {
                   {filteredCorrespondences.map(corr => (
                     <tr key={corr.id} className="hover:bg-gray-50 dark:hover:bg-gray-750/50 transition">
                       <td className="px-4 py-3.5 font-mono">
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-gray-900 ">
                           {corr.communication_code}
                         </div>
                         <div className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -871,7 +871,7 @@ export const DigitalOfficePage: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3.5 max-w-xs">
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-gray-900 ">
                           {corr.sender_or_recipient_org}
                         </div>
                         <div className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -879,7 +879,7 @@ export const DigitalOfficePage: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3.5 max-w-md">
-                        <div className="font-medium text-gray-900 dark:text-white line-clamp-2">
+                        <div className="font-medium text-gray-900  line-clamp-2">
                           {corr.subject}
                         </div>
                         <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
@@ -938,7 +938,7 @@ export const DigitalOfficePage: React.FC = () => {
             <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-gray-700 pb-2.5">
               <div className="flex items-center gap-2">
                 <FileCheck2 className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                <h3 className="text-sm font-bold text-gray-900 ">
                   Ministerial & Secretary Decisions Register ({decisions.length})
                 </h3>
               </div>
@@ -969,7 +969,7 @@ export const DigitalOfficePage: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white mt-2">
+                    <p className="text-xs font-semibold text-gray-900  mt-2">
                       {dec.decision_statement}
                     </p>
 
@@ -1009,7 +1009,7 @@ export const DigitalOfficePage: React.FC = () => {
             <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-gray-700 pb-2.5">
               <div className="flex items-center gap-2">
                 <CheckSquare className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                <h3 className="text-sm font-bold text-gray-900 ">
                   Operational Action Items & Compliance Tracking ({actionItems.length})
                 </h3>
               </div>
@@ -1020,7 +1020,7 @@ export const DigitalOfficePage: React.FC = () => {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-700 dark:text-gray-300">
-                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900  uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
                   <tr>
                     <th className="px-4 py-3">Action Code</th>
                     <th className="px-4 py-3">Description</th>
@@ -1038,7 +1038,7 @@ export const DigitalOfficePage: React.FC = () => {
                         {act.action_code}
                       </td>
                       <td className="px-4 py-3 max-w-sm">
-                        <div className="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                        <div className="font-semibold text-gray-900  line-clamp-1">
                           {act.description}
                         </div>
                         <div className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -1116,7 +1116,7 @@ export const DigitalOfficePage: React.FC = () => {
       {activeTab === 'movements' && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
           <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-gray-700 pb-2.5">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-bold text-gray-900 ">
               Permanent Chronological File Movements Registry
             </h3>
             <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -1143,7 +1143,7 @@ export const DigitalOfficePage: React.FC = () => {
                     {f.current_workflow_stage}
                   </span>
                 </div>
-                <div className="text-xs font-semibold text-gray-900 dark:text-white mt-1 line-clamp-1">
+                <div className="text-xs font-semibold text-gray-900  mt-1 line-clamp-1">
                   {f.subject}
                 </div>
                 <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
@@ -1166,7 +1166,7 @@ export const DigitalOfficePage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-700 dark:text-gray-300">
-                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/60 text-gray-900  uppercase font-semibold border-b border-gray-200 dark:border-gray-700">
                   <tr>
                     <th className="px-4 py-3">Doc Code / Title</th>
                     <th className="px-4 py-3">Category</th>
@@ -1181,7 +1181,7 @@ export const DigitalOfficePage: React.FC = () => {
                   {documents.map(doc => (
                     <tr key={doc.id} className="hover:bg-gray-50 dark:hover:bg-gray-750/50 transition">
                       <td className="px-4 py-3.5 max-w-sm">
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-gray-900 ">
                           {doc.title}
                         </div>
                         <div className="font-mono text-[11px] text-gray-500 dark:text-gray-400">
@@ -1234,7 +1234,7 @@ export const DigitalOfficePage: React.FC = () => {
                 <Compass className="w-6 h-6" />
               </span>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-bold text-gray-900 ">
                   Section 16 Live Demonstration Scenario: CKICP SH-15 Corridor Fast-Track Approval
                 </h2>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -1255,7 +1255,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-gray-900 ">
                       Inward Communication Received: COMM-IN-2026-042
                     </span>
                     <span className="font-mono text-[11px] text-gray-500">12 Jan 2026</span>
@@ -1272,7 +1272,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-gray-900 ">
                       Government File Creation: FILE-CKICP-2026-088
                     </span>
                     <button
@@ -1294,7 +1294,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-gray-900 ">
                       Structured Office Note: NOTE-2026-142
                     </span>
                     <span className="font-mono text-[11px] text-gray-500">₹0.85 Cr commitment</span>
@@ -1311,7 +1311,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-gray-900 ">
                       Ministerial Special Decision: DEC-MIN-2026-021
                     </span>
                     <span className="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold">
@@ -1330,7 +1330,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-gray-900 ">
                       Operational Action Items: ACT-OFF-081 & ACT-OFF-082
                     </span>
                     <span className="font-mono text-[11px] text-emerald-600 font-semibold">100% Closed</span>
@@ -1357,7 +1357,7 @@ export const DigitalOfficePage: React.FC = () => {
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-base text-gray-900 dark:text-white font-mono">
+                    <h3 className="font-bold text-base text-gray-900  font-mono">
                       {selectedFileDetail.file.file_number}
                     </h3>
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300">
@@ -1403,7 +1403,7 @@ export const DigitalOfficePage: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* File Summary */}
               <div className="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700 text-xs space-y-2">
-                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                <div className="font-semibold text-gray-900  text-sm">
                   {selectedFileDetail.file.subject}
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -1444,7 +1444,7 @@ export const DigitalOfficePage: React.FC = () => {
                         </span>
                         <span>{m.movement_date}</span>
                       </div>
-                      <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white mt-1">
+                      <div className="flex items-center gap-2 font-semibold text-gray-900  mt-1">
                         <span>{m.from_officer_name} ({m.from_department_name})</span>
                         <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
                         <span>{m.to_officer_name} ({m.to_department_name})</span>
@@ -1523,7 +1523,7 @@ export const DigitalOfficePage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-bold text-base text-gray-900 ">
                 Register Official Communication
               </h3>
               <button
@@ -1546,7 +1546,7 @@ export const DigitalOfficePage: React.FC = () => {
                         communication_type: e.target.value as any
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   >
                     <option value="INCOMING">INCOMING (Inward)</option>
                     <option value="OUTGOING">OUTGOING (Dispatched)</option>
@@ -1563,7 +1563,7 @@ export const DigitalOfficePage: React.FC = () => {
                         priority: e.target.value as any
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   >
                     <option value="IMMEDIATE">IMMEDIATE</option>
                     <option value="HIGH">HIGH</option>
@@ -1585,7 +1585,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setCorrespondenceForm({ ...correspondenceForm, reference_number: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1603,7 +1603,7 @@ export const DigitalOfficePage: React.FC = () => {
                         sender_or_recipient_org: e.target.value
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   />
                 </div>
                 <div>
@@ -1619,7 +1619,7 @@ export const DigitalOfficePage: React.FC = () => {
                         sender_or_recipient_name: e.target.value
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   />
                 </div>
               </div>
@@ -1634,7 +1634,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setCorrespondenceForm({ ...correspondenceForm, subject: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1654,7 +1654,7 @@ export const DigitalOfficePage: React.FC = () => {
                         dispatch_evidence_ref: e.target.value
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 "
                   />
                 </div>
               )}
@@ -1684,7 +1684,7 @@ export const DigitalOfficePage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-bold text-base text-gray-900 ">
                 Dispatch File to Another Desk
               </h3>
               <button onClick={() => setShowMovementModal(false)} className="text-gray-400">
@@ -1701,7 +1701,7 @@ export const DigitalOfficePage: React.FC = () => {
                   placeholder="e.g. Special DRO (Land Acquisition)"
                   value={movementForm.to_officer_name}
                   onChange={e => setMovementForm({ ...movementForm, to_officer_name: e.target.value })}
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1717,7 +1717,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setMovementForm({ ...movementForm, reason_for_movement: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1731,7 +1731,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setMovementForm({ ...movementForm, expected_action: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1744,7 +1744,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setMovementForm({ ...movementForm, instruction_note: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1773,7 +1773,7 @@ export const DigitalOfficePage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-bold text-base text-gray-900 ">
                 Submit Secretariat Office Note
               </h3>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-400">
@@ -1792,7 +1792,7 @@ export const DigitalOfficePage: React.FC = () => {
                   placeholder="Administrative background of the proposal..."
                   value={noteForm.background_context}
                   onChange={e => setNoteForm({ ...noteForm, background_context: e.target.value })}
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1806,7 +1806,7 @@ export const DigitalOfficePage: React.FC = () => {
                   placeholder="IRC codes, measurement data, survey findings..."
                   value={noteForm.factual_matrix}
                   onChange={e => setNoteForm({ ...noteForm, factual_matrix: e.target.value })}
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1825,7 +1825,7 @@ export const DigitalOfficePage: React.FC = () => {
                         financial_implications_cr: parseFloat(e.target.value) || 0
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   />
                 </div>
                 <div>
@@ -1837,7 +1837,7 @@ export const DigitalOfficePage: React.FC = () => {
                     placeholder="e.g. DOC-IRC-412"
                     value={noteForm.supporting_doc_ref}
                     onChange={e => setNoteForm({ ...noteForm, supporting_doc_ref: e.target.value })}
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   />
                 </div>
               </div>
@@ -1854,7 +1854,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setNoteForm({ ...noteForm, officer_recommendation: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1883,7 +1883,7 @@ export const DigitalOfficePage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-bold text-base text-gray-900 ">
                 Advance Stage & Accord Decision
               </h3>
               <button onClick={() => setShowWorkflowModal(false)} className="text-gray-400">
@@ -1897,7 +1897,7 @@ export const DigitalOfficePage: React.FC = () => {
                 <select
                   value={workflowForm.new_stage}
                   onChange={e => setWorkflowForm({ ...workflowForm, new_stage: e.target.value })}
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 >
                   <option value="DEPARTMENT_REVIEW">DEPARTMENT REVIEW</option>
                   <option value="SECRETARY_REVIEW">SECRETARY REVIEW</option>
@@ -1917,7 +1917,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setWorkflowForm({ ...workflowForm, decision_authority: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 >
                   <option value="MINISTER">Hon'ble Minister for Highways</option>
                   <option value="PRINCIPAL_SECRETARY">Principal Secretary to Government</option>
@@ -1937,7 +1937,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setWorkflowForm({ ...workflowForm, decision_remarks: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1952,7 +1952,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setWorkflowForm({ ...workflowForm, approved_action: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -1981,7 +1981,7 @@ export const DigitalOfficePage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="font-bold text-base text-gray-900 dark:text-white">
+              <h3 className="font-bold text-base text-gray-900 ">
                 Update Action Compliance
               </h3>
               <button onClick={() => setShowActionModal(false)} className="text-gray-400">
@@ -1994,7 +1994,7 @@ export const DigitalOfficePage: React.FC = () => {
                 <div className="font-mono font-bold text-indigo-700 dark:text-indigo-400">
                   {selectedActionItem.action_code}
                 </div>
-                <div className="font-semibold text-gray-900 dark:text-white mt-1">
+                <div className="font-semibold text-gray-900  mt-1">
                   {selectedActionItem.description}
                 </div>
               </div>
@@ -2010,7 +2010,7 @@ export const DigitalOfficePage: React.FC = () => {
                         status: e.target.value as any
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   >
                     <option value="IN_PROGRESS">IN PROGRESS</option>
                     <option value="COMPLETED">COMPLETED</option>
@@ -2033,7 +2033,7 @@ export const DigitalOfficePage: React.FC = () => {
                         progress_pct: parseFloat(e.target.value) || 0
                       })
                     }
-                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                    className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                   />
                 </div>
               </div>
@@ -2049,7 +2049,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setActionUpdateForm({ ...actionUpdateForm, evidence_ref: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-emerald-400 rounded-lg text-gray-900 "
                 />
               </div>
 
@@ -2062,7 +2062,7 @@ export const DigitalOfficePage: React.FC = () => {
                   onChange={e =>
                     setActionUpdateForm({ ...actionUpdateForm, closure_remarks: e.target.value })
                   }
-                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 "
                 />
               </div>
 

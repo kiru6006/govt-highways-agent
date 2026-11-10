@@ -602,45 +602,45 @@ export const FieldOpsPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {summaryData.ai_field_intelligence.divergence_alerts.map((alert, idx) => (
-                <div key={idx} className="bg-slate-900/80 p-3.5 rounded border border-rose-500/30 text-xs space-y-2">
+                <div key={idx} className="bg-rose-50/60 p-3.5 rounded-xl border border-rose-200 text-xs space-y-2 text-slate-800">
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="font-mono text-indigo-400 font-bold">{alert.project_code}</span>
-                      <h4 className="font-bold text-white text-sm">{alert.project_name}</h4>
-                      <p className="text-slate-400 text-[11px]">{alert.package}</p>
+                      <span className="font-mono text-indigo-700 font-bold">{alert.project_code}</span>
+                      <h4 className="font-bold text-slate-900 text-sm">{alert.project_name}</h4>
+                      <p className="text-slate-500 text-[11px]">{alert.package}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-rose-400 font-bold text-sm">Gap: {alert.gap_pct.toFixed(1)}%</span>
-                      <div className="text-[10px] text-slate-400">Withhold MB Entry</div>
+                      <span className="text-rose-700 font-bold text-sm">Gap: {alert.gap_pct.toFixed(1)}%</span>
+                      <div className="text-[10px] text-slate-500">Withhold MB Entry</div>
                     </div>
                   </div>
 
                   <div className="space-y-1.5 pt-1">
                     <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-400">Contractor Claimed Progress:</span>
-                      <span className="font-bold text-amber-400">{alert.reported_progress}%</span>
+                      <span className="text-slate-600">Contractor Claimed Progress:</span>
+                      <span className="font-bold text-amber-700">{alert.reported_progress}%</span>
                     </div>
-                    <div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-                      <div className="bg-amber-400 h-full" style={{ width: `${alert.reported_progress}%` }}></div>
+                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div className="bg-amber-500 h-full" style={{ width: `${alert.reported_progress}%` }}></div>
                     </div>
 
                     <div className="flex justify-between text-[11px] pt-1">
-                      <span className="text-slate-400">Engineer Verified Physical Progress:</span>
-                      <span className="font-bold text-emerald-400">{alert.verified_progress}%</span>
+                      <span className="text-slate-600">Engineer Verified Physical Progress:</span>
+                      <span className="font-bold text-emerald-700">{alert.verified_progress}%</span>
                     </div>
-                    <div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-                      <div className="bg-emerald-400 h-full" style={{ width: `${alert.verified_progress}%` }}></div>
+                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div className="bg-emerald-600 h-full" style={{ width: `${alert.verified_progress}%` }}></div>
                     </div>
                   </div>
                 </div>
               ))}
 
               {/* Recommended Action Column */}
-              <div className="bg-slate-900/60 p-3.5 rounded border border-slate-700 text-xs space-y-2">
-                <div className="text-indigo-300 font-bold uppercase text-[11px]">
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-2 text-slate-800">
+                <div className="text-indigo-800 font-bold uppercase text-[11px]">
                   Recommended Engineering Remediation
                 </div>
-                <ul className="space-y-1.5 text-slate-300">
+                <ul className="space-y-1.5 text-slate-700">
                   {summaryData.ai_field_intelligence.recommended_actions.map((act, i) => (
                     <li key={i} className="flex items-start gap-1.5">
                       <span className="text-indigo-400 font-bold">→</span>
@@ -1047,16 +1047,16 @@ export const FieldOpsPage: React.FC = () => {
           {/* Interactive GIS Spatial Grid & Pin Selector */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Left 2 Cols: Simulated Geospatial GIS Canvas */}
-            <div className="lg:col-span-2 bg-slate-900 rounded-xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden border border-slate-800 shadow-inner">
+            <div className="lg:col-span-2 bg-slate-50 rounded-xl p-6 min-h-[420px] flex flex-col justify-between relative overflow-hidden border border-slate-200 shadow-2xs text-slate-800">
               {/* Map grid lines */}
-              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-              <div className="relative z-10 flex items-center justify-between text-xs text-slate-400">
+              <div className="relative z-10 flex items-center justify-between text-xs text-slate-600">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span className="font-mono text-emerald-400">GIS Coordinates Active: WGS-84 TN Grid</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span className="font-mono text-emerald-800 font-semibold">GIS Coordinates Active: WGS-84 TN Grid</span>
                 </div>
-                <div>Datum: EPSG:4326</div>
+                <div className="font-mono text-slate-500">Datum: EPSG:4326</div>
               </div>
 
               {/* Pins visualization */}

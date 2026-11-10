@@ -667,16 +667,16 @@ export const AssetsPage: React.FC = () => {
         {/* Health alerts grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {summaryData?.ai_asset_intelligence.health_alerts.map((alert, idx) => (
-            <div key={idx} className="bg-slate-900/80 p-3.5 rounded border border-emerald-500/30 text-xs space-y-1.5">
+            <div key={idx} className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
               <div className="flex justify-between items-start">
-                <span className="font-mono text-emerald-400 font-bold">{alert.asset_code}</span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/30 text-amber-300">
+                <span className="font-mono text-emerald-700 font-bold">{alert.asset_code}</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                   {alert.current_condition}
                 </span>
               </div>
-              <h4 className="font-bold text-white text-sm">{alert.asset_name}</h4>
-              <div className="text-slate-300 text-[11px]">
-                <span className="text-slate-400">Trigger:</span> {alert.trigger_event}
+              <h4 className="font-bold text-slate-900 text-sm">{alert.asset_name}</h4>
+              <div className="text-slate-700 text-[11px]">
+                <span className="text-slate-500">Trigger:</span> {alert.trigger_event}
               </div>
               <div className="text-emerald-300 font-semibold text-[11px] pt-1 border-t border-slate-700/60">
                 Directive: {alert.action_required}

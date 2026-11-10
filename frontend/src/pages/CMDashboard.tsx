@@ -433,21 +433,21 @@ export const CMDashboard: React.FC = () => {
             </div>
 
             {/* KPI 17 (Apex Governance) */}
-            <div className="p-3.5 rounded-xl bg-slate-900 text-white shadow-sm col-span-2 sm:col-span-2 lg:col-span-4 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-white text-slate-900 border border-slate-200 shadow-2xs border-l-4 border-l-[#20242B] col-span-2 sm:col-span-2 lg:col-span-4 flex items-center justify-between">
               <div>
-                <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                  Cabinet-Level Accountability & Statutory Oversight
+                <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">
+                  Cabinet-Level Accountability &amp; Statutory Oversight
                 </div>
-                <div className="text-xs font-semibold text-slate-200 mt-0.5">
+                <div className="text-xs font-semibold text-slate-800 mt-0.5">
                   Portfolio: Highways and Minor Ports • Nodal Apex: Chief Minister's Office (CMO)
                 </div>
-                <div className="text-[11px] text-slate-400 mt-1">
-                  Pending Cabinet Approvals: <span className="text-white font-bold">{overview?.pending_cabinet_approvals_count || 2}</span> • CM Escalation Queue: <span className="text-rose-400 font-bold">{overview?.cm_escalation_queue_count || 4}</span> items
+                <div className="text-[11px] text-slate-500 mt-1">
+                  Pending Cabinet Approvals: <span className="text-slate-900 font-bold">{overview?.pending_cabinet_approvals_count || 2}</span> • CM Escalation Queue: <span className="text-rose-600 font-bold">{overview?.cm_escalation_queue_count || 4}</span> items
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+                <span className="px-2.5 py-1 rounded bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-300">
                   Apex Jurisdiction Clearance
                 </span>
               </div>
@@ -732,8 +732,8 @@ export const CMDashboard: React.FC = () => {
                       onClick={() => setDirectionFilter(st)}
                       className={`px-2 py-1 text-[10px] font-semibold rounded ${
                         directionFilter === st
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? 'bg-[#20242B] text-[#FACC15]'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
                       {st.replace('_', ' ')}
@@ -1007,7 +1007,7 @@ export const CMDashboard: React.FC = () => {
               <button
                 onClick={() => setBenchmarkLevel('zone')}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${
-                  benchmarkLevel === 'zone' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
+                  benchmarkLevel === 'zone' ? 'bg-[#20242B] text-[#FACC15]' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
                 4 Regional Zones
@@ -1015,7 +1015,7 @@ export const CMDashboard: React.FC = () => {
               <button
                 onClick={() => setBenchmarkLevel('circle')}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg ${
-                  benchmarkLevel === 'circle' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
+                  benchmarkLevel === 'circle' ? 'bg-[#20242B] text-[#FACC15]' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
                 19 Regional Circles

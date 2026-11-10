@@ -54,11 +54,7 @@ const AppLayout: React.FC = () => {
   };
 
   return (
-    <div
-      className={`flex min-h-screen font-sans transition-colors duration-200 ${
-        isNavyGov ? 'bg-[#F4F7FB] text-[#1F2937]' : 'bg-slate-50 text-slate-900'
-      }`}
-    >
+    <div className="flex min-h-screen font-sans bg-[#F8FAFC] text-slate-900 transition-colors duration-200">
       {/* 17-Module Persistent Sidebar with Category Accordion, Rail Toggle & Mobile Offcanvas Drawer */}
       <Sidebar
         isCollapsed={sidebarCollapsed}

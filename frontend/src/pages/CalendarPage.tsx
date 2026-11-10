@@ -245,23 +245,23 @@ export const CalendarPage: React.FC = () => {
       case 'LAND_ACQUISITION_DEADLINE':
         return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200';
       default:
-        return 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200';
+        return 'bg-slate-100 text-slate-800   border-slate-200';
     }
   };
 
   return (
     <div className="p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6 max-w-7xl mx-auto">
       {/* Top Header & Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200  pb-4">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold shadow-sm">
             <CalendarIcon className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 ">
               Unified Highways Calendar & Meeting Intelligence
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-500 ">
               Departmental Reviews, Court Hearings, Site Inspections & Action Item Deadlines
             </p>
           </div>
@@ -271,7 +271,7 @@ export const CalendarPage: React.FC = () => {
         <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
           <button
             onClick={() => navigate('/notifications')}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors flex items-center gap-1.5 shadow-sm"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300  bg-white  text-slate-700  hover:bg-slate-50 transition-colors flex items-center gap-1.5 shadow-sm"
           >
             <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
             <span>Alerts & Notifications</span>
@@ -295,7 +295,7 @@ export const CalendarPage: React.FC = () => {
               <Clock className="w-4 h-4" />
             </span>
             <div>
-              <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="font-bold text-slate-900  flex items-center gap-2">
                 <span>{todaySchedule.today_date}</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
                   {todaySchedule.total_events_today} Scheduled Events
@@ -322,7 +322,7 @@ export const CalendarPage: React.FC = () => {
                   const full = events.find((e) => e.id === ev.id);
                   if (full) setSelectedEvent(full);
                 }}
-                className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-[11px] font-medium whitespace-nowrap cursor-pointer hover:border-blue-400 transition-colors shadow-xs flex items-center gap-1.5 flex-shrink-0"
+                className="px-2.5 py-1.5 rounded-lg border border-slate-200  bg-white  text-[11px] font-medium whitespace-nowrap cursor-pointer hover:border-blue-400 transition-colors shadow-xs flex items-center gap-1.5 flex-shrink-0"
               >
                 <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">{ev.time.split(' ')[0]}</span>
                 <span className="truncate max-w-[150px]">{ev.title}</span>
@@ -333,17 +333,17 @@ export const CalendarPage: React.FC = () => {
       )}
 
       {/* Control Strip: Month / Week / Day / Agenda switcher + Month Navigator + Filters */}
-      <div className="p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
+      <div className="p-3 sm:p-4 rounded-xl border border-slate-200  bg-white  shadow-sm space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Navigator: Prev / Next / Title */}
           <div className="flex items-center gap-2">
             <button
               onClick={handleToday}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-300  hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               Today
             </button>
-            <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-lg overflow-hidden">
+            <div className="flex items-center border border-slate-300  rounded-lg overflow-hidden">
               <button
                 onClick={handlePrev}
                 className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -353,28 +353,28 @@ export const CalendarPage: React.FC = () => {
               </button>
               <button
                 onClick={handleNext}
-                className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-l border-slate-300 dark:border-slate-700"
+                className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-l border-slate-300 "
                 aria-label="Next date range"
               >
                 <ChevronRight className="w-4 h-4 text-slate-600" />
               </button>
             </div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pl-1">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900  pl-1">
               {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
             </h2>
           </div>
 
           {/* View Mode Toggle */}
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-slate-50 dark:bg-slate-800 text-xs">
+            <div className="inline-flex rounded-lg border border-slate-200  p-0.5 bg-slate-50  text-xs">
               {(['MONTH', 'WEEK', 'DAY', 'AGENDA'] as ViewMode[]).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
                   className={`px-3 py-1 rounded-md font-medium transition-colors ${
                     viewMode === mode
-                      ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      ? 'bg-white  text-blue-600 dark:text-blue-400 shadow-xs'
+                      : 'text-slate-600  hover:text-slate-900'
                   }`}
                 >
                   {mode.charAt(0) + mode.slice(1).toLowerCase()}
@@ -388,7 +388,7 @@ export const CalendarPage: React.FC = () => {
               className={`px-3 py-1 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 ${
                 myCalendarOnly
                   ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                  : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                  : 'bg-white  border-slate-300  text-slate-700  hover:bg-slate-50'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -398,12 +398,12 @@ export const CalendarPage: React.FC = () => {
         </div>
 
         {/* Filter dropdowns and search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-slate-100  text-xs">
           <div className="flex items-center gap-2 flex-wrap">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300  bg-white  text-slate-700  focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {EVENT_CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -415,7 +415,7 @@ export const CalendarPage: React.FC = () => {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300  bg-white  text-slate-700  focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="ALL">All Priorities</option>
               <option value="CRITICAL">Critical</option>
@@ -436,18 +436,18 @@ export const CalendarPage: React.FC = () => {
               placeholder="Search meetings, venue, agenda..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300  bg-white  text-slate-800  placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
 
       {/* Main View Area: Month / Week / Day / Agenda */}
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200  bg-white  shadow-sm overflow-hidden">
         {viewMode === 'MONTH' && (
           <div>
             {/* Weekday headers */}
-            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-bold text-slate-500 uppercase text-center py-2">
+            <div className="grid grid-cols-7 border-b border-slate-200  bg-slate-50  text-[11px] font-bold text-slate-500 uppercase text-center py-2">
               <div>Sun</div>
               <div>Mon</div>
               <div>Tue</div>
@@ -458,7 +458,7 @@ export const CalendarPage: React.FC = () => {
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 dark:divide-slate-800 border-b border-slate-200 dark:border-slate-800">
+            <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 dark:divide-slate-800 border-b border-slate-200 ">
               {monthDays.map((d, idx) => {
                 const dayEvents = d.isCurrentMonth
                   ? events.filter((e) => e.start_time.startsWith(d.dateStr))
@@ -471,7 +471,7 @@ export const CalendarPage: React.FC = () => {
                     key={idx}
                     className={`min-h-[90px] sm:min-h-[115px] p-1.5 transition-colors ${
                       !d.isCurrentMonth
-                        ? 'bg-slate-50/40 dark:bg-slate-950/20'
+                        ? 'bg-slate-50/40 '
                         : isToday
                         ? 'bg-blue-50/20 dark:bg-blue-950/10'
                         : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30'
@@ -483,7 +483,7 @@ export const CalendarPage: React.FC = () => {
                           className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
                             isToday
                               ? 'bg-blue-600 text-white'
-                              : 'text-slate-700 dark:text-slate-300'
+                              : 'text-slate-700 '
                           }`}
                         >
                           {d.dayNumber}
@@ -532,7 +532,7 @@ export const CalendarPage: React.FC = () => {
                 <div
                   key={ev.id}
                   onClick={() => setSelectedEvent(ev)}
-                  className="p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 bg-white dark:bg-slate-900 transition-all cursor-pointer shadow-xs space-y-2"
+                  className="p-3 sm:p-4 rounded-xl border border-slate-200  hover:border-blue-300 dark:hover:border-blue-700 bg-white  transition-all cursor-pointer shadow-xs space-y-2"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                     <div className="space-y-1">
@@ -549,23 +549,23 @@ export const CalendarPage: React.FC = () => {
                           </span>
                         )}
                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                          ev.status === 'CONCLUDED' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                          ev.status === 'CONCLUDED' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-700  '
                         }`}>
                           {ev.status}
                         </span>
                       </div>
 
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                      <h3 className="text-sm sm:text-base font-bold text-slate-900 ">
                         {ev.title}
                       </h3>
 
-                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">
+                      <p className="text-xs text-slate-600  line-clamp-2">
                         {ev.agenda}
                       </p>
                     </div>
 
                     <div className="flex sm:flex-col items-center sm:items-end gap-1 flex-shrink-0 text-xs text-slate-500">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">{ev.organiser_name}</span>
+                      <span className="font-medium text-slate-700 ">{ev.organiser_name}</span>
                       <span className="text-[11px] text-slate-400">{ev.venue_or_url}</span>
                     </div>
                   </div>
@@ -597,7 +597,7 @@ export const CalendarPage: React.FC = () => {
         {(viewMode === 'WEEK' || viewMode === 'DAY') && (
           <div className="p-8 text-center text-slate-500 text-xs space-y-2">
             <Clock className="w-8 h-8 mx-auto text-blue-500/70" />
-            <div className="font-semibold text-slate-800 dark:text-slate-200">
+            <div className="font-semibold text-slate-800 ">
               {viewMode === 'WEEK' ? 'Week Timeline View Active' : 'Daily Hourly Schedule Active'}
             </div>
             <p className="max-w-md mx-auto text-slate-400">
@@ -616,9 +616,9 @@ export const CalendarPage: React.FC = () => {
       {/* Slide-out Event Detail Drawer / Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-xl h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-2xl overflow-y-auto space-y-4">
+          <div className="w-full max-w-xl h-full bg-white  border-l border-slate-200  p-4 sm:p-6 shadow-2xl overflow-y-auto space-y-4">
             {/* Drawer Header */}
-            <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-start justify-between border-b border-slate-200  pb-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getEventCategoryBadge(selectedEvent.event_category)}`}>
@@ -635,7 +635,7 @@ export const CalendarPage: React.FC = () => {
                     {selectedEvent.status}
                   </span>
                 </div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                <h2 className="text-lg font-bold text-slate-900  leading-tight">
                   {selectedEvent.title}
                 </h2>
               </div>
@@ -649,10 +649,10 @@ export const CalendarPage: React.FC = () => {
             </div>
 
             {/* Time, Venue & Organiser */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-50  border border-slate-200  text-xs">
               <div className="space-y-0.5">
                 <span className="text-[10px] text-slate-400 uppercase font-mono block">Schedule</span>
-                <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <div className="font-semibold text-slate-800  flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-blue-500" />
                   {new Date(selectedEvent.start_time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                 </div>
@@ -660,7 +660,7 @@ export const CalendarPage: React.FC = () => {
 
               <div className="space-y-0.5">
                 <span className="text-[10px] text-slate-400 uppercase font-mono block">Venue / Mode</span>
-                <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 truncate">
+                <div className="font-semibold text-slate-800  flex items-center gap-1 truncate">
                   {selectedEvent.is_virtual ? <Video className="w-3.5 h-3.5 text-purple-500" /> : <MapPin className="w-3.5 h-3.5 text-red-500" />}
                   <span className="truncate">{selectedEvent.venue_or_url}</span>
                 </div>
@@ -668,7 +668,7 @@ export const CalendarPage: React.FC = () => {
 
               <div className="space-y-0.5 sm:col-span-2">
                 <span className="text-[10px] text-slate-400 uppercase font-mono block">Organiser</span>
-                <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <div className="font-semibold text-slate-800  flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-slate-500" />
                   <span>{selectedEvent.organiser_name}</span>
                   <span className="text-slate-400 text-[11px]">({selectedEvent.organiser_role})</span>
@@ -677,8 +677,8 @@ export const CalendarPage: React.FC = () => {
             </div>
 
             {/* RSVP Quick Actions */}
-            <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-2">
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+            <div className="p-3 rounded-xl border border-slate-200  bg-white  space-y-2">
+              <div className="text-xs font-semibold text-slate-800 ">
                 Your Attendance RSVP
               </div>
               <div className="flex items-center gap-2">
@@ -698,7 +698,7 @@ export const CalendarPage: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handleRSVP(selectedEvent.id, 'TENTATIVE')}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 text-slate-700 dark:text-slate-300 hover:bg-slate-100 transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 text-slate-700  hover:bg-slate-100 transition-colors"
                 >
                   Tentative
                 </button>
@@ -707,10 +707,10 @@ export const CalendarPage: React.FC = () => {
 
             {/* Agenda & Preparation Notes */}
             <div className="space-y-2 text-xs">
-              <div className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+              <div className="font-bold text-slate-900  uppercase tracking-wider text-[11px]">
                 Official Meeting Agenda
               </div>
-              <p className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="p-3 rounded-lg bg-slate-50  text-slate-700  leading-relaxed">
                 {selectedEvent.agenda}
               </p>
 
@@ -719,7 +719,7 @@ export const CalendarPage: React.FC = () => {
                   <div className="font-semibold text-amber-800 dark:text-amber-400 text-[11px]">
                     Required Preparation & Submissions:
                   </div>
-                  <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                  <p className="text-slate-600  text-[11px] leading-relaxed">
                     {selectedEvent.preparation_notes}
                   </p>
                 </div>
@@ -729,14 +729,14 @@ export const CalendarPage: React.FC = () => {
             {/* Required Documents */}
             {selectedEvent.required_documents && selectedEvent.required_documents.length > 0 && (
               <div className="space-y-1.5 text-xs">
-                <div className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                <div className="font-bold text-slate-900  uppercase tracking-wider text-[11px]">
                   Required Documents & Briefings
                 </div>
                 <div className="space-y-1">
                   {selectedEvent.required_documents.map((doc, idx) => (
                     <div
                       key={idx}
-                      className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900"
+                      className="p-2 rounded-lg border border-slate-200  flex items-center justify-between text-slate-700  bg-white "
                     >
                       <div className="flex items-center gap-2 truncate">
                         <FileText className="w-3.5 h-3.5 text-blue-500" />
@@ -751,7 +751,7 @@ export const CalendarPage: React.FC = () => {
 
             {/* Participants Register */}
             <div className="space-y-2 text-xs">
-              <div className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center justify-between">
+              <div className="font-bold text-slate-900  uppercase tracking-wider text-[11px] flex items-center justify-between">
                 <span>Invited Officials ({selectedEvent.participants.length})</span>
                 <span className="text-[10px] font-mono text-slate-400 font-normal">Attendance Status</span>
               </div>
@@ -759,10 +759,10 @@ export const CalendarPage: React.FC = () => {
                 {selectedEvent.participants.map((p) => (
                   <div
                     key={p.id}
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px]"
+                    className="p-2 rounded-lg border border-slate-200  flex items-center justify-between text-[11px]"
                   >
                     <div>
-                      <div className="font-semibold text-slate-900 dark:text-white">{p.official_name}</div>
+                      <div className="font-semibold text-slate-900 ">{p.official_name}</div>
                       <div className="text-slate-500">{p.official_role} • {p.department_name}</div>
                     </div>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-medium font-mono ${
@@ -770,7 +770,7 @@ export const CalendarPage: React.FC = () => {
                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                         : p.invitation_status === 'DECLINED'
                         ? 'bg-red-100 text-red-800'
-                        : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        : 'bg-slate-100 text-slate-700  '
                     }`}>
                       {p.invitation_status}
                     </span>
@@ -781,39 +781,39 @@ export const CalendarPage: React.FC = () => {
 
             {/* Minutes & Action Items Section */}
             {selectedEvent.minutes_of_meeting ? (
-              <div className="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-xs">
+              <div className="space-y-2.5 pt-2 border-t border-slate-200  text-xs">
                 <div className="font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                   <CheckCircle className="w-3.5 h-3.5" />
                   Official Minutes of Meeting (MoM)
                 </div>
-                <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 text-slate-700 dark:text-slate-300 leading-relaxed text-xs">
+                <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 text-slate-700  leading-relaxed text-xs">
                   {selectedEvent.minutes_of_meeting}
                 </div>
                 {selectedEvent.decisions_summary && (
                   <div className="p-2.5 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40 text-xs">
                     <span className="font-semibold text-blue-900 dark:text-blue-300 block">Decisions Recorded:</span>
-                    <span className="text-slate-700 dark:text-slate-300">{selectedEvent.decisions_summary}</span>
+                    <span className="text-slate-700 ">{selectedEvent.decisions_summary}</span>
                   </div>
                 )}
 
                 {/* Tracked Action Items */}
                 {selectedEvent.action_items.length > 0 && (
                   <div className="space-y-1.5 pt-1">
-                    <div className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
+                    <div className="font-bold text-slate-900  uppercase tracking-wider text-[11px]">
                       Follow-up Action Items
                     </div>
                     {selectedEvent.action_items.map((act) => (
                       <div
                         key={act.id}
-                        className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs space-y-1"
+                        className="p-2.5 rounded-lg border border-slate-200  bg-white  text-xs space-y-1"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-slate-900 dark:text-white">{act.title}</span>
+                          <span className="font-bold text-slate-900 ">{act.title}</span>
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-100 text-amber-800">
                             {act.status}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400">{act.description}</p>
+                        <p className="text-[11px] text-slate-600 ">{act.description}</p>
                         <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1">
                           <span>Assigned: {act.responsible_officer_name}</span>
                           <span>Due: {act.due_date}</span>
@@ -824,7 +824,7 @@ export const CalendarPage: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="pt-2 border-t border-slate-200 ">
                 <button
                   onClick={() => setShowMoMModal(true)}
                   className="w-full py-2 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
@@ -841,14 +841,14 @@ export const CalendarPage: React.FC = () => {
       {/* Schedule Meeting Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200  bg-white  p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-200  pb-3">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-lg bg-blue-600 text-white">
                   <CalendarIcon className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-base font-bold text-slate-900 ">
                     Schedule Official Review / Meeting
                   </h3>
                   <p className="text-xs text-slate-500">Add to departmental calendar and notify attendees</p>
@@ -864,7 +864,7 @@ export const CalendarPage: React.FC = () => {
 
             <form onSubmit={handleCreateEvent} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-semibold text-slate-700  block mb-1">
                   Meeting Title
                 </label>
                 <input
@@ -873,19 +873,19 @@ export const CalendarPage: React.FC = () => {
                   placeholder="e.g. Western Corridor Utility Shifting Progress Review"
                   value={newEventPayload.title}
                   onChange={(e) => setNewEventPayload({ ...newEventPayload, title: e.target.value })}
-                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                  className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="font-semibold text-slate-700  block mb-1">
                     Event Category
                   </label>
                   <select
                     value={newEventPayload.event_category}
                     onChange={(e) => setNewEventPayload({ ...newEventPayload, event_category: e.target.value })}
-                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                    className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                   >
                     {EVENT_CATEGORIES.filter((c) => c.id !== 'ALL').map((c) => (
                       <option key={c.id} value={c.id}>
@@ -896,13 +896,13 @@ export const CalendarPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="font-semibold text-slate-700  block mb-1">
                     Priority
                   </label>
                   <select
                     value={newEventPayload.priority}
                     onChange={(e) => setNewEventPayload({ ...newEventPayload, priority: e.target.value })}
-                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                    className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                   >
                     <option value="CRITICAL">Critical</option>
                     <option value="HIGH">High</option>
@@ -914,7 +914,7 @@ export const CalendarPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="font-semibold text-slate-700  block mb-1">
                     Start Date & Time
                   </label>
                   <input
@@ -922,12 +922,12 @@ export const CalendarPage: React.FC = () => {
                     required
                     value={newEventPayload.start_time}
                     onChange={(e) => setNewEventPayload({ ...newEventPayload, start_time: e.target.value })}
-                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                    className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                   />
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="font-semibold text-slate-700  block mb-1">
                     End Date & Time
                   </label>
                   <input
@@ -935,13 +935,13 @@ export const CalendarPage: React.FC = () => {
                     required
                     value={newEventPayload.end_time}
                     onChange={(e) => setNewEventPayload({ ...newEventPayload, end_time: e.target.value })}
-                    className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                    className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-semibold text-slate-700  block mb-1">
                   Venue / Meeting URL
                 </label>
                 <input
@@ -950,12 +950,12 @@ export const CalendarPage: React.FC = () => {
                   placeholder="Secretariat Committee Room / Webex Link"
                   value={newEventPayload.venue_or_url}
                   onChange={(e) => setNewEventPayload({ ...newEventPayload, venue_or_url: e.target.value })}
-                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                  className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-semibold text-slate-700  block mb-1">
                   Official Agenda & Objectives
                 </label>
                 <textarea
@@ -964,11 +964,11 @@ export const CalendarPage: React.FC = () => {
                   placeholder="Detail meeting purpose, points of discussion, and deliverables..."
                   value={newEventPayload.agenda}
                   onChange={(e) => setNewEventPayload({ ...newEventPayload, agenda: e.target.value })}
-                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                  className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 ">
                 <button
                   type="button"
                   onClick={() => setShowScheduleModal(false)}
@@ -991,14 +991,14 @@ export const CalendarPage: React.FC = () => {
       {/* Record MoM Modal */}
       {showMoMModal && selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200  bg-white  p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-200  pb-3">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-lg bg-emerald-600 text-white">
                   <FileText className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-base font-bold text-slate-900 ">
                     Record Minutes of Meeting (MoM)
                   </h3>
                   <p className="text-xs text-slate-500">{selectedEvent.title}</p>
@@ -1014,7 +1014,7 @@ export const CalendarPage: React.FC = () => {
 
             <form onSubmit={handleRecordMoM} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-semibold text-slate-700  block mb-1">
                   Minutes of Meeting Summary
                 </label>
                 <textarea
@@ -1023,12 +1023,12 @@ export const CalendarPage: React.FC = () => {
                   placeholder="Record discussions, observations, objections, and progress review details..."
                   value={momPayload.minutes_of_meeting}
                   onChange={(e) => setMomPayload({ ...momPayload, minutes_of_meeting: e.target.value })}
-                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                  className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="font-semibold text-slate-700  block mb-1">
                   Decisions Taken
                 </label>
                 <textarea
@@ -1036,12 +1036,12 @@ export const CalendarPage: React.FC = () => {
                   placeholder="Official resolutions, approvals given, or sanctions recorded..."
                   value={momPayload.decisions_summary}
                   onChange={(e) => setMomPayload({ ...momPayload, decisions_summary: e.target.value })}
-                  className="w-full p-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+                  className="w-full p-2 border rounded-lg bg-white  border-slate-300 "
                 />
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-2">
-                <div className="font-bold text-slate-900 dark:text-white text-[11px] uppercase tracking-wide">
+              <div className="p-3 rounded-xl border border-slate-200  bg-slate-50  space-y-2">
+                <div className="font-bold text-slate-900  text-[11px] uppercase tracking-wide">
                   Assign Follow-up Action Item
                 </div>
                 <div>
@@ -1050,7 +1050,7 @@ export const CalendarPage: React.FC = () => {
                     placeholder="Action item title (e.g., Submit revised hydraulic drawings)"
                     value={momPayload.action_title}
                     onChange={(e) => setMomPayload({ ...momPayload, action_title: e.target.value })}
-                    className="w-full p-1.5 border rounded bg-white dark:bg-slate-800 text-xs"
+                    className="w-full p-1.5 border rounded bg-white  text-xs"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -1059,18 +1059,18 @@ export const CalendarPage: React.FC = () => {
                     placeholder="Responsible officer"
                     value={momPayload.action_officer}
                     onChange={(e) => setMomPayload({ ...momPayload, action_officer: e.target.value })}
-                    className="p-1.5 border rounded bg-white dark:bg-slate-800 text-xs"
+                    className="p-1.5 border rounded bg-white  text-xs"
                   />
                   <input
                     type="date"
                     value={momPayload.action_due}
                     onChange={(e) => setMomPayload({ ...momPayload, action_due: e.target.value })}
-                    className="p-1.5 border rounded bg-white dark:bg-slate-800 text-xs"
+                    className="p-1.5 border rounded bg-white  text-xs"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 ">
                 <button
                   type="button"
                   onClick={() => setShowMoMModal(false)}

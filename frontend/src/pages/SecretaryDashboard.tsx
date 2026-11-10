@@ -101,12 +101,12 @@ export const SecretaryDashboard: React.FC = () => {
     return (
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="bg-white rounded-2xl border-2 border-red-200 shadow-xl overflow-hidden">
-          <div className="bg-slate-900 text-white p-6 flex items-center gap-4">
+          <div className="bg-[#20242B] text-white p-6 flex items-center gap-4 border-b border-slate-700">
             <div className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0">
-              <ShieldAlert className="w-7 h-7 text-red-400" />
+              <ShieldAlert className="w-7 h-7 text-[#FACC15]" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Access Restricted — Secretarial Clearance Required</h2>
+              <h2 className="text-xl font-bold tracking-tight text-white">Access Restricted — Secretarial Clearance Required</h2>
               <p className="text-slate-300 text-xs mt-1">
                 Tamil Nadu Highways Digital Operating System (TN-HDOS) • Statutory RBAC Boundary
               </p>
@@ -144,7 +144,7 @@ export const SecretaryDashboard: React.FC = () => {
               </button>
               <button
                 onClick={() => switchPersona('admin')}
-                className="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 shadow-sm transition-all"
+                className="bg-[#20242B] hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 shadow-xs transition-all"
               >
                 <Shield className="w-4 h-4" />
                 Switch to Admin Persona

@@ -657,12 +657,12 @@ export const QualityPage: React.FC = () => {
             </div>
             <div className="space-y-2 text-xs">
               {summaryData?.ai_quality_assessment.contractors_requiring_attention.map((c, i) => (
-                <div key={i} className="bg-slate-900/60 p-2 rounded border border-slate-700">
-                  <div className="font-semibold text-white">{c.name}</div>
-                  <div className="text-slate-400 text-[11px] mt-0.5">{c.reason}</div>
+                <div key={i} className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                  <div className="font-semibold text-slate-900">{c.name}</div>
+                  <div className="text-slate-600 text-[11px] mt-0.5">{c.reason}</div>
                 </div>
               )) || (
-                <div className="text-slate-400">KCP Infra Fictional Ltd (2 Open NCRs)</div>
+                <div className="text-slate-500">KCP Infra Fictional Ltd (2 Open NCRs)</div>
               )}
             </div>
           </div>

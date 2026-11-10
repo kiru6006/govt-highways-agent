@@ -52,18 +52,18 @@ export interface NavGroup {
 
 export const navigationItems: NavItem[] = [
   // Domain 1: Strategic Command (Apex Layer)
-  { id: 'cm_dashboard', name: 'CM Highways Smartboard', path: '/cm-dashboard', icon: Crown, badge: 'CMO', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-500/50', groupId: 'strategic' },
-  { id: '1a', name: "Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-900/60 text-amber-200 border border-amber-700/50', groupId: 'strategic' },
-  { id: '1b', name: "Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'strategic' },
+  { id: 'cm_dashboard', name: 'CM Highways Smartboard', path: '/cm-dashboard', icon: Crown, badge: 'CMO', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'strategic' },
+  { id: '1a', name: "Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'strategic' },
+  { id: '1b', name: "Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'strategic' },
   { id: '1', name: 'Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'strategic' },
   { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 
   // Domain 2: Project Intelligence (Core Layer)
-  { id: 'major_works', name: 'Major Works ₹50 Cr+', path: '/major-works', icon: Building2, badge: 'Chennai 31', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'projects' },
+  { id: 'major_works', name: 'Major Works ₹50 Cr+', path: '/major-works', icon: Building2, badge: 'Chennai 31', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'projects' },
   { id: '3', name: 'Project Portfolio Grid', path: '/projects', icon: FolderGit2, groupId: 'projects' },
   { id: '4', name: 'Project 360° Dossier', path: '/project-360', icon: View, groupId: 'projects' },
-  { id: 'ckicp', name: 'CKICP Intelligence', path: '/ckicp', icon: Globe, badge: 'ADB', badgeColor: 'bg-sky-900/60 text-sky-200 border border-sky-700/50', groupId: 'projects' },
-  { id: 'tnrsp', name: 'TNRSP-II Intelligence', path: '/tnrsp', icon: Milestone, badge: 'World Bank', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'projects' },
+  { id: 'ckicp', name: 'CKICP Intelligence', path: '/ckicp', icon: Globe, badge: 'ADB', badgeColor: 'bg-sky-50 text-sky-800 border border-sky-300', groupId: 'projects' },
+  { id: 'tnrsp', name: 'TNRSP-II Intelligence', path: '/tnrsp', icon: Milestone, badge: 'World Bank', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'projects' },
 
   // Domain 3: Engineering & Field Ops (Operational Layer)
   { id: '10', name: 'Field Operations', path: '/field-ops', icon: HardHat, groupId: 'engineering' },
@@ -76,50 +76,50 @@ export const navigationItems: NavItem[] = [
   { id: '5', name: 'People & Directory', path: '/directory', icon: Users, groupId: 'commercial' },
 
   // Domain 5: Governance & Coordination (Control Layer)
-  { id: '6', name: 'Dept. Connections', path: '/departments', icon: Network, badge: 'Inter-agency', badgeColor: 'bg-blue-900/60 text-blue-200 border border-blue-700/50', groupId: 'governance' },
-  { id: 'land_litigation', name: 'Land & Litigation Intelligence', path: '/land-litigation', icon: Scale, badge: 'Control', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
+  { id: '6', name: 'Dept. Connections', path: '/departments', icon: Network, badge: 'Inter-agency', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'governance' },
+  { id: 'land_litigation', name: 'Land & Litigation Intelligence', path: '/land-litigation', icon: Scale, badge: 'Control', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'governance' },
   { id: '13', name: 'Land & Utility Coord', path: '/land-utility', icon: MapPin, groupId: 'governance' },
-  { id: '14', name: 'Governance & Legal', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'governance' },
+  { id: '14', name: 'Governance & Legal', path: '/compliance', icon: Scale, badge: 'Statutory', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'governance' },
   { id: '15', name: 'Citizen Services', path: '/citizen-services', icon: HeartHandshake, groupId: 'governance' },
-  { id: '2', name: 'Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'governance' },
+  { id: '2', name: 'Leakage Intelligence', path: '/leakage', icon: ShieldAlert, badge: 'Vigilance', badgeColor: 'bg-red-50 text-red-800 border border-red-300', groupId: 'governance' },
 
   // Domain 6: Digital Office & Utilities (Utility Layer)
   { id: '12', name: 'Digital Office', path: '/digital-office', icon: FileText, groupId: 'digital_office' },
   { id: 'calendar', name: 'Unified Calendar', path: '/calendar', icon: Calendar, groupId: 'digital_office' },
-  { id: 'messages', name: 'Discussions & Chat', path: '/messages', icon: MessageSquare, badge: 'Govt', badgeColor: 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50', groupId: 'digital_office' },
-  { id: 'notifications', name: 'Notifications & Alerts', path: '/notifications', icon: Bell, badge: 'Live', badgeColor: 'bg-red-900/60 text-red-200 border border-red-700/50', groupId: 'digital_office' },
+  { id: 'messages', name: 'Discussions & Chat', path: '/messages', icon: MessageSquare, badge: 'Govt', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'digital_office' },
+  { id: 'notifications', name: 'Notifications & Alerts', path: '/notifications', icon: Bell, badge: 'Live', badgeColor: 'bg-red-50 text-red-800 border border-red-300', groupId: 'digital_office' },
   { id: '17', name: 'System Administration', path: '/admin', icon: Settings, groupId: 'digital_office' },
 ];
 
 export const navigationGroups: NavGroup[] = [
   {
     id: 'strategic',
-    title: '🏛️ Strategic Command',
+    title: 'Strategic Command',
     items: navigationItems.filter((i) => i.groupId === 'strategic'),
   },
   {
     id: 'projects',
-    title: '🏗️ Project Intelligence',
+    title: 'Project Intelligence',
     items: navigationItems.filter((i) => i.groupId === 'projects'),
   },
   {
     id: 'engineering',
-    title: '🛠️ Engineering & Field',
+    title: 'Engineering & Field Ops',
     items: navigationItems.filter((i) => i.groupId === 'engineering'),
   },
   {
     id: 'commercial',
-    title: '💰 Commercial & Resource',
+    title: 'Commercial & Resource Mgmt',
     items: navigationItems.filter((i) => i.groupId === 'commercial'),
   },
   {
     id: 'governance',
-    title: '⚖️ Governance & Control',
+    title: 'Governance & Coordination',
     items: navigationItems.filter((i) => i.groupId === 'governance'),
   },
   {
     id: 'digital_office',
-    title: '📁 Digital Office & Tools',
+    title: 'Digital Office & Services',
     items: navigationItems.filter((i) => i.groupId === 'digital_office'),
   },
 ];
@@ -132,51 +132,49 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  isCollapsed: controlledCollapsed,
-  onToggleCollapse: controlledToggle,
+  isCollapsed = false,
+  onToggleCollapse,
   isMobileOpen = false,
   onCloseMobile,
 }) => {
   const location = useLocation();
   const { isNavyGov } = useTheme();
 
-  // Internal collapse state with localStorage persistence
-  const [internalCollapsed, setInternalCollapsed] = useState<boolean>(() => {
-    return localStorage.getItem('tn_hdos_sidebar_collapsed') === 'true';
-  });
-
-  const isCollapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
-
-  const toggleSidebar = () => {
-    if (controlledToggle) {
-      controlledToggle();
-    } else {
-      setInternalCollapsed((prev) => {
-        const next = !prev;
-        localStorage.setItem('tn_hdos_sidebar_collapsed', String(next));
-        return next;
-      });
+  // Collapsible Accordion State: Track open/closed status per navigation group
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('tn_hdos_nav_open_groups');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // Fallback to all open
+      }
     }
-  };
-
-  // Group expand/collapse accordion state (6 Domains)
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    strategic: true,
-    projects: true,
-    engineering: true,
-    commercial: true,
-    governance: true,
-    digital_office: true,
+    return {
+      strategic: true,
+      projects: true,
+      engineering: true,
+      commercial: true,
+      governance: true,
+      digital_office: true,
+    };
   });
 
-  // Auto-expand the group of the currently active path
+  // Save accordion state to localStorage
+  useEffect(() => {
+    localStorage.setItem('tn_hdos_nav_open_groups', JSON.stringify(openGroups));
+  }, [openGroups]);
+
+  // Auto-expand group that contains active link on route change
   useEffect(() => {
     const activeItem = navigationItems.find((item) => item.path === location.pathname);
-    if (activeItem && !openGroups[activeItem.groupId]) {
-      setOpenGroups((prev) => ({
-        ...prev,
-        [activeItem.groupId]: true,
-      }));
+    if (activeItem) {
+      setOpenGroups((prev) => {
+        if (!prev[activeItem.groupId]) {
+          return { ...prev, [activeItem.groupId]: true };
+        }
+        return prev;
+      });
     }
   }, [location.pathname]);
 
@@ -189,11 +187,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const toggleAllGroups = () => {
     const allOpen = Object.values(openGroups).every(Boolean);
-    const nextState: Record<string, boolean> = {};
+    const newState: Record<string, boolean> = {};
     navigationGroups.forEach((g) => {
-      nextState[g.id] = !allOpen;
+      newState[g.id] = !allOpen;
     });
-    setOpenGroups(nextState);
+    setOpenGroups(newState);
+  };
+
+  const toggleSidebar = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    }
   };
 
   return (
@@ -201,50 +205,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Backdrop Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-40 md:hidden transition-opacity"
           onClick={onCloseMobile}
           aria-hidden="true"
         />
       )}
 
       <aside
-        className={`flex flex-col flex-shrink-0 min-h-screen border-r transition-all duration-300 select-none ${
-          isNavyGov
-            ? 'bg-[#091A2E] text-slate-200 border-[#142842] theme-sidebar'
-            : 'bg-slate-900 text-slate-300 border-slate-800'
-        } ${isCollapsed ? 'md:w-20' : 'md:w-72'} ${
+        className={`flex flex-col flex-shrink-0 min-h-screen border-r border-slate-200 bg-white text-slate-800 transition-all duration-300 select-none ${
+          isCollapsed ? 'md:w-20' : 'md:w-72'
+        } ${
           isMobileOpen
-            ? 'fixed inset-y-0 left-0 z-50 w-72 shadow-2xl translate-x-0'
+            ? 'fixed inset-y-0 left-0 z-50 w-72 shadow-xl translate-x-0'
             : 'fixed md:static inset-y-0 left-0 z-50 md:z-auto -translate-x-full md:translate-x-0'
         }`}
       >
         {/* Tamil Nadu Govt Header in Sidebar */}
-        <div
-          className={`p-3.5 border-b flex items-center justify-between ${
-            isNavyGov ? 'bg-[#05111F] border-[#142842]' : 'bg-slate-950/50 border-slate-800/80'
-          }`}
-        >
+        <div className="p-3.5 border-b border-slate-200 bg-white flex items-center justify-between">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs border ${
-                isNavyGov
-                  ? 'bg-[#0F2A4A] text-white border-sky-400/50'
-                  : 'bg-[#006A4E] text-white border-[#B2DFCD]/40'
-              }`}
-            >
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-2xs bg-[#20242B] text-[#FACC15] border border-slate-700">
               TN
             </div>
             {(!isCollapsed || isMobileOpen) && (
               <div className="overflow-hidden">
-                <div className="text-xs font-bold text-white tracking-wide truncate">
+                <div className="text-xs font-bold text-slate-900 tracking-wide truncate">
                   GOVERNMENT OF TN
                 </div>
-                <div
-                  className={`text-[10px] font-medium truncate ${
-                    isNavyGov ? 'text-sky-300' : 'text-emerald-400'
-                  }`}
-                >
-                  Highways Department
+                <div className="text-[10px] font-medium text-slate-600 truncate flex items-center gap-1">
+                  <span>Highways Department</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
                 </div>
               </div>
             )}
@@ -255,24 +244,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {isMobileOpen && (
               <button
                 onClick={onCloseMobile}
-                className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors flex-shrink-0"
+                className="md:hidden p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0"
                 aria-label="Close navigation drawer"
               >
-                <X className="w-5 h-5 text-slate-300" />
+                <X className="w-5 h-5 text-slate-600" />
               </button>
             )}
 
             {/* Expand / Collapse Sidebar Width Button (Desktop only) */}
             <button
               onClick={toggleSidebar}
-              className="hidden md:flex p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex-shrink-0"
+              className="hidden md:flex p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0"
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               aria-label="Toggle sidebar collapse"
             >
               {isCollapsed ? (
-                <PanelLeftOpen className="w-4 h-4 text-emerald-400" />
+                <PanelLeftOpen className="w-4 h-4 text-slate-700" />
               ) : (
-                <PanelLeftClose className="w-4 h-4 text-slate-400" />
+                <PanelLeftClose className="w-4 h-4 text-slate-500" />
               )}
             </button>
           </div>
@@ -280,13 +269,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Global Quick Action: Expand/Collapse All Categories (when not collapsed) */}
         {(!isCollapsed || isMobileOpen) && (
-          <div className="px-3 py-2 border-b border-slate-800/60 bg-slate-900/60 flex items-center justify-between text-[11px]">
-            <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
+          <div className="px-3 py-2 border-b border-slate-100 bg-slate-50 flex items-center justify-between text-[11px]">
+            <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">
               Domains (6) • Modules (22)
             </span>
             <button
               onClick={toggleAllGroups}
-              className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-emerald-400 font-medium px-2 py-0.5 rounded hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-1 text-[10px] text-slate-600 hover:text-slate-900 font-medium px-2 py-0.5 rounded hover:bg-slate-200/60 transition-colors"
               title="Expand or collapse all menu sections"
             >
               <ChevronsUpDown className="w-3 h-3" />
@@ -298,13 +287,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* Nav List with Collapsible Groups */}
-        <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-3 scrollbar-thin">
+        <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-3 custom-scrollbar">
           {navigationGroups.map((group) => {
             const isOpen = openGroups[group.id];
             const hasActiveChild = group.items.some((i) => i.path === location.pathname);
 
             return (
-              <div key={group.id} className="space-y-1">
+              <div key={group.id} className="space-y-0.5">
                 {/* Group Header (Accordion Toggle) */}
                 {!isCollapsed || isMobileOpen ? (
                   <button
@@ -312,8 +301,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => toggleGroup(group.id)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] font-bold tracking-wider uppercase transition-colors ${
                       hasActiveChild
-                        ? 'text-emerald-400 bg-emerald-950/20'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                        ? 'text-slate-900 bg-amber-50/70 font-bold'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
                     <span className="truncate">{group.title}</span>
@@ -322,20 +311,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ({group.items.length})
                       </span>
                       {isOpen ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-500 transition-transform duration-200" />
                       ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 transition-transform duration-200" />
                       )}
                     </div>
                   </button>
                 ) : (
                   // In collapsed desktop mode: subtle separator
-                  <div className="h-px bg-slate-800 my-2 mx-1" />
+                  <div className="h-px bg-slate-200 my-2 mx-1" />
                 )}
 
                 {/* Group Menu Items */}
                 {(isCollapsed && !isMobileOpen ? true : isOpen) && (
-                  <div className="space-y-0.5 animate-in slide-in-from-top-1 duration-150">
+                  <div className="space-y-0.5">
                     {group.items.map((item) => {
                       const Icon = item.icon;
                       return (
@@ -353,12 +342,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 : 'justify-between px-3 py-2'
                             } rounded-lg text-xs font-medium transition-all group ${
                               isActive
-                                ? isNavyGov
-                                  ? 'bg-[#0F2A4A] text-white shadow-xs font-semibold border-l-4 border-white theme-active-nav'
-                                  : 'bg-[#006A4E] text-white shadow-xs font-semibold'
-                                : isNavyGov
-                                ? 'text-slate-300 hover:bg-[#14355B] hover:text-white'
-                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                ? 'bg-amber-50 text-slate-900 font-semibold border-l-4 border-[#FACC15] shadow-2xs'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                             }`
                           }
                         >
@@ -368,10 +353,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <Icon
                                   className={`w-4 h-4 flex-shrink-0 ${
                                     isActive
-                                      ? 'text-white'
-                                      : isNavyGov
-                                      ? 'text-slate-400 group-hover:text-sky-300'
-                                      : 'text-slate-400 group-hover:text-emerald-400'
+                                      ? 'text-slate-900'
+                                      : 'text-slate-500 group-hover:text-slate-800'
                                   }`}
                                 />
                                 {(!isCollapsed || isMobileOpen) && (
@@ -384,7 +367,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <span
                                   className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
                                     item.badgeColor ||
-                                    'bg-slate-800 text-slate-300 border border-slate-700'
+                                    'bg-slate-100 text-slate-700 border border-slate-200'
                                   }`}
                                 >
                                   {item.badge}
@@ -403,19 +386,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Footer in Sidebar */}
-        <div className="p-3 border-t border-slate-800/80 bg-slate-950/40 text-[10px] text-slate-500">
+        <div className="p-3 border-t border-slate-200 bg-slate-50 text-[10px] text-slate-500">
           {(!isCollapsed || isMobileOpen) ? (
             <div className="space-y-1">
-              <div className="flex items-center justify-between text-slate-400 font-medium">
+              <div className="flex items-center justify-between text-slate-700 font-medium">
                 <span>TN-HDOS Platform</span>
-                <span className="font-mono text-emerald-400">v2.1.0</span>
+                <span className="font-mono text-slate-900 font-bold bg-[#FACC15] px-1.5 py-0.2 rounded text-[9px]">v2.1.0</span>
               </div>
               <div className="text-[9px] text-slate-500">
                 Statutory Highways OS • Govt of Tamil Nadu
               </div>
             </div>
           ) : (
-            <div className="text-center font-mono text-[9px] text-slate-400">v2.1</div>
+            <div className="text-center font-mono text-[9px] text-slate-600 font-bold">v2.1</div>
           )}
         </div>
       </aside>

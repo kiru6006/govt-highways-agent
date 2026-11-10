@@ -445,9 +445,9 @@ export const Project360Page: React.FC = () => {
             </button>
             <button
               onClick={() => setShowQualityModal(true)}
-              className="px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-800 text-white hover:bg-slate-900 flex items-center gap-1.5 shadow-sm transition"
+              className="px-3.5 py-2 text-xs font-semibold rounded-lg bg-[#20242B] text-[#FACC15] hover:bg-slate-800 flex items-center gap-1.5 shadow-2xs transition"
             >
-              <ShieldCheck className="w-4 h-4 text-emerald-400" /> Log Quality Issue
+              <ShieldCheck className="w-4 h-4 text-[#FACC15]" /> Log Quality Issue
             </button>
           </div>
         </div>
@@ -804,35 +804,35 @@ export const Project360Page: React.FC = () => {
                 </div>
 
                 {/* C. Multi-Dimensional Root Cause Analysis */}
-                <div className="bg-slate-800/80 border border-indigo-500/20 rounded-lg p-3.5">
-                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2 flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5" /> C. Multi-Dimensional Root Cause Synthesis
+                <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2 flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-emerald-700" /> C. Multi-Dimensional Root Cause Synthesis
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
-                    <div className="bg-slate-900/60 p-2 rounded border border-slate-700/60">
-                      <span className="text-[10px] font-bold text-teal-300 uppercase block">1. Land Acquisition</span>
-                      <p className="text-slate-300 text-[11px] mt-0.5">
+                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] font-bold text-teal-800 uppercase block">1. Land Acquisition</span>
+                      <p className="text-slate-700 text-[11px] mt-0.5">
                         {selectedProject.ai_project_intelligence?.root_cause_analysis?.land_acquisition ||
                           '12 private tea-estate parcels awaiting Sec 19(1) declaration in Ooty Taluk; compensation deposited with revenue court.'}
                       </p>
                     </div>
-                    <div className="bg-slate-900/60 p-2 rounded border border-slate-700/60">
-                      <span className="text-[10px] font-bold text-amber-300 uppercase block">2. Utility Shifting</span>
-                      <p className="text-slate-300 text-[11px] mt-0.5">
+                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] font-bold text-amber-800 uppercase block">2. Utility Shifting</span>
+                      <p className="text-slate-700 text-[11px] mt-0.5">
                         {selectedProject.ai_project_intelligence?.root_cause_analysis?.utility_shifting ||
                           '48 high-tension poles on ghat corridor require coordinated power shutdown from Gudalur sub-station.'}
                       </p>
                     </div>
-                    <div className="bg-slate-900/60 p-2 rounded border border-slate-700/60">
-                      <span className="text-[10px] font-bold text-purple-300 uppercase block">3. Department Approvals</span>
-                      <p className="text-slate-300 text-[11px] mt-0.5">
+                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] font-bold text-purple-800 uppercase block">3. Department Approvals</span>
+                      <p className="text-slate-700 text-[11px] mt-0.5">
                         {selectedProject.ai_project_intelligence?.root_cause_analysis?.departmental_approvals ||
                           'Forest Department permission for 0.8 hectares reserve forest diversion pending PCCF regional committee clearance.'}
                       </p>
                     </div>
-                    <div className="bg-slate-900/60 p-2 rounded border border-slate-700/60">
-                      <span className="text-[10px] font-bold text-rose-300 uppercase block">4. Financial & Variation</span>
-                      <p className="text-slate-300 text-[11px] mt-0.5">
+                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] font-bold text-rose-800 uppercase block">4. Financial & Variation</span>
+                      <p className="text-slate-700 text-[11px] mt-0.5">
                         {selectedProject.ai_project_intelligence?.root_cause_analysis?.funding_and_payment ||
                           'Contractor submitted ₹9.80 Cr hard rock variation claim exceeding 25% tender BOQ limit without prior CE approval.'}
                       </p>
@@ -844,30 +844,30 @@ export const Project360Page: React.FC = () => {
               {/* Right Column: Recommended Actions & Ministerial Decision Required */}
               <div className="space-y-4">
                 {/* D. Recommended Actions */}
-                <div className="bg-slate-800/80 border border-indigo-500/20 rounded-lg p-3.5">
-                  <div className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2 flex items-center gap-1.5">
-                    <ClipboardList className="w-3.5 h-3.5" /> D. Recommended Corrective Actions
+                <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-blue-800 mb-2 flex items-center gap-1.5">
+                    <ClipboardList className="w-3.5 h-3.5 text-blue-700" /> D. Recommended Corrective Actions
                   </div>
-                  <div className="space-y-2 text-xs text-slate-200">
+                  <div className="space-y-2 text-xs text-slate-700">
                     {(selectedProject.ai_project_intelligence?.recommended_actions || [
                       'Convene District Revenue-Highways Task Force meeting chaired by Nilgiris District Collector for Sec 19(1) closure.',
                       'Direct TANGEDCO Superintending Engineer to schedule rolling power shutdowns between 06:00 and 10:00 hrs.',
                       'Withhold ₹9.80 Cr variation claim from RA Bill #14 pending independent geological assessment.',
                       'Issue statutory 14-day cure notice to contractor under Clause 46 for bitumen quality rectification.'
                     ]).map((act, i) => (
-                      <div key={i} className="flex items-start gap-2 bg-slate-900/40 p-2 rounded border border-slate-700/40">
-                        <span className="bg-indigo-600/40 text-indigo-200 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                      <div key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                        <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded">
                           {i + 1}
                         </span>
-                        <span className="text-[11px]">{act}</span>
+                        <span className="text-[11px] text-slate-800">{act}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* E. Ministerial Decision Required */}
-                <div className="bg-gradient-to-b from-red-950/80 to-slate-900 border border-red-500/40 rounded-lg p-3.5 shadow-inner">
-                  <div className="text-xs font-bold uppercase tracking-wider text-red-300 mb-1 flex items-center justify-between">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 shadow-2xs">
+                  <div className="text-xs font-bold uppercase tracking-wider text-red-800 mb-1 flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
                       <Scale className="w-3.5 h-3.5 text-red-400" /> E. Executive Decision Required
                     </span>
@@ -2557,13 +2557,13 @@ export const Project360Page: React.FC = () => {
 
       {/* MODAL: ASSIGN ACTION DIRECTIVE */}
       {showActionModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full border border-slate-200 overflow-hidden">
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-slate-50 border-b border-slate-200 text-slate-900 p-4 flex items-center justify-between">
               <h3 className="text-sm font-bold flex items-center gap-2">
-                <Plus className="w-4 h-4 text-indigo-400" /> Assign Executive Action Directive
+                <Plus className="w-4 h-4 text-indigo-600" /> Assign Executive Action Directive
               </h3>
-              <button onClick={() => setShowActionModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowActionModal(false)} className="text-slate-400 hover:text-slate-700">
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -2656,13 +2656,13 @@ export const Project360Page: React.FC = () => {
 
       {/* MODAL: LOG QUALITY OBSERVATION */}
       {showQualityModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full border border-slate-200 overflow-hidden">
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-slate-50 border-b border-slate-200 text-slate-900 p-4 flex items-center justify-between">
               <h3 className="text-sm font-bold flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Record Engineering Quality Observation
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Record Engineering Quality Observation
               </h3>
-              <button onClick={() => setShowQualityModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowQualityModal(false)} className="text-slate-400 hover:text-slate-700">
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -2752,9 +2752,9 @@ export const Project360Page: React.FC = () => {
                 <button
                   type="submit"
                   disabled={qualitySubmitting}
-                  className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-black font-semibold flex items-center gap-1.5 shadow"
+                  className="px-4 py-2 bg-[#20242B] text-[#FACC15] rounded-lg hover:bg-slate-800 font-semibold flex items-center gap-1.5 shadow-2xs"
                 >
-                  {qualitySubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4 text-emerald-400" />}
+                  {qualitySubmitting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4 text-[#FACC15]" />}
                   Log Quality Issue
                 </button>
               </div>
@@ -2765,14 +2765,14 @@ export const Project360Page: React.FC = () => {
 
       {/* MODAL: DOCUMENT PREVIEW */}
       {selectedDocPreview && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full border border-slate-200 overflow-hidden">
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-slate-50 border-b border-slate-200 text-slate-900 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-indigo-400" />
+                <FileText className="w-4 h-4 text-indigo-600" />
                 <h3 className="text-sm font-bold truncate max-w-md">{selectedDocPreview.document_title}</h3>
               </div>
-              <button onClick={() => setSelectedDocPreview(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setSelectedDocPreview(null)} className="text-slate-400 hover:text-slate-700">
                 <XCircle className="w-5 h-5" />
               </button>
             </div>

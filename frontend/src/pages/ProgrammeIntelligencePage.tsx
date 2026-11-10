@@ -163,13 +163,13 @@ export const ProgrammeIntelligencePage: React.FC = () => {
             onClick={() => setActiveProgrammeCode('CKICP')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               activeProgrammeCode === 'CKICP'
-                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20'
-                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
+                ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
             <Milestone className="w-4 h-4" />
             <span>CKICP (ADB Funded)</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-900/60 text-sky-200">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/80 text-sky-800 border border-slate-200 font-semibold">
               ₹6,448 Cr
             </span>
           </button>
@@ -179,12 +179,12 @@ export const ProgrammeIntelligencePage: React.FC = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               activeProgrammeCode === 'TNRSP_II'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
             <Layers className="w-4 h-4" />
             <span>TNRSP-II (World Bank Funded)</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-900/60 text-emerald-200">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/80 text-emerald-800 border border-slate-200 font-semibold">
               ₹5,171 Cr
             </span>
           </button>
@@ -332,22 +332,22 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Interactive Alignment Map Visualization */}
-                    <div className="lg:col-span-2 bg-slate-950 rounded-xl p-5 border border-slate-800 text-white relative">
+                    <div className="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 text-slate-900 relative shadow-2xs">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <Milestone className="w-4 h-4 text-sky-400" />
-                          <h3 className="text-sm font-semibold text-slate-200">
+                          <Milestone className="w-4 h-4 text-sky-600" />
+                          <h3 className="text-sm font-semibold text-slate-800">
                             Tamil Nadu Strategic Corridor Alignments (GeoJSON Geometry)
                           </h3>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="inline-flex rounded-lg bg-slate-900 p-0.5 border border-slate-700 text-xs">
+                          <div className="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-xs">
                             <button
                               onClick={() => setMapMode('gis')}
                               className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
                                 mapMode === 'gis'
                                   ? 'bg-sky-600 text-white shadow'
-                                  : 'text-slate-400 hover:text-slate-200'
+                                  : 'text-slate-600 hover:text-slate-900'
                               }`}
                             >
                               GIS Map (Leaflet)
@@ -357,13 +357,13 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                               className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
                                 mapMode === 'schematic'
                                   ? 'bg-sky-600 text-white shadow'
-                                  : 'text-slate-400 hover:text-slate-200'
+                                  : 'text-slate-600 hover:text-slate-900'
                               }`}
                             >
                               Schematic Outline
                             </button>
                           </div>
-                          <span className="text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                          <span className="text-xs px-2 py-0.5 rounded bg-sky-50 text-sky-800 border border-sky-200 font-semibold">
                             {alignments.length} Corridors Plotted
                           </span>
                         </div>
@@ -373,13 +373,13 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                         <CorridorMap height="340px" />
                       ) : (
                       /* Schematic Map Representation */
-                      <div className="bg-slate-900/90 rounded-lg p-4 border border-slate-800 h-80 flex flex-col justify-between relative overflow-hidden">
+                      <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 h-80 flex flex-col justify-between relative overflow-hidden">
                         <svg className="w-full h-full" viewBox="0 0 600 320" fill="none" xmlns="http://www.w3.org/2000/svg">
                           {/* Tamil Nadu State Outline Schematic */}
                           <path
                             d="M 280,30 C 330,25 360,50 370,80 C 360,110 375,130 380,160 C 370,210 340,260 300,295 C 280,305 260,280 250,250 C 230,210 210,160 220,120 C 230,70 250,40 280,30 Z"
-                            fill="#0f172a"
-                            stroke="#334155"
+                            fill="#F1F5F9"
+                            stroke="#CBD5E1"
                             strokeWidth="2"
                             strokeDasharray="4 4"
                           />
@@ -428,7 +428,7 @@ export const ProgrammeIntelligencePage: React.FC = () => {
                           })}
                         </svg>
 
-                        <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur border border-slate-800 p-2 rounded text-[11px] text-slate-300 space-y-1">
+                        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-xs border border-slate-200 p-2.5 rounded-lg text-[11px] text-slate-700 space-y-1 shadow-2xs">
                           <div className="flex items-center gap-2">
                             <span className="w-3 h-1 bg-sky-500 rounded" />
                             <span>Primary Economic Corridor (ADB / WB)</span>

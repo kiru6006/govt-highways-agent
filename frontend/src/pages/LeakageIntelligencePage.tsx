@@ -472,11 +472,11 @@ export const LeakageIntelligencePage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             {/* Observed Facts */}
-            <div className="p-4 bg-slate-900/80 rounded-xl border border-slate-800/80 space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400 block">
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-800 block">
                 1. Observed Facts (Records Grounding)
               </span>
-              <ul className="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+              <ul className="text-xs text-slate-700 space-y-1.5 list-disc pl-4">
                 {assessment.observed_facts.map((fact, idx) => (
                   <li key={idx}>{fact}</li>
                 ))}
@@ -484,11 +484,11 @@ export const LeakageIntelligencePage: React.FC = () => {
             </div>
 
             {/* Calculated Indicators */}
-            <div className="p-4 bg-slate-900/80 rounded-xl border border-slate-800/80 space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 block">
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 block">
                 2. Calculated Risk Indicators
               </span>
-              <ul className="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+              <ul className="text-xs text-slate-700 space-y-1.5 list-disc pl-4">
                 {assessment.calculated_indicators.map((ind, idx) => (
                   <li key={idx}>{ind}</li>
                 ))}
@@ -496,11 +496,11 @@ export const LeakageIntelligencePage: React.FC = () => {
             </div>
 
             {/* AI Interpretations */}
-            <div className="p-4 bg-slate-900/80 rounded-xl border border-slate-800/80 space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-400 block">
-                3. AI Interpretations & Hypotheses
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-800 block">
+                3. AI Interpretations &amp; Hypotheses
               </span>
-              <ul className="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+              <ul className="text-xs text-slate-700 space-y-1.5 list-disc pl-4">
                 {assessment.ai_interpretations.map((interp, idx) => (
                   <li key={idx}>{interp}</li>
                 ))}
@@ -510,16 +510,16 @@ export const LeakageIntelligencePage: React.FC = () => {
 
           {/* Recommended Executive Directives */}
           <div className="pt-2">
-            <span className="text-xs font-bold text-emerald-400 block mb-2">Recommended Departmental Directives</span>
+            <span className="text-xs font-bold text-emerald-800 block mb-2">Recommended Departmental Directives</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {assessment.recommended_executive_actions.map((act, idx) => (
-                <div key={idx} className="p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+                <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
                   <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase mb-1.5 ${
-                    act.urgency === 'IMMEDIATE' || act.urgency === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-slate-800 text-slate-300'
+                    act.urgency === 'IMMEDIATE' || act.urgency === 'CRITICAL' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-slate-200 text-slate-700'
                   }`}>
                     {act.urgency}
                   </span>
-                  <p className="text-slate-200 font-medium">{act.action}</p>
+                  <p className="text-slate-800 font-medium">{act.action}</p>
                   <span className="text-[10px] text-slate-500 block mt-2">Authority: {act.authority}</span>
                 </div>
               ))}
@@ -864,22 +864,22 @@ export const LeakageIntelligencePage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex justify-end">
           <div className="w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 overflow-hidden">
             {/* Drawer Header */}
-            <div className="p-5 bg-slate-900 text-white flex items-center justify-between flex-shrink-0">
+            <div className="p-5 bg-white border-b border-slate-200 text-slate-900 flex items-center justify-between flex-shrink-0">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-800 text-amber-400 font-bold">
+                  <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold border border-slate-200">
                     {selectedFinding.finding_code}
                   </span>
                   {getSeverityBadge(selectedFinding.severity)}
                   {getStatusBadge(selectedFinding.review_status)}
                 </div>
-                <h3 className="text-sm font-bold text-slate-100 leading-snug line-clamp-1">
+                <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-1">
                   {selectedFinding.title}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedFinding(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -945,7 +945,7 @@ export const LeakageIntelligencePage: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <span className="text-[10px] font-bold uppercase text-slate-400 block">Supporting Transaction Records</span>
-                    <div className="mt-2 p-3 bg-slate-900 text-emerald-400 font-mono text-[11px] rounded-xl overflow-x-auto">
+                    <div className="mt-2 p-3 bg-slate-50 text-slate-800 border border-slate-200 font-mono text-[11px] rounded-xl overflow-x-auto">
                       <pre>{selectedFinding.evidence_records_json ? JSON.stringify(JSON.parse(selectedFinding.evidence_records_json), null, 2) : 'No raw telemetry attached'}</pre>
                     </div>
                   </div>

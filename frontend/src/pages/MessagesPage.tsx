@@ -280,27 +280,27 @@ export const MessagesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-100 dark:bg-slate-950 overflow-hidden font-sans">
+    <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-100  overflow-hidden font-sans">
       
       {/* ========================================================= */}
       {/* PANEL 1: CONVERSATION LIST (LEFT)                         */}
       {/* ========================================================= */}
-      <div className={`w-full md:w-80 lg:w-96 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shrink-0 ${
+      <div className={`w-full md:w-80 lg:w-96 flex flex-col bg-white  border-r border-slate-200  shrink-0 ${
         selectedConversationId ? 'hidden md:flex' : 'flex'
       }`}>
         
         {/* Header with Search and New Action buttons */}
-        <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="p-3 sm:p-4 border-b border-slate-200 ">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
                 <MessageSquare className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                <h1 className="text-sm font-bold text-slate-900  leading-tight">
                   Discussions
                 </h1>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] text-slate-500 ">
                   Highways Department Communication Grid
                 </p>
               </div>
@@ -311,7 +311,7 @@ export const MessagesPage: React.FC = () => {
                 type="button"
                 onClick={() => handleOpenUserSearch(false)}
                 title="New Direct Message"
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600  hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <User className="w-4 h-4" />
               </button>
@@ -334,7 +334,7 @@ export const MessagesPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search conversations, projects..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-slate-800 dark:text-slate-200 placeholder-slate-400"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50  border border-slate-200  rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-slate-800  placeholder-slate-400"
             />
           </div>
 
@@ -353,8 +353,8 @@ export const MessagesPage: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-2.5 py-1 rounded-md font-medium capitalize whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-slate-900 text-white dark:bg-primary-600'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-[#20242B] text-[#FACC15] font-semibold'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 {tab.label}
@@ -389,7 +389,7 @@ export const MessagesPage: React.FC = () => {
                   {/* Avatar / Icon */}
                   <div className="relative shrink-0">
                     {c.conversation_type === 'DIRECT' ? (
-                      <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 text-xs shadow-xs">
+                      <div className="w-10 h-10 rounded-full bg-slate-200  flex items-center justify-center font-bold text-slate-700  text-xs shadow-xs">
                         {c.title.split(' ').map(n => n[0]).slice(0, 2).join('')}
                       </div>
                     ) : (
@@ -407,7 +407,7 @@ export const MessagesPage: React.FC = () => {
                   {/* Body */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
-                      <h2 className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                      <h2 className="text-xs font-semibold text-slate-900  truncate">
                         {c.title}
                       </h2>
                       <span className="text-[10px] text-slate-400 shrink-0 ml-1">
@@ -416,15 +416,15 @@ export const MessagesPage: React.FC = () => {
                     </div>
 
                     {c.related_project_id && (
-                      <div className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-300 font-medium mb-1 truncate max-w-full">
+                      <div className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-slate-100  text-[10px] text-slate-600  font-medium mb-1 truncate max-w-full">
                         <span>Project #{c.related_project_id}</span>
                       </div>
                     )}
 
                     <p className={`text-[11px] truncate ${
                       hasUnread 
-                        ? 'font-semibold text-slate-900 dark:text-white' 
-                        : 'text-slate-500 dark:text-slate-400'
+                        ? 'font-semibold text-slate-900 ' 
+                        : 'text-slate-500 '
                     }`}>
                       {c.last_message_preview || 'No messages yet.'}
                     </p>
@@ -446,13 +446,13 @@ export const MessagesPage: React.FC = () => {
       {/* ========================================================= */}
       {/* PANEL 2: ACTIVE CONVERSATION THREAD (CENTRE)              */}
       {/* ========================================================= */}
-      <div className={`flex-1 flex flex-col bg-white dark:bg-slate-900 overflow-hidden ${
+      <div className={`flex-1 flex flex-col bg-white  overflow-hidden ${
         !selectedConversationId ? 'hidden md:flex' : 'flex'
       }`}>
         {selectedConversation ? (
           <>
             {/* Header */}
-            <div className="h-14 sm:h-16 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
+            <div className="h-14 sm:h-16 px-4 border-b border-slate-200  flex items-center justify-between shrink-0 bg-white/80  backdrop-blur-sm">
               <div className="flex items-center gap-3 min-w-0">
                 {/* Mobile Back Button */}
                 <button
@@ -465,7 +465,7 @@ export const MessagesPage: React.FC = () => {
 
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                    <h2 className="text-sm font-bold text-slate-900  truncate">
                       {selectedConversation.title}
                     </h2>
                     {selectedConversation.category && (
@@ -474,7 +474,7 @@ export const MessagesPage: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-[11px] text-slate-500  truncate">
                     {selectedConversation.participants.length} Participants • {selectedConversation.participants.map(p => p.full_name).slice(0, 3).join(', ')}{selectedConversation.participants.length > 3 ? '...' : ''}
                   </p>
                 </div>
@@ -525,7 +525,7 @@ export const MessagesPage: React.FC = () => {
                   title="Toggle Intelligence & Actions Panel"
                   className={`p-2 rounded-lg text-xs transition-colors ${
                     showRightPanel 
-                      ? 'bg-slate-100 dark:bg-slate-800 text-primary-600'
+                      ? 'bg-slate-100  text-primary-600'
                       : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
@@ -548,7 +548,7 @@ export const MessagesPage: React.FC = () => {
             )}
 
             {/* Messages Thread Container */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 ">
               {messagesLoading ? (
                 <div className="flex items-center justify-center h-full text-xs text-slate-400">
                   <RefreshCw className="w-4 h-4 animate-spin mr-2" />
@@ -572,7 +572,7 @@ export const MessagesPage: React.FC = () => {
                     <React.Fragment key={m.id}>
                       {showDate && (
                         <div className="flex items-center justify-center my-2">
-                          <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-slate-200  text-slate-600 ">
                             {formatDateLabel(m.created_at)}
                           </span>
                         </div>
@@ -582,10 +582,10 @@ export const MessagesPage: React.FC = () => {
                         {/* Sender info */}
                         {!isMine && (
                           <div className="flex items-center gap-1.5 mb-1 px-1">
-                            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                            <span className="text-[11px] font-bold text-slate-800 ">
                               {m.sender_name}
                             </span>
-                            <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                            <span className="text-[10px] text-slate-500 ">
                               • {m.sender_role} {m.sender_department ? `(${m.sender_department})` : ''}
                             </span>
                           </div>
@@ -595,7 +595,7 @@ export const MessagesPage: React.FC = () => {
                         <div className={`max-w-[85%] sm:max-w-xl rounded-2xl p-3 shadow-xs relative group ${
                           isMine
                             ? 'bg-primary-600 text-white rounded-br-xs'
-                            : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-xs'
+                            : 'bg-white  text-slate-900  border border-slate-200  rounded-bl-xs'
                         } ${isCritical ? 'ring-2 ring-rose-500' : isHigh ? 'ring-2 ring-amber-500' : ''}`}>
                           
                           {/* Priority Pill */}
@@ -618,14 +618,14 @@ export const MessagesPage: React.FC = () => {
 
                           {/* Attachments List */}
                           {m.attachments && m.attachments.length > 0 && (
-                            <div className="mt-2.5 pt-2 border-t border-slate-200/40 dark:border-slate-700 space-y-1.5">
+                            <div className="mt-2.5 pt-2 border-t border-slate-200/40  space-y-1.5">
                               {m.attachments.map((att) => (
                                 <div
                                   key={att.id}
                                   className={`flex items-center justify-between p-2 rounded-lg text-xs ${
                                     isMine 
                                       ? 'bg-primary-700/60 text-white' 
-                                      : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
+                                      : 'bg-slate-100  text-slate-800 '
                                   }`}
                                 >
                                   <div className="flex items-center gap-2 truncate">
@@ -657,7 +657,7 @@ export const MessagesPage: React.FC = () => {
                           </div>
 
                           {/* Quick Reply Action on Hover */}
-                          <div className="absolute right-2 -bottom-3 hidden group-hover:flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full px-2 py-0.5 shadow-md">
+                          <div className="absolute right-2 -bottom-3 hidden group-hover:flex items-center gap-1 bg-white  border border-slate-200  rounded-full px-2 py-0.5 shadow-md">
                             <button
                               type="button"
                               onClick={() => setReplyingTo(m)}
@@ -678,11 +678,11 @@ export const MessagesPage: React.FC = () => {
 
             {/* Replying Banner */}
             {replyingTo && (
-              <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+              <div className="px-4 py-2 bg-slate-100  border-t border-slate-200  flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 truncate">
                   <Reply className="w-3.5 h-3.5 text-primary-600" />
-                  <span className="text-slate-500">Replying to <strong className="text-slate-800 dark:text-slate-200">{replyingTo.sender_name}</strong>:</span>
-                  <span className="truncate italic text-slate-600 dark:text-slate-400">"{replyingTo.content}"</span>
+                  <span className="text-slate-500">Replying to <strong className="text-slate-800 ">{replyingTo.sender_name}</strong>:</span>
+                  <span className="truncate italic text-slate-600 ">"{replyingTo.content}"</span>
                 </div>
                 <button type="button" onClick={() => setReplyingTo(null)}>
                   <X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" />
@@ -692,14 +692,14 @@ export const MessagesPage: React.FC = () => {
 
             {/* Attachment Bar */}
             {showAttachInput && (
-              <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center gap-2">
+              <div className="px-4 py-2 bg-slate-50  border-t border-slate-200  flex items-center gap-2">
                 <FileText className="w-4 h-4 text-primary-600 shrink-0" />
                 <input
                   type="text"
                   value={attachmentName}
                   onChange={(e) => setAttachmentName(e.target.value)}
                   placeholder="Document file name (e.g., Alignment_Clearance_Map.pdf)"
-                  className="flex-1 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2.5 py-1 text-slate-800 dark:text-slate-200"
+                  className="flex-1 text-xs bg-white  border border-slate-300  rounded px-2.5 py-1 text-slate-800 "
                 />
                 <button
                   type="button"
@@ -712,7 +712,7 @@ export const MessagesPage: React.FC = () => {
             )}
 
             {/* Composer */}
-            <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+            <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-slate-200  bg-white  shrink-0">
               <div className="flex items-end gap-2">
                 {/* Priority Selector */}
                 <select
@@ -723,7 +723,7 @@ export const MessagesPage: React.FC = () => {
                       ? 'border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
                       : selectedPriority === 'HIGH'
                       ? 'border-amber-400 bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                      : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      : 'border-slate-200  bg-slate-50  text-slate-700 '
                   }`}
                 >
                   <option value="ROUTINE">Routine</option>
@@ -740,7 +740,7 @@ export const MessagesPage: React.FC = () => {
                     if (!attachmentName) setAttachmentName('Inspection_Report_Annexure.pdf');
                   }}
                   title="Attach Project Document"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center border border-slate-200  text-slate-600  hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   <Paperclip className="w-4 h-4" />
                 </button>
@@ -757,7 +757,7 @@ export const MessagesPage: React.FC = () => {
                     }
                   }}
                   placeholder={`Write official note or directive...`}
-                  className="flex-1 min-h-[38px] max-h-32 py-2 px-3 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-slate-800 dark:text-slate-100 placeholder-slate-400 resize-none"
+                  className="flex-1 min-h-[38px] max-h-32 py-2 px-3 text-xs sm:text-sm bg-slate-50  border border-slate-200  rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-slate-800  placeholder-slate-400 resize-none"
                 />
 
                 {/* Send Button */}
@@ -773,8 +773,8 @@ export const MessagesPage: React.FC = () => {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400">
-            <MessageSquare className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
-            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <MessageSquare className="w-12 h-12 text-slate-300  mb-3" />
+            <h3 className="text-sm font-bold text-slate-700  mb-1">
               Select an Official Conversation
             </h3>
             <p className="text-xs max-w-sm text-slate-500">
@@ -788,13 +788,13 @@ export const MessagesPage: React.FC = () => {
       {/* PANEL 3: INTELLIGENCE & CONTEXTUAL PANEL (RIGHT)          */}
       {/* ========================================================= */}
       {showRightPanel && selectedConversation && (
-        <div className="hidden xl:flex w-80 lg:w-88 flex-col bg-slate-50 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 overflow-y-auto">
+        <div className="hidden xl:flex w-80 lg:w-88 flex-col bg-slate-50  border-l border-slate-200  overflow-y-auto">
           
           {/* Header */}
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="p-4 border-b border-slate-200  flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
+              <h2 className="text-xs font-bold text-slate-900  uppercase tracking-wider">
                 Discussion Intelligence
               </h2>
             </div>
@@ -810,16 +810,16 @@ export const MessagesPage: React.FC = () => {
           <div className="p-4 space-y-4">
 
             {/* AI Summary Card */}
-            <div className="p-3.5 bg-white dark:bg-slate-800/90 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
+            <div className="p-3.5 bg-white  rounded-xl border border-slate-200  shadow-xs">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-slate-700  flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-primary-600" />
                   AI Executive Summary
                 </span>
                 {summaryLoading && <RefreshCw className="w-3 h-3 animate-spin text-slate-400" />}
               </div>
 
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
+              <p className="text-xs text-slate-600  leading-relaxed mb-3">
                 {aiSummary?.summary_text || 'No AI summary generated for this discussion.'}
               </p>
 
@@ -829,7 +829,7 @@ export const MessagesPage: React.FC = () => {
                   <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
                     Decisions Reached
                   </p>
-                  <ul className="text-[11px] text-slate-600 dark:text-slate-300 space-y-1 list-disc pl-4">
+                  <ul className="text-[11px] text-slate-600  space-y-1 list-disc pl-4">
                     {aiSummary.key_decisions_discussed.map((dec, i) => (
                       <li key={i}>{dec}</li>
                     ))}
@@ -843,7 +843,7 @@ export const MessagesPage: React.FC = () => {
                   <p className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400 mb-1">
                     Pending Bottlenecks & Risks
                   </p>
-                  <ul className="text-[11px] text-slate-600 dark:text-slate-300 space-y-1 list-disc pl-4">
+                  <ul className="text-[11px] text-slate-600  space-y-1 list-disc pl-4">
                     {aiSummary.unresolved_issues.map((issue, i) => (
                       <li key={i}>{issue}</li>
                     ))}
@@ -867,12 +867,12 @@ export const MessagesPage: React.FC = () => {
                   {selectedConversation.action_suggestions.map((action) => (
                     <div
                       key={action.id}
-                      className="p-2.5 bg-white dark:bg-slate-800 rounded-lg border border-amber-200 dark:border-amber-700/60 text-xs shadow-2xs"
+                      className="p-2.5 bg-white  rounded-lg border border-amber-200 dark:border-amber-700/60 text-xs shadow-2xs"
                     >
-                      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                      <p className="font-semibold text-slate-900  mb-1">
                         {action.title}
                       </p>
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-2">
+                      <div className="flex items-center justify-between text-[10px] text-slate-500  mb-2">
                         <span>Assignee: {action.suggested_assignee_name || 'Designated Officer'}</span>
                         <span>Due: {action.suggested_due_date || '7 Days'}</span>
                       </div>
@@ -899,17 +899,17 @@ export const MessagesPage: React.FC = () => {
 
             {/* Related Project Context */}
             {selectedConversation.related_project_id && (
-              <div className="p-3.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
-                <h4 className="text-[11px] font-bold text-slate-800 dark:text-slate-200 mb-2">
+              <div className="p-3.5 bg-white  rounded-xl border border-slate-200  shadow-xs">
+                <h4 className="text-[11px] font-bold text-slate-800  mb-2">
                   Linked Highway Infrastructure
                 </h4>
-                <div className="p-2 rounded bg-slate-50 dark:bg-slate-900 text-xs space-y-1">
+                <div className="p-2 rounded bg-slate-50  text-xs space-y-1">
                   <div className="flex justify-between font-mono text-[10px] text-slate-500">
                     <span>PROJECT ID</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">#{selectedConversation.related_project_id}</span>
+                    <span className="font-semibold text-slate-800 ">#{selectedConversation.related_project_id}</span>
                   </div>
                   {selectedConversation.related_project_name && (
-                    <div className="text-[11px] text-slate-700 dark:text-slate-300 pt-1 font-medium">
+                    <div className="text-[11px] text-slate-700  pt-1 font-medium">
                       {selectedConversation.related_project_name}
                     </div>
                   )}
@@ -926,9 +926,9 @@ export const MessagesPage: React.FC = () => {
             )}
 
             {/* Participants Roster */}
-            <div className="p-3.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
+            <div className="p-3.5 bg-white  rounded-xl border border-slate-200  shadow-xs">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                <h4 className="text-[11px] font-bold text-slate-800 ">
                   Participants ({selectedConversation.participants.length})
                 </h4>
                 <span className="text-[10px] text-slate-400">Official Roster</span>
@@ -938,15 +938,15 @@ export const MessagesPage: React.FC = () => {
                 {selectedConversation.participants.map((p) => (
                   <div key={p.id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 truncate">
-                      <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">
+                      <div className="w-6 h-6 rounded-full bg-slate-200  flex items-center justify-center text-[10px] font-bold">
                         {p.full_name[0]}
                       </div>
                       <div className="truncate">
-                        <p className="font-semibold truncate text-slate-800 dark:text-slate-200">{p.full_name}</p>
+                        <p className="font-semibold truncate text-slate-800 ">{p.full_name}</p>
                         <p className="text-[9px] text-slate-400 truncate">{p.designation}</p>
                       </div>
                     </div>
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100  text-slate-600 ">
                       {p.role_in_conversation}
                     </span>
                   </div>
@@ -963,9 +963,9 @@ export const MessagesPage: React.FC = () => {
       {/* ========================================================= */}
       {showNewDirectModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          <div className="bg-white  rounded-2xl max-w-md w-full shadow-2xl border border-slate-200  overflow-hidden">
+            <div className="p-4 border-b border-slate-200  flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 ">
                 New Direct Official Discussion
               </h3>
               <button type="button" onClick={() => setShowNewDirectModal(false)}>
@@ -986,7 +986,7 @@ export const MessagesPage: React.FC = () => {
                     className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-left transition-colors"
                   >
                     <div>
-                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{u.full_name}</p>
+                      <p className="text-xs font-semibold text-slate-900 ">{u.full_name}</p>
                       <p className="text-[11px] text-slate-500">{u.role_name} • {u.department_name}</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -1003,9 +1003,9 @@ export const MessagesPage: React.FC = () => {
       {/* ========================================================= */}
       {showNewGroupModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <form onSubmit={handleCreateGroupChat} className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          <form onSubmit={handleCreateGroupChat} className="bg-white  rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200  overflow-hidden">
+            <div className="p-4 border-b border-slate-200  flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 ">
                 Create Government Working Group
               </h3>
               <button type="button" onClick={() => setShowNewGroupModal(false)}>
@@ -1015,7 +1015,7 @@ export const MessagesPage: React.FC = () => {
 
             <div className="p-4 space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700  mb-1">
                   Working Group Title
                 </label>
                 <input
@@ -1024,18 +1024,18 @@ export const MessagesPage: React.FC = () => {
                   value={newGroupTitle}
                   onChange={(e) => setNewGroupTitle(e.target.value)}
                   placeholder="e.g. Chennai-Kanyakumari Corridor Land Taskforce"
-                  className="w-full text-xs p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  className="w-full text-xs p-2 bg-slate-50  border border-slate-200  rounded-lg text-slate-900 "
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700  mb-1">
                   Category
                 </label>
                 <select
                   value={newGroupCategory}
                   onChange={(e) => setNewGroupCategory(e.target.value)}
-                  className="w-full text-xs p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  className="w-full text-xs p-2 bg-slate-50  border border-slate-200  rounded-lg text-slate-900 "
                 >
                   <option value="PROJECT_WORKING_GROUP">Project Working Group</option>
                   <option value="DEPARTMENT_WORKING_GROUP">Department Working Group</option>
@@ -1051,10 +1051,10 @@ export const MessagesPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700  mb-1">
                   Select Participants ({selectedUserIds.length} selected)
                 </label>
-                <div className="max-h-48 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-lg p-2 space-y-1">
+                <div className="max-h-48 overflow-y-auto border border-slate-200  rounded-lg p-2 space-y-1">
                   {userDirectory.filter(u => u.id !== user?.id).map((u) => {
                     const isChecked = selectedUserIds.includes(u.id);
                     return (
@@ -1085,11 +1085,11 @@ export const MessagesPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+            <div className="p-4 bg-slate-50  border-t border-slate-200  flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowNewGroupModal(false)}
-                className="px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                className="px-3 py-1.5 text-xs text-slate-600  hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
               >
                 Cancel
               </button>

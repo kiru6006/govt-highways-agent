@@ -412,7 +412,7 @@ export const GovernanceRegistryPage: React.FC = () => {
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-slate-100">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-slate-900 text-white">
+                    <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-[#20242B] text-[#FACC15] border border-slate-700">
                       {ref.committee_code}
                     </span>
                     <span className="text-sm font-bold text-slate-900 uppercase tracking-wide">

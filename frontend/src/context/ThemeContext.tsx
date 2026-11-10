@@ -15,21 +15,21 @@ export interface ThemeInfo {
 export const THEME_CONFIGS: Record<ThemeMode, ThemeInfo> = {
   classic: {
     id: 'classic',
-    name: 'Tamil Nadu Classic',
-    badge: 'Emerald & Slate',
-    description: 'Original Tamil Nadu Highways brand palette (#006A4E)',
-    primaryColor: '#006A4E',
+    name: 'Highways Standard (Light)',
+    badge: 'Charcoal & Yellow Accent',
+    description: 'Highways Government light theme with yellow road markings accent (#FACC15)',
+    primaryColor: '#20242B',
     headerBg: '#FFFFFF',
-    sidebarBg: '#0F172A',
+    sidebarBg: '#FFFFFF',
   },
   'navy-gov': {
     id: 'navy-gov',
-    name: 'Government Navy (DESIGN.md)',
-    badge: 'GIGW / UX4G Token Shell',
-    description: 'Provisional Government Shell (#0F2A4A) with #F4F7FB Surface',
-    primaryColor: '#0F2A4A',
-    headerBg: '#0F2A4A',
-    sidebarBg: '#091A2E',
+    name: 'Highways State Blue (Light)',
+    badge: 'State Blue Accent',
+    description: 'Clean government light theme with State Highway blue accent (#1D4ED8)',
+    primaryColor: '#1D4ED8',
+    headerBg: '#FFFFFF',
+    sidebarBg: '#FFFFFF',
   },
 };
 
@@ -93,4 +93,3 @@ export const useTheme = (): ThemeContextType => {
   }
   return context;
 };
-

@@ -2,154 +2,203 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   CENTRAL HIGHWAYS DESIGN TOKEN SYSTEM
+   Light theme across all screens. White cards, subtle borders, restrained shadows.
+   Black/Charcoal (#20242B) and Yellow (#FACC15) Highways identity accents.
+   ========================================================================== */
+
+:root, [data-theme="classic"], [data-theme="navy-gov"] {
+  --app-bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-muted: #F1F5F9;
+  --border-default: #E2E8F0;
+  --text-primary: #111827;
+  --text-secondary: #475569;
+
+  --highways-charcoal: #20242B;
+  --highways-yellow: #FACC15;
+
+  --risk-critical: #DC2626;
+  --risk-critical-bg: #FEF2F2;
+  --risk-critical-border: #FECACA;
+
+  --risk-warning: #D97706;
+  --risk-warning-bg: #FFFBEB;
+  --risk-warning-border: #FDE68A;
+
+  --status-success: #15803D;
+  --status-success-bg: #F0FDF4;
+
+  --status-info: #2563EB;
+  --status-info-bg: #EFF6FF;
+
+  /* Global Shell Tokens - Universal Light Theme */
+  --shell-bg: #FFFFFF;
+  --shell-fg: #111827;
+  --shell-border: #E2E8F0;
+  --shell-active-bg: #FEF9C3;
+  --shell-active-fg: #111827;
+  --shell-active-indicator: #FACC15;
+
+  --focus-ring: #FACC15;
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans;
+    background-color: var(--app-bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Force universal light surface across inputs, selects, tables */
+  input, select, textarea {
+    color: var(--text-primary);
   }
 }
 
 /* ==========================================================================
-   DESIGN SYSTEM TOKEN PALETTES (DESIGN.md Stage 1)
+   SHELL COMPONENT CLASSES (Header, Sidebar, Navigation)
    ========================================================================== */
 
-:root, [data-theme="classic"] {
-  --shell-bg: #0F172A;
-  --shell-fg: #FFFFFF;
-  --shell-active-indicator: #006A4E;
-  --shell-btn-primary-bg: #006A4E;
-  --shell-btn-primary-fg: #FFFFFF;
-  --surface-page: #F8FAFC;
-  --surface-card: #FFFFFF;
-  --border-default: #E2E8F0;
-  --text-primary: #0F172A;
-  --text-secondary: #64748B;
-  --focus-ring: #006A4E;
+.theme-header {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #111827 !important;
 }
 
-[data-theme="navy-gov"] {
-  /* Layer A: Government identity (shell only) - Provisional DESIGN.md tokens */
-  --shell-bg: #0F2A4A;              /* header, sidebar */
-  --shell-fg: #FFFFFF;
-  --shell-active-indicator: #FFFFFF; /* 4px left bar, neutral indicator */
-  --shell-btn-primary-bg: #0F2A4A;
-  --shell-btn-primary-fg: #FFFFFF;
-  --surface-page: #F4F7FB;
-  --surface-card: #FFFFFF;
-  --border-default: #DCE4ED;
-  --text-primary: #1F2937;
-  --text-secondary: #5B6678;
-  --focus-ring: #1D4ED8;            /* 2px + 2px offset */
-
-  /* Layer C: Operational status tokens */
-  --status-on-track-fg: #0F6B4A;
-  --status-on-track-bg: #E3F4EC;
-  --status-on-track-solid: #1E9E6B;
-  --status-observation-fg: #14578F;
-  --status-observation-bg: #E2EFFA;
-  --status-observation-solid: #1F78C8;
-  --status-at-risk-fg: #7A4B00;
-  --status-at-risk-bg: #FFF1CC;
-  --status-at-risk-solid: #B07A00;
-  --status-delayed-fg: #8F3A00;
-  --status-delayed-bg: #FFE6D2;
-  --status-delayed-solid: #E8650A;
-  --status-critical-fg: #9B1C1C;
-  --status-critical-bg: #FDE3E3;
-  --status-critical-solid: #D32F2F;
-  --status-completed-fg: #0B4F36;
-  --status-completed-bg: #CFEBDD;
-  --status-completed-solid: #15704D;
-  --status-on-hold-fg: #3F4756;
-  --status-on-hold-bg: #E5E8ED;
-  --status-on-hold-solid: #6B7280;
-  --status-pending-approval-fg: #5B2DB0;
-  --status-pending-approval-bg: #EDE5FB;
-  --status-pending-approval-solid: #7C4DDB;
+.theme-header-search {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #111827 !important;
 }
 
-[data-theme="navy-gov"] body {
-  background-color: var(--surface-page);
-  color: var(--text-primary);
-}
-
-[data-theme="navy-gov"] .theme-header {
-  background-color: #0F2A4A !important;
-  border-color: #1A3E66 !important;
-  color: #FFFFFF !important;
-}
-
-[data-theme="navy-gov"] .theme-header-search {
-  background-color: #091C33 !important;
-  border-color: #1E4673 !important;
-  color: #FFFFFF !important;
-}
-
-[data-theme="navy-gov"] .theme-header-search::placeholder {
+.theme-header-search::placeholder {
   color: #94A3B8 !important;
 }
 
-[data-theme="navy-gov"] .theme-header-btn {
-  background-color: #14355B !important;
-  border-color: #234D7E !important;
-  color: #FFFFFF !important;
+.theme-header-btn {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #334155 !important;
 }
 
-[data-theme="navy-gov"] .theme-header-btn:hover {
-  background-color: #1A4372 !important;
+.theme-header-btn:hover {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
 }
 
-[data-theme="navy-gov"] .theme-sidebar {
-  background-color: #081728 !important;
-  border-color: #142842 !important;
+.theme-sidebar {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #334155 !important;
 }
 
-[data-theme="navy-gov"] .theme-sidebar-header {
-  background-color: #040D17 !important;
-  border-color: #142842 !important;
+.theme-sidebar-header {
+  background-color: #FAFAFA !important;
+  border-color: #E2E8F0 !important;
 }
 
-[data-theme="navy-gov"] .theme-active-nav {
-  background-color: #0F2A4A !important;
-  border-left-color: #FFFFFF !important;
-  color: #FFFFFF !important;
+.theme-active-nav {
+  background-color: #FEF3C7 !important;
+  border-left-color: #FACC15 !important;
+  color: #1E293B !important;
+  font-weight: 600 !important;
 }
 
-/* Highway Road Type Badge Classes adhering to DESIGN.md */
-.badge-sh {
-  @apply bg-[#E6F4EA] text-[#006A4E] border border-[#B2DFCD] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
-}
+/* ==========================================================================
+   HIGHWAYS ROAD TYPE BADGES
+   NH: Charcoal bg, Yellow text
+   SH: Deep Blue / Royal Blue
+   MDR: Forest Green
+   ODR: Slate / Grey-blue
+   ========================================================================== */
 
 .badge-nh {
-  @apply bg-[#FFF9E6] text-[#996600] border border-[#FFE680] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+  background-color: #20242B;
+  color: #FACC15;
+  border: 1px solid #374151;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge-sh {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .badge-mdr {
-  @apply bg-[#E6F0F7] text-[#004B87] border border-[#B3CFE5] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+  background-color: #F0FDF4;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .badge-odr {
-  @apply bg-[#FCE8F3] text-[#D1197E] border border-[#F2B3D6] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .badge-rural {
-  @apply bg-[#FFF3EB] text-[#FF6600] border border-[#FFCCB3] font-medium px-2 py-0.5 rounded text-xs inline-flex items-center;
+  background-color: #FFF7ED;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-/* Responsive Table & Scrollbar Styles */
+/* ==========================================================================
+   SCROLLBAR & DATA TABLE STYLES
+   Light header, subtle row dividers, alternating rows, sticky header.
+   ========================================================================== */
+
 .custom-scrollbar::-webkit-scrollbar {
   height: 6px;
   width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F1F5F9;
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94A3B8;
 }
 
 .table-responsive {
@@ -158,3 +207,55 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Highways Data Table Utilities */
+.highways-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8125rem;
+}
+
+.highways-table thead th {
+  background-color: #F8FAFC;
+  color: #475569;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid #E2E8F0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.highways-table tbody tr {
+  background-color: #FFFFFF;
+  transition: background-color 0.15s ease;
+}
+
+.highways-table tbody tr:nth-child(even) {
+  background-color: #FAFAFA;
+}
+
+.highways-table tbody tr:hover {
+  background-color: #F1F5F9;
+}
+
+.highways-table tbody td {
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid #F1F5F9;
+  color: #1E293B;
+  vertical-align: middle;
+}
+
+/* Risk row accents: Pale highlights only when justified */
+.row-critical {
+  background-color: #FEF2F2 !important;
+  border-left: 3px solid #DC2626;
+}
+
+.row-warning {
+  background-color: #FFFBEB !important;
+  border-left: 3px solid #D97706;
+}

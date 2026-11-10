@@ -897,16 +897,16 @@ export const LandUtilityPage: React.FC = () => {
             </div>
 
             {/* Spatial Grid Canvas Simulation */}
-            <div className="bg-slate-900 rounded-xl p-6 min-h-[420px] relative overflow-hidden flex flex-col justify-between">
+            <div className="bg-slate-50 rounded-xl p-6 min-h-[420px] relative overflow-hidden flex flex-col justify-between border border-slate-200 text-slate-800 shadow-2xs">
               {/* Background Map Grid */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-              <div className="relative z-10 flex items-center justify-between text-xs text-slate-300 border-b border-slate-800 pb-3">
+              <div className="relative z-10 flex items-center justify-between text-xs text-slate-600 border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <Compass className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-white">Spatial View: Tamil Nadu State Highway Corridors</span>
+                  <Compass className="w-4 h-4 text-emerald-700" />
+                  <span className="font-semibold text-slate-900">Spatial View: Tamil Nadu State Highway Corridors</span>
                 </div>
-                <div className="font-mono text-slate-400">Bounding Box: 8.08° N to 13.50° N, 76.24° E to 80.34° E</div>
+                <div className="font-mono text-slate-500">Bounding Box: 8.08° N to 13.50° N, 76.24° E to 80.34° E</div>
               </div>
 
               {/* Map Points Scatter */}
@@ -1088,13 +1088,13 @@ export const LandUtilityPage: React.FC = () => {
             </div>
 
             {/* Interactive Scenario Action Bar */}
-            <div className="bg-slate-900 text-white p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-white text-slate-900 p-5 rounded-xl border border-slate-200 shadow-2xs border-l-4 border-l-[#20242B] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
                   Secretary Executive Intervention Decision
                 </h4>
-                <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                <p className="text-xs text-slate-600 mt-1 max-w-xl">
                   Simulate Secretary-level coordination order: Authorize District Treasury Ooty to release ₹0.85 Cr voucher and mandate TANGEDCO Gudalur 66kV substation feeder shutdown on upcoming Sunday.
                 </p>
               </div>

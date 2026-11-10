@@ -134,7 +134,7 @@ export const MinisterDashboard: React.FC = () => {
               </button>
               <button
                 onClick={() => switchPersona('admin')}
-                className="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 shadow-sm transition-all"
+                className="bg-[#20242B] hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 shadow-xs transition-all"
               >
                 <Shield className="w-4 h-4" />
                 Switch to Admin Persona

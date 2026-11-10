@@ -836,13 +836,13 @@ export const DirectoryPage: React.FC = () => {
             </div>
 
             {/* Historical Officeholders Banner */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+            <div className="p-3 bg-slate-50  rounded-xl border border-slate-200  flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-slate-200  text-slate-700  font-mono text-[10px] font-bold">
                   HISTORICAL RECORD
                 </span>
-                <span className="text-slate-600 dark:text-slate-400">
-                  Previous Minister for Public Works, Highways &amp; Minor Ports: <strong className="text-slate-800 dark:text-slate-200">Thiru E.V. Velu</strong> (Tenure: May 2021 – May 2026 • G.O. Ms No. 01/2026 Archive)
+                <span className="text-slate-600 ">
+                  Previous Minister for Public Works, Highways &amp; Minor Ports: <strong className="text-slate-800 ">Thiru E.V. Velu</strong> (Tenure: May 2021 – May 2026 • G.O. Ms No. 01/2026 Archive)
                 </span>
               </div>
               <span className="text-[10px] text-slate-400 font-mono">Archived Tenure Record</span>
