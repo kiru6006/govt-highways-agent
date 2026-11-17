@@ -160,8 +160,20 @@ import {
   CRIDPAdvancedFilterResult,
   CRIDPAdministrativeHierarchy,
   CRIDPYearWiseComparisonPayload,
-  CRIDPYearWiseComparisonResult
+  CRIDPYearWiseComparisonResult,
+  UnifiedWorkRecord,
+  WorksAnalyticsFilterRegistry,
+  WorksAnalyticsFilterPayload,
+  WorksAnalyticsKPIs,
+  WorksAnalyticsQueryResult,
+  WorksAnalyticsCharts
 } from '../types';
+import {
+  fallbackWorksFilterRegistry,
+  fallbackUnifiedWorks,
+  fallbackWorksKPIs,
+  fallbackWorksCharts
+} from '../data/fallbackWorksAnalytics';
 import {
   fallbackDigitalOfficeOverview,
   fallbackCorrespondenceList,
@@ -5887,6 +5899,118 @@ export const api = {
       throw new Error(`Export failed: ${res.statusText}`);
     }
     return await res.blob();
+  }
+};
+
+export const worksAnalyticsAPI = {
+  getFilterRegistry: async (): Promise<WorksAnalyticsFilterRegistry> => {
+    try {
+      return await request<WorksAnalyticsFilterRegistry>('/works-analytics/filter-registry');
+    } catch {
+      return fallbackWorksFilterRegistry;
+    }
+  },
+
+  queryWorks: async (payload: WorksAnalyticsFilterPayload, skip: number = 0, limit: number = 50): Promise<WorksAnalyticsQueryResult> => {
+    try {
+      return await request<WorksAnalyticsQueryResult>(`/works-analytics/query?skip=${skip}&limit=${limit}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      let filtered = [...fallbackUnifiedWorks];
+      if (payload.wings && payload.wings.length > 0) {
+        filtered = filtered.filter(w => payload.wings!.includes(w.wing));
+      }
+      if (payload.circles && payload.circles.length > 0) {
+        filtered = filtered.filter(w => payload.circles!.includes(w.circle));
+      }
+      if (payload.divisions && payload.divisions.length > 0) {
+        filtered = filtered.filter(w => payload.divisions!.includes(w.division));
+      }
+      if (payload.schemes && payload.schemes.length > 0) {
+        filtered = filtered.filter(w => payload.schemes!.includes(w.scheme));
+      }
+      if (payload.work_stages && payload.work_stages.length > 0) {
+        filtered = filtered.filter(w => payload.work_stages!.includes(w.work_stage));
+      }
+      if (payload.progress_bands && payload.progress_bands.length > 0) {
+        filtered = filtered.filter(w => payload.progress_bands!.includes(w.progress_band));
+      }
+      if (payload.search_query && payload.search_query.trim()) {
+        const q = payload.search_query.toLowerCase().trim();
+        filtered = filtered.filter(w =>
+          w.work_name.toLowerCase().includes(q) ||
+          w.work_code.toLowerCase().includes(q) ||
+          w.road_name.toLowerCase().includes(q) ||
+          (w.contractor_name || '').toLowerCase().includes(q)
+        );
+      }
+      const page = payload.page || 1;
+      const pageSize = payload.page_size || limit;
+      const offset = (page - 1) * pageSize;
+      const paginated = filtered.slice(offset, offset + pageSize);
+      return {
+        items: paginated,
+        total_matching: filtered.length,
+        page,
+        page_size: pageSize,
+        total_pages: Math.max(1, Math.ceil(filtered.length / pageSize)),
+        kpis: fallbackWorksKPIs,
+        active_filter_chips: []
+      };
+    }
+  },
+
+  getKPIs: async (payload: WorksAnalyticsFilterPayload): Promise<WorksAnalyticsKPIs> => {
+    try {
+      return await request<WorksAnalyticsKPIs>('/works-analytics/kpis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return fallbackWorksKPIs;
+    }
+  },
+
+  getCharts: async (payload: WorksAnalyticsFilterPayload): Promise<WorksAnalyticsCharts> => {
+    try {
+      return await request<WorksAnalyticsCharts>('/works-analytics/charts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return fallbackWorksCharts;
+    }
+  },
+
+  exportData: async (payload: WorksAnalyticsFilterPayload, format: 'excel' | 'csv' = 'excel'): Promise<Blob> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('tn_hdos_token') : '';
+    const res = await fetch(`${API_BASE}/works-analytics/export?format=${format}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token || ''}`
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      throw new Error(`Export failed: ${res.statusText}`);
+    }
+    return await res.blob();
+  },
+
+  getWorkDetail: async (workId: string): Promise<UnifiedWorkRecord> => {
+    try {
+      return await request<UnifiedWorkRecord>(`/works-analytics/work/${workId}`);
+    } catch {
+      const found = fallbackUnifiedWorks.find(w => w.id === workId || w.work_code === workId);
+      if (found) return found;
+      return fallbackUnifiedWorks[0];
+    }
   }
 };
 

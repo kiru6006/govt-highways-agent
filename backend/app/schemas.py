@@ -3283,3 +3283,194 @@ class CRIDPYearWiseComparisonResultOut(BaseModel):
     comparison_rows: List[Dict[str, Any]]
     metric_deltas: Dict[str, Any]
     summary_findings: List[str]
+
+
+# ============================================================================
+# UNIFIED WORKS ANALYTICS SCHEMAS
+# ============================================================================
+
+class UnifiedWorkRecordOut(BaseModel):
+    id: int
+    work_code: str
+    work_name: str
+    wing: str
+    circle: str
+    division: str
+    subdivision: Optional[str] = None
+    district: str
+    constituency: Optional[str] = None
+    section: Optional[str] = None
+    scheme: str
+    normalized_scheme: str
+    road_name: Optional[str] = None
+    road_number: Optional[str] = None
+    road_classification: str
+    work_type: str
+    work_sub_type: str
+    work_stage: str
+    project_length_km: float
+    start_chainage_km: float
+    end_chainage_km: float
+    length_completed_km: float
+    c_go_number: Optional[str] = None
+    d_go_date: Optional[datetime.datetime] = None
+    financial_year: str
+    sanction_year: int
+    as_amount_cr: float
+    ts_amount_cr: float
+    revised_ts_amount_cr: float
+    contract_value_cr: float
+    expenditure_cr: float
+    last_payment_date: Optional[datetime.datetime] = None
+    last_payment_amount_cr: float
+    work_commencement_date: Optional[datetime.datetime] = None
+    planned_completion_date: Optional[datetime.datetime] = None
+    agreement_completion_date: Optional[datetime.datetime] = None
+    forecast_completion_date: Optional[datetime.datetime] = None
+    verified_completion_date: Optional[datetime.datetime] = None
+    physical_progress_pct: float
+    financial_progress_pct: float
+    delay_status: str
+    forecast_delay_category: str
+    agreement_delay_category: str
+    overall_delay_days: int
+    milestone_25_delay_days: int
+    milestone_50_delay_days: int
+    milestone_75_delay_days: int
+    milestone_100_delay_days: int
+    contractor_name: Optional[str] = None
+    contract_reference: Optional[str] = None
+    responsible_engineer: Optional[str] = None
+    resolution_authority: str
+    pending_action_owner: Optional[str] = None
+    issue_land_acquisition: bool
+    issue_forest_clearance: bool
+    issue_utility_shifting: bool
+    issue_railway_approvals: bool
+    issue_wrd_approvals: bool
+    issue_court_approvals: bool
+    risk_severity: str
+    root_cause: Optional[str] = None
+    financial_exposure_cr: float
+    avoidable_expenditure_cr: float
+    previous_work_overlap_km: float
+    five_year_renewal_eligibility: str
+    corrective_action_status: str
+    mitigation_status: str
+    last_review_date: Optional[datetime.datetime] = None
+    source_document: str
+    source_record_id: Optional[str] = None
+    verification_status: str
+    data_confidence: float
+    data_mode: str
+    project_id: Optional[int] = None
+    road_id: Optional[int] = None
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class WorksAnalyticsFilterRegistryOut(BaseModel):
+    wings: List[str]
+    circles: List[str] = []
+    divisions: List[str] = []
+    circles_by_wing: Dict[str, List[str]]
+    divisions_by_circle: Dict[str, List[str]]
+    subdivisions_by_division: Dict[str, List[str]]
+    districts_by_division: Dict[str, List[str]]
+    constituencies: List[str]
+    schemes: List[str]
+    work_types: List[str]
+    work_sub_types: List[str]
+    work_stages: List[str]
+    road_classifications: List[str]
+    financial_years: List[str]
+    delay_categories: List[str]
+    agreement_delay_categories: List[str]
+    risk_severities: List[str]
+    progress_bands: List[str] = ["0–10%", "10–25%", "26–50%", "51–75%", "76–90%", "91–100%"]
+
+
+class WorksAnalyticsFilterPayload(BaseModel):
+    wings: Optional[List[str]] = None
+    circles: Optional[List[str]] = None
+    divisions: Optional[List[str]] = None
+    subdivisions: Optional[List[str]] = None
+    districts: Optional[List[str]] = None
+    constituencies: Optional[List[str]] = None
+    schemes: Optional[List[str]] = None
+    work_types: Optional[List[str]] = None
+    work_sub_types: Optional[List[str]] = None
+    work_stages: Optional[List[str]] = None
+    road_classifications: Optional[List[str]] = None
+    financial_years: Optional[List[str]] = None
+    go_number: Optional[str] = None
+    go_date_from: Optional[datetime.date] = None
+    go_date_to: Optional[datetime.date] = None
+    min_as_amount_cr: Optional[float] = None
+    max_as_amount_cr: Optional[float] = None
+    min_expenditure_cr: Optional[float] = None
+    max_expenditure_cr: Optional[float] = None
+    min_contract_value_cr: Optional[float] = None
+    max_contract_value_cr: Optional[float] = None
+    progress_bands: Optional[List[str]] = None  # ["0-10%", "10-25%", "26-50%", "51-75%", "76-90%", "91-100%"]
+    delay_statuses: Optional[List[str]] = None
+    forecast_delay_categories: Optional[List[str]] = None
+    agreement_delay_categories: Optional[List[str]] = None
+    risk_severities: Optional[List[str]] = None
+    dependency_issues: Optional[List[str]] = None  # ["land_acquisition", "forest", "utility", "railway", "wrd", "court"]
+    five_year_eligibilities: Optional[List[str]] = None
+    contractors: Optional[List[str]] = None
+    search_query: Optional[str] = None
+    search_column: Optional[str] = None
+    sort_by: Optional[str] = "id"
+    sort_order: Optional[str] = "asc"
+    page: int = 1
+    page_size: int = 50
+
+
+class WorksAnalyticsKPIsOut(BaseModel):
+    total_works: int
+    completed_works: int
+    work_in_progress: int
+    deleted_cancelled_works: int
+    works_with_potential_delay: int
+    works_beyond_agreement_date: int
+    pre_construction_works: int
+    critical_financial_risk_count: int
+    works_requiring_action: int
+    unverified_work_records: int
+    total_length_km: float
+    completed_length_km: float
+    total_as_amount_cr: float
+    total_contract_value_cr: float
+    total_expenditure_cr: float
+    total_avoidable_exposure_cr: float
+    scope_description: str
+    active_filters_count: int
+
+
+class WorksAnalyticsQueryResultOut(BaseModel):
+    items: List[UnifiedWorkRecordOut]
+    total_matching: int
+    page: int
+    page_size: int
+    total_pages: int
+    kpis: WorksAnalyticsKPIsOut
+    active_filter_chips: List[Dict[str, str]] = []
+
+
+class WorksAnalyticsChartsOut(BaseModel):
+    progress_stages: List[Dict[str, Any]]
+    potential_delay_distribution: List[Dict[str, Any]]
+    agreement_delay_distribution: List[Dict[str, Any]]
+    pre_construction_stages: List[Dict[str, Any]]
+    financial_performance: Dict[str, Any]
+    circle_division_performance: List[Dict[str, Any]]
+    scheme_performance: List[Dict[str, Any]]
+    risk_distribution: List[Dict[str, Any]]
+    year_trends: List[Dict[str, Any]]
+    cridp_five_year_verification: Dict[str, Any]
+    kpis: WorksAnalyticsKPIsOut

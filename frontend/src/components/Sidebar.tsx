@@ -60,6 +60,7 @@ export const navigationItems: NavItem[] = [
   { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 
   // Domain 2: Project Intelligence (Core Layer)
+  { id: 'works_analytics', name: 'Works Status Analytics', path: '/works-analytics', icon: BarChart3, badge: 'Live Explorer', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'projects' },
   { id: 'cridp_risk_intelligence', name: 'CRIDP Risk Intelligence', path: '/cridp-risk-intelligence', icon: ShieldAlert, badge: '11-Tab Engine', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60', groupId: 'projects' },
   { id: 'major_works', name: 'Major Works ₹50 Cr+', path: '/major-works', icon: Building2, badge: 'Chennai 31', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'projects' },
   { id: '3', name: 'Project Portfolio Grid', path: '/projects', icon: FolderGit2, groupId: 'projects' },

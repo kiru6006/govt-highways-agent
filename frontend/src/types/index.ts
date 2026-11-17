@@ -4081,3 +4081,218 @@ export interface CRIDPYearWiseComparisonResult {
   metric_deltas: Record<string, any>;
   summary_findings: string[];
 }
+
+// ==========================================
+// WORKS STATUS ANALYTICS (UNIFIED EXPLORER)
+// ==========================================
+
+export interface UnifiedWorkRecord {
+  id: string;
+  work_code: string;
+  work_name: string;
+  wing: string;
+  circle: string;
+  division: string;
+  subdivision?: string;
+  district: string;
+  constituency: string;
+  section?: string;
+  scheme: string;
+  road_number: string;
+  road_name: string;
+  road_classification: string;
+  start_chainage_km: number;
+  end_chainage_km: number;
+  project_length_km: number;
+  length_completed_km: number;
+  work_type: string;
+  work_sub_type: string;
+  work_stage: string;
+  c_go_number?: string;
+  d_go_date?: string;
+  financial_year: string;
+  sanction_year: number;
+  as_amount_cr: number;
+  ts_amount_cr: number;
+  revised_ts_amount_cr?: number;
+  contract_value_cr: number;
+  expenditure_cr: number;
+  physical_progress_pct: number;
+  financial_progress_pct: number;
+  progress_band: string;
+  commencement_date?: string;
+  probable_completion_date?: string;
+  fixed_end_date?: string;
+  actual_completion_date?: string;
+  overall_delay_days: number;
+  delay_status: string;
+  forecast_delay_category: string;
+  agreement_delay_category: string;
+  contractor_name?: string;
+  contract_ref?: string;
+  responsible_office?: string;
+  responsible_engineer?: string;
+  issue_land_acquisition: boolean;
+  issue_forest_clearance: boolean;
+  issue_utility_shifting: boolean;
+  issue_railway_approvals: boolean;
+  issue_wrd_approvals: boolean;
+  issue_court_approvals: boolean;
+  risk_severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  root_cause?: string;
+  financial_exposure_cr: number;
+  avoidable_expenditure_cr: number;
+  previous_work_overlap_km: number;
+  five_year_renewal_eligibility: string;
+  corrective_action_status: string;
+  mitigation_status: string;
+  last_review_date?: string;
+  source_document: string;
+  source_record_id?: string;
+  verification_status: string;
+  data_confidence: number;
+  data_mode: string;
+  project_id?: number;
+  road_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WorksAnalyticsFilterRegistry {
+  wings: string[];
+  circles: string[];
+  divisions: string[];
+  circles_by_wing: Record<string, string[]>;
+  divisions_by_circle: Record<string, string[]>;
+  subdivisions_by_division: Record<string, string[]>;
+  districts_by_division: Record<string, string[]>;
+  constituencies: string[];
+  schemes: string[];
+  work_types: string[];
+  work_sub_types: string[];
+  work_stages: string[];
+  road_classifications: string[];
+  financial_years: string[];
+  delay_categories: string[];
+  agreement_delay_categories: string[];
+  risk_severities: string[];
+  progress_bands: string[];
+}
+
+export interface WorksAnalyticsFilterPayload {
+  wings?: string[];
+  circles?: string[];
+  divisions?: string[];
+  subdivisions?: string[];
+  districts?: string[];
+  constituencies?: string[];
+  schemes?: string[];
+  work_types?: string[];
+  work_sub_types?: string[];
+  work_stages?: string[];
+  road_classifications?: string[];
+  financial_years?: string[];
+  go_number?: string;
+  go_date_from?: string;
+  go_date_to?: string;
+  min_as_amount_cr?: number;
+  max_as_amount_cr?: number;
+  min_expenditure_cr?: number;
+  max_expenditure_cr?: number;
+  min_contract_value_cr?: number;
+  max_contract_value_cr?: number;
+  progress_bands?: string[];
+  delay_statuses?: string[];
+  forecast_delay_categories?: string[];
+  agreement_delay_categories?: string[];
+  risk_severities?: string[];
+  dependency_issues?: string[];
+  five_year_eligibilities?: string[];
+  contractors?: string[];
+  search_query?: string;
+  search_column?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+  page?: number;
+  page_size?: number;
+}
+
+export interface WorksAnalyticsKPIs {
+  total_works: number;
+  completed_works: number;
+  work_in_progress: number;
+  deleted_cancelled_works: number;
+  works_with_potential_delay: number;
+  works_beyond_agreement_date: number;
+  pre_construction_works: number;
+  critical_financial_risk_count: number;
+  works_requiring_action: number;
+  unverified_work_records: number;
+  total_length_km: number;
+  completed_length_km: number;
+  total_as_amount_cr: number;
+  total_contract_value_cr: number;
+  total_expenditure_cr: number;
+  total_avoidable_exposure_cr: number;
+  scope_description: string;
+  active_filters_count: number;
+}
+
+export interface WorksAnalyticsQueryResult {
+  items: UnifiedWorkRecord[];
+  total_matching: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  kpis: WorksAnalyticsKPIs;
+  active_filter_chips: Array<{ key: string; label: string; value: string }>;
+}
+
+export interface WorksAnalyticsCharts {
+  progress_stages: Array<{ stage: string; count: number; pct_of_total: number }>;
+  potential_delay_distribution: Array<{ delay_category: string; count: number }>;
+  agreement_delay_distribution: Array<{ delay_category: string; count: number }>;
+  pre_construction_stages: Array<{ stage: string; count: number }>;
+  financial_performance: {
+    as_amount_cr: number;
+    ts_amount_cr: number;
+    contract_value_cr: number;
+    expenditure_cr: number;
+    overall_financial_progress_pct: number;
+  };
+  circle_division_performance: Array<{
+    circle: string;
+    total_works: number;
+    completed_works: number;
+    delayed_works: number;
+    critical_risks: number;
+    sanction_amount_cr: number;
+    expenditure_cr: number;
+  }>;
+  scheme_performance: Array<{
+    scheme: string;
+    total_works: number;
+    total_length_km: number;
+    completion_rate_pct: number;
+    critical_risks: number;
+  }>;
+  risk_distribution: Array<{ risk_type: string; count: number }>;
+  year_trends: Array<{
+    year: number;
+    works_sanctioned: number;
+    works_started: number;
+    works_completed: number;
+    length_completed_km: number;
+    expenditure_cr: number;
+    delayed_works: number;
+  }>;
+  cridp_five_year_verification: {
+    eligible_length_km: number;
+    recently_renewed_length_km: number;
+    overlapping_length_km: number;
+    unknown_history_length_km: number;
+    works_requiring_review_count: number;
+  };
+  kpis: WorksAnalyticsKPIs;
+}
+

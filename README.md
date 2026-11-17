@@ -283,6 +283,55 @@ TOP HEADER UTILITY BAR
   * `GET /api/v1/cridp-verification/data-quality`
   * `POST /api/v1/cridp-verification/ai-risk-analyst`
   * `GET /api/v1/cridp-verification/kpis`
+
+#### 15. Unified Works Status Analytics (`#/works-analytics`)
+* **Display Title**: **Unified Works Analytics: Synchronized Data Explorer, Charts, Filters and Risk Intelligence**
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Government Auditors, Finance & Planning Officers.
+* **Navigation Path**: Works Management $\rightarrow$ Works Status Analytics (`#/works-analytics`)
+* **Key Capabilities & Architecture**:
+  * **Dual Synchronized Workspace Architecture**:
+    * **Tab 1: Works Data Explorer**: High-performance 55+ column tabular master with search, multi-column sort, 5 column visibility presets (`Core PMS`, `Financials`, `Timeline & Delays`, `Blockers & 5-Yr`, `All Columns`), and full 360° slide-over dossier inspection.
+    * **Tab 2: Works Analytics & Charts**: 10 interactive, responsive visual intelligence charts (A through J) with click-to-filter drill-down directly focusing Tab 1.
+  * **Single Source of Truth**: Both tabs share identical state, active filters, URL bookmarking parameters, and reporting snapshot.
+  * **10 Top Clickable Synchronized KPI Cards**:
+    1. *Total Works & Total Length (km)*
+    2. *Completed Works (with completed length km)*
+    3. *Work in Progress (active site count)*
+    4. *Forecast Delay (schedule risk)*
+    5. *Agreement Date Slippage (> contracted end date)*
+    6. *Critical Financial Exposure & Risks*
+    7. *CRIDP 5-Year Warranty Overlap (avoidable ₹ Cr)*
+    8. *Pre-Construction Pipeline (LA, DPR, Tender, Estimate)*
+    9. *Total Sanction Value (AS ₹ Cr)*
+    10. *Total Expenditure Booked vs Contract Agreement*
+  * **Interactive Visual Intelligence Suite (Charts A to J)**:
+    * **Chart A: Work Progress Bands**: Disjoint partition into non-overlapping bands (`0–10%`, `10–25%`, `26–50%`, `51–75%`, `76–90%`, `91–100%`). Clicking any bar filters Tab 1.
+    * **Chart B: Potential Delay Categorization**: Donut chart partitioning forecast delays (`No Delay`, `< 30 Days`, `30-90 Days`, `91-180 Days`, `> 180 Days`).
+    * **Chart C: Agreement End-Date Slippage**: Bar distribution of elapsed time past contract deadline (`1–2 Months`, `3–6 Months`, `More Than 6 Months`).
+    * **Chart D: Pre-Construction Pipeline**: Stage-wise funnel across LA, DPR, Tender, Estimate, and To Be Started.
+    * **Chart E: Financial Performance Comparison**: Direct comparison of AS Amount vs TS Amount vs Contract Value vs Expenditure Incurred.
+    * **Chart F: Circle Delivery Performance Matrix**: Multi-metric breakdown across SE Circles comparing completed, delayed, and critical-risk works.
+    * **Chart G: Scheme Performance Matrix**: Comparative analysis across CRIDP Regular, CRIDP SCP, CKICP, TNRSP-II, CMRDP, SASCI, and State Road Fund.
+    * **Chart H: Critical Risk & Blocker Distribution**: Horizontal bar chart isolating Land Acquisition, Utility Shifting, Railway GAD Approvals, Forest Clearances, and High Court Stays.
+    * **Chart I: Year-wise Work Trends**: Multiannual tracking of works sanctioned, works completed, and expenditure.
+    * **Chart J: CRIDP 5-Year Renewal Scrutiny**: Quantitative breakdown of eligible length, locked warranty length, direct overlaps, and proposals requiring technical reduction.
+  * **Multi-Sheet Excel (.xlsx) & CSV Export Engine**:
+    * Generates 5-sheet formatted `.xlsx` workbooks: `Filtered Works`, `KPI Summary`, `Risk Findings`, `Data Quality Exceptions`, and `Filter Criteria & Metadata`.
+    * **Formula Injection Guard**: Escapes leading `=`, `+`, `-`, and `@` characters with a leading single quote `'` on all cells.
+  * **360° Work Dossier Slide-Over**:
+    * 6 inspection sections: Administrative Jurisdiction, Road Inventory & Scope, Financial Sanctions & Contracts, Progress & Timeline, Inter-departmental Clearances, and CRIDP 5-Year Audit Findings.
+* **Data Provenance & Seed Records**:
+  * 169 canonical highway works populated in `UnifiedWorkRecord` with realistic road numbers (`SH-02`, `SH-110`, `SH-72`, `MDR-280`), official contractor names, and dependency blockers.
+* **Automated Acceptance Tests**:
+  * `backend/tests/test_works_analytics.py`: 12/12 tests passing with 100% success.
+  * Total combined CRIDP and Works Analytics tests: **77 passing automated tests**.
+* **Endpoints**:
+  * `GET /api/v1/works-analytics/filter-registry`
+  * `POST /api/v1/works-analytics/query`
+  * `POST /api/v1/works-analytics/kpis`
+  * `POST /api/v1/works-analytics/charts`
+  * `POST /api/v1/works-analytics/export` (`format=excel` | `format=csv`)
+  * `GET /api/v1/works-analytics/work/{work_id}`
   * `GET /api/v1/cridp-verification/proposals`
   * `POST /api/v1/cridp-verification/check-overlap`
   * `GET /api/v1/cridp-verification/year-wise-eligibility`
