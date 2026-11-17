@@ -5,7 +5,7 @@
 [![Government of Tamil Nadu](https://img.shields.io/badge/Government%20of-Tamil%20Nadu-006A4E?style=for-the-badge)](https://www.tn.gov.in)
 [![Department](https://img.shields.io/badge/Department-Highways%20%26%20Minor%20Ports-004B87?style=for-the-badge)](https://www.tnhighways.gov.in)
 [![Live Interactive Deployment](https://img.shields.io/badge/Live%20Console-GitHub%20Pages-FFCC00?style=for-the-badge&logo=github&labelColor=006A4E)](https://kiru6006.github.io/govt-highways-agent/)
-[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-192%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
+[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-261%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
 [![Phase 17 Audit](https://img.shields.io/badge/Phase%2017%20Audit-Certified%20Production%20Ready-D1197E?style=for-the-badge)](docs/PHASE_17_AUDIT_REPORT.md)
 
 ### An Integrated Enterprise Operating Platform for Statewide Infrastructure Governance, Project Intelligence, Inter-Agency Coordination & Decision Support

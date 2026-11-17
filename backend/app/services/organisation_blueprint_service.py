@@ -245,3 +245,4 @@ def resolve_mapping_exception(db: Session, payload: OrganisationResolveException
     db.commit()
     db.refresh(exc)
     return exc
+

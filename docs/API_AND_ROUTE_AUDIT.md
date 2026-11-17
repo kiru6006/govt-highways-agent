@@ -23,16 +23,26 @@ The TN-HDOS frontend utilizes `react-router-dom` in HashRouter mode for zero-con
 | **8** | `/#/directory` | `DirectoryPage.tsx` | **OPERATIONAL** | All Officials & Public | 8 Highways Wings, 47 HQ posts, G.O. Ms. No. 75 delegations, external SPOCs |
 | **9** | `/#/compliance` | `GovernanceRegistryPage.tsx` | **OPERATIONAL** | Secretary, CE, Vigilance | High Court stays, statutory committees, PAC audit paras, grounded AI findings |
 | **10** | `/#/governance` | `GovernanceRegistryPage.tsx` | **OPERATIONAL** | Secretary, CE, Vigilance | Alias to `/compliance` |
-| **11** | `/#/leakage` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | Vigilance, Internal Audit | Anomaly detection console; backend algorithms active in executive router |
-| **12** | `/#/departments` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | Secretariat, CE | Inter-departmental coordination console (TANGEDCO, Revenue, Forest, TWAD) |
-| **13** | `/#/quality` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | CE (Quality), ADE, Lab | Core test register, non-conformance reports (NCR), lab cube test data |
-| **14** | `/#/finance` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | FA, Accounts Officers | Letter of Credit (LOC) tracking, bill clearance, FIDIC price escalation |
-| **15** | `/#/contractors` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | CE, SE, Contractors | Performance grading, debarment registry, encashment tracking |
-| **16** | `/#/field-ops` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | DE, ADE, AE, JDO | Measurement Book (MB) recordings, daily site logs, weather downtime |
-| **17** | `/#/assets` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | CE (P&D), GIS Cell | Road asset management system (RAMS), bridge condition indices (BCI) |
-| **18** | `/#/digital-office`| `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | Secretariat, Circle Clerks | e-File movement, G.O. issuance, departmental circulars |
-| **19** | `/#/land-utility` | `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | Spl DRO (LA), DE | Section 15(1) gazettes, award awards, utility shifting joint inspections |
-| **20** | `/#/citizen-services`| `PlaceholderModule.tsx` | **PROMOTION PLANNED (P18)** | Public, Grievance Cell | Pothole reporting, CM Helpline integration, Right to Information (RTI) |
+| **11** | `/#/cm-dashboard` | `CMDashboard.tsx` | **OPERATIONAL** | CMO, Minister, Secretary | 17 Apex KPIs, 8-zone state pulse map, delay root-cause analysis, CM directions |
+| **12** | `/#/organisation-intelligence` | `OrganisationIntelligencePage.tsx` | **OPERATIONAL** | All Departmental Leadership | G.O. (Ms) No. 43 Blueprint, 4 C&M Zones, 19 Circles, 68 Divisions, 285 Subdivisions, 19 Annexure-III redesignations, Exception resolution |
+| **13** | `/#/works-analytics` | `WorksAnalyticsPage.tsx` | **OPERATIONAL** | Chief Engineers, Planning | Works Data Explorer & Charts, URL-synchronized filtering, Excel export |
+| **14** | `/#/cridp-risk-intelligence` | `CRIDPRiskIntelligencePage.tsx` | **OPERATIONAL** | Chief Engineers, Planning, Audit | 11-Tab CRIDP Risk Intelligence: Previous works, investigations, corrective actions, advanced filtering |
+| **15** | `/#/cridp-verification` | `CRIDPRiskIntelligencePage.tsx` | **OPERATIONAL** | Chief Engineers, Planning, Audit | 5-Year renewal verification, chainage overlap intervals, delegation of power rules |
+| **16** | `/#/major-works` | `MajorWorksPortfolioPage.tsx` | **OPERATIONAL** | Leadership, Project Directors | ₹50 Cr+ flagship works portfolio, loss prevention ledger, site blocker tracking |
+| **17** | `/#/leakage` | `LeakageIntelligencePage.tsx` | **OPERATIONAL** | Vigilance, Internal Audit | Bitumen cross-reconciliation, weighbridge anomalies, anti-corruption risk scoring |
+| **18** | `/#/departments` | `DepartmentsPage.tsx` | **OPERATIONAL** | Secretariat, CE | Inter-departmental coordination console (TANGEDCO, Revenue, Forest, TWAD) |
+| **19** | `/#/quality` | `QualityPage.tsx` | **OPERATIONAL** | CE (Quality), ADE, Lab | Core test register, non-conformance reports (NCR), lab cube test data |
+| **20** | `/#/finance` | `PlaceholderModule.tsx` | **OPERATIONAL DEMO** | FA, Accounts Officers | Letter of Credit (LOC) tracking, bill clearance, FIDIC price escalation |
+| **21** | `/#/contractors` | `PlaceholderModule.tsx` | **OPERATIONAL DEMO** | CE, SE, Contractors | Performance grading, debarment registry, encashment tracking |
+| **22** | `/#/field-ops` | `FieldOpsPage.tsx` | **OPERATIONAL** | DE, ADE, AE, JDO | Measurement Book (MB) recordings, daily site logs, weather downtime |
+| **23** | `/#/assets` | `AssetsPage.tsx` | **OPERATIONAL** | CE (P&D), GIS Cell | Road asset management system (RAMS), bridge condition indices (BCI) |
+| **24** | `/#/digital-office`| `DigitalOfficePage.tsx` | **OPERATIONAL** | Secretariat, Circle Clerks | e-File movement, G.O. issuance, departmental circulars |
+| **25** | `/#/land-utility` | `LandUtilityPage.tsx` | **OPERATIONAL** | Spl DRO (LA), DE | Section 15(1) gazettes, award awards, utility shifting joint inspections |
+| **26** | `/#/land-litigation`| `LandLitigationPage.tsx` | **OPERATIONAL** | Legal Officers, Spl DRO | Land acquisition writ petitions, stay orders, Advocate monitoring |
+| **27** | `/#/notifications`| `NotificationsPage.tsx` | **OPERATIONAL** | All Officials | Real-time statutory alerts, priority briefings, severity filtration |
+| **28** | `/#/calendar` | `CalendarPage.tsx` | **OPERATIONAL** | Leadership, Engineers | Unified tender opening, High Court hearings, PAC audit dates |
+| **29** | `/#/messages` | `MessagesPage.tsx` | **OPERATIONAL** | Departmental Cadre | Secure official chat, project discussion channels, AI action items |
+| **30** | `/#/citizen-services`| `PlaceholderModule.tsx` | **PROMOTION PLANNED** | Public, Grievance Cell | Pothole reporting, CM Helpline integration, Right to Information (RTI) |
 
 ---
 
@@ -58,6 +68,25 @@ The FastAPI backend exposes modular routers mounted under `/api/v1`.
 | **14** | `GET` | `/api/v1/executive/governance/committees` | `routers.executive` | Yes | Secretary, CE | None | `List[CommitteeResponse]` |
 | **15** | `GET` | `/api/v1/executive/governance/referrals` | `routers.executive` | Yes | Secretary, CE, Vigilance | None | `List[ReferralResponse]` |
 | **16** | `GET` | `/api/v1/executive/ai/findings` | `routers.executive` | Yes | Secretary, Internal Audit| None | `List[AIFindingResponse]` |
+| **17** | `GET` | `/api/v1/works-analytics/filter-registry` | `routers.works_analytics` | Yes | All Officials | None | `WorksAnalyticsFilterRegistryOut` |
+| **18** | `POST` | `/api/v1/works-analytics/query` | `routers.works_analytics` | Yes | All Officials | `skip`, `limit`, JSON payload | `WorksAnalyticsQueryResultOut` |
+| **19** | `POST` | `/api/v1/works-analytics/kpis` | `routers.works_analytics` | Yes | All Officials | JSON payload | `WorksAnalyticsKPIsOut` |
+| **20** | `POST` | `/api/v1/works-analytics/charts` | `routers.works_analytics` | Yes | All Officials | JSON payload | `WorksAnalyticsChartsOut` |
+| **21** | `POST` | `/api/v1/works-analytics/export` | `routers.works_analytics` | Yes | All Officials | `format: excel \| csv` | Streaming File Blob |
+| **22** | `GET` | `/api/v1/works-analytics/work/{work_id}` | `routers.works_analytics` | Yes | All Officials | `work_id: str` | `UnifiedWorkRecordOut` |
+| **23** | `GET` | `/api/v1/cridp-verification/risk-overview` | `routers.cridp_verification` | Yes | All Officials | None | `CRIDPRiskOverviewResponse` |
+| **24** | `POST` | `/api/v1/cridp-verification/check-overlap` | `routers.cridp_verification` | Yes | Chief Engineers, Planning | `proposal_id` or road/chainage | `OverlapCheckResponse` |
+| **25** | `GET` | `/api/v1/cridp-verification/investigation/{id}` | `routers.cridp_verification` | Yes | All Officials | `proposal_id: int` | `InvestigationDossierResponse` |
+| **26** | `POST` | `/api/v1/cridp-verification/investigation/{id}/decision` | `routers.cridp_verification` | Yes | Chief Engineers | Decision JSON payload | `DecisionConfirmationResponse` |
+| **27** | `POST` | `/api/v1/cridp-verification/advanced-filter` | `routers.cridp_verification` | Yes | All Officials | Multi-field filter payload | `CRIDPFilterResponse` |
+| **28** | `POST` | `/api/v1/cridp-verification/year-wise-comparison` | `routers.cridp_verification` | Yes | All Officials | Comparison filter payload | `YearWiseComparisonResponse` |
+| **29** | `GET` | `/api/v1/organisation-blueprint/hierarchy` | `routers.organisation_blueprint` | Yes | All Officials | `root_id: Optional[str]` | `OrganisationHierarchyTreeOut` |
+| **30** | `GET` | `/api/v1/organisation-blueprint/unit/{unit_id}` | `routers.organisation_blueprint` | Yes | All Officials | `unit_id: str` | `UnitDetailsResponse` |
+| **31** | `GET` | `/api/v1/organisation-blueprint/filter-options` | `routers.organisation_blueprint` | Yes | All Officials | None | `OrganisationFilterOptionsOut` |
+| **32** | `GET` | `/api/v1/organisation-blueprint/historical-mappings` | `routers.organisation_blueprint` | Yes | All Officials | None | `List[HistoricalOrganisationMappingOut]` (19 items) |
+| **33** | `GET` | `/api/v1/organisation-blueprint/kpis` | `routers.organisation_blueprint` | Yes | All Officials | None | `OrganisationKPIsOut` |
+| **34** | `GET` | `/api/v1/organisation-blueprint/exceptions` | `routers.organisation_blueprint` | Yes | Chief Engineers, Auditors | `status_filter: Optional[str]` | `List[DataQualityMappingExceptionOut]` |
+| **35** | `POST` | `/api/v1/organisation-blueprint/resolve-exception` | `routers.organisation_blueprint` | Yes | Chief Engineers | Resolution payload | `DataQualityMappingExceptionOut` |
 
 ---
 

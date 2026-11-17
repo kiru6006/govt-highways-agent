@@ -130,3 +130,4 @@ def resolve_exception(payload: OrganisationResolveExceptionPayload, db: Session 
             detail=f"Mapping exception '{payload.exception_id}' not found."
         )
     return exc
+

@@ -53,25 +53,51 @@ graph TD
 
 ---
 
-## 3. Departmental Navigation Structure (17 Modules)
+## 3. Departmental Navigation Structure (23 Connected Workspaces)
 
-1. **Executive Command Centre** (`/`) - Chief Minister, Minister, and Secretary strategic KPI cockpit.
-2. **Leakage Intelligence** (`/leakage`) - Refinery bitumen reconciliation and anti-corruption signals.
-3. **Project Management** (`/projects`) - DPR, technical sanctions, milestone schedules, and progress tracking.
-4. **Project 360°** (`/project-360`) - Unified road stretch and bridge digital passport.
-5. **People & Directory** (`/directory`) - Official hierarchy and contractor registers.
-6. **Department Connections** (`/departments`) - Inter-agency war room (Revenue, TANGEDCO, TWAD, Forest, Railways).
-7. **Engineering Quality** (`/quality`) - Highways Research Station (HRS) cube, core, and roughness tests.
-8. **Finance & Procurement** (`/finance`) - Letter of Credit (LC), IFMS bridge, and bill clearance.
-9. **Contractor Intelligence** (`/contractors`) - Empanelled contractor performance ratings and bid capacities.
-10. **Field Operations** (`/field-ops`) - Daily field logs, gang work maintenance, and JE inspections.
-11. **Road & Bridge Assets** (`/assets`) - RAMS asset register with condition scoring.
-12. **Digital Office** (`/digital-office`) - E-Office files, G.O. repository, and statutory circulars.
-13. **Land & Utility Coordination** (`/land-utility`) - TN Highways Act 2001 Section 15(2) and utility shifting.
-14. **Legal, Audit & Compliance** (`/compliance`) - High Court writ petitions and AG audit paras.
-15. **Citizen Services** (`/citizen-services`) - Pothole grievances and Right to Information (RTI).
-16. **Reports and Analytics** (`/reports`) - Cabinet notes and Legislative Assembly Questions (LAQ).
-17. **Administration** (`/admin`) - User provisioning, circle/division boundaries, and security audits.
+### Domain 1: Strategic Command (Apex Layer)
+1. **CM Highways Smartboard** (`/cm-dashboard`) - CMO executive pulse, delivery index, and ministerial directives.
+2. **Minister's Command Centre** (`/leadership/minister`) - Cabinet infrastructure dashboard, constituency queries, and press notes.
+3. **Secretary's Command Centre** (`/leadership/secretary`) - Administrative sanctions, inter-departmental bottlenecks, and budget utilization.
+4. **Organisation & Jurisdiction Intelligence** (`/organisation-intelligence`) - G.O. (Ms) No. 43 canonical organisation blueprint, 4 C&M Zones, 19 circles, 68 divisions, 285 subdivisions, and 19 historical redesignations.
+5. **Executive Smartboard** (`/`) - Statewide portfolio KPIs, financial progress, and contractor ratings.
+6. **Reports & Analytics** (`/reports`) - Statutory reports, legislative questions, and export consoles.
+
+### Domain 2: Project Intelligence (Core Layer)
+7. **Works Status Analytics** (`/works-analytics`) - Unified Works Data Explorer & Analytics Charts with URL-synchronized cascading filters.
+8. **CRIDP Risk Intelligence** (`/cridp-risk-intelligence`) - 11-tab historical work investigation, root-cause analysis, and corrective actions.
+9. **CRIDP Work Verification** (`/cridp-verification`) - 5-year road renewal verification, interval-union chainage overlap detection, and delegation of powers checks.
+10. **Major Works ₹50 Cr+** (`/major-works`) - High-value project blocker tracking, loss prevention ledger, and pre-construction readiness gates.
+11. **Project Portfolio Grid** (`/projects`) - Comprehensive master project directory with multi-field search and filters.
+12. **Project 360° Dossier** (`/project-360`) - 16-facet connected digital passport for every highway and bridge asset.
+13. **CKICP Intelligence** (`/ckicp`) - Asian Development Bank (ADB) funded industrial corridor monitoring.
+14. **TNRSP-II Intelligence** (`/tnrsp`) - World Bank core road network closeout and PPP concession tracking.
+
+### Domain 3: Engineering & Field Operations (Operational Layer)
+15. **Field Operations** (`/field-ops`) - Daily site progress logs, labour turnout, and gang work maintenance.
+16. **Engineering Quality** (`/quality`) - Highways Research Station (HRS) test registers, cube crushing strengths, and Non-Conformance Reports (NCR).
+17. **Road & Bridge Assets** (`/assets`) - Road Asset Management System (RAMS) inventory, pavement condition index (PCI), and structural health monitoring.
+
+### Domain 4: Commercial & Resource Management (Support Layer)
+18. **Finance & Procurement** (`/finance`) - Letter of Credit (LC) tracking, IFMS integration, and contractor bill clearance.
+19. **Contractor Intelligence** (`/contractors`) - Empanelled contractor performance ratings, live package commitments, and bid capacity validation.
+20. **People & Directory** (`/directory`) - Official cadre registry, contact coordinates, and jurisdiction assignments.
+
+### Domain 5: Governance & Inter-Agency Coordination (Control Layer)
+21. **Department Connections** (`/departments`) - Inter-agency war room (Revenue, TANGEDCO, Forest, Southern Railway).
+22. **Land & Utility Coordination** (`/land-utility`) - TN Highways Act 2001 Section 15(2) land parcels and utility shifting clearances.
+23. **Leakage & Vigilance Intelligence** (`/leakage`) - Refinery bitumen reconciliation, weight bridge cross-audits, and anti-corruption alerts.
+
+---
+
+## 4. Organisation & Jurisdiction Architecture (G.O. Ms No. 43)
+
+Governed by G.O. (Ms) No. 43, Highways and Minor Ports (HN1) Department, dated 13.03.2026:
+- **Canonical Structure:** Department $\rightarrow$ Wing $\rightarrow$ Region $\rightarrow$ Circle $\rightarrow$ Division $\rightarrow$ Subdivision.
+- **Construction & Maintenance (C&M) Scope:** 4 Regional Zones (Chennai, Trichy, Madurai, Coimbatore), 19 Circles, 68 Divisions, 285 Subdivisions, managing exactly **68,149.618 km** of SH, MDR, and ODR assets.
+- **National Highways (NH) Wing Scope:** 4 Circles and 11 Divisions, isolated strictly from C&M road length and project metrics, marked `PENDING_VERIFICATION`.
+- **Historical Continuity Engine:** 19 statutory Old-to-New division redesignations indexed in `HistoricalOrganisationMapping` to prevent historical data loss.
+- **Data Quality Framework:** Automated mapping exception queue with Chief Engineer resolution workflows.
 
 ---
 

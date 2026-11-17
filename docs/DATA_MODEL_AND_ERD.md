@@ -79,3 +79,52 @@ erDiagram
    - `tender_excess_pct_limit`: Float
    - `statutory_rule_reference`: String(200)
 
+4. **`OrganisationUnit` (G.O. Ms No. 43 Organisation Blueprint)**:
+   - `id`: String(50) Primary Key (e.g. `DIV-CM-CHN-TVL`)
+   - `code`: String(50) Unique
+   - `name`: String(150)
+   - `unit_type`: Enum (`DEPARTMENT`, `WING`, `REGION`, `CIRCLE`, `DIVISION`, `SUBDIVISION`, `SECTION`)
+   - `parent_id`: String(50) Self-Referential ForeignKey
+   - `wing_code`: String(20) (`CM`, `NH`, etc.)
+   - `headquarters`: String(100)
+   - `chief_engineer_post`: String(150)
+   - `total_length_km`: Float (Statewide 68,149.618 km)
+   - `status`: String(50) (`ACTIVE`, `PENDING_VERIFICATION`)
+
+5. **`HistoricalOrganisationMapping` (G.O. 43 Annexure-III)**:
+   - `id`: Integer Primary Key
+   - `previous_unit_name`: String(150)
+   - `previous_circle_name`: String(100)
+   - `reorganised_unit_id`: String(50) ForeignKey to `OrganisationUnit`
+   - `effective_date`: Date (2026-06-15)
+   - `go_reference`: String(150)
+   - `mapping_type`: String(50) (`CIRCLE_REALIGNMENT`, `HQ_REDESIGNATION`, etc.)
+   - `verification_status`: String(50) (`VERIFIED`)
+
+6. **`DataQualityMappingException`**:
+   - `id`: Integer Primary Key
+   - `exception_type`: String(100)
+   - `source_record_id`: String(100)
+   - `raw_value`: String(200)
+   - `suggested_unit_id`: String(50)
+   - `confidence_score`: Float
+   - `review_status`: String(50) (`FLAGGED_FOR_REVIEW`, `VERIFIED_APPROVED`, `REJECTED`)
+   - `resolution_action`: String(100)
+
+7. **`UnifiedWorkRecord` (Works Status Analytics Master Entity)**:
+   - `id`: String(100) Primary Key
+   - `work_code`: String(100) Unique (e.g. `CRIDP-2025-26-001`)
+   - `work_name`: String(255)
+   - `wing`, `circle`, `division`, `district`: Hierarchical jurisdiction strings
+   - `project_length_km`, `start_chainage_km`, `end_chainage_km`: Linear geometry
+   - `as_amount_cr`, `ts_amount_cr`, `contract_value_cr`, `expenditure_cr`: Financial values
+   - `physical_progress_pct`, `financial_progress_pct`, `progress_band`: Progress metrics
+   - `overall_delay_days`, `delay_status`, `forecast_delay_category`: Schedule telemetry
+   - `risk_severity`: Enum (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`)
+   - `avoidable_expenditure_cr`: Potential financial loss/leakage
+
+8. **`CRIDPWork` & `WorkHistory` (5-Year Renewal Audit)**:
+   - Interval-union algorithm checks proposed chainage $[S_p, E_p]$ against previous works $[S_h, E_h]$ completed within 5 years (cutoff: 1826 days).
+   - Flags premature overlaps and calculates eligible road length for Chief Engineer sanction.
+
+
