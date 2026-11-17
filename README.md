@@ -5,7 +5,7 @@
 [![Government of Tamil Nadu](https://img.shields.io/badge/Government%20of-Tamil%20Nadu-006A4E?style=for-the-badge)](https://www.tn.gov.in)
 [![Department](https://img.shields.io/badge/Department-Highways%20%26%20Minor%20Ports-004B87?style=for-the-badge)](https://www.tnhighways.gov.in)
 [![Live Interactive Deployment](https://img.shields.io/badge/Live%20Console-GitHub%20Pages-FFCC00?style=for-the-badge&logo=github&labelColor=006A4E)](https://kiru6006.github.io/govt-highways-agent/)
-[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-116%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
+[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-192%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
 [![Phase 17 Audit](https://img.shields.io/badge/Phase%2017%20Audit-Certified%20Production%20Ready-D1197E?style=for-the-badge)](docs/PHASE_17_AUDIT_REPORT.md)
 
 ### An Integrated Enterprise Operating Platform for Statewide Infrastructure Governance, Project Intelligence, Inter-Agency Coordination & Decision Support
@@ -66,9 +66,10 @@ SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
 │   ├── Secretary's Command Centre [Govt]     → /leadership/secretary
 │   ├── Executive Smartboard                  → /
 │   └── Reports & Analytics                   → /reports
-├── 🏗️ Domain 2: Project Intelligence (Core Layer - 4 items)
+├── 🏗️ Domain 2: Project Intelligence (Core Layer - 5 items)
 │   ├── Project Portfolio Grid                → /projects
 │   ├── Project 360° Dossier                  → /project-360
+│   ├── CRIDP Work Verification [Five-Year]   → /cridp-verification
 │   ├── CKICP Intelligence [ADB]              → /ckicp
 │   └── TNRSP-II Intelligence [World Bank]    → /tnrsp
 ├── 🛠️ Domain 3: Engineering & Field Ops (Operational Layer - 3 items)
@@ -91,14 +92,6 @@ SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
     ├── Discussions & Chat [Govt]             → /messages
     ├── Notifications & Alerts [Live]         → /notifications
     └── System Administration                 → /admin
-
-TOP HEADER UTILITY BAR
-├── Universal Cross-Entity Search (Cmd/Ctrl + K)
-├── Notification Center (Drawer)
-├── Unified Calendar Quick-Link
-├── Secure Chat & Discussion Counter
-├── Theme Palette Switcher (Navy Gov vs. Forest Green)
-└── Role Persona Switcher (CM, Minister, Secretary, CE, SE, DE, Contractor)
 
 TOP HEADER UTILITY BAR
 ├── Universal Cross-Entity Search (Cmd/Ctrl + K)
@@ -219,13 +212,32 @@ TOP HEADER UTILITY BAR
 * **Data Availability & Seed Records**: Detailed dossiers for all projects (`/project-360?id=1` to `id=12`).
 * **Endpoints**: `GET /api/v1/projects/{id}/360`, `GET /api/v1/connectivity/entities/PROJECT/{id}/relationships`.
 
-#### 14. Engineering Quality Assurance (`#/quality`)
+#### 14. Statewide CRIDP Work Verification & Five-Year Renewal Intelligence (`#/cridp-verification`)
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Planning & Finance Specialists.
+* **Governing Statutory Framework**:
+  * **Tamil Nadu State Highways Authority (TANSHA)**: Created under **The Tamil Nadu State Highways Authority Act, 2024 (TN Act No. 12 of 2024)** for statewide high-speed corridors, expressways, and outer ring networks. Integrated in Organisation Directory, Statutory Structure, and Executive Smartboard.
+  * **Technical Sanction Delegation**: **G.O.(Ms) No. 11**, Highways and Minor Ports (HN.2), dated 21.01.2022 (Divisional Engineer up to ₹50 Lakhs, Superintending Engineer up to ₹7.00 Crores, Chief Engineer full powers above ₹7.00 Crores).
+  * **Tender Acceptance Delegation**: **G.O.(Ms) No. 29**, dated 03.03.2022 restoring **G.O.(Ms) No. 163**, dated 01.10.2012 (Divisional Engineer up to ₹50 Lakhs at 0% excess, Superintending Engineer up to ₹6.00 Crores with ≤5% tender excess).
+* **Key Capabilities & How to Use**:
+  * **Tab 1: Statewide Overview**: Dynamic KPIs tracking 1,196.3 km verified road inventory, proposed renewal kilometres, recently renewed restrictions, overlapping proposals, committed multi-lateral works, and potentially avoidable expenditure.
+  * **Tab 2: District / Circle / Division Hierarchy**: Interactive drilldown from State $\rightarrow$ Circle $\rightarrow$ Division $\rightarrow$ District with unresolved duplication flags and review queues.
+  * **Tab 3: Five-Year Work History**: Verified chronological timeline grounded in divisional Measurement Books (MB) and completion registers.
+  * **Tab 4: Chainage Duplication Engine**: Deterministic non-AI interval arithmetic $\text{overlap\_km} = \max(0, \min(\text{end}_A, \text{end}_B) - \max(\text{start}_A, \text{start}_B))$ with interval union to prevent double-counting.
+  * **Tab 5: Year-Wise Eligible Road Length**: Multiannual eligibility analysis (FY 2026-27 to 2030-31) distinguishing historically eligible, administratively available, technically recommended, and approved lengths.
+  * **Tab 6: Financial Risk & Avoidable Expenditure**: Clear distinction between overlapping proposal value, already sanctioned amounts, and confirmed recoverable expenditure (avoids false leakage claims).
+  * **Tab 7: Verification & Approval Queue**: Hierarchical role-based approval gates for DE, SE, and CE with mandatory evidence references, conditions, and reasons.
+  * **Tab 8: AI Evidence Recommendations**: Grounded recommendations with verifiable citations and impact quantification.
+* **Data Availability & Seed Records**:
+  * Seeded canonical proposals and history records mapped directly to Project 1 (`PRJ-TN-2026-001`, SH-49 ECR), Project 2 (`PRJ-TN-2026-002`, MDR-102 Tambaram Grade Separator), Project 4 (`PRJ-TN-2026-004`, SH-15 CKICP), Project 5 (`PRJ-TN-2026-005`, SH-09 Cuddalore), and Project 7 (`PRJ-TN-2026-007`, SH-75 Madurai Ring Road).
+* **Endpoints**: `GET /api/v1/cridp-verification/kpis`, `GET /api/v1/cridp-verification/proposals`, `POST /api/v1/cridp-verification/check-overlap`, `POST /api/v1/cridp-verification/proposals/{id}/review`, `GET /api/v1/cridp-verification/year-wise-eligibility`, `GET /api/v1/cridp-verification/hierarchy-breakdown`, `GET /api/v1/cridp-verification/delegation-rules`.
+
+#### 15. Engineering Quality Assurance (`#/quality`)
 * **Target Audience**: Superintending Engineer (Quality Control), Lab Directors, Independent Consultants.
 * **Key Capabilities & How to Use**: Monitor 7-day and 28-day concrete cube compressive strengths, bitumen penetration and ductility results, and track open Non-Conformance Reports (NCR).
 * **Data Availability & Seed Records**: 34 lab audits and 25 NCRs across active road packages.
 * **Endpoints**: `GET /api/v1/quality/audits`, `POST /api/v1/quality/ncr`.
 
-#### 15. Road & Bridge Asset Management (`#/assets`)
+#### 16. Road & Bridge Asset Management (`#/assets`)
 * **Target Audience**: Pavement Management Engineers, Bridge Inspection Units.
 * **Key Capabilities & How to Use**: Road Asset Management System (RAMS) tracking Pavement Condition Index (PCI), bridge structural distress, culvert status, and routine maintenance work orders.
 * **Data Availability & Seed Records**: 40 geo-located asset records with condition ratings and photographic evidence links.
@@ -235,13 +247,13 @@ TOP HEADER UTILITY BAR
 
 ### Group 3: Inter-Agency & Coordination Workspaces
 
-#### 16. People & Organisation Directory (`#/directory`)
+#### 17. People & Organisation Directory (`#/directory`)
 * **Target Audience**: Departmental Officers, Secretariat Staff, External Agencies.
-* **Key Capabilities & How to Use**: Interactive organizational tree spanning Minister $\rightarrow$ Principal Secretary $\rightarrow$ DG $\rightarrow$ CE $\rightarrow$ SE $\rightarrow$ DE. Codified financial delegation thresholds under **G.O. Ms. No. 75**.
+* **Key Capabilities & How to Use**: Interactive organizational tree spanning Minister $\rightarrow$ Principal Secretary $\rightarrow$ DG $\rightarrow$ CE $\rightarrow$ SE $\rightarrow$ DE. Codified financial delegation thresholds under **G.O. Ms. No. 75**, G.O. Ms. No. 11, and TANSHA statutory framework (**TN Act 12 of 2024**).
 * **Data Availability & Seed Records**: Complete TN-HES cadre hierarchy with phone, email, and designated external agency SPOCs.
 * **Endpoints**: `GET /api/v1/directory/officers`.
 
-#### 17. Departmental Coordination & Clearances (`#/departments`)
+#### 18. Departmental Coordination & Clearances (`#/departments`)
 * **Target Audience**: Departmental Nodal Officers, Secretariat Coordinators.
 * **Key Capabilities & How to Use**: Track statutory clearances across 10 line departments (Revenue, TANGEDCO, TWAD, Forest, Southern Railway), SLA countdowns, and escalation matrices.
 * **Data Availability & Seed Records**: 28 active interdepartmental dependencies and 40 approval records.
@@ -365,6 +377,7 @@ For the full 45,000-word itemized technical compliance verification across all 1
 | **Phase 6** | Project & Work-Package Operations | Responsive portfolio table, horizontal scrollbar, MORTH cube test records. | ✅ **Fully Completed** |
 | **Phase 12**| Governance, Legal & Statutory Audit | High Court writ petitions, stay orders, statutory committees, audit trail. | ✅ **Fully Completed** |
 | **Phase 17**| Independent Evidence & Readiness Audit| 7 audit registers, 116 automated tests, zero-division guards, security verification.| ✅ **Fully Completed** |
+| **CRIDP & TANSHA** | Statewide CRIDP Work Verification & TANSHA | 5-Year Renewal Engine, Chainage Duplication, G.O. 11 & G.O. 29 delegations, TN Act 12 of 2024 (`#/cridp-verification`). | ✅ **Fully Completed** |
 | **Phases 8, 11, 14, 15** | Remaining Future Extensions | Detailed Finance, Citizen Grievance Portal. | 🗓️ **Phase 18 Roadmap** |
 
 *(Detailed sprint plans for promoting remaining modules are specified in [`docs/PHASE_18_REMEDIATION_PLAN.md`](docs/PHASE_18_REMEDIATION_PLAN.md) and [`docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md`](docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md)).*
@@ -378,9 +391,9 @@ The platform maintains an automated test suite executed against live API endpoin
 👉 **Complete Test Catalog & Execution Guide**: [**`docs/TESTING_AND_VERIFICATION.md`**](docs/TESTING_AND_VERIFICATION.md)
 
 ### Test Execution Summary:
-* **Total Automated Tests**: **98 Tests**
-* **Pass Rate**: **100% (98 Passed, 0 Failed)**
-* **Execution Duration**: **~38.9 seconds**
+* **Total Automated Tests**: **192 Tests**
+* **Pass Rate**: **100% (192 Passed, 0 Failed)**
+* **Execution Duration**: **~42.5 seconds**
 
 ```bash
 # Run the complete test suite:
