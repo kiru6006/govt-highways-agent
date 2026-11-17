@@ -4296,3 +4296,130 @@ export interface WorksAnalyticsCharts {
   kpis: WorksAnalyticsKPIs;
 }
 
+
+// ==========================================
+// ORGANISATION BLUEPRINT & JURISDICTION TYPES (G.O. Ms No. 43)
+// ==========================================
+
+export interface OrganisationHierarchyNode {
+  id: string;
+  code: string;
+  name: string;
+  unit_type: 'DEPARTMENT' | 'WING' | 'REGION' | 'CIRCLE' | 'DIVISION' | 'SUBDIVISION' | 'SECTION';
+  parent_id?: string | null;
+  wing_code: string;
+  headquarters?: string | null;
+  chief_engineer_post?: string | null;
+  district?: string | null;
+  total_length_km: number;
+  total_works_count: number;
+  active_works_count: number;
+  critical_risk_count: number;
+  avoidable_cost_cr: number;
+  is_active: boolean;
+  is_verified: boolean;
+  status: string;
+  children: OrganisationHierarchyNode[];
+}
+
+export interface OrganisationHierarchyTree {
+  root: OrganisationHierarchyNode;
+  total_units: number;
+  cm_wing_totals: {
+    regions_count: number;
+    circles_count: number;
+    divisions_count: number;
+    subdivisions_count: number;
+    total_length_km: number;
+    effective_date: string;
+    go_reference: string;
+  };
+  nh_wing_totals: {
+    circles_count: number;
+    divisions_count: number;
+    total_length_km: number;
+    status: string;
+  };
+}
+
+export interface HistoricalOrganisationMappingItem {
+  id: number;
+  previous_unit_name: string;
+  previous_unit_type: string;
+  previous_headquarters?: string | null;
+  previous_circle_name?: string | null;
+  previous_region_name?: string | null;
+  reorganised_unit_id: string;
+  reorganised_unit_name: string;
+  reorganised_circle_name: string;
+  reorganised_region_name: string;
+  effective_date: string;
+  go_reference: string;
+  annexure_reference?: string | null;
+  mapping_type: string;
+  remarks?: string | null;
+  verification_status: string;
+}
+
+export interface DataQualityMappingExceptionItem {
+  id: number;
+  exception_type: string;
+  source_record_type: string;
+  source_record_id: string;
+  source_record_title?: string | null;
+  raw_value: string;
+  attempted_field: string;
+  current_assigned_unit_id?: string | null;
+  suggested_unit_id?: string | null;
+  confidence_score: number;
+  review_status: string;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  resolution_action?: string | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface OrganisationFilterOptionItem {
+  id: string;
+  code: string;
+  name: string;
+  unit_type: string;
+  parent_id?: string | null;
+  wing_code: string;
+  district?: string | null;
+  total_length_km: number;
+  is_active: boolean;
+}
+
+export interface OrganisationFilterOptions {
+  wings: OrganisationFilterOptionItem[];
+  regions: OrganisationFilterOptionItem[];
+  circles: OrganisationFilterOptionItem[];
+  divisions: OrganisationFilterOptionItem[];
+  subdivisions: OrganisationFilterOptionItem[];
+  districts: string[];
+}
+
+export interface OrganisationKPIs {
+  cm_wing: {
+    regions: number;
+    circles: number;
+    divisions: number;
+    subdivisions: number;
+    total_length_km: number;
+    go_reference: string;
+    effective_date: string;
+  };
+  nh_wing: {
+    circles: number;
+    divisions: number;
+    status: string;
+  };
+  active_works_total: number;
+  total_sanction_cr: number;
+  critical_risk_works: number;
+  total_avoidable_cost_cr: number;
+  exceptions_count: number;
+  historical_redesignations_count: number;
+}

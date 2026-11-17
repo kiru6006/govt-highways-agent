@@ -1,6 +1,6 @@
 import datetime
 from sqlalchemy import (
-    Column, Integer, String, Boolean, DateTime, Float, ForeignKey, Text, Table
+    Column, Integer, String, Boolean, DateTime, Date, Float, ForeignKey, Text, Table
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -2926,3 +2926,102 @@ class UnifiedWorkRecord(Base):
 
     project = relationship("Project")
     road = relationship("Road")
+
+
+# ============================================================================
+# MASTER ORGANISATION BLUEPRINT & JURISDICTION ENTITIES (G.O. Ms No. 43)
+# ============================================================================
+
+class OrganisationUnit(Base):
+    """Canonical, version-controlled organisation unit across Tamil Nadu Highways."""
+    __tablename__ = "organisation_units"
+
+    id = Column(String(100), primary_key=True, index=True)
+    official_name = Column(String(255), nullable=False)
+    display_name = Column(String(255), nullable=False, index=True)
+    unit_type = Column(String(50), nullable=False, index=True)  # DEPARTMENT, WING, REGION, CIRCLE, DIVISION, SUBDIVISION
+    parent_id = Column(String(100), ForeignKey("organisation_units.id"), nullable=True, index=True)
+
+    wing = Column(String(100), nullable=False, default="Construction & Maintenance", index=True)
+    region = Column(String(100), nullable=True, index=True)
+    circle = Column(String(150), nullable=True, index=True)
+    division = Column(String(150), nullable=True, index=True)
+    subdivision = Column(String(150), nullable=True, index=True)
+
+    road_length_km = Column(Float, default=0.0)
+    status = Column(String(100), nullable=True)  # Continuing, Newly reassigned / renamed, Split
+    effective_from = Column(Date, default=datetime.date(2026, 6, 15))
+    effective_to = Column(Date, nullable=True)
+    is_active = Column(Boolean, default=True)
+
+    source_go = Column(String(200), default="G.O. (Ms) No.43, Highways Dept, dated 13.03.2026")
+    source_sheet = Column(String(100), nullable=True)
+    source_row = Column(Integer, nullable=True)
+    verification_status = Column(String(50), default="VERIFIED_GO_43", index=True)  # VERIFIED_GO_43, PENDING_VERIFICATION, HISTORICAL_MAPPED
+    hq_location = Column(String(100), nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    parent = relationship("OrganisationUnit", remote_side=[id], backref="children")
+
+
+class HistoricalOrganisationMapping(Base):
+    """Old-to-new division mapping under G.O. (Ms) No. 43 Annexure-III."""
+    __tablename__ = "historical_organisation_mappings"
+
+    id = Column(String(100), primary_key=True, index=True)
+    serial_no = Column(Integer, nullable=False)
+    old_wing = Column(String(100), nullable=False)
+    old_division = Column(String(255), nullable=False)
+    new_division = Column(String(255), nullable=False)
+    new_org_unit_id = Column(String(100), ForeignKey("organisation_units.id"), nullable=True)
+
+    source_go = Column(String(200), default="G.O. (Ms) No.43, Highways Dept, dated 13.03.2026")
+    source_annexure = Column(String(100), default="Annexure-III")
+    effective_date = Column(Date, default=datetime.date(2026, 6, 15))
+    confidence_score = Column(Float, default=1.0)
+    mapping_status = Column(String(50), default="VERIFIED_REDESIGNATION")
+    notes = Column(Text, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    new_org_unit = relationship("OrganisationUnit")
+
+
+class ProjectOrganisationAssignment(Base):
+    """Many-to-many relationship supporting multi-jurisdictional projects."""
+    __tablename__ = "project_organisation_assignments"
+
+    id = Column(String(100), primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    work_code = Column(String(100), nullable=True, index=True)
+    org_unit_id = Column(String(100), ForeignKey("organisation_units.id"), nullable=False, index=True)
+    role_type = Column(String(50), default="EXECUTION")  # ADMINISTRATIVE, EXECUTION, APPROVAL, FUNDING
+    effective_from = Column(Date, nullable=True)
+    effective_to = Column(Date, nullable=True)
+    is_primary = Column(Boolean, default=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    org_unit = relationship("OrganisationUnit")
+
+
+class DataQualityMappingException(Base):
+    """Data quality and jurisdiction mapping exceptions register."""
+    __tablename__ = "data_quality_mapping_exceptions"
+
+    id = Column(String(100), primary_key=True, index=True)
+    entity_type = Column(String(50), nullable=False)  # PROJECT, HISTORICAL_WORK, ORGANISATION_UNIT, ROAD
+    entity_id = Column(String(100), nullable=False)
+    entity_code = Column(String(100), nullable=False)
+    exception_category = Column(String(100), nullable=False)  # UNMAPPED_JURISDICTION, SPLIT_DIVISION_AMBIGUITY, PENDING_NH_VERIFICATION
+    severity = Column(String(20), default="MEDIUM")  # CRITICAL, HIGH, MEDIUM, LOW
+    description = Column(Text, nullable=False)
+    suggested_fix = Column(Text, nullable=True)
+    review_status = Column(String(50), default="PENDING_REVIEW")  # PENDING_REVIEW, VERIFIED_APPROVED, EXCEPTION_OVERRULED
+    reviewed_by = Column(String(150), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)

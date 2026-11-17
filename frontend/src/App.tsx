@@ -27,6 +27,7 @@ import { MajorWorksPortfolioPage } from './pages/MajorWorksPortfolioPage';
 import { CRIDPVerificationPage } from './pages/CRIDPVerificationPage';
 import { CRIDPRiskIntelligencePage } from './pages/CRIDPRiskIntelligencePage';
 import { WorksAnalyticsPage } from './pages/WorksAnalyticsPage';
+import { OrganisationIntelligencePage } from './pages/OrganisationIntelligencePage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -86,6 +87,7 @@ const AppLayout: React.FC = () => {
             <Route path="/leadership/cm" element={<CMDashboard />} />
             <Route path="/leadership/minister" element={<MinisterDashboard />} />
             <Route path="/leadership/secretary" element={<SecretaryDashboard />} />
+            <Route path="/organisation-intelligence" element={<OrganisationIntelligencePage />} />
             <Route path="/ckicp" element={<ProgrammeIntelligencePage />} />
             <Route path="/tnrsp" element={<ProgrammeIntelligencePage />} />
             <Route path="/projects" element={<ProjectsPage />} />

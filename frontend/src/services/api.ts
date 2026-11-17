@@ -166,8 +166,21 @@ import {
   WorksAnalyticsFilterPayload,
   WorksAnalyticsKPIs,
   WorksAnalyticsQueryResult,
-  WorksAnalyticsCharts
+  WorksAnalyticsCharts,
+  OrganisationHierarchyNode,
+  OrganisationHierarchyTree,
+  HistoricalOrganisationMappingItem,
+  DataQualityMappingExceptionItem,
+  OrganisationFilterOptions,
+  OrganisationKPIs
 } from '../types';
+import {
+  fallbackOrganisationKPIs,
+  fallbackHistoricalMappings,
+  fallbackExceptions,
+  fallbackOrganisationFilterOptions,
+  fallbackHierarchyTree
+} from '../data/fallbackOrganisation';
 import {
   fallbackWorksFilterRegistry,
   fallbackUnifiedWorks,
@@ -6010,6 +6023,87 @@ export const worksAnalyticsAPI = {
       const found = fallbackUnifiedWorks.find(w => w.id === workId || w.work_code === workId);
       if (found) return found;
       return fallbackUnifiedWorks[0];
+    }
+  }
+};
+
+export const organisationAPI = {
+  getHierarchyTree: async (rootId?: string): Promise<OrganisationHierarchyTree> => {
+    try {
+      const url = rootId ? `/organisation-blueprint/hierarchy?root_id=${encodeURIComponent(rootId)}` : '/organisation-blueprint/hierarchy';
+      return await request<OrganisationHierarchyTree>(url);
+    } catch {
+      return fallbackHierarchyTree;
+    }
+  },
+
+  getUnitDetails: async (unitId: string): Promise<{ unit: OrganisationHierarchyNode; ancestors: OrganisationHierarchyNode[]; children: OrganisationHierarchyNode[]; assigned_works: UnifiedWorkRecord[] }> => {
+    try {
+      return await request<{ unit: OrganisationHierarchyNode; ancestors: OrganisationHierarchyNode[]; children: OrganisationHierarchyNode[]; assigned_works: UnifiedWorkRecord[] }>(`/organisation-blueprint/unit/${encodeURIComponent(unitId)}`);
+    } catch {
+      const u = fallbackHierarchyTree.root.children[0];
+      return {
+        unit: u,
+        ancestors: [fallbackHierarchyTree.root],
+        children: u.children || [],
+        assigned_works: fallbackUnifiedWorks.slice(0, 10)
+      };
+    }
+  },
+
+  getFilterOptions: async (): Promise<OrganisationFilterOptions> => {
+    try {
+      return await request<OrganisationFilterOptions>('/organisation-blueprint/filter-options');
+    } catch {
+      return fallbackOrganisationFilterOptions;
+    }
+  },
+
+  getHistoricalMappings: async (): Promise<HistoricalOrganisationMappingItem[]> => {
+    try {
+      return await request<HistoricalOrganisationMappingItem[]>('/organisation-blueprint/historical-mappings');
+    } catch {
+      return fallbackHistoricalMappings;
+    }
+  },
+
+  getKPIs: async (): Promise<OrganisationKPIs> => {
+    try {
+      return await request<OrganisationKPIs>('/organisation-blueprint/kpis');
+    } catch {
+      return fallbackOrganisationKPIs;
+    }
+  },
+
+  getExceptions: async (statusFilter?: string): Promise<DataQualityMappingExceptionItem[]> => {
+    try {
+      const url = statusFilter ? `/organisation-blueprint/exceptions?status_filter=${encodeURIComponent(statusFilter)}` : '/organisation-blueprint/exceptions';
+      return await request<DataQualityMappingExceptionItem[]>(url);
+    } catch {
+      if (statusFilter) {
+        return fallbackExceptions.filter(e => e.review_status === statusFilter);
+      }
+      return fallbackExceptions;
+    }
+  },
+
+  resolveException: async (payload: { exception_id: number; review_status: string; suggested_unit_id?: string; resolution_action?: string; correction_notes?: string }): Promise<DataQualityMappingExceptionItem> => {
+    try {
+      return await request<DataQualityMappingExceptionItem>('/organisation-blueprint/resolve-exception', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const found = fallbackExceptions.find(e => e.id === payload.exception_id) || fallbackExceptions[0];
+      return {
+        ...found,
+        review_status: payload.review_status,
+        resolution_action: payload.resolution_action,
+        notes: payload.correction_notes,
+        reviewed_by: 'Er. K. Ravichandran, CE (C&M)',
+        reviewed_at: new Date().toISOString()
+      };
     }
   }
 };

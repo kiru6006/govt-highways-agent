@@ -60,10 +60,11 @@ The platform is structured into **6 Functional Enterprise Domains (22 Connected 
 
 ```
 SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
-├── 🏛️ Domain 1: Strategic Command (Apex Layer - 5 items)
+├── 🏛️ Domain 1: Strategic Command (Apex Layer - 6 items)
 │   ├── CM Highways Smartboard [CMO]          → /cm-dashboard
 │   ├── Minister's Command Centre [Cabinet]   → /leadership/minister
 │   ├── Secretary's Command Centre [Govt]     → /leadership/secretary
+│   ├── Organisation & Jurisdiction [G.O. 43] → /organisation-intelligence
 │   ├── Executive Smartboard                  → /
 │   └── Reports & Analytics                   → /reports
 ├── 🏗️ Domain 2: Project Intelligence (Core Layer - 5 items)
@@ -138,7 +139,27 @@ TOP HEADER UTILITY BAR
   * Financial records linked with BE/RE allocation dockets across all active packages.
   * Endpoints: `GET /api/v1/executive/secretary`.
 
-#### 4. Executive Smartboard (`#/`)
+#### 4. Organisation & Jurisdiction Intelligence (`#/organisation-intelligence`)
+* **Governing Statute**: G.O. (Ms) No. 43, Highways and Minor Ports (HN1) Department, dated 13 March 2026 (Effective 15 June 2026).
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, State Planning Cadre, Finance Auditors.
+* **Key Capabilities & How to Use**:
+  * **Canonical 5-Level Hierarchy Bar**: Standardized cascading filter (`Wing -> Region -> Circle -> Division -> Subdivision -> District`) governing all analytics and CRIDP verifications.
+  * **Quad-Zonal C&M Command**: Full jurisdictional breakdown across 4 Regions (Chennai, Trichy, Madurai, Coimbatore), 19 Circles, 68 Divisions, 285 Subdivisions, and exactly 68,149.618 km total road length.
+  * **National Highways Branch Isolation**: Demarcated 4 Circles and 11 Divisions, isolated with `PENDING_VERIFICATION` status to prevent cross-wing data leakage.
+  * **7 Connected Intelligence Tabs**:
+    * *Tab A (Statewide Organisation Overview)*: Zonal delivery cards, road lengths, and statutory governance principles.
+    * *Tab B (Organisation Explorer)*: Interactive collapsible hierarchy tree with detailed unit dossiers and assigned works.
+    * *Tab C (Works Analytics Sync)*: Synchronized tabular works explorer filtered dynamically by active jurisdiction.
+    * *Tab D (CRIDP Renewal Verification)*: Chainage-level 5-year renewal eligibility and premature overlap audits.
+    * *Tab E (Risk & Financial Exposure)*: Aggregated execution delays, critical blockers, and avoidable costs by zone.
+    * *Tab F (Historical Reorganisation)*: G.O. 43 Annexure-III Old-to-New Division mapping register with all 19 redesignations.
+    * *Tab G (Data Quality & Mapping Exceptions)*: Unresolved legacy record queue with Chief Engineer statutory resolution workflow.
+* **Data Availability & Seed Records**:
+  * Deterministically parsed from `CM_Wing_Reorganisation_GO43_13-03-2026.xlsx` (`backend/app/seed_organisation_master.py`).
+  * 398 canonical `OrganisationUnit` records, 19 `HistoricalOrganisationMapping` entries, initial `DataQualityMappingException` audit records.
+  * Endpoints: `GET /api/v1/organisation-blueprint/hierarchy`, `GET /api/v1/organisation-blueprint/unit/{id}`, `GET /api/v1/organisation-blueprint/filter-options`, `GET /api/v1/organisation-blueprint/historical-mappings`, `GET /api/v1/organisation-blueprint/kpis`, `GET /api/v1/organisation-blueprint/exceptions`, `POST /api/v1/organisation-blueprint/resolve-exception`.
+
+#### 5. Executive Smartboard (`#/`)
 * **Target Audience**: Departmental Leadership, Chief Engineers, Planning Directors.
 * **Key Capabilities & How to Use**:
   * Real-time statewide pulse: 16 core KPIs, 4 C&M Administrative Zone benchmarks, inter-agency blocker summaries.

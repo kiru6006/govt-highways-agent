@@ -3474,3 +3474,131 @@ class WorksAnalyticsChartsOut(BaseModel):
     year_trends: List[Dict[str, Any]]
     cridp_five_year_verification: Dict[str, Any]
     kpis: WorksAnalyticsKPIsOut
+
+
+# ============================================================================
+# MASTER ORGANISATION BLUEPRINT & JURISDICTION SCHEMAS (G.O. Ms No. 43)
+# ============================================================================
+
+class OrganisationUnitOut(BaseModel):
+    id: str
+    official_name: str
+    display_name: str
+    unit_type: str
+    parent_id: Optional[str] = None
+    wing: str
+    region: Optional[str] = None
+    circle: Optional[str] = None
+    division: Optional[str] = None
+    subdivision: Optional[str] = None
+    road_length_km: float
+    status: Optional[str] = None
+    effective_from: Optional[datetime.date] = None
+    effective_to: Optional[datetime.date] = None
+    is_active: bool
+    source_go: str
+    source_sheet: Optional[str] = None
+    source_row: Optional[int] = None
+    verification_status: str
+    hq_location: Optional[str] = None
+    children_count: int = 0
+    assigned_projects_count: int = 0
+    assigned_works_count: int = 0
+
+    class Config:
+        from_attributes = True
+
+
+class OrganisationHierarchyNode(BaseModel):
+    id: str
+    label: str
+    official_name: str
+    unit_type: str
+    road_length_km: float
+    verification_status: str
+    children: List['OrganisationHierarchyNode'] = []
+
+
+class OrganisationHierarchyTreeOut(BaseModel):
+    root: OrganisationHierarchyNode
+    total_units: int
+    total_road_length_km: float
+    cm_regions_count: int
+    cm_circles_count: int
+    cm_divisions_count: int
+    cm_subdivisions_count: int
+
+
+class HistoricalOrganisationMappingOut(BaseModel):
+    id: str
+    serial_no: int
+    old_wing: str
+    old_division: str
+    new_division: str
+    new_org_unit_id: Optional[str] = None
+    source_go: str
+    source_annexure: str
+    effective_date: datetime.date
+    confidence_score: float
+    mapping_status: str
+    notes: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class DataQualityMappingExceptionOut(BaseModel):
+    id: str
+    entity_type: str
+    entity_id: str
+    entity_code: str
+    exception_category: str
+    severity: str
+    description: str
+    suggested_fix: Optional[str] = None
+    review_status: str
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[datetime.datetime] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OrganisationFilterOptionsOut(BaseModel):
+    wings: List[str]
+    regions_by_wing: Dict[str, List[str]]
+    circles_by_region: Dict[str, List[str]]
+    divisions_by_circle: Dict[str, List[str]]
+    subdivisions_by_division: Dict[str, List[str]]
+    all_regions: List[str]
+    all_circles: List[str]
+    all_divisions: List[str]
+    all_subdivisions: List[str]
+    districts: List[str]
+    constituencies: List[str]
+
+
+class OrganisationKPIsOut(BaseModel):
+    operational_wings_count: int
+    cm_regions_count: int
+    cm_circles_count: int
+    cm_divisions_count: int
+    cm_subdivisions_count: int
+    cm_total_road_length_km: float
+    total_active_projects: int
+    total_delayed_projects: int
+    total_financial_exposure_cr: float
+    total_critical_blockers: int
+    historical_redesignations_count: int
+    open_mapping_exceptions_count: int
+    nh_circles_count: int
+    nh_divisions_count: int
+    nh_verification_status: str
+
+
+class OrganisationResolveExceptionPayload(BaseModel):
+    exception_id: str
+    review_status: str  # VERIFIED_APPROVED, EXCEPTION_OVERRULED
+    reviewed_by: str
+    correction_notes: Optional[str] = None

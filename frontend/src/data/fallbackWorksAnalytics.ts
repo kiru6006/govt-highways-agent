@@ -482,3 +482,4 @@ export const fallbackWorksCharts: WorksAnalyticsCharts = {
   },
   kpis: fallbackWorksKPIs
 };
+

@@ -32,6 +32,7 @@ import {
   MessageSquare,
   Crown,
   FileCheck2,
+  Compass,
   X
 } from 'lucide-react';
 
@@ -56,6 +57,7 @@ export const navigationItems: NavItem[] = [
   { id: 'cm_dashboard', name: 'CM Highways Smartboard', path: '/cm-dashboard', icon: Crown, badge: 'CMO', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'strategic' },
   { id: '1a', name: "Minister's Command Centre", path: '/leadership/minister', icon: Landmark, badge: 'Cabinet', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'strategic' },
   { id: '1b', name: "Secretary's Command Centre", path: '/leadership/secretary', icon: Building2, badge: 'Govt', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'strategic' },
+  { id: 'org_intelligence', name: 'Organisation & Jurisdiction', path: '/organisation-intelligence', icon: Compass, badge: 'G.O. 43', badgeColor: 'bg-amber-100 text-amber-900 border border-amber-300', groupId: 'strategic' },
   { id: '1', name: 'Executive Smartboard', path: '/', icon: LayoutDashboard, groupId: 'strategic' },
   { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 

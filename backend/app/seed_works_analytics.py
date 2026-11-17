@@ -363,3 +363,4 @@ def seed_works_analytics_data(db_session: Session = None):
     finally:
         if db_session is None:
             db.close()
+
