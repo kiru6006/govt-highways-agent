@@ -13,13 +13,17 @@ from app.database import get_db
 from app.models import (
     Road, RoadSegment, WorkHistory, CRIDPWork, OverlapFinding,
     DelegationOfPowerRegistry, VerificationDecision, RenewalEligibilityAssessment,
-    Circle, Division
+    Circle, Division, CRIDPInvestigation, CRIDPCorrectiveAction, CRIDPDataQualityFinding
 )
 from app.schemas import (
     CRIDPWorkOut, CRIDPWorkCreateIn, CRIDPVerificationDecisionIn,
     CRIDPDashboardKPIs, YearWiseEligibilityRow, DistrictCircleEligibilityRow,
     ChainageOverlapCheckIn, ChainageOverlapCheckOut, DelegationOfPowerRuleOut,
-    WorkHistoryOut, VerificationDecisionOut
+    WorkHistoryOut, VerificationDecisionOut,
+    CRIDPCorrectiveActionOut, CRIDPCorrectiveActionCreateIn, CRIDPCorrectiveActionUpdateIn,
+    CRIDPInvestigationOut, CRIDPInvestigationDecisionIn, CRIDPDataQualityFindingOut,
+    CRIDPRiskOverviewKPIs, CRIDPDelayRootCauseItem, CRIDPContractorScorecardItem,
+    CRIDPAIInsightResponse
 )
 from app.auth import get_current_user
 from app.services.audit import log_audit_event
@@ -27,6 +31,10 @@ from app.services.cridp_verification_service import (
     verify_proposal_chainage_overlap, calculate_statewide_cridp_kpis,
     calculate_year_wise_eligibility, determine_delegation_authority,
     merge_intervals, sum_interval_length
+)
+from app.services.cridp_risk_service import (
+    calculate_statewide_risk_kpis, get_investigation_dossier,
+    get_delays_and_root_causes, get_contractor_scorecards, get_ai_insight_answer
 )
 
 router = APIRouter(prefix="/cridp-verification", tags=["Statewide CRIDP Work Verification"])
@@ -91,14 +99,18 @@ def list_cridp_proposals(
 
 @router.get("/proposals/{proposal_id}", response_model=CRIDPWorkOut)
 def get_cridp_proposal_detail(
-    proposal_id: int,
+    proposal_id: str,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
     """Retrieves single proposal with full overlap audit findings and decision trail."""
-    proposal = db.query(CRIDPWork).filter(CRIDPWork.id == proposal_id).first()
+    proposal = None
+    if proposal_id.isdigit():
+        proposal = db.query(CRIDPWork).filter(CRIDPWork.id == int(proposal_id)).first()
     if not proposal:
-        raise HTTPException(status_code=404, detail=f"Proposal with ID {proposal_id} not found.")
+        proposal = db.query(CRIDPWork).filter(CRIDPWork.proposal_code == proposal_id).first()
+    if not proposal:
+        raise HTTPException(status_code=404, detail=f"Proposal with ID/Code {proposal_id} not found.")
     return proposal
 
 
@@ -482,4 +494,245 @@ def get_ai_recommendations(
             }
         ]
     }
+
+
+# =============================================================================
+# HISTORICAL WORK RISK INTELLIGENCE & INVESTIGATION DOSSIER ENDPOINTS
+# =============================================================================
+
+@router.get("/risk-overview", response_model=CRIDPRiskOverviewKPIs)
+def get_cridp_risk_overview(
+    financial_year: str = Query("2026-27"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Calculates all 14 mandatory KPIs for the Statewide CRIDP Risk Overview Dashboard."""
+    return calculate_statewide_risk_kpis(db, financial_year=financial_year)
+
+
+@router.get("/investigations", response_model=List[CRIDPInvestigationOut])
+def list_cridp_investigations(
+    problem_category: Optional[str] = Query(None),
+    investigation_status: Optional[str] = Query(None),
+    severity: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Lists all investigated previous works and dossiers with multi-criteria filters."""
+    query = db.query(CRIDPInvestigation)
+    if problem_category and problem_category != "ALL":
+        query = query.filter(CRIDPInvestigation.problem_category == problem_category)
+    if investigation_status and investigation_status != "ALL":
+        query = query.filter(CRIDPInvestigation.investigation_status == investigation_status)
+    if severity and severity != "ALL":
+        query = query.filter(CRIDPInvestigation.problem_severity == severity)
+    if search:
+        s = f"%{search}%"
+        query = query.filter(
+            or_(
+                CRIDPInvestigation.investigation_code.ilike(s),
+                CRIDPInvestigation.problem_statement.ilike(s),
+                CRIDPInvestigation.root_cause_analysis.ilike(s),
+                CRIDPInvestigation.decision_justification.ilike(s)
+            )
+        )
+    return query.order_by(CRIDPInvestigation.id.asc()).all()
+
+
+@router.get("/investigations/{proposal_id}", response_model=CRIDPInvestigationOut)
+def get_investigation_for_proposal(
+    proposal_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Returns the comprehensive 5-part Previous Work Investigation Dossier for a proposed stretch."""
+    dossier = get_investigation_dossier(db, proposal_id=proposal_id)
+    if not dossier:
+        raise HTTPException(status_code=404, detail="Investigation dossier not found for proposal")
+    return dossier
+
+
+@router.post("/investigations/{proposal_id}/decision", response_model=CRIDPInvestigationOut)
+def record_investigation_decision(
+    proposal_id: str,
+    payload: CRIDPInvestigationDecisionIn,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Records the authoritative Chief Engineer / competent authority verdict on the new proposal."""
+    # RBAC check: only CE, Secretary, Minister or Admin can record final executive decisions
+    user_role = (current_user.role.code if getattr(current_user, "role", None) else getattr(current_user, "role_code", "")).upper()
+    allowed_roles = ["CHIEF_ENGINEER", "CHIEF_ENG", "CE", "SECRETARY", "PRIN_SEC", "MINISTER", "ADMIN", "SUPER_ADMIN"]
+    if user_role not in allowed_roles:
+        raise HTTPException(status_code=403, detail="Forbidden: Only Chief Engineer or above may record executive renewal decisions")
+
+    if payload.recommended_action == "APPROVED_OVERRIDE" and len(payload.decision_justification.strip()) < 15:
+        raise HTTPException(status_code=400, detail="Executive override requires detailed engineering justification (min 15 characters)")
+
+    dossier = get_investigation_dossier(db, proposal_id=proposal_id)
+    if not dossier:
+        raise HTTPException(status_code=404, detail="Investigation dossier not found")
+
+    dossier.recommended_action = payload.recommended_action
+    dossier.decision_justification = payload.decision_justification
+    dossier.deciding_authority = payload.deciding_authority
+    dossier.investigation_status = "COMPLETED"
+    dossier.updated_at = datetime.datetime.utcnow()
+
+    # Also sync with CRIDPWork review status
+    proposal = db.query(CRIDPWork).filter(
+        or_(CRIDPWork.id == dossier.proposal_id, CRIDPWork.proposal_code == str(proposal_id))
+    ).first()
+    if proposal:
+        proposal.ce_review_status = payload.recommended_action
+        proposal.review_remarks = payload.decision_justification
+        proposal.reviewed_at = datetime.datetime.utcnow()
+
+    db.commit()
+    db.refresh(dossier)
+    return dossier
+
+    log_audit_event(
+        db=db,
+        user_id=current_user.id if hasattr(current_user, "id") else 1,
+        action="RECORD_INVESTIGATION_DECISION",
+        resource_type="CRIDP_INVESTIGATION",
+        resource_id=str(dossier.id),
+        details={"proposal_id": proposal_id, "verdict": payload.recommended_action}
+    )
+    return dossier
+
+
+@router.get("/delays-and-root-causes", response_model=List[CRIDPDelayRootCauseItem])
+def list_delays_and_root_causes(
+    district: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Returns milestone comparison, critical-path delay days, and causal accountability matrix."""
+    return get_delays_and_root_causes(db, district=district)
+
+
+@router.get("/contractor-accountability", response_model=List[CRIDPContractorScorecardItem])
+def list_contractor_accountability(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Returns contractor risk scorecards, schedule variances, and open corrective action counts."""
+    return get_contractor_scorecards(db)
+
+
+@router.get("/corrective-actions", response_model=List[CRIDPCorrectiveActionOut])
+def list_corrective_actions(
+    status: Optional[str] = Query(None),
+    priority: Optional[str] = Query(None),
+    escalation_level: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Lists corrective actions across the statewide pipeline."""
+    query = db.query(CRIDPCorrectiveAction)
+    if status and status != "ALL":
+        query = query.filter(CRIDPCorrectiveAction.status == status)
+    if priority and priority != "ALL":
+        query = query.filter(CRIDPCorrectiveAction.priority == priority)
+    if escalation_level and escalation_level != "ALL":
+        query = query.filter(CRIDPCorrectiveAction.escalation_level == escalation_level)
+    return query.order_by(CRIDPCorrectiveAction.target_date.asc()).all()
+
+
+@router.post("/corrective-actions", response_model=CRIDPCorrectiveActionOut, status_code=status.HTTP_201_CREATED)
+def create_corrective_action(
+    payload: CRIDPCorrectiveActionCreateIn,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Creates a new tracked corrective action item."""
+    now = datetime.datetime.utcnow()
+    count = db.query(CRIDPCorrectiveAction).count()
+    action = CRIDPCorrectiveAction(
+        investigation_id=payload.investigation_id,
+        proposal_id=payload.proposal_id,
+        historical_work_id=payload.historical_work_id,
+        action_code=f"CAP-2026-{String(count + 1).zfill(3) if hasattr(str, 'zfill') else str(count + 1).rjust(3, '0')}",
+        action_title=payload.action_title,
+        action_description=payload.action_description,
+        responsible_authority=payload.responsible_authority,
+        action_owner_name=payload.action_owner_name,
+        action_owner_designation=payload.action_owner_designation,
+        action_category=payload.action_category,
+        priority=payload.priority,
+        start_date=payload.start_date or now,
+        target_date=payload.target_date,
+        status="IN_PROGRESS",
+        progress_pct=10,
+        escalation_level=payload.escalation_level,
+        supporting_document_ref=payload.supporting_document_ref,
+        last_update_notes="Action initiated by Chief Engineer review.",
+        data_mode="SIMULATED",
+        created_at=now,
+        updated_at=now
+    )
+    db.add(action)
+    db.commit()
+    db.refresh(action)
+    return action
+
+
+@router.put("/corrective-actions/{action_id}", response_model=CRIDPCorrectiveActionOut)
+def update_corrective_action(
+    action_id: int,
+    payload: CRIDPCorrectiveActionUpdateIn,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Updates progress, escalation level, or records closure evidence for a corrective action."""
+    action = db.query(CRIDPCorrectiveAction).filter(CRIDPCorrectiveAction.id == action_id).first()
+    if not action:
+        raise HTTPException(status_code=404, detail="Corrective action not found")
+
+    if payload.status:
+        action.status = payload.status
+    if payload.progress_pct is not None:
+        action.progress_pct = payload.progress_pct
+    if payload.escalation_level:
+        action.escalation_level = payload.escalation_level
+    if payload.last_update_notes:
+        action.last_update_notes = payload.last_update_notes
+    if payload.closure_evidence_ref:
+        action.closure_evidence_ref = payload.closure_evidence_ref
+
+    action.updated_at = datetime.datetime.utcnow()
+    db.commit()
+    db.refresh(action)
+    return action
+
+
+@router.get("/data-quality", response_model=List[CRIDPDataQualityFindingOut])
+def list_data_quality_findings(
+    severity: Optional[str] = Query(None),
+    metric_category: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Returns detected data quality anomalies and source lineage audit entries."""
+    query = db.query(CRIDPDataQualityFinding)
+    if severity and severity != "ALL":
+        query = query.filter(CRIDPDataQualityFinding.severity == severity)
+    if metric_category and metric_category != "ALL":
+        query = query.filter(CRIDPDataQualityFinding.metric_category == metric_category)
+    return query.order_by(CRIDPDataQualityFinding.id.asc()).all()
+
+
+@router.post("/ai-risk-analyst", response_model=CRIDPAIInsightResponse)
+def ask_ai_risk_analyst(
+    payload: Dict[str, str],
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Evidence-grounded Ask AI analyst answering the 10 mandated Chief Engineer questions."""
+    q = payload.get("question", "What is the statewide CRIDP risk overview?")
+    return get_ai_insight_answer(q, db=db)
+
 

@@ -147,7 +147,15 @@ import {
   YearWiseEligibilityItem,
   DistrictCircleEligibilityItem,
   DelegationOfPowerRuleItem,
-  ChainageOverlapResult
+  ChainageOverlapResult,
+  CRIDPRiskOverviewKPIs,
+  CRIDPInvestigationItem,
+  CRIDPInvestigationDecisionPayload,
+  CRIDPDelayRootCauseItem,
+  CRIDPContractorScorecardItem,
+  CRIDPCorrectiveActionItem,
+  CRIDPDataQualityItem,
+  CRIDPAIInsightResponse
 } from '../types';
 import {
   fallbackDigitalOfficeOverview,
@@ -166,7 +174,13 @@ import {
   fallbackCRIDPFinancialRiskData,
   fallbackDelegationRulesList,
   fallbackCRIDPAIRecommendationsData,
-  fallbackChainageOverlapCheck
+  fallbackChainageOverlapCheck,
+  fallbackCRIDPRiskOverviewData,
+  fallbackCRIDPInvestigationsList,
+  fallbackCRIDPDelayRootCausesList,
+  fallbackCRIDPContractorScorecardsList,
+  fallbackCRIDPCorrectiveActionsList,
+  fallbackCRIDPDataQualityFindingsList
 } from './fallbackData';
 import {
   SYNTHETIC_ANOMALIES,
@@ -5579,6 +5593,193 @@ export const api = {
       return await request<any>(`/cridp-verification/ai-recommendations?financial_year=${encodeURIComponent(financialYear)}`);
     } catch {
       return fallbackCRIDPAIRecommendationsData;
+    }
+  },
+
+  getCRIDPRiskOverview: async (financialYear: string = '2026-27'): Promise<CRIDPRiskOverviewKPIs> => {
+    try {
+      return await request<CRIDPRiskOverviewKPIs>(`/cridp-verification/risk-overview?financial_year=${encodeURIComponent(financialYear)}`);
+    } catch {
+      return fallbackCRIDPRiskOverviewData;
+    }
+  },
+
+  getCRIDPInvestigations: async (filters: { problem_category?: string; severity?: string; search?: string } = {}): Promise<CRIDPInvestigationItem[]> => {
+    try {
+      const sp = new URLSearchParams();
+      if (filters.problem_category && filters.problem_category !== 'ALL') sp.append('problem_category', filters.problem_category);
+      if (filters.severity && filters.severity !== 'ALL') sp.append('severity', filters.severity);
+      if (filters.search) sp.append('search', filters.search);
+      const url = `/cridp-verification/investigations${sp.toString() ? '?' + sp.toString() : ''}`;
+      return await request<CRIDPInvestigationItem[]>(url);
+    } catch {
+      let res = [...fallbackCRIDPInvestigationsList];
+      if (filters.problem_category && filters.problem_category !== 'ALL') {
+        res = res.filter(i => i.problem_category === filters.problem_category);
+      }
+      if (filters.severity && filters.severity !== 'ALL') {
+        res = res.filter(i => i.problem_severity === filters.severity);
+      }
+      if (filters.search) {
+        const s = filters.search.toLowerCase();
+        res = res.filter(i =>
+          i.investigation_code.toLowerCase().includes(s) ||
+          i.problem_statement.toLowerCase().includes(s) ||
+          i.root_cause_analysis.toLowerCase().includes(s)
+        );
+      }
+      return res;
+    }
+  },
+
+  getCRIDPInvestigationDossier: async (proposalIdOrCode: string | number): Promise<CRIDPInvestigationItem> => {
+    try {
+      return await request<CRIDPInvestigationItem>(`/cridp-verification/investigations/${proposalIdOrCode}`);
+    } catch {
+      const found = fallbackCRIDPInvestigationsList.find(
+        i => i.scenario_id === String(proposalIdOrCode) ||
+             i.investigation_code === String(proposalIdOrCode) ||
+             i.proposal_id === Number(proposalIdOrCode)
+      );
+      return found || fallbackCRIDPInvestigationsList[0];
+    }
+  },
+
+  recordCRIDPInvestigationDecision: async (proposalIdOrCode: string | number, payload: CRIDPInvestigationDecisionPayload): Promise<CRIDPInvestigationItem> => {
+    try {
+      return await request<CRIDPInvestigationItem>(`/cridp-verification/investigations/${proposalIdOrCode}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const d = fallbackCRIDPInvestigationsList.find(i => i.scenario_id === String(proposalIdOrCode)) || fallbackCRIDPInvestigationsList[0];
+      return {
+        ...d,
+        recommended_action: payload.recommended_action,
+        decision_justification: payload.decision_justification,
+        deciding_authority: payload.deciding_authority,
+        investigation_status: 'COMPLETED'
+      };
+    }
+  },
+
+  getCRIDPDelaysAndRootCauses: async (district?: string): Promise<CRIDPDelayRootCauseItem[]> => {
+    try {
+      const q = district && district !== 'ALL' ? `?district=${encodeURIComponent(district)}` : '';
+      return await request<CRIDPDelayRootCauseItem[]>(`/cridp-verification/delays-and-root-causes${q}`);
+    } catch {
+      let res = [...fallbackCRIDPDelayRootCausesList];
+      if (district && district !== 'ALL') {
+        res = res.filter(d => d.district.toLowerCase().includes(district.toLowerCase()));
+      }
+      return res;
+    }
+  },
+
+  getCRIDPContractorScorecards: async (): Promise<CRIDPContractorScorecardItem[]> => {
+    try {
+      return await request<CRIDPContractorScorecardItem[]>('/cridp-verification/contractor-accountability');
+    } catch {
+      return fallbackCRIDPContractorScorecardsList;
+    }
+  },
+
+  getCRIDPCorrectiveActions: async (filters: { status?: string; priority?: string; escalation_level?: string } = {}): Promise<CRIDPCorrectiveActionItem[]> => {
+    try {
+      const sp = new URLSearchParams();
+      if (filters.status && filters.status !== 'ALL') sp.append('status', filters.status);
+      if (filters.priority && filters.priority !== 'ALL') sp.append('priority', filters.priority);
+      if (filters.escalation_level && filters.escalation_level !== 'ALL') sp.append('escalation_level', filters.escalation_level);
+      const url = `/cridp-verification/corrective-actions${sp.toString() ? '?' + sp.toString() : ''}`;
+      return await request<CRIDPCorrectiveActionItem[]>(url);
+    } catch {
+      let res = [...fallbackCRIDPCorrectiveActionsList];
+      if (filters.status && filters.status !== 'ALL') res = res.filter(a => a.status === filters.status);
+      if (filters.priority && filters.priority !== 'ALL') res = res.filter(a => a.priority === filters.priority);
+      if (filters.escalation_level && filters.escalation_level !== 'ALL') res = res.filter(a => a.escalation_level === filters.escalation_level);
+      return res;
+    }
+  },
+
+  createCRIDPCorrectiveAction: async (payload: any): Promise<CRIDPCorrectiveActionItem> => {
+    try {
+      return await request<CRIDPCorrectiveActionItem>('/cridp-verification/corrective-actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const item: CRIDPCorrectiveActionItem = {
+        id: fallbackCRIDPCorrectiveActionsList.length + 1,
+        action_code: `CAP-2026-${String(fallbackCRIDPCorrectiveActionsList.length + 1).padStart(3, '0')}`,
+        action_title: payload.action_title,
+        action_description: payload.action_description,
+        responsible_authority: payload.responsible_authority,
+        action_owner_name: payload.action_owner_name,
+        action_owner_designation: payload.action_owner_designation,
+        action_category: payload.action_category || 'TECHNICAL',
+        priority: payload.priority || 'HIGH',
+        start_date: new Date().toISOString(),
+        target_date: payload.target_date || new Date().toISOString(),
+        status: 'OPEN',
+        progress_pct: 0,
+        escalation_level: payload.escalation_level || 'CIRCLE',
+        data_mode: 'SIMULATED'
+      };
+      fallbackCRIDPCorrectiveActionsList.unshift(item);
+      return item;
+    }
+  },
+
+  updateCRIDPCorrectiveAction: async (actionId: number, payload: any): Promise<CRIDPCorrectiveActionItem> => {
+    try {
+      return await request<CRIDPCorrectiveActionItem>(`/cridp-verification/corrective-actions/${actionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const act = fallbackCRIDPCorrectiveActionsList.find(a => a.id === actionId);
+      if (act) {
+        if (payload.status) act.status = payload.status;
+        if (payload.progress_pct !== undefined) act.progress_pct = payload.progress_pct;
+        if (payload.escalation_level) act.escalation_level = payload.escalation_level;
+        if (payload.last_update_notes) act.last_update_notes = payload.last_update_notes;
+        return act;
+      }
+      return fallbackCRIDPCorrectiveActionsList[0];
+    }
+  },
+
+  getCRIDPDataQualityFindings: async (): Promise<CRIDPDataQualityItem[]> => {
+    try {
+      return await request<CRIDPDataQualityItem[]>('/cridp-verification/data-quality');
+    } catch {
+      return fallbackCRIDPDataQualityFindingsList;
+    }
+  },
+
+  askCRIDPAIRiskAnalyst: async (question: string): Promise<CRIDPAIInsightResponse> => {
+    try {
+      return await request<CRIDPAIInsightResponse>('/cridp-verification/ai-risk-analyst', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+    } catch {
+      return {
+        question,
+        answer: `AI Risk Analyst Assessment (Offline/Mock Mode): Analysis based on G.O.(Ms) No. 105 and verified Measurement Book registers confirms rigorous enforcement of the 5-year renewal policy under G.O. Ms. No. 84. No premature renewal is permitted without Highways Research Station (HRS) deflection test exception and Chief Engineer concurrence.`,
+        status: 'SIMULATED_RESPONSE',
+        cited_rules: ['G.O.(Ms) No. 105 (02.07.2025)', 'G.O.(Ms) No. 11 (2022)', 'G.O.(Ms) No. 29 (163)'],
+        supporting_sources: ['Predefined Report (1).csv', 'CRIDP 2025-26 Work Annexures', 'Circle MB Records'],
+        suggested_followups: [
+          'What are the 10 highest-exposure premature renewal proposals?',
+          'Which contractors hold more than 2 delayed CRIDP packages?',
+          'What is the verified avoidable expenditure statewide?'
+        ]
+      };
     }
   }
 };

@@ -2983,3 +2983,208 @@ class ChainageOverlapCheckOut(BaseModel):
     delegation_rule_ref: str
     is_authoritative: bool = True
 
+
+# =============================================================================
+# CRIDP HISTORICAL WORK RISK INTELLIGENCE & INVESTIGATION SCHEMAS
+# =============================================================================
+
+class CRIDPCorrectiveActionOut(BaseModel):
+    id: int
+    investigation_id: Optional[int] = None
+    proposal_id: Optional[int] = None
+    historical_work_id: Optional[int] = None
+    action_code: str
+    action_title: str
+    action_description: str
+    responsible_authority: str
+    action_owner_name: str
+    action_owner_designation: str
+    action_category: str
+    priority: str
+    start_date: datetime.datetime
+    target_date: datetime.datetime
+    status: str
+    progress_pct: int
+    escalation_level: str
+    supporting_document_ref: Optional[str] = None
+    last_update_notes: Optional[str] = None
+    closure_evidence_ref: Optional[str] = None
+    data_mode: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPCorrectiveActionCreateIn(BaseModel):
+    investigation_id: Optional[int] = None
+    proposal_id: Optional[int] = None
+    historical_work_id: Optional[int] = None
+    action_title: str
+    action_description: str
+    responsible_authority: str
+    action_owner_name: str
+    action_owner_designation: str
+    action_category: str = "TECHNICAL"
+    priority: str = "HIGH"
+    start_date: Optional[datetime.datetime] = None
+    target_date: datetime.datetime
+    escalation_level: str = "CIRCLE"
+    supporting_document_ref: Optional[str] = None
+
+
+class CRIDPCorrectiveActionUpdateIn(BaseModel):
+    status: Optional[str] = None
+    progress_pct: Optional[int] = None
+    escalation_level: Optional[str] = None
+    last_update_notes: Optional[str] = None
+    closure_evidence_ref: Optional[str] = None
+
+
+class CRIDPInvestigationOut(BaseModel):
+    id: int
+    proposal_id: int
+    historical_work_id: Optional[int] = None
+    investigation_code: str
+    scenario_id: Optional[str] = None
+    investigation_status: str
+
+    # Facet 1: What work was previously sanctioned/completed?
+    previous_work_summary: Optional[str] = None
+    previous_completion_status: str
+
+    # Facet 2: What went wrong or remains unverified?
+    problem_category: str
+    problem_statement: str
+    problem_severity: str
+
+    # Facet 3: Why did it happen?
+    root_cause_category: str
+    root_cause_analysis: str
+    evidence_chain: str
+    is_critical_path_impact: bool
+    delay_days_investigated: int
+    financial_exposure_cr: float
+    avoidable_expenditure_cr: float
+
+    # Facet 4: How is it being managed?
+    management_summary: Optional[str] = None
+    action_owner_designation: Optional[str] = None
+
+    # Facet 5: Decision on the proposed new work
+    recommended_action: str
+    decision_justification: str
+    deciding_authority: str
+    delegation_rule_ref: str
+    data_mode: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+    proposal: Optional[CRIDPWorkOut] = None
+    historical_work: Optional[WorkHistoryOut] = None
+    corrective_actions: List[CRIDPCorrectiveActionOut] = []
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPInvestigationDecisionIn(BaseModel):
+    recommended_action: str
+    decision_justification: str
+    deciding_authority: str
+    condition_notes: Optional[str] = None
+    evidence_document_ref: Optional[str] = None
+
+
+class CRIDPDataQualityFindingOut(BaseModel):
+    id: int
+    finding_code: str
+    metric_category: str
+    record_identifier: str
+    road_code: Optional[str] = None
+    district: Optional[str] = None
+    division_name: Optional[str] = None
+    source_filename: str
+    source_row_or_page: Optional[str] = None
+    anomaly_description: str
+    severity: str
+    suggested_remediation: str
+    validation_status: str
+    data_confidence_score: float
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPRiskOverviewKPIs(BaseModel):
+    total_cridp_works: int
+    historical_works_assessed: int
+    proposed_renewal_works_count: int
+    works_with_verified_previous_history: int
+    potential_duplicate_works_count: int
+    partially_overlapping_length_km: float
+    works_completed_within_previous_five_years: int
+    works_with_unresolved_previous_issues: int
+    works_with_disputed_completion_status: int
+    works_requiring_technical_review: int
+    potential_financial_exposure_cr: float
+    verified_avoidable_expenditure_cr: float
+    open_corrective_actions_count: int
+    overdue_corrective_actions_count: int
+    reporting_date: str
+    data_completeness_pct: float
+    data_quality_index: float
+    verification_status: str
+
+
+class CRIDPDelayRootCauseItem(BaseModel):
+    id: int
+    work_code: str
+    road_code: str
+    road_name: str
+    district: str
+    division_name: str
+    contractor_name: Optional[str] = None
+    planned_commencement_date: Optional[str] = None
+    actual_commencement_date: Optional[str] = None
+    contractual_completion_date: Optional[str] = None
+    approved_extension_of_time_date: Optional[str] = None
+    forecast_completion_date: Optional[str] = None
+    verified_completion_date: Optional[str] = None
+    overall_delay_days: int
+    critical_path_delay_days: int
+    delay_category: str
+    delay_responsibility: Optional[str] = "CONTRACTOR"
+    root_cause: Optional[str] = None
+    root_cause_summary: str
+    management_plan: Optional[str] = None
+    contractor_controlled_pct: float
+    department_controlled_pct: float
+    external_force_majeure_pct: float
+    evidence_document: Optional[str] = None
+
+
+class CRIDPContractorScorecardItem(BaseModel):
+    contractor_name: str
+    active_packages_count: int
+    completed_packages_count: int
+    delayed_packages_count: int
+    avg_schedule_variance_days: float
+    quality_ncr_count: int
+    unresolved_corrective_actions_count: int
+    performance_band: str  # SATISFACTORY, ATTENTION_REQUIRED, CRITICAL_UNDERPERFORMANCE
+    liquidity_warning: bool
+    recommended_scrutiny_level: str
+
+
+class CRIDPAIInsightResponse(BaseModel):
+    question: str
+    answer_markdown: str
+    cited_records: List[dict]
+    grounded_evidence_sources: List[str]
+    confidence_pct: float
+    generated_at: str
+
+

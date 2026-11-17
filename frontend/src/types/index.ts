@@ -3819,3 +3819,157 @@ export interface ChainageOverlapResult {
   is_authoritative: boolean;
 }
 
+
+export interface CRIDPRiskOverviewKPIs {
+  total_cridp_works: number;
+  historical_works_assessed: number;
+  proposed_renewal_works_count: number;
+  works_with_verified_previous_history: number;
+  potential_duplicate_works_count: number;
+  partially_overlapping_length_km: number;
+  works_completed_within_previous_five_years: number;
+  works_with_unresolved_previous_issues: number;
+  works_with_disputed_completion_status: number;
+  works_requiring_technical_review: number;
+  potential_financial_exposure_cr: number;
+  verified_avoidable_expenditure_cr: number;
+  open_corrective_actions_count: number;
+  overdue_corrective_actions_count: number;
+  reporting_date: string;
+  data_completeness_pct: number;
+  data_quality_index: number;
+  verification_status: string;
+}
+
+export interface CRIDPInvestigationItem {
+  id: number;
+  proposal_id: number;
+  historical_work_id?: number;
+  investigation_code: string;
+  scenario_id?: string;
+  investigation_status: string;
+  previous_work_summary?: string;
+  previous_completion_status: string;
+  problem_category: string;
+  problem_statement: string;
+  problem_severity: string;
+  root_cause_category: string;
+  root_cause_analysis: string;
+  evidence_chain: string;
+  is_critical_path_impact: boolean;
+  delay_days_investigated: number;
+  financial_exposure_cr: number;
+  avoidable_expenditure_cr: number;
+  management_summary?: string;
+  action_owner_designation?: string;
+  recommended_action: string;
+  decision_justification: string;
+  deciding_authority: string;
+  delegation_rule_ref: string;
+  data_mode: string;
+  created_at?: string;
+  updated_at?: string;
+  proposal?: CRIDPWorkItem;
+  historical_work?: any;
+  corrective_actions?: CRIDPCorrectiveActionItem[];
+}
+
+export interface CRIDPInvestigationDecisionPayload {
+  recommended_action: string;
+  decision_justification: string;
+  deciding_authority: string;
+  evidence_document_ref?: string;
+}
+
+export interface CRIDPDelayRootCauseItem {
+  id: number;
+  work_code: string;
+  road_code: string;
+  road_name: string;
+  district: string;
+  division_name: string;
+  contractor_name: string;
+  planned_commencement_date: string;
+  actual_commencement_date: string;
+  contractual_completion_date: string;
+  approved_extension_of_time_date?: string;
+  forecast_completion_date: string;
+  verified_completion_date?: string;
+  overall_delay_days: number;
+  critical_path_delay_days: number;
+  delay_category: string;
+  delay_responsibility: string;
+  root_cause?: string;
+  root_cause_summary: string;
+  management_plan?: string;
+  contractor_controlled_pct: number;
+  department_controlled_pct: number;
+  external_force_majeure_pct: number;
+  evidence_document: string;
+}
+
+export interface CRIDPContractorScorecardItem {
+  contractor_name: string;
+  active_packages_count: number;
+  completed_packages_count: number;
+  delayed_packages_count: number;
+  avg_schedule_variance_days: number;
+  quality_ncr_count: number;
+  unresolved_corrective_actions_count: number;
+  performance_band: string;
+  liquidity_warning: boolean;
+  recommended_scrutiny_level: string;
+}
+
+export interface CRIDPCorrectiveActionItem {
+  id: number;
+  investigation_id?: number;
+  proposal_id?: number;
+  historical_work_id?: number;
+  action_code: string;
+  action_title: string;
+  action_description: string;
+  responsible_authority: string;
+  action_owner_name: string;
+  action_owner_designation: string;
+  action_category: string;
+  priority: string;
+  start_date: string;
+  target_date: string;
+  status: string;
+  progress_pct: number;
+  escalation_level: string;
+  supporting_document_ref?: string;
+  last_update_notes?: string;
+  closure_evidence_ref?: string;
+  data_mode: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CRIDPDataQualityItem {
+  id: number;
+  finding_code: string;
+  category: string;
+  source_record_id: string;
+  road_code: string;
+  district: string;
+  division_name?: string;
+  source_dataset_filename: string;
+  source_line_or_page: string;
+  anomaly_description: string;
+  severity: string;
+  suggested_resolution: string;
+  status: string;
+  confidence_score: number;
+  created_at?: string;
+}
+
+export interface CRIDPAIInsightResponse {
+  question: string;
+  answer: string;
+  status: string;
+  cited_rules: string[];
+  supporting_sources: string[];
+  suggested_followups: string[];
+}

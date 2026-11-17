@@ -212,24 +212,60 @@ TOP HEADER UTILITY BAR
 * **Data Availability & Seed Records**: Detailed dossiers for all projects (`/project-360?id=1` to `id=12`).
 * **Endpoints**: `GET /api/v1/projects/{id}/360`, `GET /api/v1/connectivity/entities/PROJECT/{id}/relationships`.
 
-#### 14. Statewide CRIDP Work Verification & Five-Year Renewal Intelligence (`#/cridp-verification`)
-* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Planning & Finance Specialists.
+#### 14. Statewide CRIDP Work Verification & Risk Intelligence (`#/cridp-risk-intelligence` & `#/cridp-verification`)
+* **Display Title**: **Statewide CRIDP Work Verification & Risk Intelligence**
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Planning & Finance Specialists, Pavement & Quality Auditors.
 * **Governing Statutory Framework**:
   * **Tamil Nadu State Highways Authority (TANSHA)**: Created under **The Tamil Nadu State Highways Authority Act, 2024 (TN Act No. 12 of 2024)** for statewide high-speed corridors, expressways, and outer ring networks. Integrated in Organisation Directory, Statutory Structure, and Executive Smartboard.
   * **Technical Sanction Delegation**: **G.O.(Ms) No. 11**, Highways and Minor Ports (HN.2), dated 21.01.2022 (Divisional Engineer up to ₹50 Lakhs, Superintending Engineer up to ₹7.00 Crores, Chief Engineer full powers above ₹7.00 Crores).
-  * **Tender Acceptance Delegation**: **G.O.(Ms) No. 29**, dated 03.03.2022 restoring **G.O.(Ms) No. 163**, dated 01.10.2012 (Divisional Engineer up to ₹50 Lakhs at 0% excess, Superintending Engineer up to ₹6.00 Crores with ≤5% tender excess).
-* **Key Capabilities & How to Use**:
-  * **Tab 1: Statewide Overview**: Dynamic KPIs tracking 1,196.3 km verified road inventory, proposed renewal kilometres, recently renewed restrictions, overlapping proposals, committed multi-lateral works, and potentially avoidable expenditure.
-  * **Tab 2: District / Circle / Division Hierarchy**: Interactive drilldown from State $\rightarrow$ Circle $\rightarrow$ Division $\rightarrow$ District with unresolved duplication flags and review queues.
-  * **Tab 3: Five-Year Work History**: Verified chronological timeline grounded in divisional Measurement Books (MB) and completion registers.
-  * **Tab 4: Chainage Duplication Engine**: Deterministic non-AI interval arithmetic $\text{overlap\_km} = \max(0, \min(\text{end}_A, \text{end}_B) - \max(\text{start}_A, \text{start}_B))$ with interval union to prevent double-counting.
-  * **Tab 5: Year-Wise Eligible Road Length**: Multiannual eligibility analysis (FY 2026-27 to 2030-31) distinguishing historically eligible, administratively available, technically recommended, and approved lengths.
-  * **Tab 6: Financial Risk & Avoidable Expenditure**: Clear distinction between overlapping proposal value, already sanctioned amounts, and confirmed recoverable expenditure (avoids false leakage claims).
-  * **Tab 7: Verification & Approval Queue**: Hierarchical role-based approval gates for DE, SE, and CE with mandatory evidence references, conditions, and reasons.
-  * **Tab 8: AI Evidence Recommendations**: Grounded recommendations with verifiable citations and impact quantification.
-* **Data Availability & Seed Records**:
-  * Seeded canonical proposals and history records mapped directly to Project 1 (`PRJ-TN-2026-001`, SH-49 ECR), Project 2 (`PRJ-TN-2026-002`, MDR-102 Tambaram Grade Separator), Project 4 (`PRJ-TN-2026-004`, SH-15 CKICP), Project 5 (`PRJ-TN-2026-005`, SH-09 Cuddalore), and Project 7 (`PRJ-TN-2026-007`, SH-75 Madurai Ring Road).
-* **Endpoints**: `GET /api/v1/cridp-verification/kpis`, `GET /api/v1/cridp-verification/proposals`, `POST /api/v1/cridp-verification/check-overlap`, `POST /api/v1/cridp-verification/proposals/{id}/review`, `GET /api/v1/cridp-verification/year-wise-eligibility`, `GET /api/v1/cridp-verification/hierarchy-breakdown`, `GET /api/v1/cridp-verification/delegation-rules`.
+  * **Tender Acceptance Delegation**: **G.O.(Ms) No. 29**, dated 03.03.2022 restoring **G.O.(Ms) No. 163**, dated 01.10.2012 (Divisional Engineer up to ₹50 Lakhs at 0% excess, Superintending Engineer up to ₹1.00 Crore with ≤5% tender excess, Chief Engineer up to ₹6.00 Crores at 0% excess, Committee of Chief Engineers COT up to ₹100.00 Crores with ≤10% tender excess).
+  * **Five-Year Renewal Policy**: **G.O. Ms. No. 84** (5-year lock-in restriction on surface renewals) and **G.O.(Ms) No. 105**, dated 02.07.2025 (CRIDP 2025-2026 Works Schedule).
+* **The 5 Core Investigation Facets Answered For Every Proposed Work**:
+  1. *What work was previously sanctioned or completed on this road stretch?*
+  2. *What went wrong, or what remains unverified, in the previous work?*
+  3. *What caused the problem, and what evidence supports that conclusion?*
+  4. *How is the issue currently being managed, by whom and within what deadline?*
+  5. *Should the proposed new work proceed, require modification or be referred for further technical verification?*
+* **11 Mandated Interactive Dashboard Tabs**:
+  * **Tab 1: Statewide Risk Overview**: 14 dynamically calculated KPIs (total CRIDP works, historical works assessed, premature proposals, partial overlaps, unresolved previous issues, disputed completions, open & overdue corrective actions, avoidable expenditure).
+  * **Tab 2: Previous Work Investigation**: Interactive Dossier selector covering 12 deliberately designed canonical investigation scenarios (`SCN-01` through `SCN-12`) with Chief Engineer authoritative verdict recording form.
+  * **Tab 3: Five-Year Renewal Verification**: Deterministic day-level arithmetic enforcing the 5-year lock-in window unless supported by Highways Research Station (HRS) core deflection tests.
+  * **Tab 4: Duplicate & Overlap Detection**: Mathematical 1D interval union algorithm $\bigcup [a_i, b_i]$ with visual chainage bars preventing double-counting.
+  * **Tab 5: Delay & Root Cause Analysis**: Planned vs actual vs forecast milestone comparison, critical-path delay quantification, and causal responsibility partitioning (Contractor, Department, Shared, External).
+  * **Tab 6: Contractor Performance & Accountability**: Prime contractor risk scorecards, active vs delayed packages, schedule variances, and liquidated damages tracking.
+  * **Tab 7: Financial Exposure & Leakage Prevention**: Mathematically rigorous separation between Gross Potential Exposure and Confirmed Avoidable Expenditure (protects against false leakage accusations).
+  * **Tab 8: Corrective Action & Mitigation Tracker**: End-to-end corrective action pipeline (`OPEN` $\rightarrow$ `CLOSED`), designated action owners, deadlines, and multi-tier escalations (Division $\rightarrow$ Circle $\rightarrow$ Chief Engineer $\rightarrow$ Secretary).
+  * **Tab 9: Year-wise Eligible Road Length**: Multiannual network unlocking projections from FY 2026-27 to 2030-31 distinguishing historically eligible, administratively available, technically recommended, and approved lengths.
+  * **Tab 10: Data Quality & Lineage**: 12 anomaly categories grounded in `Predefined Report (1).csv` rows, `CRIDP-2025-2026-Annexures-.pdf` pages, and circle measurement book references.
+  * **Tab 11: Reports & AI Insights**: Interactive Ask AI Assistant answering strategic Chief Engineer queries with verified government citations.
+* **Data Provenance & Seed Records**:
+  * 204 verified historical works (`WorkHistory`) across 38 Tamil Nadu districts.
+  * 96 CRIDP work proposals (`CRIDPWork`) for FY 2026-27.
+  * 96 deep investigation dossiers (`CRIDPInvestigation`) including `SCN-01` to `SCN-12`.
+  * 45 tracked corrective actions (`CRIDPCorrectiveAction`).
+  * 30 data quality findings (`CRIDPDataQualityFinding`).
+* **Automated Acceptance Test Coverage**:
+  * `tests/test_cridp_verification.py`: 20/20 tests passing.
+  * `tests/test_cridp_risk_intelligence.py`: 25/25 acceptance criteria tests passing.
+  * Total: **45 automated CRIDP backend tests passing with 100% success**.
+* **Endpoints**:
+  * `GET /api/v1/cridp-verification/risk-overview`
+  * `GET /api/v1/cridp-verification/investigations`
+  * `GET /api/v1/cridp-verification/investigations/{proposal_id}`
+  * `POST /api/v1/cridp-verification/investigations/{proposal_id}/decision`
+  * `GET /api/v1/cridp-verification/delays-and-root-causes`
+  * `GET /api/v1/cridp-verification/contractor-accountability`
+  * `GET /api/v1/cridp-verification/corrective-actions`
+  * `POST /api/v1/cridp-verification/corrective-actions`
+  * `PUT /api/v1/cridp-verification/corrective-actions/{action_id}`
+  * `GET /api/v1/cridp-verification/data-quality`
+  * `POST /api/v1/cridp-verification/ai-risk-analyst`
+  * `GET /api/v1/cridp-verification/kpis`
+  * `GET /api/v1/cridp-verification/proposals`
+  * `POST /api/v1/cridp-verification/check-overlap`
+  * `GET /api/v1/cridp-verification/year-wise-eligibility`
+  * `GET /api/v1/cridp-verification/hierarchy-breakdown`
+  * `GET /api/v1/cridp-verification/delegation-rules`
 
 #### 15. Engineering Quality Assurance (`#/quality`)
 * **Target Audience**: Superintending Engineer (Quality Control), Lab Directors, Independent Consultants.

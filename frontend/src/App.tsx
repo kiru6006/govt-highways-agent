@@ -25,6 +25,7 @@ import { DigitalOfficePage } from './pages/DigitalOfficePage';
 import { LandLitigationPage } from './pages/LandLitigationPage';
 import { MajorWorksPortfolioPage } from './pages/MajorWorksPortfolioPage';
 import { CRIDPVerificationPage } from './pages/CRIDPVerificationPage';
+import { CRIDPRiskIntelligencePage } from './pages/CRIDPRiskIntelligencePage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -88,7 +89,8 @@ const AppLayout: React.FC = () => {
             <Route path="/tnrsp" element={<ProgrammeIntelligencePage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/major-works" element={<MajorWorksPortfolioPage />} />
-            <Route path="/cridp-verification" element={<CRIDPVerificationPage />} />
+            <Route path="/cridp-risk-intelligence" element={<CRIDPRiskIntelligencePage />} />
+            <Route path="/cridp-verification" element={<CRIDPRiskIntelligencePage />} />
             <Route path="/leakage" element={<LeakageIntelligencePage />} />
             <Route path="/project-360" element={<Project360Page />} />
             <Route path="/directory" element={<DirectoryPage />} />

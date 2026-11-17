@@ -2731,3 +2731,110 @@ class VerificationDecision(Base):
     proposal = relationship("CRIDPWork", back_populates="decisions")
     reviewer = relationship("User")
 
+
+class CRIDPInvestigation(Base):
+    __tablename__ = "cridp_investigations"
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("cridp_works.id"), nullable=False, index=True)
+    historical_work_id = Column(Integer, ForeignKey("work_histories.id"), nullable=True, index=True)
+    investigation_code = Column(String(64), unique=True, index=True, nullable=False)
+    scenario_id = Column(String(50), nullable=True)  # e.g., SCN-01 to SCN-12
+    investigation_status = Column(String(50), default="UNDER_INVESTIGATION")  # OPEN, UNDER_INVESTIGATION, COMPLETED, CLOSED
+
+    # 5 Critical Investigation Facets
+    # Facet 1: What work was previously sanctioned/completed?
+    previous_work_summary = Column(Text, nullable=True)
+    previous_completion_status = Column(String(50), default="VERIFIED_COMPLETED")  # VERIFIED_COMPLETED, UNVERIFIED_CLAIM, IN_PROGRESS, SANCTIONED_NOT_STARTED, ABANDONED
+
+    # Facet 2: What went wrong or remains unverified?
+    problem_category = Column(String(100), nullable=False)
+    # PREMATURE_RENEWAL, UNVERIFIED_COMPLETION, SCHEDULE_OVERRUN, COST_OVERRUN, QUALITY_DEFECT,
+    # LAND_ACQUISITION_BLOCKER, UTILITY_RELOCATION_BLOCKER, LITIGATION_STAY, PHYSICAL_FINANCIAL_MISMATCH,
+    # MULTIPLE_SCHEME_CONFLICT, UNRESOLVED_CORRECTIVE_ACTION, DOCUMENTATION_DEFICIT, NONE
+    problem_statement = Column(Text, nullable=False)
+    problem_severity = Column(String(20), default="MEDIUM")  # LOW, MEDIUM, HIGH, CRITICAL
+
+    # Facet 3: Why did it happen? (Root-cause workflow & responsibility)
+    root_cause_category = Column(String(100), nullable=False)
+    # CONTRACTOR_CONTROLLED, DEPARTMENT_CONTROLLED, INTERDEPARTMENTAL, LAND_ACQUISITION,
+    # LITIGATION, DESIGN, UTILITY, WEATHER_EXTERNAL, SHARED_RESPONSIBILITY, UNDETERMINED
+    root_cause_analysis = Column(Text, nullable=False)
+    evidence_chain = Column(Text, nullable=False)  # Measurement book refs, lab tests, gazette orders
+    is_critical_path_impact = Column(Boolean, default=False)
+    delay_days_investigated = Column(Integer, default=0)
+    financial_exposure_cr = Column(Float, default=0.0)
+    avoidable_expenditure_cr = Column(Float, default=0.0)
+
+    # Facet 4: How is it being managed?
+    management_summary = Column(Text, nullable=True)
+    action_owner_designation = Column(String(100), nullable=True)
+
+    # Facet 5: Decision on the proposed new work
+    recommended_action = Column(String(100), nullable=False)
+    # ELIGIBLE, MODIFY_CHAINAGE, REVIEW_PREVIOUS_COMPLETION, INVESTIGATE_PAVEMENT,
+    # RESOLVE_EXISTING_CONTRACT, SEEK_ENGINEERING_EXCEPTION, HOLD_PENDING_EVIDENCE, REFER_COMPETENT_AUTHORITY
+    decision_justification = Column(Text, nullable=False)
+    deciding_authority = Column(String(100), default="Chief Engineer")
+    delegation_rule_ref = Column(String(150), default="G.O.(Ms) No. 11 & G.O.(Ms) No. 29")
+
+    data_mode = Column(String(20), default="SIMULATED")  # OFFICIAL, SIMULATED
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    proposal = relationship("CRIDPWork", foreign_keys=[proposal_id])
+    historical_work = relationship("WorkHistory", foreign_keys=[historical_work_id])
+    corrective_actions = relationship("CRIDPCorrectiveAction", back_populates="investigation", cascade="all, delete-orphan")
+
+
+class CRIDPCorrectiveAction(Base):
+    __tablename__ = "cridp_corrective_actions"
+    id = Column(Integer, primary_key=True, index=True)
+    investigation_id = Column(Integer, ForeignKey("cridp_investigations.id"), nullable=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("cridp_works.id"), nullable=True, index=True)
+    historical_work_id = Column(Integer, ForeignKey("work_histories.id"), nullable=True, index=True)
+    action_code = Column(String(64), unique=True, index=True, nullable=False)
+    action_title = Column(String(250), nullable=False)
+    action_description = Column(Text, nullable=False)
+    responsible_authority = Column(String(150), nullable=False)  # e.g., Superintending Engineer, Chengalpattu Circle
+    action_owner_name = Column(String(150), nullable=False)
+    action_owner_designation = Column(String(100), nullable=False)
+    action_category = Column(String(50), default="TECHNICAL")  # TECHNICAL, CONTRACTUAL, LEGAL, REVENUE, UTILITY, FINANCIAL, ADMINISTRATIVE
+    priority = Column(String(20), default="HIGH")  # ROUTINE, URGENT, HIGH, IMMEDIATE
+    start_date = Column(DateTime, nullable=False)
+    target_date = Column(DateTime, nullable=False)
+    status = Column(String(50), default="IN_PROGRESS")  # OPEN, UNDER_INVESTIGATION, ACTION_ASSIGNED, IN_PROGRESS, VERIFICATION, CLOSED, BLOCKED, REOPENED
+    progress_pct = Column(Integer, default=0)
+    escalation_level = Column(String(50), default="CIRCLE")  # DIVISION, CIRCLE, CHIEF_ENGINEER, SECRETARY, MINISTER
+    supporting_document_ref = Column(String(150), nullable=True)
+    last_update_notes = Column(Text, nullable=True)
+    closure_evidence_ref = Column(String(150), nullable=True)
+    data_mode = Column(String(20), default="SIMULATED")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    investigation = relationship("CRIDPInvestigation", back_populates="corrective_actions")
+    proposal = relationship("CRIDPWork")
+    historical_work = relationship("WorkHistory")
+
+
+class CRIDPDataQualityFinding(Base):
+    __tablename__ = "cridp_data_quality_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    finding_code = Column(String(64), unique=True, index=True, nullable=False)
+    metric_category = Column(String(100), nullable=False)
+    # MISSING_COMPLETION_DATE, UNVERIFIED_100_PROGRESS, MISSING_CHAINAGE, ZERO_LENGTH_ENTRY,
+    # DUPLICATE_JOB_CODE, INCONSISTENT_DATES, INVALID_MILESTONE_SEQUENCE, UNRECONCILED_EXPENDITURE,
+    # CONFLICTING_STATUS, UNVERIFIED_COURT_STAY, MISSING_SOURCE_LINEAGE
+    record_identifier = Column(String(100), nullable=False)  # Works code or proposal code
+    road_code = Column(String(50), nullable=True)
+    district = Column(String(100), nullable=True)
+    division_name = Column(String(100), nullable=True)
+    source_filename = Column(String(150), default="Predefined Report (1).csv")
+    source_row_or_page = Column(String(50), nullable=True)
+    anomaly_description = Column(Text, nullable=False)
+    severity = Column(String(20), default="WARNING")  # INFO, WARNING, HIGH, CRITICAL
+    suggested_remediation = Column(Text, nullable=False)
+    validation_status = Column(String(50), default="DETECTED")  # DETECTED, RECONCILED, WAIVED, ESCALATED
+    data_confidence_score = Column(Float, default=70.0)  # 0 to 100
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
