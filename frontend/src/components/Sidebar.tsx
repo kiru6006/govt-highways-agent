@@ -31,6 +31,7 @@ import {
   Calendar,
   MessageSquare,
   Crown,
+  FileCheck2,
   X
 } from 'lucide-react';
 
@@ -59,6 +60,7 @@ export const navigationItems: NavItem[] = [
   { id: '16', name: 'Reports & Analytics', path: '/reports', icon: BarChart3, groupId: 'strategic' },
 
   // Domain 2: Project Intelligence (Core Layer)
+  { id: 'cridp_verification', name: 'CRIDP Work Verification', path: '/cridp-verification', icon: FileCheck2, badge: '5-Yr Audit', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'projects' },
   { id: 'major_works', name: 'Major Works ₹50 Cr+', path: '/major-works', icon: Building2, badge: 'Chennai 31', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'projects' },
   { id: '3', name: 'Project Portfolio Grid', path: '/projects', icon: FolderGit2, groupId: 'projects' },
   { id: '4', name: 'Project 360° Dossier', path: '/project-360', icon: View, groupId: 'projects' },

@@ -13,6 +13,7 @@ from app.seed_digital_office import seed_digital_office_data
 from app.seed_notifications_calendar import seed_notifications_calendar_data
 from app.seed_messaging import seed_messaging_data
 from app.seed_universal_connectivity import seed_universal_connectivity
+from app.seed_cridp_verification import seed_cridp_verification_data
 from app.models import Project, Issue, DepartmentDependency, WorkflowTask, Road
 from app.routers import (
     auth, users, roles, departments, organisations, projects,
@@ -20,7 +21,7 @@ from app.routers import (
     documents, audit, ai, executive, programmes, leakage, reports,
     engineering_quality_assets, land_utility, digital_office,
     notifications, calendar, messaging, connectivity, cm_dashboard,
-    land_litigation, major_works_blockers
+    land_litigation, major_works_blockers, cridp_verification
 )
 
 # Initialize schema tables
@@ -70,6 +71,7 @@ def on_startup():
     seed_notifications_calendar_data()
     seed_messaging_data()
     seed_universal_connectivity()
+    seed_cridp_verification_data()
 
 # Include versioned API routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -100,6 +102,7 @@ app.include_router(connectivity.router, prefix=settings.API_V1_STR)
 app.include_router(cm_dashboard.router, prefix=settings.API_V1_STR)
 app.include_router(land_litigation.router, prefix=settings.API_V1_STR)
 app.include_router(major_works_blockers.router, prefix=settings.API_V1_STR)
+app.include_router(cridp_verification.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

@@ -3618,3 +3618,204 @@ export interface MajorWorksAIResponse {
   confidence_score: number;
   simulated_data_badge: string;
 }
+
+// =============================================================================
+// STATEWIDE CRIDP RENEWAL INTELLIGENCE & DELEGATION OF POWERS TYPES
+// =============================================================================
+
+export interface CRIDPDashboardKPIs {
+  total_verified_road_length_km: number;
+  cridp_works_proposed_count: number;
+  total_proposed_renewal_length_km: number;
+  length_verified_eligible_km: number;
+  length_renewed_prev_five_years_km: number;
+  length_with_overlapping_proposals_km: number;
+  length_committed_other_schemes_km: number;
+  length_requiring_manual_verification_km: number;
+  districts_with_unresolved_duplication_count: number;
+  districts_with_unresolved_duplication: string[];
+  estimated_value_overlapping_proposals_cr: number;
+  potentially_avoidable_expenditure_cr: number;
+  confirmed_recoverable_amounts_cr: number;
+  proposals_awaiting_ce_review_count: number;
+  reporting_date: string;
+  data_completeness_pct: number;
+  verification_status: string;
+}
+
+export interface OverlapFindingItem {
+  id: number;
+  proposal_id: number;
+  historical_work_id?: number;
+  conflicting_proposal_id?: number;
+  overlap_type: string;
+  overlap_start_chainage: number;
+  overlap_end_chainage: number;
+  overlap_length_km: number;
+  historical_completion_date?: string;
+  years_since_completion?: number;
+  is_within_five_year_window: boolean;
+  estimated_overlap_cost_cr: number;
+  recommended_action?: string;
+  created_at: string;
+}
+
+export interface VerificationDecisionItem {
+  id: number;
+  proposal_id: number;
+  reviewer_name: string;
+  reviewer_designation: string;
+  decision: string;
+  justification: string;
+  evidence_document_ref?: string;
+  condition_notes?: string;
+  decided_at: string;
+}
+
+export interface CRIDPWorkItem {
+  id: number;
+  proposal_code: string;
+  work_name: string;
+  road_id: number;
+  road_code: string;
+  road_name: string;
+  road_category: string;
+  district: string;
+  circle_id?: number;
+  circle_name?: string;
+  division_id?: number;
+  division_name?: string;
+  section_name?: string;
+  start_chainage: number;
+  end_chainage: number;
+  proposed_length_km: number;
+  proposed_work_type: string;
+  financial_year: string;
+  estimated_cost_cr: number;
+  sanctioned_cost_cr: number;
+  existing_pavement_type: string;
+  existing_crust_thickness_mm: number;
+  pci_score: number;
+  roughness_iri: number;
+  verification_status: string;
+  duplicate_severity: string;
+  overlapping_length_km: number;
+  eligible_length_km: number;
+  overlapping_chainage_description?: string;
+  potential_financial_exposure_cr: number;
+  avoidable_expenditure_cr: number;
+  engineering_exception_justification?: string;
+  approval_authority_required: string;
+  ce_review_status: string;
+  reviewed_by_id?: number;
+  reviewed_at?: string;
+  review_remarks?: string;
+  evidence_document_ref?: string;
+  data_mode: string;
+  data_status: string;
+  source_document_ref?: string;
+  created_at: string;
+  updated_at: string;
+  overlap_findings?: OverlapFindingItem[];
+  decisions?: VerificationDecisionItem[];
+}
+
+export interface WorkHistoryItem {
+  id: number;
+  work_reference: string;
+  road_id: number;
+  road_code: string;
+  road_name: string;
+  road_category: string;
+  district: string;
+  division_name?: string;
+  section_name?: string;
+  start_chainage: number;
+  end_chainage: number;
+  length_km: number;
+  work_type: string;
+  scheme_name: string;
+  sanction_order_no?: string;
+  sanction_date?: string;
+  sanctioned_cost_cr: number;
+  contract_agreement_no?: string;
+  contractor_name?: string;
+  awarded_value_cr: number;
+  physical_completion_date?: string;
+  actual_expenditure_cr: number;
+  completion_certificate_ref?: string;
+  measurement_book_ref?: string;
+  pavement_treatment?: string;
+  is_verified: boolean;
+  verification_source: string;
+  created_at: string;
+}
+
+export interface YearWiseEligibilityItem {
+  financial_year: string;
+  total_verified_length_km: number;
+  restricted_renewal_window_km: number;
+  already_sanctioned_km: number;
+  other_schemes_committed_km: number;
+  under_execution_km: number;
+  historically_eligible_km: number;
+  administratively_available_km: number;
+  technically_recommended_km: number;
+  approved_renewal_km: number;
+  insufficient_data_km: number;
+}
+
+export interface DistrictCircleEligibilityItem {
+  circle: string;
+  division: string;
+  district: string;
+  verified_inventory_km: number;
+  proposed_proposals_count: number;
+  proposed_renewal_km: number;
+  eligible_length_km: number;
+  restricted_five_year_km: number;
+  overlapping_length_km: number;
+  financial_exposure_cr: number;
+  unresolved_duplicates: number;
+  proposals_pending_review: number;
+}
+
+export interface DelegationOfPowerRuleItem {
+  id: number;
+  rule_id: string;
+  go_reference: string;
+  issuing_authority: string;
+  approval_category: string;
+  applicable_organisation: string;
+  applicable_work_type: string;
+  authority_designation: string;
+  monetary_limit_cr: number;
+  tender_excess_pct_limit: number;
+  structural_design_separate: boolean;
+  effective_date: string;
+  supersession_date?: string;
+  verification_status: string;
+  supporting_source: string;
+  operative_provisions: string;
+  notes?: string;
+}
+
+export interface ChainageOverlapResult {
+  road_id: number;
+  road_code: string;
+  road_name: string;
+  proposed_length_km: number;
+  overlapping_length_km: number;
+  eligible_length_km: number;
+  overlap_percentage: number;
+  overlapping_chainage_description: string;
+  verification_classification: string;
+  duplicate_severity: string;
+  detailed_overlapping_intervals: any[];
+  historical_works_identified: any[];
+  recommended_action: string;
+  operative_sanction_authority_required: string;
+  delegation_rule_ref: string;
+  is_authoritative: boolean;
+}
+

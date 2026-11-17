@@ -2519,3 +2519,215 @@ class PreConstructionGateCheck(Base):
 
     project = relationship("Project")
     major_work = relationship("MajorWorksProjectReviewSnapshot")
+
+
+# =============================================================================
+# STATEWIDE CRIDP RENEWAL INTELLIGENCE & DELEGATION OF POWERS MODELS
+# =============================================================================
+
+class RoadSegment(Base):
+    __tablename__ = "road_segments"
+    id = Column(Integer, primary_key=True, index=True)
+    road_id = Column(Integer, ForeignKey("roads.id"), nullable=False, index=True)
+    segment_code = Column(String(64), unique=True, index=True, nullable=False)
+    start_chainage = Column(Float, nullable=False)
+    end_chainage = Column(Float, nullable=False)
+    length_km = Column(Float, nullable=False)
+    carriageway_type = Column(String(50), default="2-Lane")  # Single Lane, Intermediate Lane, 2-Lane, 4-Lane Divided
+    surface_type = Column(String(50), default="Bituminous")  # Bituminous, Concrete, Paver
+    circle_id = Column(Integer, ForeignKey("circles.id"), nullable=True)
+    division_id = Column(Integer, ForeignKey("divisions.id"), nullable=True)
+    district = Column(String(100), nullable=False)
+    jurisdiction_agency = Column(String(100), default="Highways C&M")  # Highways C&M, TANSHA, NHAI
+
+    road = relationship("Road")
+    circle = relationship("Circle")
+    division = relationship("Division")
+
+
+class WorkHistory(Base):
+    __tablename__ = "work_histories"
+    id = Column(Integer, primary_key=True, index=True)
+    work_reference = Column(String(64), unique=True, index=True, nullable=False)
+    road_id = Column(Integer, ForeignKey("roads.id"), nullable=False, index=True)
+    road_code = Column(String(50), index=True, nullable=False)
+    road_name = Column(String(200), nullable=False)
+    road_category = Column(String(20), default="SH")  # SH, NH, MDR, ODR
+    district = Column(String(100), index=True, nullable=False)
+    division_id = Column(Integer, ForeignKey("divisions.id"), nullable=True)
+    division_name = Column(String(100), nullable=True)
+    section_name = Column(String(100), nullable=True)
+    start_chainage = Column(Float, nullable=False)
+    end_chainage = Column(Float, nullable=False)
+    length_km = Column(Float, nullable=False)
+    work_type = Column(String(150), nullable=False)  # Periodic Renewal / SDBC, Widening & Strengthening, BM & BC Overlay, Reconstruction
+    scheme_name = Column(String(100), default="CRIDP")  # CRIDP, CMRDP, TNRSP, CKICP, NABARD, State Funds, NHAI
+    sanction_order_no = Column(String(100), nullable=True)
+    sanction_date = Column(DateTime, nullable=True)
+    sanctioned_cost_cr = Column(Float, default=0.0)
+    contract_agreement_no = Column(String(100), nullable=True)
+    contractor_name = Column(String(200), nullable=True)
+    awarded_value_cr = Column(Float, default=0.0)
+    physical_completion_date = Column(DateTime, nullable=True, index=True)
+    actual_expenditure_cr = Column(Float, default=0.0)
+    completion_certificate_ref = Column(String(100), nullable=True)
+    measurement_book_ref = Column(String(100), nullable=True)
+    pavement_treatment = Column(String(150), nullable=True)
+    is_verified = Column(Boolean, default=True)
+    verification_source = Column(String(150), default="TN Highways Completion Register")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    road = relationship("Road")
+    division = relationship("Division")
+
+
+class CRIDPWork(Base):
+    __tablename__ = "cridp_works"
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_code = Column(String(64), unique=True, index=True, nullable=False)
+    work_name = Column(String(250), nullable=False)
+    road_id = Column(Integer, ForeignKey("roads.id"), nullable=False, index=True)
+    road_code = Column(String(50), index=True, nullable=False)
+    road_name = Column(String(200), nullable=False)
+    road_category = Column(String(20), default="SH")  # SH, MDR, ODR
+    district = Column(String(100), index=True, nullable=False)
+    circle_id = Column(Integer, ForeignKey("circles.id"), nullable=True)
+    circle_name = Column(String(100), nullable=True)
+    division_id = Column(Integer, ForeignKey("divisions.id"), nullable=True)
+    division_name = Column(String(100), nullable=True)
+    section_name = Column(String(100), nullable=True)
+    start_chainage = Column(Float, nullable=False)
+    end_chainage = Column(Float, nullable=False)
+    proposed_length_km = Column(Float, nullable=False)
+    proposed_work_type = Column(String(150), nullable=False)  # Periodic Renewal / SDBC, BM & BC Overlay, Widening & Strengthening, Reconstruction
+    financial_year = Column(String(20), index=True, nullable=False)  # 2026-27, 2027-28, etc.
+    estimated_cost_cr = Column(Float, default=0.0)
+    sanctioned_cost_cr = Column(Float, default=0.0)
+    existing_pavement_type = Column(String(50), default="Flexible")  # Flexible, Rigid, Composite
+    existing_crust_thickness_mm = Column(Float, default=150.0)
+    pci_score = Column(Float, default=65.0)  # Pavement Condition Index (0-100)
+    roughness_iri = Column(Float, default=3200.0)  # IRI mm/km
+    verification_status = Column(String(50), default="MANUAL REVIEW REQUIRED", index=True)
+    # ELIGIBLE, RECENTLY RENEWED, PARTIALLY OVERLAPPING, DUPLICATE PROPOSAL, ALREADY SANCTIONED, WORK IN PROGRESS, ENGINEERING EXCEPTION, INSUFFICIENT DATA, MANUAL REVIEW REQUIRED
+    duplicate_severity = Column(String(20), default="NONE")  # NONE, LOW, MEDIUM, CRITICAL
+    overlapping_length_km = Column(Float, default=0.0)
+    eligible_length_km = Column(Float, default=0.0)
+    overlapping_chainage_description = Column(String(250), nullable=True)
+    potential_financial_exposure_cr = Column(Float, default=0.0)
+    avoidable_expenditure_cr = Column(Float, default=0.0)
+    engineering_exception_justification = Column(Text, nullable=True)
+    approval_authority_required = Column(String(100), default="Chief Engineer")  # Divisional Engineer, Superintending Engineer, Chief Engineer, COT, Govt
+    ce_review_status = Column(String(50), default="PENDING")  # PENDING, APPROVED, REJECTED, RETURNED_FOR_REVISION
+    reviewed_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    review_remarks = Column(Text, nullable=True)
+    evidence_document_ref = Column(String(150), nullable=True)
+    data_mode = Column(String(20), default="OFFICIAL")  # OFFICIAL, SIMULATED
+    data_status = Column(String(50), default="Verified Register")
+    source_document_ref = Column(String(150), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    road = relationship("Road")
+    circle = relationship("Circle")
+    division = relationship("Division")
+    reviewed_by = relationship("User")
+    overlap_findings = relationship("OverlapFinding", foreign_keys="OverlapFinding.proposal_id", back_populates="proposal", cascade="all, delete-orphan")
+    decisions = relationship("VerificationDecision", back_populates="proposal", cascade="all, delete-orphan")
+
+
+class OverlapFinding(Base):
+    __tablename__ = "overlap_findings"
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("cridp_works.id"), nullable=False, index=True)
+    historical_work_id = Column(Integer, ForeignKey("work_histories.id"), nullable=True)
+    conflicting_proposal_id = Column(Integer, ForeignKey("cridp_works.id"), nullable=True)
+    overlap_type = Column(String(50), nullable=False)  # HISTORICAL_RENEWAL, ONGOING_WORK, MULTIPLE_PROPOSAL_OVERLAP, CROSS_SCHEME
+    overlap_start_chainage = Column(Float, nullable=False)
+    overlap_end_chainage = Column(Float, nullable=False)
+    overlap_length_km = Column(Float, nullable=False)
+    historical_completion_date = Column(DateTime, nullable=True)
+    years_since_completion = Column(Float, nullable=True)
+    is_within_five_year_window = Column(Boolean, default=True)
+    estimated_overlap_cost_cr = Column(Float, default=0.0)
+    recommended_action = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    proposal = relationship("CRIDPWork", foreign_keys=[proposal_id], back_populates="overlap_findings")
+    historical_work = relationship("WorkHistory")
+    conflicting_proposal = relationship("CRIDPWork", foreign_keys=[conflicting_proposal_id])
+
+
+class RenewalEligibilityRule(Base):
+    __tablename__ = "renewal_eligibility_rules"
+    id = Column(Integer, primary_key=True, index=True)
+    rule_code = Column(String(50), unique=True, index=True, nullable=False)
+    policy_name = Column(String(200), nullable=False)
+    restriction_period_years = Column(Float, default=5.0)
+    reference_date_type = Column(String(50), default="PHYSICAL_COMPLETION_DATE")  # PHYSICAL_COMPLETION_DATE, MEASUREMENT_DATE, SANCTION_DATE
+    governing_order_ref = Column(String(150), nullable=False)  # e.g., CRIDP Annual Guidelines / Highways Manual Vol II
+    applicable_schemes = Column(String(250), default="CRIDP, CMRDP, State Capital")
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class RenewalEligibilityAssessment(Base):
+    __tablename__ = "renewal_eligibility_assessments"
+    id = Column(Integer, primary_key=True, index=True)
+    road_id = Column(Integer, ForeignKey("roads.id"), nullable=False, index=True)
+    financial_year = Column(String(20), index=True, nullable=False)  # 2026-27, 2027-28, etc.
+    total_length_km = Column(Float, nullable=False)
+    restricted_length_km = Column(Float, default=0.0)  # within 5-year renewal window
+    already_sanctioned_length_km = Column(Float, default=0.0)
+    other_scheme_committed_length_km = Column(Float, default=0.0)  # committed to TNRSP, CKICP, NHAI, NABARD
+    under_execution_length_km = Column(Float, default=0.0)
+    historically_eligible_length_km = Column(Float, default=0.0)  # Total - restricted
+    administratively_available_length_km = Column(Float, default=0.0)  # Historically eligible - (other schemes + execution)
+    technically_recommended_length_km = Column(Float, default=0.0)  # Evaluated by pavement survey / PCI
+    approved_renewal_length_km = Column(Float, default=0.0)  # Sanctioned in this FY
+    insufficient_data_length_km = Column(Float, default=0.0)
+    calculated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    road = relationship("Road")
+
+
+class DelegationOfPowerRegistry(Base):
+    __tablename__ = "delegation_of_power_registry"
+    id = Column(Integer, primary_key=True, index=True)
+    rule_id = Column(String(50), unique=True, index=True, nullable=False)  # e.g. DOP-TS-DE-001, DOP-TA-SE-001
+    go_reference = Column(String(150), index=True, nullable=False)  # G.O.(Ms) No. 11, G.O.(Ms) No. 29, G.O.(Ms) No. 163
+    issuing_authority = Column(String(150), default="Highways and Minor Ports (HN.2) Department")
+    approval_category = Column(String(80), index=True, nullable=False)
+    # ADMINISTRATIVE_SANCTION, TECHNICAL_SANCTION, DETAILED_DESIGN_APPROVAL, TENDER_ACCEPTANCE,
+    # REVISED_ESTIMATE_APPROVAL, EXTENSION_OF_TIME, CONTRACT_VARIATION, PAYMENT_AUTHORISATION
+    applicable_organisation = Column(String(100), default="Highways Department (C&M)")  # Highways Department (C&M), TANSHA, TNRIDC, TNRSP/CKICP
+    applicable_work_type = Column(String(100), default="Road Works")  # Road Works, Bridge Works, Structural Design, General Maintenance
+    authority_designation = Column(String(100), index=True, nullable=False)  # Divisional Engineer, Superintending Engineer, Chief Engineer, Commissionerate of Tenders, Government
+    monetary_limit_cr = Column(Float, nullable=False)  # e.g. 0.50, 7.00, 9999.00
+    tender_excess_pct_limit = Column(Float, default=0.0)  # 0.0, 5.0, etc.
+    structural_design_separate = Column(Boolean, default=False)  # As per G.O. 11, structural design treated separately
+    effective_date = Column(DateTime, nullable=False)
+    supersession_date = Column(DateTime, nullable=True)
+    verification_status = Column(String(50), default="VERIFIED CURRENT")  # VERIFIED CURRENT, SUPERSEDED, PENDING VERIFICATION, AUTHORITY VERIFICATION REQUIRED
+    supporting_source = Column(String(250), nullable=False)
+    operative_provisions = Column(Text, nullable=False)
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class VerificationDecision(Base):
+    __tablename__ = "verification_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("cridp_works.id"), nullable=False, index=True)
+    reviewer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    reviewer_name = Column(String(150), nullable=False)
+    reviewer_designation = Column(String(100), nullable=False)
+    decision = Column(String(50), nullable=False)  # APPROVED, REJECTED, RETURNED_FOR_REVISION, EXCEPTION_GRANTED
+    justification = Column(Text, nullable=False)
+    evidence_document_ref = Column(String(150), nullable=True)
+    condition_notes = Column(Text, nullable=True)
+    decided_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    proposal = relationship("CRIDPWork", back_populates="decisions")
+    reviewer = relationship("User")
+

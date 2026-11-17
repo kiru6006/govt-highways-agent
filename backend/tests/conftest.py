@@ -14,6 +14,7 @@ from app.seed_universal_connectivity import seed_universal_connectivity
 from app.seed_digital_office import seed_digital_office_data
 from app.seed_land_litigation import seed_land_litigation_data
 from app.seed_major_works_blockers import seed_major_works_blockers_data
+from app.seed_cridp_verification import seed_cridp_verification_data
 
 # Use in-memory or dedicated test database
 TEST_DATABASE_URL = "sqlite:///./test_tn_hdos.db"
@@ -35,6 +36,7 @@ def setup_test_db():
     seed_digital_office_data(db_session=db)
     seed_land_litigation_data(db_session=db)
     seed_major_works_blockers_data(db_session=db)
+    seed_cridp_verification_data(db_session=db)
     db.close()
     yield
     Base.metadata.drop_all(bind=test_engine)

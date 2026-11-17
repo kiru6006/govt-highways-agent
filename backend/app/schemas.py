@@ -2727,3 +2727,259 @@ class MajorWorksAIQueryOut(BaseModel):
     uncertainty_and_limitations: str
     confidence_score: float
     simulated_data_badge: str = "SIMULATED"
+
+
+# =============================================================================
+# CRIDP WORK VERIFICATION, RENEWAL INTELLIGENCE & DELEGATION SCHEMAS
+# =============================================================================
+
+class WorkHistoryOut(BaseModel):
+    id: int
+    work_reference: str
+    road_id: int
+    road_code: str
+    road_name: str
+    road_category: str
+    district: str
+    division_name: Optional[str] = None
+    section_name: Optional[str] = None
+    start_chainage: float
+    end_chainage: float
+    length_km: float
+    work_type: str
+    scheme_name: str
+    sanction_order_no: Optional[str] = None
+    sanction_date: Optional[datetime.datetime] = None
+    sanctioned_cost_cr: float
+    contract_agreement_no: Optional[str] = None
+    contractor_name: Optional[str] = None
+    awarded_value_cr: float
+    physical_completion_date: Optional[datetime.datetime] = None
+    actual_expenditure_cr: float
+    completion_certificate_ref: Optional[str] = None
+    measurement_book_ref: Optional[str] = None
+    pavement_treatment: Optional[str] = None
+    is_verified: bool
+    verification_source: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OverlapFindingOut(BaseModel):
+    id: int
+    proposal_id: int
+    historical_work_id: Optional[int] = None
+    conflicting_proposal_id: Optional[int] = None
+    overlap_type: str
+    overlap_start_chainage: float
+    overlap_end_chainage: float
+    overlap_length_km: float
+    historical_completion_date: Optional[datetime.datetime] = None
+    years_since_completion: Optional[float] = None
+    is_within_five_year_window: bool
+    estimated_overlap_cost_cr: float
+    recommended_action: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class VerificationDecisionOut(BaseModel):
+    id: int
+    proposal_id: int
+    reviewer_id: Optional[int] = None
+    reviewer_name: str
+    reviewer_designation: str
+    decision: str
+    justification: str
+    evidence_document_ref: Optional[str] = None
+    condition_notes: Optional[str] = None
+    decided_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPWorkOut(BaseModel):
+    id: int
+    proposal_code: str
+    work_name: str
+    road_id: int
+    road_code: str
+    road_name: str
+    road_category: str
+    district: str
+    circle_id: Optional[int] = None
+    circle_name: Optional[str] = None
+    division_id: Optional[int] = None
+    division_name: Optional[str] = None
+    section_name: Optional[str] = None
+    start_chainage: float
+    end_chainage: float
+    proposed_length_km: float
+    proposed_work_type: str
+    financial_year: str
+    estimated_cost_cr: float
+    sanctioned_cost_cr: float
+    existing_pavement_type: str
+    existing_crust_thickness_mm: float
+    pci_score: float
+    roughness_iri: float
+    verification_status: str
+    duplicate_severity: str
+    overlapping_length_km: float
+    eligible_length_km: float
+    overlapping_chainage_description: Optional[str] = None
+    potential_financial_exposure_cr: float
+    avoidable_expenditure_cr: float
+    engineering_exception_justification: Optional[str] = None
+    approval_authority_required: str
+    ce_review_status: str
+    reviewed_by_id: Optional[int] = None
+    reviewed_at: Optional[datetime.datetime] = None
+    review_remarks: Optional[str] = None
+    evidence_document_ref: Optional[str] = None
+    data_mode: str = "OFFICIAL"
+    data_status: str = "Verified Register"
+    source_document_ref: Optional[str] = None
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    overlap_findings: List[OverlapFindingOut] = []
+    decisions: List[VerificationDecisionOut] = []
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPWorkCreateIn(BaseModel):
+    work_name: str
+    road_id: int
+    road_code: str
+    road_name: str
+    road_category: str = "SH"
+    district: str
+    circle_name: Optional[str] = None
+    division_name: Optional[str] = None
+    section_name: Optional[str] = None
+    start_chainage: float
+    end_chainage: float
+    proposed_work_type: str
+    financial_year: str = "2026-27"
+    estimated_cost_cr: float
+    existing_pavement_type: str = "Flexible"
+    existing_crust_thickness_mm: float = 150.0
+    pci_score: float = 65.0
+    roughness_iri: float = 3200.0
+    engineering_exception_justification: Optional[str] = None
+    evidence_document_ref: Optional[str] = None
+
+
+class CRIDPVerificationDecisionIn(BaseModel):
+    decision: str  # APPROVED, REJECTED, RETURNED_FOR_REVISION, EXCEPTION_GRANTED
+    justification: str
+    evidence_document_ref: Optional[str] = None
+    condition_notes: Optional[str] = None
+
+
+class DelegationOfPowerRuleOut(BaseModel):
+    id: int
+    rule_id: str
+    go_reference: str
+    issuing_authority: str
+    approval_category: str
+    applicable_organisation: str
+    applicable_work_type: str
+    authority_designation: str
+    monetary_limit_cr: float
+    tender_excess_pct_limit: float
+    structural_design_separate: bool
+    effective_date: datetime.datetime
+    supersession_date: Optional[datetime.datetime] = None
+    verification_status: str
+    supporting_source: str
+    operative_provisions: str
+    notes: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class CRIDPDashboardKPIs(BaseModel):
+    total_verified_road_length_km: float
+    cridp_works_proposed_count: int
+    total_proposed_renewal_length_km: float
+    length_verified_eligible_km: float
+    length_renewed_prev_five_years_km: float
+    length_with_overlapping_proposals_km: float
+    length_committed_other_schemes_km: float
+    length_requiring_manual_verification_km: float
+    districts_with_unresolved_duplication_count: int
+    districts_with_unresolved_duplication: List[str]
+    estimated_value_overlapping_proposals_cr: float
+    potentially_avoidable_expenditure_cr: float
+    confirmed_recoverable_amounts_cr: float
+    proposals_awaiting_ce_review_count: int
+    reporting_date: str
+    data_completeness_pct: float
+    verification_status: str
+
+
+class YearWiseEligibilityRow(BaseModel):
+    financial_year: str
+    total_verified_length_km: float
+    restricted_renewal_window_km: float
+    already_sanctioned_km: float
+    other_schemes_committed_km: float
+    under_execution_km: float
+    historically_eligible_km: float
+    administratively_available_km: float
+    technically_recommended_km: float
+    approved_renewal_km: float
+    insufficient_data_km: float
+
+
+class DistrictCircleEligibilityRow(BaseModel):
+    circle: str
+    division: str
+    district: str
+    verified_inventory_km: float
+    proposed_proposals_count: int
+    proposed_renewal_km: float
+    eligible_length_km: float
+    restricted_five_year_km: float
+    overlapping_length_km: float
+    financial_exposure_cr: float
+    unresolved_duplicates: int
+    proposals_pending_review: int
+
+
+class ChainageOverlapCheckIn(BaseModel):
+    road_id: Optional[int] = None
+    road_code: Optional[str] = None
+    start_chainage: float
+    end_chainage: float
+    proposed_work_type: str = "Periodic Renewal / SDBC"
+    financial_year: str = "2026-27"
+    policy_period_years: float = 5.0
+
+
+class ChainageOverlapCheckOut(BaseModel):
+    road_id: int
+    road_code: str
+    road_name: str
+    proposed_length_km: float
+    overlapping_length_km: float
+    eligible_length_km: float
+    overlap_percentage: float
+    verification_classification: str
+    duplicate_severity: str
+    detailed_overlapping_intervals: List[dict]
+    historical_works_identified: List[dict]
+    recommended_action: str
+    operative_sanction_authority_required: str
+    delegation_rule_ref: str
+    is_authoritative: bool = True
+

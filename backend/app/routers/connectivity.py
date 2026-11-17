@@ -19,7 +19,8 @@ from app.database import get_db
 from app.auth import get_current_user
 from app.models import (
     User, EntityRelationship, RelationshipAuditLog, Project, Contractor,
-    Department, LandParcel, LegalCase, QualityFindingRecord, CMDirection
+    Department, LandParcel, LegalCase, QualityFindingRecord, CMDirection,
+    Road, CRIDPWork, DelegationOfPowerRegistry
 )
 from app.schemas import (
     EntityRelationshipCreate, EntityRelationshipOut, RelationshipAuditLogOut,
@@ -347,6 +348,83 @@ def universal_entity_search(
                 "route": f"/compliance?caseId={lc.id}",
                 "connection_count": 3,
                 "badge": lc.current_status
+            })
+
+    # 6. Departments & Statutory Authorities (including TANSHA)
+    if not entity_types or "DEPARTMENT" in [t.upper() for t in entity_types] or "AUTHORITY" in [t.upper() for t in entity_types]:
+        depts = db.query(Department).filter(
+            or_(Department.code.ilike(q_str), Department.name.ilike(q_str))
+        ).limit(limit).all()
+        for d in depts:
+            results.append({
+                "entity_type": "DEPARTMENT",
+                "entity_id": str(d.id),
+                "code": d.code,
+                "title": d.name,
+                "subtitle": f"Category: {d.category} • HoD: {d.head_of_department}",
+                "route": f"/departments?code={d.code}",
+                "connection_count": 5,
+                "badge": "STATUTORY" if "AUTHORITY" in d.category.upper() else "DEPT"
+            })
+
+    # 7. CRIDP Proposals & Renewal Verifications
+    if not entity_types or "CRIDP" in [t.upper() for t in entity_types] or "RENEWAL" in [t.upper() for t in entity_types]:
+        proposals = db.query(CRIDPWork).filter(
+            or_(
+                CRIDPWork.proposal_code.ilike(q_str),
+                CRIDPWork.work_name.ilike(q_str),
+                CRIDPWork.road_code.ilike(q_str)
+            )
+        ).limit(limit).all()
+        for p in proposals:
+            results.append({
+                "entity_type": "CRIDP_PROPOSAL",
+                "entity_id": str(p.id),
+                "code": p.proposal_code,
+                "title": f"{p.proposal_code}: {p.road_code} (Km {p.start_chainage} - {p.end_chainage})",
+                "subtitle": f"{p.work_name} • Status: {p.verification_status} • FY: {p.financial_year}",
+                "route": f"/cridp-verification?proposalId={p.id}",
+                "connection_count": 3,
+                "badge": p.verification_status
+            })
+
+    # 8. Canonical Roads
+    if not entity_types or "ROAD" in [t.upper() for t in entity_types]:
+        roads = db.query(Road).filter(
+            or_(Road.code.ilike(q_str), Road.name.ilike(q_str))
+        ).limit(limit).all()
+        for r in roads:
+            results.append({
+                "entity_type": "ROAD",
+                "entity_id": str(r.id),
+                "code": r.code,
+                "title": f"{r.code}: {r.name}",
+                "subtitle": f"Type: {r.road_type} • Km {r.start_chainage} to {r.end_chainage} ({r.total_length_km} km)",
+                "route": f"/cridp-verification?roadId={r.id}",
+                "connection_count": 4,
+                "badge": r.road_type
+            })
+
+    # 9. Delegation of Powers Rules
+    if not entity_types or "DELEGATION" in [t.upper() for t in entity_types] or "DOP" in [t.upper() for t in entity_types]:
+        dop_rules = db.query(DelegationOfPowerRegistry).filter(
+            or_(
+                DelegationOfPowerRegistry.rule_id.ilike(q_str),
+                DelegationOfPowerRegistry.go_reference.ilike(q_str),
+                DelegationOfPowerRegistry.authority_designation.ilike(q_str),
+                DelegationOfPowerRegistry.approval_category.ilike(q_str)
+            )
+        ).limit(limit).all()
+        for r in dop_rules:
+            results.append({
+                "entity_type": "DELEGATION_RULE",
+                "entity_id": str(r.id),
+                "code": r.rule_id,
+                "title": f"{r.rule_id}: {r.authority_designation} ({r.approval_category})",
+                "subtitle": f"Limit: ₹{r.monetary_limit_cr} Cr • {r.go_reference}",
+                "route": f"/cridp-verification?tab=delegation&ruleId={r.id}",
+                "connection_count": 2,
+                "badge": r.verification_status
             })
 
     return {

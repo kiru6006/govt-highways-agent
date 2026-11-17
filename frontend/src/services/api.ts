@@ -5153,6 +5153,128 @@ export const api = {
       fallbackEvidenceRequestsList.unshift(newEv);
       return newEv;
     }
+  },
+
+  // CRIDP Work Verification & Five-Year Renewal Intelligence
+  getCRIDPKPIs: async (financialYear: string = '2026-27') => {
+    try {
+      return await request<any>(`/cridp-verification/kpis?financial_year=${encodeURIComponent(financialYear)}`);
+    } catch {
+      return {
+        total_verified_road_length_km: 1196.3,
+        cridp_works_proposed_count: 6,
+        total_proposed_renewal_length_km: 41.0,
+        length_verified_eligible_km: 24.0,
+        length_renewed_prev_five_years_km: 7.0,
+        length_with_overlapping_proposals_km: 23.0,
+        length_committed_other_schemes_km: 26.0,
+        length_requiring_manual_verification_km: 0.0,
+        districts_with_unresolved_duplication_count: 1,
+        districts_with_unresolved_duplication: ['Chengalpattu'],
+        estimated_value_overlapping_proposals_cr: 14.8,
+        potentially_avoidable_expenditure_cr: 6.33,
+        confirmed_recoverable_amounts_cr: 2.53,
+        proposals_awaiting_ce_review_count: 6,
+        reporting_date: '16 November 2026',
+        data_completeness_pct: 98.4,
+        verification_status: 'OFFICIALLY GROUNDED IN HIGHWAYS COMPLETION REGISTERS'
+      };
+    }
+  },
+
+  getCRIDPProposals: async (params?: Record<string, string>) => {
+    try {
+      const sp = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          if (v && v !== 'ALL') sp.append(k, v);
+        });
+      }
+      const url = `/cridp-verification/proposals${sp.toString() ? '?' + sp.toString() : ''}`;
+      return await request<any[]>(url);
+    } catch {
+      return [];
+    }
+  },
+
+  getCRIDPProposalDetail: async (proposalId: number) => {
+    return await request<any>(`/cridp-verification/proposals/${proposalId}`);
+  },
+
+  createCRIDPProposal: async (payload: any) => {
+    return await request<any>('/cridp-verification/proposals', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  reviewCRIDPProposal: async (proposalId: number, payload: { decision: string; justification: string; evidence_document_ref?: string; condition_notes?: string }) => {
+    return await request<any>(`/cridp-verification/proposals/${proposalId}/review`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  checkChainageOverlap: async (payload: { road_id?: number; road_code?: string; start_chainage: number; end_chainage: number; proposed_work_type?: string; financial_year?: string }) => {
+    return await request<any>('/cridp-verification/check-overlap', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  getCRIDPYearWiseEligibility: async () => {
+    try {
+      return await request<any[]>('/cridp-verification/year-wise-eligibility');
+    } catch {
+      return [];
+    }
+  },
+
+  getCRIDPHierarchyBreakdown: async (financialYear: string = '2026-27') => {
+    try {
+      return await request<any[]>(`/cridp-verification/hierarchy-breakdown?financial_year=${encodeURIComponent(financialYear)}`);
+    } catch {
+      return [];
+    }
+  },
+
+  getCRIDPHistoricalWorks: async (params?: Record<string, string>) => {
+    try {
+      const sp = new URLSearchParams();
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          if (v && v !== 'ALL') sp.append(k, v);
+        });
+      }
+      return await request<any[]>(`/cridp-verification/historical-works${sp.toString() ? '?' + sp.toString() : ''}`);
+    } catch {
+      return [];
+    }
+  },
+
+  getCRIDPFinancialRisk: async (financialYear: string = '2026-27') => {
+    try {
+      return await request<any>(`/cridp-verification/financial-risk?financial_year=${encodeURIComponent(financialYear)}`);
+    } catch {
+      return null;
+    }
+  },
+
+  getDelegationRules: async (category?: string) => {
+    try {
+      const q = category && category !== 'ALL' ? `?approval_category=${encodeURIComponent(category)}` : '';
+      return await request<any[]>(`/cridp-verification/delegation-rules${q}`);
+    } catch {
+      return [];
+    }
+  },
+
+  getCRIDPAIRecommendations: async (financialYear: string = '2026-27') => {
+    try {
+      return await request<any>(`/cridp-verification/ai-recommendations?financial_year=${encodeURIComponent(financialYear)}`);
+    } catch {
+      return { recommendations: [] };
+    }
   }
 };
 

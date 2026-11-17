@@ -228,6 +228,20 @@ def get_programme_performance(
             "delayed": 1,
             "high_risk": 1,
             "status": "MODERATE_RISK"
+        },
+        {
+            "code": "TANSHA",
+            "name": "Tamil Nadu State Highways Authority (Act 12 of 2024)",
+            "approved_cost_cr": 450.00,
+            "budget_allocation_cr": 350.00,
+            "expenditure_cr": 112.40,
+            "physical_pct": 42.0,
+            "financial_pct": 32.1,
+            "projects_count": 4,
+            "packages_count": 8,
+            "delayed": 1,
+            "high_risk": 0,
+            "status": "ON_TRACK"
         }
     ]
 
