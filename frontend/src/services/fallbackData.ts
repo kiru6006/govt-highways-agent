@@ -1986,3 +1986,139 @@ export const fallbackCRIDPDataQualityFindingsList: CRIDPDataQualityItem[] = [
     confidence_score: 88.0
   }
 ];
+
+
+export const fallbackCRIDPAdministrativeHierarchy = {
+  circles: [
+    "Chengalpattu Circle",
+    "Chennai Circle",
+    "Coimbatore Circle",
+    "Cuddalore Circle",
+    "Madurai Circle",
+    "Salem Circle",
+    "Tiruchirappalli Circle",
+    "Tirunelveli Circle",
+    "Vellore Circle",
+    "Villupuram Circle"
+  ],
+  divisions_by_circle: {
+    "Chengalpattu Circle": ["Chengalpattu Division", "Kancheepuram Division"],
+    "Chennai Circle": ["Chennai City Roads Division"],
+    "Coimbatore Circle": ["Coimbatore Special Division", "Pollachi Division"],
+    "Cuddalore Circle": ["Chidambaram Division", "Cuddalore Division"],
+    "Madurai Circle": ["Madurai Special Division", "Usilampatti Division"],
+    "Salem Circle": ["Salem Division", "Omalur Division"],
+    "Tiruchirappalli Circle": ["Trichy Division", "Musiri Division"],
+    "Tirunelveli Circle": ["Tirunelveli Division", "Tenkasi Division"],
+    "Vellore Circle": ["Vellore Division", "Ranipet Division"],
+    "Villupuram Circle": ["Villupuram Division", "Tindivanam Division"]
+  },
+  districts_by_division: {
+    "Chengalpattu Division": ["Chengalpattu"],
+    "Kancheepuram Division": ["Kancheepuram"],
+    "Chennai City Roads Division": ["Chennai"],
+    "Coimbatore Special Division": ["Coimbatore"],
+    "Pollachi Division": ["Coimbatore"],
+    "Chidambaram Division": ["Cuddalore"],
+    "Cuddalore Division": ["Cuddalore"],
+    "Madurai Special Division": ["Madurai"],
+    "Usilampatti Division": ["Madurai"],
+    "Salem Division": ["Salem"],
+    "Omalur Division": ["Salem"],
+    "Trichy Division": ["Tiruchirappalli"],
+    "Musiri Division": ["Tiruchirappalli"],
+    "Tirunelveli Division": ["Tirunelveli"],
+    "Tenkasi Division": ["Tenkasi"],
+    "Vellore Division": ["Vellore"],
+    "Ranipet Division": ["Ranipet"],
+    "Villupuram Division": ["Villupuram"],
+    "Tindivanam Division": ["Villupuram"]
+  },
+  constituencies: [
+    "Chengalpattu North",
+    "Kancheepuram Central",
+    "Madurai East",
+    "Coimbatore South",
+    "Salem West",
+    "Tiruchirappalli Central",
+    "Cuddalore Coast"
+  ],
+  work_categories: [
+    "Widening",
+    "Strengthening",
+    "Renewal",
+    "Riding Quality Improvement",
+    "Bridge and Culvert",
+    "Road Safety",
+    "Urban Improvement",
+    "Bypass",
+    "Drainage and Protective Works"
+  ],
+  contractors: [
+    "M/s Southern Infra Projects Pvt Ltd",
+    "M/s Bharath Buildcon Ltd",
+    "M/s KCP Infra Ltd",
+    "M/s Pandian Road Constructions",
+    "M/s Coromandel Expressways",
+    "M/s Premier Pavements",
+    "M/s Kongu Infrastructure",
+    "M/s Cauvery Engineering & Contractors"
+  ],
+  schemes: ["CRIDP - Regular", "CRIDP - SCP", "CRIDP - Other Schemes", "CMRDP"],
+  road_classes: ["SH", "MDR", "ODR", "Rural Road"],
+  financial_years: ["2024-25", "2025-26", "2026-27"]
+};
+
+export const fallbackCRIDPYearWiseComparisonData = {
+  comparison_rows: [
+    {
+      financial_year: "2024-25",
+      total_works_count: 32,
+      total_length_km: 240.5,
+      sanction_amount_cr: 68.4,
+      overlapping_length_km: 28.8,
+      avoidable_expenditure_cr: 5.47,
+      delayed_works_count: 8,
+      open_risk_count: 5,
+      completion_rate_pct: 75.0
+    },
+    {
+      financial_year: "2025-26",
+      total_works_count: 48,
+      total_length_km: 380.2,
+      sanction_amount_cr: 112.6,
+      overlapping_length_km: 45.6,
+      avoidable_expenditure_cr: 9.01,
+      delayed_works_count: 12,
+      open_risk_count: 7,
+      completion_rate_pct: 75.0
+    },
+    {
+      financial_year: "2026-27",
+      total_works_count: 96,
+      total_length_km: 642.8,
+      sanction_amount_cr: 198.5,
+      overlapping_length_km: 74.2,
+      avoidable_expenditure_cr: 18.25,
+      delayed_works_count: 14,
+      open_risk_count: 11,
+      completion_rate_pct: 85.4
+    }
+  ],
+  metric_deltas: {
+    works_count_delta: 48,
+    works_count_growth_pct: 100.0,
+    length_km_delta: 262.6,
+    length_growth_pct: 69.1,
+    sanction_cr_delta: 85.9,
+    sanction_growth_pct: 76.3,
+    avoidable_expenditure_delta: 9.24,
+    avoidable_growth_pct: 102.6
+  },
+  summary_findings: [
+    "CRIDP proposals grew by 100.0% between FY 2025-26 and FY 2026-27.",
+    "Proposed length expanded from 380.2 Km to 642.8 Km (+69.1%).",
+    "High-risk overlapping length increased from 45.6 Km to 74.2 Km, highlighting urgency of automated duplicate pre-verification.",
+    "Proactive screening under G.O.(Ms) No. 105 protects up to ₹18.25 Cr in avoidable duplicate expenditure."
+  ]
+};

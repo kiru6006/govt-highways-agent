@@ -5,7 +5,7 @@ and Delegation of Powers (Phases 2-11).
 
 import datetime
 from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, func
 
@@ -23,7 +23,8 @@ from app.schemas import (
     CRIDPCorrectiveActionOut, CRIDPCorrectiveActionCreateIn, CRIDPCorrectiveActionUpdateIn,
     CRIDPInvestigationOut, CRIDPInvestigationDecisionIn, CRIDPDataQualityFindingOut,
     CRIDPRiskOverviewKPIs, CRIDPDelayRootCauseItem, CRIDPContractorScorecardItem,
-    CRIDPAIInsightResponse
+    CRIDPAIInsightResponse, CRIDPAdvancedFilterPayload, CRIDPAdvancedFilterResultOut,
+    CRIDPAdministrativeHierarchyOut, CRIDPYearWiseComparisonPayload, CRIDPYearWiseComparisonResultOut
 )
 from app.auth import get_current_user
 from app.services.audit import log_audit_event
@@ -34,7 +35,9 @@ from app.services.cridp_verification_service import (
 )
 from app.services.cridp_risk_service import (
     calculate_statewide_risk_kpis, get_investigation_dossier,
-    get_delays_and_root_causes, get_contractor_scorecards, get_ai_insight_answer
+    get_delays_and_root_causes, get_contractor_scorecards, get_ai_insight_answer,
+    get_cridp_administrative_hierarchy, filter_cridp_proposals_advanced,
+    get_cridp_year_wise_comparison, export_cridp_filtered_records_csv
 )
 
 router = APIRouter(prefix="/cridp-verification", tags=["Statewide CRIDP Work Verification"])
@@ -736,3 +739,51 @@ def ask_ai_risk_analyst(
     return get_ai_insight_answer(q, db=db)
 
 
+
+
+# =============================================================================
+# ADVANCED FILTERING, SEARCH, DRILL-DOWN & COMPARISON ENDPOINTS
+# =============================================================================
+
+@router.get("/hierarchy", response_model=CRIDPAdministrativeHierarchyOut)
+def get_administrative_hierarchy_tree(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Returns dependent hierarchy tree (Circles -> Divisions -> Districts) and available filter dimensions."""
+    return get_cridp_administrative_hierarchy(db)
+
+
+@router.post("/advanced-filter", response_model=CRIDPAdvancedFilterResultOut)
+def filter_proposals_advanced(
+    payload: CRIDPAdvancedFilterPayload,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Universal multi-criteria, preset-aware filtering across all 11 dashboard tabs with dynamic KPIs."""
+    return filter_cridp_proposals_advanced(db, payload=payload, current_user=current_user)
+
+
+@router.post("/year-wise-comparison", response_model=CRIDPYearWiseComparisonResultOut)
+def compare_financial_years(
+    payload: CRIDPYearWiseComparisonPayload,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Computes multiannual comparative matrix and percentage variances between selected financial years."""
+    return get_cridp_year_wise_comparison(db, payload=payload)
+
+
+@router.post("/export-filtered")
+def export_filtered_proposals_csv(
+    payload: CRIDPAdvancedFilterPayload,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Exports matching proposals matching the active multi-criteria filter directly to RFC 4180 CSV."""
+    csv_data = export_cridp_filtered_records_csv(db, payload=payload, current_user=current_user)
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=CRIDP_Filtered_Proposals_Export.csv"}
+    )

@@ -247,8 +247,30 @@ TOP HEADER UTILITY BAR
 * **Automated Acceptance Test Coverage**:
   * `tests/test_cridp_verification.py`: 20/20 tests passing.
   * `tests/test_cridp_risk_intelligence.py`: 25/25 acceptance criteria tests passing.
-  * Total: **45 automated CRIDP backend tests passing with 100% success**.
+  * `tests/test_cridp_advanced_filter.py`: 20/20 acceptance criteria tests passing (Section 10).
+  * Total: **65 automated CRIDP backend tests passing with 100% success**.
+* **Statewide CRIDP Advanced Filtering, Search & Drill-Down Engine**:
+  * **Global Persistent Filter Bar**: Top-level bar synchronized across all 11 tabs, KPI cards, tables, investigations, and charts.
+  * **8 Chief Engineer Preset Views**:
+    1. `PRESET_5YR_DUPLICATE`: 5-Year Duplicate Verification (flagged renewals within 5-yr lock).
+    2. `PRESET_UNCLOSED_PREVIOUS`: Previous Work Not Properly Closed (physical/financial discrepancy, uncertified 100% progress).
+    3. `PRESET_HIGH_FINANCIAL_RISK`: High Financial Risk (avoidable duplicate exposure > ₹50 Lakhs).
+    4. `PRESET_CRITICAL_DELAYS`: Critical Project Delays (active work delayed > 180 days).
+    5. `PRESET_LAND_LITIGATION_BLOCKERS`: Land, Litigation & Utility Blockers (stay orders, LA stalls, utility shifting).
+    6. `PRESET_CONTRACTOR_PERFORMANCE`: Contractor Performance Review (multiple delayed packages under low-score contractors).
+    7. `PRESET_FREE_STRETCHES`: Year-wise Free Road Stretches (0% overlap, eligible for sanction).
+    8. `PRESET_DATA_VERIFICATION`: Data Verification Required (missing chainage, unverified completion dates).
+  * **Category-Based Unified Search**: Instant lookups by `ALL`, `ROAD`, `WORK_CODE`, `DISTRICT`, `DIVISION`, `CONTRACTOR`, `G.O.`, or `RISK`.
+  * **Dependent Administrative Cascading**: State (TN) $\rightarrow$ Circle $\rightarrow$ Division $\rightarrow$ District. Accurately accounts for non-1:1 relationship between divisions and revenue districts.
+  * **1D Chainage Interval Overlap Querying**: Evaluates whether $[s_i, e_i]$ overlaps requested range $[S_{\min}, E_{\max}]$ ($e_i > S_{\min} \land s_i < E_{\max}$).
+  * **Financial Unit Consistency**: Seamless bidirectional handling of ₹ in Lakhs and ₹ in Crores.
+  * **Multiannual Year-Wise Comparison Matrix**: Cross-year matrix comparing FY 2024-25, 2025-26, and 2026-27 with total works, proposed length, sanction amount, avoidable expenditure, and delta findings.
+  * **Direct RFC 4180 CSV Export**: Generates filtered proposal reports respecting all active parameters.
 * **Endpoints**:
+  * `GET /api/v1/cridp-verification/hierarchy`
+  * `POST /api/v1/cridp-verification/advanced-filter`
+  * `POST /api/v1/cridp-verification/year-wise-comparison`
+  * `POST /api/v1/cridp-verification/export-filtered`
   * `GET /api/v1/cridp-verification/risk-overview`
   * `GET /api/v1/cridp-verification/investigations`
   * `GET /api/v1/cridp-verification/investigations/{proposal_id}`

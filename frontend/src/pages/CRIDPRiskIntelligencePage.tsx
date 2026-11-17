@@ -11,7 +11,12 @@ import {
   CRIDPWorkItem,
   WorkHistoryItem,
   YearWiseEligibilityItem,
-  DelegationOfPowerRuleItem
+  DelegationOfPowerRuleItem,
+  CRIDPAdvancedFilterPayload,
+  CRIDPFilteredKPIs,
+  CRIDPAdvancedFilterResult,
+  CRIDPAdministrativeHierarchy,
+  CRIDPYearWiseComparisonResult
 } from '../types';
 import {
   ShieldAlert,
@@ -48,7 +53,14 @@ import {
   Hammer,
   BadgeAlert,
   ArrowUpRight,
-  BookOpen
+  BookOpen,
+  Download,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Sliders,
+  Calendar,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export const CRIDPRiskIntelligencePage: React.FC = () => {
@@ -92,6 +104,34 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
   const [selectedSeverity, setSelectedSeverity] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  // Advanced Filtering, Search & Drill-Down Engine States
+  const [hierarchy, setHierarchy] = useState<CRIDPAdministrativeHierarchy | null>(null);
+  const [selectedCircles, setSelectedCircles] = useState<string[]>([]);
+  const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
+  const [selectedRoadClasses, setSelectedRoadClasses] = useState<string[]>([]);
+  const [selectedWorkCategories, setSelectedWorkCategories] = useState<string[]>([]);
+  const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [searchCategory, setSearchCategory] = useState<string>('ALL');
+  const [startChainage, setStartChainage] = useState<string>('');
+  const [endChainage, setEndChainage] = useState<string>('');
+  const [minCostLakhs, setMinCostLakhs] = useState<string>('');
+  const [maxCostLakhs, setMaxCostLakhs] = useState<string>('');
+  const [fiveYearEligibleOnly, setFiveYearEligibleOnly] = useState<boolean>(false);
+  const [delayStatusFilter, setDelayStatusFilter] = useState<string>('ALL');
+
+  // Filter Drawer & Multi-Year Comparison Modal
+  const [showAdvancedDrawer, setShowAdvancedDrawer] = useState<boolean>(false);
+  const [showComparisonModal, setShowComparisonModal] = useState<boolean>(false);
+  const [comparisonLoading, setComparisonLoading] = useState<boolean>(false);
+  const [comparisonData, setComparisonData] = useState<CRIDPYearWiseComparisonResult | null>(null);
+
+  // Filtered Proposals & Active KPIs
+  const [filterResult, setFilterResult] = useState<CRIDPAdvancedFilterResult | null>(null);
+  const [filterLoading, setFilterLoading] = useState<boolean>(false);
+  const [exportingCSV, setExportingCSV] = useState<boolean>(false);
+
   // Decision Form State (CE Verdict)
   const [decisionVerdict, setDecisionVerdict] = useState<string>('REJECT_PREMATURE_RENEWAL');
   const [decisionJustification, setDecisionJustification] = useState<string>('');
@@ -128,7 +168,8 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
         actionsRes,
         ywRes,
         dqRes,
-        rulesRes
+        rulesRes,
+        hierRes
       ] = await Promise.all([
         api.getCRIDPRiskOverview(selectedFY),
         api.getCRIDPInvestigations(),
@@ -139,10 +180,12 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
         api.getCRIDPCorrectiveActions(),
         api.getCRIDPYearWiseEligibility(),
         api.getCRIDPDataQualityFindings(),
-        api.getDelegationRules()
+        api.getDelegationRules(),
+        api.getCRIDPAdministrativeHierarchy()
       ]);
 
       setRiskKPIs(kpisRes);
+      setHierarchy(hierRes);
       setInvestigations(invsRes);
       if (invsRes.length > 0 && !selectedInvestigation) {
         setSelectedInvestigation(invsRes[0]);
@@ -251,6 +294,175 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
     });
   }, [investigations, selectedCategory, selectedSeverity, searchQuery]);
 
+  // Active Proposals (Synchronized with Filter Results)
+  const activeProposals = useMemo(() => {
+    return filterResult ? filterResult.proposals : proposals;
+  }, [filterResult, proposals]);
+
+  // Dependent cascading options
+  const availableDivisions = useMemo(() => {
+    if (!hierarchy) return [];
+    if (selectedCircles.length === 0) {
+      const allDivs = new Set<string>();
+      Object.values(hierarchy.divisions_by_circle).forEach(divs => divs.forEach(d => allDivs.add(d)));
+      return Array.from(allDivs).sort();
+    }
+    const filteredDivs = new Set<string>();
+    selectedCircles.forEach(c => {
+      (hierarchy.divisions_by_circle[c] || []).forEach(d => filteredDivs.add(d));
+    });
+    return Array.from(filteredDivs).sort();
+  }, [hierarchy, selectedCircles]);
+
+  const availableDistricts = useMemo(() => {
+    if (!hierarchy) return [];
+    if (selectedDivisions.length === 0) {
+      if (selectedCircles.length === 0) {
+        const allDist = new Set<string>();
+        Object.values(hierarchy.districts_by_division).forEach(dists => dists.forEach(d => allDist.add(d)));
+        return Array.from(allDist).sort();
+      }
+      const dists = new Set<string>();
+      availableDivisions.forEach(div => {
+        (hierarchy.districts_by_division[div] || []).forEach(d => dists.add(d));
+      });
+      return Array.from(dists).sort();
+    }
+    const dists = new Set<string>();
+    selectedDivisions.forEach(div => {
+      (hierarchy.districts_by_division[div] || []).forEach(d => dists.add(d));
+    });
+    return Array.from(dists).sort();
+  }, [hierarchy, selectedDivisions, availableDivisions, selectedCircles]);
+
+  // Execute Advanced Filter
+  const executeFilter = async (override?: Partial<CRIDPAdvancedFilterPayload>) => {
+    setFilterLoading(true);
+    try {
+      const payload: CRIDPAdvancedFilterPayload = {
+        financial_years: [selectedFY],
+        circles: selectedCircles.length > 0 ? selectedCircles : undefined,
+        divisions: selectedDivisions.length > 0 ? selectedDivisions : undefined,
+        districts: selectedDistricts.length > 0 ? selectedDistricts : undefined,
+        road_categories: selectedRoadClasses.length > 0 ? selectedRoadClasses : undefined,
+        work_categories: selectedWorkCategories.length > 0 ? selectedWorkCategories : undefined,
+        severities: selectedSeverities.length > 0 ? selectedSeverities : undefined,
+        preset_view: selectedPreset || undefined,
+        search_query: searchQuery.trim() || undefined,
+        search_category: searchCategory !== 'ALL' ? searchCategory : undefined,
+        start_chainage: startChainage ? parseFloat(startChainage) : undefined,
+        end_chainage: endChainage ? parseFloat(endChainage) : undefined,
+        min_cost_lakhs: minCostLakhs ? parseFloat(minCostLakhs) : undefined,
+        max_cost_lakhs: maxCostLakhs ? parseFloat(maxCostLakhs) : undefined,
+        five_year_eligible_only: fiveYearEligibleOnly || undefined,
+        delay_statuses: delayStatusFilter !== 'ALL' ? [delayStatusFilter] : undefined,
+        page: 1,
+        page_size: 50,
+        ...override
+      };
+
+      const res = await api.filterCRIDPProposalsAdvanced(payload);
+      setFilterResult(res);
+    } catch (err: any) {
+      console.error('Filter execution failed:', err);
+    } finally {
+      setFilterLoading(false);
+    }
+  };
+
+  const handleClearAll = () => {
+    setSelectedCircles([]);
+    setSelectedDivisions([]);
+    setSelectedDistricts([]);
+    setSelectedRoadClasses([]);
+    setSelectedWorkCategories([]);
+    setSelectedSeverities([]);
+    setSelectedPreset(null);
+    setSearchQuery('');
+    setSearchCategory('ALL');
+    setStartChainage('');
+    setEndChainage('');
+    setMinCostLakhs('');
+    setMaxCostLakhs('');
+    setFiveYearEligibleOnly(false);
+    setDelayStatusFilter('ALL');
+    setFilterResult(null);
+  };
+
+  const handlePresetClick = (presetKey: string) => {
+    if (selectedPreset === presetKey) {
+      setSelectedPreset(null);
+      executeFilter({ preset_view: undefined });
+    } else {
+      setSelectedPreset(presetKey);
+      executeFilter({ preset_view: presetKey });
+    }
+  };
+
+  const handleExportCSV = async () => {
+    setExportingCSV(true);
+    try {
+      const payload: CRIDPAdvancedFilterPayload = {
+        financial_years: [selectedFY],
+        circles: selectedCircles.length > 0 ? selectedCircles : undefined,
+        divisions: selectedDivisions.length > 0 ? selectedDivisions : undefined,
+        districts: selectedDistricts.length > 0 ? selectedDistricts : undefined,
+        road_categories: selectedRoadClasses.length > 0 ? selectedRoadClasses : undefined,
+        work_categories: selectedWorkCategories.length > 0 ? selectedWorkCategories : undefined,
+        severities: selectedSeverities.length > 0 ? selectedSeverities : undefined,
+        preset_view: selectedPreset || undefined,
+        search_query: searchQuery.trim() || undefined,
+        search_category: searchCategory !== 'ALL' ? searchCategory : undefined,
+        start_chainage: startChainage ? parseFloat(startChainage) : undefined,
+        end_chainage: endChainage ? parseFloat(endChainage) : undefined,
+        min_cost_lakhs: minCostLakhs ? parseFloat(minCostLakhs) : undefined,
+        max_cost_lakhs: maxCostLakhs ? parseFloat(maxCostLakhs) : undefined,
+        five_year_eligible_only: fiveYearEligibleOnly || undefined,
+        delay_statuses: delayStatusFilter !== 'ALL' ? [delayStatusFilter] : undefined
+      };
+      const blob = await api.exportCRIDPFilteredCSV(payload);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cridp_${selectedFY}_filtered_records.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      alert(`CSV Export failed: ${err.message}`);
+    } finally {
+      setExportingCSV(false);
+    }
+  };
+
+  const handleOpenComparison = async () => {
+    setShowComparisonModal(true);
+    setComparisonLoading(true);
+    try {
+      const res = await api.getCRIDPYearWiseComparison({
+        financial_years: ['2024-25', '2025-26', '2026-27']
+      });
+      setComparisonData(res);
+    } catch (err: any) {
+      console.error('Failed to load multiannual comparison:', err);
+    } finally {
+      setComparisonLoading(false);
+    }
+  };
+
+  // 8 Chief Engineer Preset Views Definitions
+  const CE_PRESETS = [
+    { id: 'PRESET_5YR_DUPLICATE', label: '5-Yr Duplicate Verification', icon: ShieldAlert, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+    { id: 'PRESET_UNCLOSED_PREVIOUS', label: 'Previous Work Not Closed', icon: AlertTriangle, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+    { id: 'PRESET_HIGH_FINANCIAL_RISK', label: 'High Financial Risk', icon: DollarSign, color: 'text-orange-400 bg-orange-500/10 border-orange-500/30' },
+    { id: 'PRESET_CRITICAL_DELAYS', label: 'Critical Project Delays', icon: Clock, color: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+    { id: 'PRESET_LAND_LITIGATION_BLOCKERS', label: 'Land / Litigation / Utility', icon: Scale, color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
+    { id: 'PRESET_CONTRACTOR_PERFORMANCE', label: 'Contractor Performance', icon: Users, color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30' },
+    { id: 'PRESET_FREE_STRETCHES', label: 'Free Road Stretches', icon: Milestone, color: 'text-sky-400 bg-sky-500/10 border-sky-500/30' },
+    { id: 'PRESET_DATA_VERIFICATION', label: 'Data Verification Req.', icon: FileQuestion, color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30' }
+  ];
+
   // Unique Districts for Filter Dropdowns
   const districts = useMemo(() => {
     const setD = new Set<string>();
@@ -317,6 +529,493 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
       </div>
 
       {/* ------------------------------------------------------------------- */}
+      {/* GLOBAL PERSISTENT FILTER BAR & SEARCH ENGINE */}
+      {/* ------------------------------------------------------------------- */}
+      <div className="bg-slate-800/90 backdrop-blur border border-slate-700/80 rounded-xl p-4 shadow-xl space-y-4">
+        {/* Preset Views Bar */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+              Chief Engineer Preset Views
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenComparison}
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 rounded-lg transition"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                Multi-Year Comparison
+              </button>
+              <button
+                onClick={handleExportCSV}
+                disabled={exportingCSV}
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/30 rounded-lg transition"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                {exportingCSV ? 'Exporting...' : 'Export Filtered CSV'}
+              </button>
+              {(filterResult || selectedPreset || selectedCircles.length > 0 || selectedDistricts.length > 0 || searchQuery) && (
+                <button
+                  onClick={handleClearAll}
+                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded-lg transition"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Clear All
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+            {CE_PRESETS.map((preset) => {
+              const Icon = preset.icon;
+              const isSelected = selectedPreset === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  onClick={() => handlePresetClick(preset.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition whitespace-nowrap ${
+                    isSelected
+                      ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md font-bold'
+                      : 'bg-slate-900/60 hover:bg-slate-700/60 text-slate-300 border-slate-700'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950' : 'text-emerald-400'}`} />
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Primary Search & Dependent Filters Row */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+          {/* Search Category Dropdown */}
+          <div className="md:col-span-2">
+            <select
+              value={searchCategory}
+              onChange={(e) => setSearchCategory(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+            >
+              <option value="ALL">All Categories</option>
+              <option value="ROAD">Road Name / Number</option>
+              <option value="WORK_CODE">Job / Work Code</option>
+              <option value="DISTRICT">District</option>
+              <option value="DIVISION">Division</option>
+              <option value="CONTRACTOR">Contractor</option>
+              <option value="G.O.">G.O. Reference</option>
+              <option value="RISK">Risk Description</option>
+            </select>
+          </div>
+
+          {/* Search Input Box */}
+          <div className="md:col-span-4 relative">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <input
+              type="text"
+              placeholder={`Search ${searchCategory === 'ALL' ? 'by road, job code, contractor, or risk' : searchCategory}...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') executeFilter(); }}
+              className="w-full pl-9 pr-8 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(''); executeFilter({ search_query: undefined }); }}
+                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Dependent Circle Selector */}
+          <div className="md:col-span-2">
+            <select
+              value={selectedCircles[0] || 'ALL'}
+              onChange={(e) => {
+                const val = e.target.value === 'ALL' ? [] : [e.target.value];
+                setSelectedCircles(val);
+                setSelectedDivisions([]);
+                setSelectedDistricts([]);
+                executeFilter({ circles: val.length > 0 ? val : undefined, divisions: undefined, districts: undefined });
+              }}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+            >
+              <option value="ALL">All Circles (Statewide)</option>
+              {(hierarchy?.circles || []).map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Dependent Division Selector */}
+          <div className="md:col-span-2">
+            <select
+              value={selectedDivisions[0] || 'ALL'}
+              onChange={(e) => {
+                const val = e.target.value === 'ALL' ? [] : [e.target.value];
+                setSelectedDivisions(val);
+                setSelectedDistricts([]);
+                executeFilter({ divisions: val.length > 0 ? val : undefined, districts: undefined });
+              }}
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+            >
+              <option value="ALL">All Divisions</option>
+              {availableDivisions.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Drawer Toggle & Filter Action Button */}
+          <div className="md:col-span-2 flex items-center gap-2">
+            <button
+              onClick={() => executeFilter()}
+              disabled={filterLoading}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition shadow"
+            >
+              <Filter className="w-3.5 h-3.5" />
+              {filterLoading ? 'Filtering...' : 'Filter'}
+            </button>
+            <button
+              onClick={() => setShowAdvancedDrawer(!showAdvancedDrawer)}
+              className={`p-2 rounded-lg border text-xs font-semibold transition ${
+                showAdvancedDrawer
+                  ? 'bg-slate-700 border-slate-500 text-white'
+                  : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-700'
+              }`}
+              title="Toggle Advanced Filter Drawer"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Collapsible Advanced Filters Drawer */}
+        {showAdvancedDrawer && (
+          <div className="bg-slate-900/80 border border-slate-700/80 rounded-xl p-4 space-y-4 pt-3 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Road & Chainage Bounds */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Road Classification & Chainage (Km)
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={selectedRoadClasses[0] || 'ALL'}
+                    onChange={(e) => {
+                      const val = e.target.value === 'ALL' ? [] : [e.target.value];
+                      setSelectedRoadClasses(val);
+                    }}
+                    className="w-1/2 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200"
+                  >
+                    <option value="ALL">All Class</option>
+                    <option value="SH">SH</option>
+                    <option value="MDR">MDR</option>
+                    <option value="ODR">ODR</option>
+                    <option value="Rural Road">Rural</option>
+                  </select>
+                  <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={fiveYearEligibleOnly}
+                      onChange={(e) => setFiveYearEligibleOnly(e.target.checked)}
+                      className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0"
+                    />
+                    <span>5-Yr Eligible</span>
+                  </label>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="Start Km (e.g. 20.0)"
+                    value={startChainage}
+                    onChange={(e) => setStartChainage(e.target.value)}
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200"
+                  />
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="End Km (e.g. 35.0)"
+                    value={endChainage}
+                    onChange={(e) => setEndChainage(e.target.value)}
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200"
+                  />
+                </div>
+              </div>
+
+              {/* Financial Ranges (Lakhs with Crores conversion) */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex justify-between">
+                  <span>Sanction Range (₹ in Lakhs)</span>
+                  <span className="text-emerald-400 text-[10px]">100 Lakhs = ₹1.00 Cr</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Min Lakhs"
+                      value={minCostLakhs}
+                      onChange={(e) => setMinCostLakhs(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200"
+                    />
+                    {minCostLakhs && (
+                      <span className="text-[10px] text-slate-400">≈ ₹{(parseFloat(minCostLakhs) / 100).toFixed(2)} Cr</span>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Max Lakhs"
+                      value={maxCostLakhs}
+                      onChange={(e) => setMaxCostLakhs(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200"
+                    />
+                    {maxCostLakhs && (
+                      <span className="text-[10px] text-slate-400">≈ ₹{(parseFloat(maxCostLakhs) / 100).toFixed(2)} Cr</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Work Category */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Work Classification
+                </label>
+                <select
+                  value={selectedWorkCategories[0] || 'ALL'}
+                  onChange={(e) => {
+                    const val = e.target.value === 'ALL' ? [] : [e.target.value];
+                    setSelectedWorkCategories(val);
+                  }}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-200"
+                >
+                  <option value="ALL">All Work Categories</option>
+                  {(hierarchy?.work_categories || [
+                    'Widening',
+                    'Strengthening',
+                    'Renewal',
+                    'Riding Quality Improvement',
+                    'Bridge and Culvert',
+                    'Road Safety',
+                    'Bypass'
+                  ]).map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Risk Severity & Delay Status */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                  Risk Severity & Delay Status
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={selectedSeverities[0] || 'ALL'}
+                    onChange={(e) => {
+                      const val = e.target.value === 'ALL' ? [] : [e.target.value];
+                      setSelectedSeverities(val);
+                    }}
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200"
+                  >
+                    <option value="ALL">All Severities</option>
+                    <option value="CRITICAL">CRITICAL</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="LOW">LOW</option>
+                  </select>
+                  <select
+                    value={delayStatusFilter}
+                    onChange={(e) => setDelayStatusFilter(e.target.value)}
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200"
+                  >
+                    <option value="ALL">All Delays</option>
+                    <option value="Delayed">Delayed</option>
+                    <option value="Critically delayed">Critically delayed</option>
+                    <option value="In progress">In progress</option>
+                    <option value="Completed and verified">Completed & Verified</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Apply & Close Row */}
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
+              <button
+                onClick={() => setShowAdvancedDrawer(false)}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+              >
+                Close Drawer
+              </button>
+              <button
+                onClick={() => { executeFilter(); setShowAdvancedDrawer(false); }}
+                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition shadow"
+              >
+                Apply Advanced Filters
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Active Filter Scope Description & Chips Bar */}
+        {(filterResult || selectedPreset || selectedCircles.length > 0 || selectedDistricts.length > 0 || selectedRoadClasses.length > 0 || startChainage || minCostLakhs || searchQuery) && (
+          <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-700/60">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-semibold text-slate-400">
+                Scope: <span className="text-emerald-300 font-bold">{filterResult?.kpis.scope_description || 'Active Filter Scope'}</span>
+              </span>
+              {selectedPreset && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Preset: {selectedPreset}
+                  <button onClick={() => { setSelectedPreset(null); executeFilter({ preset_view: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              )}
+              {selectedCircles.map((c) => (
+                <span key={c} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                  Circle: {c}
+                  <button onClick={() => { setSelectedCircles([]); executeFilter({ circles: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+              {selectedDivisions.map((d) => (
+                <span key={d} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                  Division: {d}
+                  <button onClick={() => { setSelectedDivisions([]); executeFilter({ divisions: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+              {selectedRoadClasses.map((rc) => (
+                <span key={rc} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Class: {rc}
+                  <button onClick={() => { setSelectedRoadClasses([]); executeFilter({ road_categories: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+              {startChainage && endChainage && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  Chainage: Km {startChainage} - {endChainage}
+                  <button onClick={() => { setStartChainage(''); setEndChainage(''); executeFilter({ start_chainage: undefined, end_chainage: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              )}
+              {minCostLakhs && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  Min Cost: {minCostLakhs} L
+                  <button onClick={() => { setMinCostLakhs(''); executeFilter({ min_cost_lakhs: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                  Search: "{searchQuery}"
+                  <button onClick={() => { setSearchQuery(''); executeFilter({ search_query: undefined }); }}><X className="w-3 h-3" /></button>
+                </span>
+              )}
+            </div>
+
+            <div className="text-xs text-slate-300 font-semibold">
+              <span className="text-emerald-400 font-bold">{activeProposals.length}</span> Matching Proposals
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ------------------------------------------------------------------- */}
+      {/* MULTIANNUAL COMPARISON MODAL */}
+      {/* ------------------------------------------------------------------- */}
+      {showComparisonModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-4xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-700 pb-4">
+              <div>
+                <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-emerald-400" />
+                  Multiannual Year-Wise Comparison Matrix
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Comparative performance and duplicate risk variance across Financial Years 2024-25, 2025-26, and 2026-27.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowComparisonModal(false)}
+                className="text-slate-400 hover:text-white p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {comparisonLoading ? (
+              <div className="py-12 flex flex-col items-center justify-center gap-3">
+                <RefreshCw className="w-8 h-8 text-emerald-400 animate-spin" />
+                <span className="text-sm text-slate-400">Computing cross-year metrics and risk variance...</span>
+              </div>
+            ) : comparisonData ? (
+              <div className="space-y-5">
+                {/* Comparison Table */}
+                <div className="overflow-x-auto border border-slate-700 rounded-xl">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-900/80 text-slate-300 uppercase tracking-wider border-b border-slate-700 font-bold">
+                      <tr>
+                        <th className="p-3">Financial Year</th>
+                        <th className="p-3 text-right">Works Count</th>
+                        <th className="p-3 text-right">Total Length (Km)</th>
+                        <th className="p-3 text-right">Sanction Amount (₹ Cr)</th>
+                        <th className="p-3 text-right">Overlapping (Km)</th>
+                        <th className="p-3 text-right">Avoidable Loss (₹ Cr)</th>
+                        <th className="p-3 text-right">Delayed Works</th>
+                        <th className="p-3 text-right">Completion Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-700/60 font-medium">
+                      {comparisonData.comparison_rows.map((row) => (
+                        <tr key={row.financial_year} className="hover:bg-slate-700/30 transition">
+                          <td className="p-3 font-bold text-white flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                            {row.financial_year}
+                          </td>
+                          <td className="p-3 text-right text-slate-200">{row.total_works_count}</td>
+                          <td className="p-3 text-right text-slate-200">{row.total_length_km}</td>
+                          <td className="p-3 text-right font-bold text-emerald-400">₹{row.sanction_amount_cr}</td>
+                          <td className="p-3 text-right text-amber-400 font-semibold">{row.overlapping_length_km}</td>
+                          <td className="p-3 text-right text-rose-400 font-bold">₹{row.avoidable_expenditure_cr}</td>
+                          <td className="p-3 text-right text-red-400">{row.delayed_works_count}</td>
+                          <td className="p-3 text-right font-bold text-sky-400">{row.completion_rate_pct}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Key Summary Findings */}
+                <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-2">
+                  <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    Comparative Audit Findings & Risk Summary
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {comparisonData.summary_findings.map((finding, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-emerald-400 font-bold mt-0.5">•</span>
+                        <span>{finding}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="flex justify-end pt-2 border-t border-slate-700">
+              <button
+                onClick={() => setShowComparisonModal(false)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg transition"
+              >
+                Close Matrix
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------------- */}
       {/* 11 MANDATORY TABS NAVIGATION */}
       {/* ------------------------------------------------------------------- */}
       <div className="border-b border-slate-700/80 overflow-x-auto scrollbar-thin">
@@ -359,6 +1058,52 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
       {/* ------------------------------------------------------------------- */}
       {activeTab === 'overview' && riskKPIs && (
         <div className="space-y-6">
+          {/* Synchronized Filtered Scope Banner */}
+          {filterResult && (
+            <div className="bg-emerald-950/40 border border-emerald-500/50 rounded-xl p-4 shadow-lg space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-2">
+                <div className="flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-200">
+                    Active Filter Scope: {filterResult.kpis.scope_description}
+                  </span>
+                </div>
+                <button
+                  onClick={handleClearAll}
+                  className="px-2.5 py-1 text-[11px] font-semibold bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/30 rounded-lg transition"
+                >
+                  Reset to Statewide Totals
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Matching Works</div>
+                  <div className="text-base font-bold text-white mt-0.5">{filterResult.kpis.filtered_proposals_count}</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Filtered Length</div>
+                  <div className="text-base font-bold text-sky-400 mt-0.5">{filterResult.kpis.filtered_total_length_km} km</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Eligible Stretches</div>
+                  <div className="text-base font-bold text-emerald-400 mt-0.5">{filterResult.kpis.filtered_eligible_length_km} km</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Overlapping Stretches</div>
+                  <div className="text-base font-bold text-amber-400 mt-0.5">{filterResult.kpis.filtered_overlapping_length_km} km</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Sanction Estimate</div>
+                  <div className="text-base font-bold text-emerald-300 mt-0.5">₹{filterResult.kpis.filtered_estimated_cost_cr} Cr</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/60">
+                  <div className="text-[10px] text-slate-400 font-medium">Avoidable Expenditure</div>
+                  <div className="text-base font-bold text-rose-400 mt-0.5">₹{filterResult.kpis.filtered_avoidable_expenditure_cr} Cr</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Top 14 Mandatory KPIs Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
             {[
@@ -761,7 +1506,7 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800 font-medium">
-                  {proposals.slice(0, 15).map(p => (
+                  {activeProposals.slice(0, 15).map(p => (
                     <tr key={p.id} className="hover:bg-slate-800/50 transition">
                       <td className="p-3 font-mono font-bold text-emerald-400">{p.proposal_code}</td>
                       <td className="p-3">
@@ -814,7 +1559,7 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {proposals.filter(p => p.overlapping_length_km > 0).slice(0, 8).map(p => (
+            {activeProposals.filter(p => p.overlapping_length_km > 0).slice(0, 8).map(p => (
               <div key={p.id} className="bg-slate-800/90 border border-slate-700 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold text-emerald-400">{p.proposal_code}</span>
@@ -1043,7 +1788,7 @@ export const CRIDPRiskIntelligencePage: React.FC = () => {
             <div className="p-4 bg-slate-800/90 border border-slate-700 rounded-xl space-y-2">
               <span className="text-xs font-bold text-slate-400 uppercase">Net Sanctionable Portfolio</span>
               <span className="text-2xl font-black text-sky-400 block">
-                ₹{((proposals.reduce((acc, p) => acc + (p.estimated_cost_cr || 0), 0)) - riskKPIs.verified_avoidable_expenditure_cr).toFixed(2)} Cr
+                ₹{((activeProposals.reduce((acc, p) => acc + (p.estimated_cost_cr || 0), 0)) - riskKPIs.verified_avoidable_expenditure_cr).toFixed(2)} Cr
               </span>
               <p className="text-xs text-slate-400">Verified eligible road renewal portfolio ready for Technical Sanction by Chief Engineers under G.O. 11/2022.</p>
             </div>

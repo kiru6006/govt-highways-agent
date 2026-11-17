@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict, Set, Union
 import datetime
 from pydantic import BaseModel, EmailStr, Field
 
@@ -3188,3 +3188,98 @@ class CRIDPAIInsightResponse(BaseModel):
     generated_at: str
 
 
+
+
+class CRIDPAdvancedFilterPayload(BaseModel):
+    circles: Optional[List[str]] = None
+    districts: Optional[List[str]] = None
+    divisions: Optional[List[str]] = None
+    constituencies: Optional[List[str]] = None
+    schemes: Optional[List[str]] = None
+    financial_years: Optional[List[str]] = None
+    road_categories: Optional[List[str]] = None
+    work_categories: Optional[List[str]] = None
+    work_statuses: Optional[List[str]] = None
+    sanction_statuses: Optional[List[str]] = None
+    funding_categories: Optional[List[str]] = None
+    road_code: Optional[str] = None
+    road_name: Optional[str] = None
+    start_chainage_min: Optional[float] = None
+    end_chainage_max: Optional[float] = None
+    min_length_km: Optional[float] = None
+    max_length_km: Optional[float] = None
+    overlap_status: Optional[str] = None  # ALL, OVERLAPPING_ONLY, NON_OVERLAPPING_ONLY, FIVE_YEAR_VIOLATIONS
+    min_overlap_km: Optional[float] = None
+    max_overlap_km: Optional[float] = None
+    min_cost_lakhs: Optional[float] = None
+    max_cost_lakhs: Optional[float] = None
+    min_financial_exposure_cr: Optional[float] = None
+    max_financial_exposure_cr: Optional[float] = None
+    min_physical_progress_pct: Optional[float] = None
+    max_physical_progress_pct: Optional[float] = None
+    delay_statuses: Optional[List[str]] = None
+    min_delay_days: Optional[int] = None
+    max_delay_days: Optional[int] = None
+    risk_severities: Optional[List[str]] = None
+    problem_categories: Optional[List[str]] = None
+    root_cause_categories: Optional[List[str]] = None
+    contractor_names: Optional[List[str]] = None
+    investigation_statuses: Optional[List[str]] = None
+    has_overdue_actions: Optional[bool] = None
+    litigation_statuses: Optional[List[str]] = None
+    land_acquisition_statuses: Optional[List[str]] = None
+    preset_view: Optional[str] = None  # PRESET_5YR_DUPLICATE, PRESET_UNCLOSED_PREVIOUS, PRESET_HIGH_FINANCIAL_RISK, etc.
+    search_query: Optional[str] = None
+    search_category: Optional[str] = "ALL"
+    page: int = 1
+    page_size: int = 25
+    sort_by: Optional[str] = "id"
+    sort_order: Optional[str] = "desc"
+
+
+class CRIDPFilteredKPIsOut(BaseModel):
+    filtered_record_count: int
+    filtered_total_length_km: float
+    filtered_eligible_length_km: float
+    filtered_overlapping_length_km: float
+    filtered_estimated_cost_cr: float
+    filtered_potential_exposure_cr: float
+    filtered_avoidable_expenditure_cr: float
+    filtered_delayed_works_count: int
+    filtered_critical_risks_count: int
+    scope_description: str
+
+
+class CRIDPAdvancedFilterResultOut(BaseModel):
+    kpis: CRIDPFilteredKPIsOut
+    proposals: List[CRIDPWorkOut]
+    total_matching: int
+    page: int
+    page_size: int
+    total_pages: int
+    applied_preset: Optional[str] = None
+    active_filter_chips: List[Dict[str, str]] = []
+
+
+class CRIDPAdministrativeHierarchyOut(BaseModel):
+    circles: List[str]
+    divisions_by_circle: Dict[str, List[str]]
+    districts_by_division: Dict[str, List[str]]
+    constituencies: List[str]
+    work_categories: List[str]
+    contractors: List[str]
+    schemes: List[str]
+    road_classes: List[str]
+    financial_years: List[str]
+
+
+class CRIDPYearWiseComparisonPayload(BaseModel):
+    financial_years: List[str]
+    circles: Optional[List[str]] = None
+    road_categories: Optional[List[str]] = None
+
+
+class CRIDPYearWiseComparisonResultOut(BaseModel):
+    comparison_rows: List[Dict[str, Any]]
+    metric_deltas: Dict[str, Any]
+    summary_findings: List[str]

@@ -3973,3 +3973,111 @@ export interface CRIDPAIInsightResponse {
   supporting_sources: string[];
   suggested_followups: string[];
 }
+
+// STATEWIDE CRIDP ADVANCED FILTERING, SEARCH & DRILL-DOWN ENGINE
+export interface CRIDPAdvancedFilterPayload {
+  circles?: string[];
+  divisions?: string[];
+  districts?: string[];
+  sections?: string[];
+  constituencies?: string[];
+  responsible_offices?: string[];
+  ce_jurisdiction?: string;
+  schemes?: string[];
+  financial_years?: string[];
+  road_categories?: string[];
+  work_categories?: string[];
+  work_types?: string[];
+  work_statuses?: string[];
+  sanction_statuses?: string[];
+  funding_categories?: string[];
+  road_code?: string;
+  road_name?: string;
+  road_id?: number;
+  start_chainage?: number;
+  end_chainage?: number;
+  min_length_km?: number;
+  max_length_km?: number;
+  five_year_eligible_only?: boolean;
+  overlap_status?: string;
+  min_overlap_pct?: number;
+  max_overlap_pct?: number;
+  min_cost_lakhs?: number;
+  max_cost_lakhs?: number;
+  min_cost_cr?: number;
+  max_cost_cr?: number;
+  min_physical_progress?: number;
+  max_physical_progress?: number;
+  delay_statuses?: string[];
+  min_delay_days?: number;
+  max_delay_days?: number;
+  severities?: string[];
+  problem_categories?: string[];
+  contractors?: string[];
+  preset_view?: string;
+  search_query?: string;
+  search_category?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface CRIDPFilteredKPIs {
+  filtered_proposals_count: number;
+  filtered_total_length_km: number;
+  filtered_eligible_length_km: number;
+  filtered_overlapping_length_km: number;
+  filtered_estimated_cost_cr: number;
+  filtered_potential_exposure_cr: number;
+  filtered_avoidable_expenditure_cr: number;
+  delayed_works_count: number;
+  critical_risk_count: number;
+  active_filters_count: number;
+  scope_description: string;
+}
+
+export interface CRIDPAdvancedFilterResult {
+  kpis: CRIDPFilteredKPIs;
+  proposals: CRIDPWorkItem[];
+  total_matching: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  applied_preset?: string;
+  active_filter_chips: Array<{ key: string; label: string; value: string }>;
+}
+
+export interface CRIDPAdministrativeHierarchy {
+  circles: string[];
+  divisions_by_circle: Record<string, string[]>;
+  districts_by_division: Record<string, string[]>;
+  constituencies: string[];
+  work_categories: string[];
+  contractors: string[];
+  schemes: string[];
+  road_classes: string[];
+  financial_years: string[];
+}
+
+export interface CRIDPYearWiseComparisonPayload {
+  financial_years: string[];
+  circles?: string[];
+  road_categories?: string[];
+}
+
+export interface CRIDPYearWiseComparisonRow {
+  financial_year: string;
+  total_works_count: number;
+  total_length_km: number;
+  sanction_amount_cr: number;
+  overlapping_length_km: number;
+  avoidable_expenditure_cr: number;
+  delayed_works_count: number;
+  open_risk_count: number;
+  completion_rate_pct: number;
+}
+
+export interface CRIDPYearWiseComparisonResult {
+  comparison_rows: CRIDPYearWiseComparisonRow[];
+  metric_deltas: Record<string, any>;
+  summary_findings: string[];
+}

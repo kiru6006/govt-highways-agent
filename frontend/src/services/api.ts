@@ -155,7 +155,12 @@ import {
   CRIDPContractorScorecardItem,
   CRIDPCorrectiveActionItem,
   CRIDPDataQualityItem,
-  CRIDPAIInsightResponse
+  CRIDPAIInsightResponse,
+  CRIDPAdvancedFilterPayload,
+  CRIDPAdvancedFilterResult,
+  CRIDPAdministrativeHierarchy,
+  CRIDPYearWiseComparisonPayload,
+  CRIDPYearWiseComparisonResult
 } from '../types';
 import {
   fallbackDigitalOfficeOverview,
@@ -180,7 +185,9 @@ import {
   fallbackCRIDPDelayRootCausesList,
   fallbackCRIDPContractorScorecardsList,
   fallbackCRIDPCorrectiveActionsList,
-  fallbackCRIDPDataQualityFindingsList
+  fallbackCRIDPDataQualityFindingsList,
+  fallbackCRIDPAdministrativeHierarchy,
+  fallbackCRIDPYearWiseComparisonData
 } from './fallbackData';
 import {
   SYNTHETIC_ANOMALIES,
@@ -5781,6 +5788,105 @@ export const api = {
         ]
       };
     }
+  },
+
+  getCRIDPAdministrativeHierarchy: async (): Promise<CRIDPAdministrativeHierarchy> => {
+    try {
+      return await request<CRIDPAdministrativeHierarchy>('/cridp-verification/hierarchy');
+    } catch {
+      return fallbackCRIDPAdministrativeHierarchy as any;
+    }
+  },
+
+  filterCRIDPProposalsAdvanced: async (payload: CRIDPAdvancedFilterPayload): Promise<CRIDPAdvancedFilterResult> => {
+    try {
+      return await request<CRIDPAdvancedFilterResult>('/cridp-verification/advanced-filter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      let list = [...fallbackCRIDPProposalsList];
+      if (payload.circles && payload.circles.length > 0) {
+        list = list.filter(p => payload.circles!.some(c => (p.circle_name || '').toLowerCase().includes(c.toLowerCase())));
+      }
+      if (payload.divisions && payload.divisions.length > 0) {
+        list = list.filter(p => payload.divisions!.some(d => (p.division_name || '').toLowerCase().includes(d.toLowerCase())));
+      }
+      if (payload.districts && payload.districts.length > 0) {
+        list = list.filter(p => payload.districts!.includes(p.district));
+      }
+      if (payload.road_categories && payload.road_categories.length > 0) {
+        list = list.filter(p => payload.road_categories!.includes(p.road_category));
+      }
+      if (payload.severities && payload.severities.length > 0) {
+        list = list.filter(p => payload.severities!.includes(p.duplicate_severity));
+      }
+      if (payload.preset_view === 'PRESET_5YR_DUPLICATE') {
+        list = list.filter(p => p.verification_status === 'RECENTLY RENEWED' || p.duplicate_severity === 'CRITICAL');
+      } else if (payload.preset_view === 'PRESET_CRITICAL_DELAYS') {
+        list = list.filter(p => p.verification_status === 'WORK IN PROGRESS');
+      } else if (payload.preset_view === 'PRESET_FREE_STRETCHES') {
+        list = list.filter(p => p.verification_status === 'ELIGIBLE');
+      }
+      const totalKm = list.reduce((acc, p) => acc + (p.proposed_length_km || 0), 0);
+      const eligibleKm = list.reduce((acc, p) => acc + (p.eligible_length_km || 0), 0);
+      const overlapKm = list.reduce((acc, p) => acc + (p.overlapping_length_km || 0), 0);
+      const costCr = list.reduce((acc, p) => acc + (p.estimated_cost_cr || 0), 0);
+      const exposureCr = list.reduce((acc, p) => acc + (p.potential_financial_exposure_cr || 0), 0);
+      const avoidableCr = list.reduce((acc, p) => acc + (p.avoidable_expenditure_cr || 0), 0);
+
+      return {
+        kpis: {
+          filtered_proposals_count: list.length,
+          filtered_total_length_km: Number(totalKm.toFixed(2)),
+          filtered_eligible_length_km: Number(eligibleKm.toFixed(2)),
+          filtered_overlapping_length_km: Number(overlapKm.toFixed(2)),
+          filtered_estimated_cost_cr: Number(costCr.toFixed(2)),
+          filtered_potential_exposure_cr: Number(exposureCr.toFixed(2)),
+          filtered_avoidable_expenditure_cr: Number(avoidableCr.toFixed(2)),
+          delayed_works_count: list.filter(p => p.verification_status === 'WORK IN PROGRESS').length,
+          critical_risk_count: list.filter(p => p.duplicate_severity === 'CRITICAL').length,
+          active_filters_count: (payload.circles?.length || 0) + (payload.districts?.length || 0) + (payload.preset_view ? 1 : 0),
+          scope_description: `${payload.preset_view || 'Filtered Scope'} (${list.length} Matching Works)`
+        },
+        proposals: list,
+        total_matching: list.length,
+        page: payload.page || 1,
+        page_size: payload.page_size || 50,
+        total_pages: 1,
+        applied_preset: payload.preset_view,
+        active_filter_chips: []
+      };
+    }
+  },
+
+  getCRIDPYearWiseComparison: async (payload: CRIDPYearWiseComparisonPayload): Promise<CRIDPYearWiseComparisonResult> => {
+    try {
+      return await request<CRIDPYearWiseComparisonResult>('/cridp-verification/year-wise-comparison', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return fallbackCRIDPYearWiseComparisonData as any;
+    }
+  },
+
+  exportCRIDPFilteredCSV: async (payload: CRIDPAdvancedFilterPayload): Promise<Blob> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+    const res = await fetch(`${API_BASE}/cridp-verification/export-filtered`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token || ''}`
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      throw new Error(`Export failed: ${res.statusText}`);
+    }
+    return await res.blob();
   }
 };
 
