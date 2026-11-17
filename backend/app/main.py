@@ -7,9 +7,15 @@ from app.config import settings
 from app.database import engine, Base, get_db
 from app.seed import seed_database
 from app.seed_synthetic_foundation import seed_synthetic_foundation_data
+from app.seed_official_verification import seed_official_verification
+from app.seed_ckicp_tnrsp import seed_ckicp_tnrsp
+from app.seed_project_360 import seed_project_360
+from app.seed_mock_personas import seed_mock_personas
 from app.seed_engineering_quality_assets import seed_engineering_quality_assets_data
 from app.seed_department_land_utility import seed_department_land_utility_data
 from app.seed_digital_office import seed_digital_office_data
+from app.seed_land_litigation import seed_land_litigation_data
+from app.seed_major_works_blockers import seed_major_works_blockers_data
 from app.seed_notifications_calendar import seed_notifications_calendar_data
 from app.seed_messaging import seed_messaging_data
 from app.seed_universal_connectivity import seed_universal_connectivity
@@ -65,9 +71,15 @@ def on_startup():
     # Automatically seed the database if fresh
     seed_database()
     seed_synthetic_foundation_data()
+    seed_official_verification()
+    seed_ckicp_tnrsp()
+    seed_project_360()
+    seed_mock_personas()
     seed_engineering_quality_assets_data()
     seed_department_land_utility_data()
     seed_digital_office_data()
+    seed_land_litigation_data()
+    seed_major_works_blockers_data()
     seed_notifications_calendar_data()
     seed_messaging_data()
     seed_universal_connectivity()

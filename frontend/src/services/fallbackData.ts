@@ -1,0 +1,1365 @@
+import {
+  CorrespondenceItem,
+  GovernmentFileItem,
+  FileMovementItem,
+  OfficeNoteItem,
+  GovernmentDecisionItem,
+  DigitalOfficeMeetingItem,
+  GovernmentActionItem,
+  DigitalDocumentItem,
+  DigitalOfficeAIFindingItem,
+  GovernmentFileDetail,
+  DigitalOfficeOverviewData,
+  CRIDPWorkItem,
+  WorkHistoryItem,
+  YearWiseEligibilityItem,
+  DistrictCircleEligibilityItem,
+  DelegationOfPowerRuleItem,
+  ChainageOverlapResult,
+  OverlapFindingItem
+} from '../types';
+
+// ============================================================================
+// DIGITAL OFFICE FALLBACK DATA
+// ============================================================================
+
+export const fallbackCorrespondenceList: CorrespondenceItem[] = [
+  {
+    id: 1,
+    communication_code: 'CORR-2026-001',
+    reference_number: 'LTR/HWD/2026/891',
+    communication_type: 'INCOMING',
+    received_or_dispatch_date: '2026-11-12T10:30:00Z',
+    sender_or_recipient_org: 'Revenue and Disaster Management Department',
+    sender_or_recipient_name: 'Dr. K. Senthil Nathan, IAS',
+    sender_or_recipient_role: 'District Collector, Chengalpattu',
+    subject: 'Expedited Section 15(1) Land Acquisition Award Enquiry for ECR 6-Lane Expansion',
+    category: 'LAND_ACQUISITION',
+    department_id: 1,
+    project_id: 1,
+    project_code: 'PRJ-TN-2026-001',
+    priority: 'HIGH',
+    confidentiality_level: 'INTERNAL',
+    assigned_officer_name: 'Er. R. Sundararajan (Superintending Engineer)',
+    status: 'UNDER_REVIEW',
+    due_date: '2026-11-25T17:00:00Z',
+    document_reference: 'DOC-LA-CHG-2026-01',
+    action_history_summary: 'Received by CE Secretariat; forwarded to Chengalpattu Special DRO.'
+  },
+  {
+    id: 2,
+    communication_code: 'CORR-2026-002',
+    reference_number: 'TNEB/TRANS/CHN/2026/1102',
+    communication_type: 'INCOMING',
+    received_or_dispatch_date: '2026-11-14T11:15:00Z',
+    sender_or_recipient_org: 'TANGEDCO (Distribution & Transmission)',
+    sender_or_recipient_name: 'Er. M. Rajendran',
+    sender_or_recipient_role: 'Superintending Engineer, TANGEDCO South',
+    subject: 'HT Line 110kV Tower Shifting Estimate Concurrence for Tambaram Grade Separator',
+    category: 'UTILITY_SHIFTING',
+    department_id: 1,
+    project_id: 2,
+    project_code: 'PRJ-TN-2026-002',
+    priority: 'IMMEDIATE',
+    confidentiality_level: 'INTERNAL',
+    assigned_officer_name: 'Er. P. Velmurugan (Divisional Engineer)',
+    status: 'FILE_GENERATED',
+    due_date: '2026-11-20T17:00:00Z',
+    document_reference: 'DOC-UT-TBM-2026-04',
+    government_file_id: 2,
+    action_history_summary: 'File opened e-File No. HW-TBM-2026-UT-002 for departmental deposit payment.'
+  },
+  {
+    id: 3,
+    communication_code: 'CORR-2026-003',
+    reference_number: 'FIN/BUD/HIGHWAYS/2026/410',
+    communication_type: 'INCOMING',
+    received_or_dispatch_date: '2026-11-15T14:00:00Z',
+    sender_or_recipient_org: 'Finance (Public Works-II) Department',
+    sender_or_recipient_name: 'Thiru S. Balachandran',
+    sender_or_recipient_role: 'Joint Secretary to Government',
+    subject: 'Revised Administrative Sanction Approval Checklist for ODR Thiruporur Bypass',
+    category: 'BUDGET_SANCTION',
+    department_id: 1,
+    project_id: 3,
+    project_code: 'PRJ-TN-2026-003',
+    priority: 'URGENT',
+    confidentiality_level: 'INTERNAL',
+    assigned_officer_name: 'Chief Engineer (Planning & Designs)',
+    status: 'RECEIVED',
+    due_date: '2026-11-28T17:00:00Z',
+    document_reference: 'DOC-FIN-AS-2026-09',
+    action_history_summary: 'Circulated to Planning wing for remarks on revised utility compensation component.'
+  }
+];
+
+export const fallbackGovernmentFilesList: GovernmentFileItem[] = [
+  {
+    id: 1,
+    file_number: 'HW-ECR-2026-LA-001',
+    subject: 'Land Acquisition & Valuation Compensation Approval for ECR Coromandel Expressway (Km 13/0 to 28/0)',
+    file_category: 'LAND_ACQUISITION',
+    originating_department_id: 1,
+    originating_department_code: 'HIGHWAYS',
+    current_department_id: 2,
+    current_department_code: 'REVENUE',
+    originating_officer_name: 'Er. R. Sundararajan (SE Chengalpattu)',
+    current_responsible_officer_name: 'Dr. K. Senthil Nathan, IAS (District Collector)',
+    project_id: 1,
+    project_code: 'PRJ-TN-2026-001',
+    priority: 'HIGH',
+    confidentiality_level: 'INTERNAL',
+    current_workflow_stage: 'COLLECTOR_INSPECTION_AND_VALUATION',
+    pending_action: 'Joint site inspection report and interim compensation disbursement sign-off',
+    due_date: '2026-11-26T17:00:00Z',
+    is_closed: false,
+    document_reference: 'DOC-ECR-LA-VAL-001',
+    created_at: '2026-10-15T10:00:00Z',
+    updated_at: '2026-11-15T16:30:00Z'
+  },
+  {
+    id: 2,
+    file_number: 'HW-TBM-2026-UT-002',
+    subject: 'TANGEDCO 110kV Extra High Voltage Line Relocation Deposit Sanction (Tambaram Junction)',
+    file_category: 'UTILITY_SHIFTING',
+    originating_department_id: 1,
+    originating_department_code: 'HIGHWAYS',
+    current_department_id: 1,
+    current_department_code: 'HIGHWAYS',
+    originating_officer_name: 'Er. P. Velmurugan (DE Tambaram)',
+    current_responsible_officer_name: 'Er. K. Natarajan (Chief Engineer, Metro)',
+    project_id: 2,
+    project_code: 'PRJ-TN-2026-002',
+    priority: 'IMMEDIATE',
+    confidentiality_level: 'INTERNAL',
+    current_workflow_stage: 'CHIEF_ENGINEER_FINANCIAL_CONCURRENCE',
+    pending_action: 'Technical sanction and deposit advance release under G.O. Ms. No. 11 powers',
+    due_date: '2026-11-21T17:00:00Z',
+    is_closed: false,
+    document_reference: 'DOC-TBM-TANGEDCO-002',
+    created_at: '2026-11-01T09:30:00Z',
+    updated_at: '2026-11-16T11:00:00Z'
+  },
+  {
+    id: 3,
+    file_number: 'HW-CKICP-2026-ADB-003',
+    subject: 'Environmental Management Plan & Wildlife Corridor Clearance for Ooty Ghat SH-15',
+    file_category: 'FOREST_ENVIRONMENT',
+    originating_department_id: 1,
+    originating_department_code: 'HIGHWAYS',
+    current_department_id: 4,
+    current_department_code: 'FOREST',
+    originating_officer_name: 'Er. V. Murugesan (SE CKICP)',
+    current_responsible_officer_name: 'Thiru R. K. Singh, IFS (Principal Chief Conservator of Forests)',
+    project_id: 4,
+    project_code: 'PRJ-TN-2026-004',
+    priority: 'HIGH',
+    confidentiality_level: 'INTERNAL',
+    current_workflow_stage: 'STAGE_I_FOREST_CLEARANCE_APPRAISAL',
+    pending_action: 'Regional Empowered Committee meeting minutes submission',
+    due_date: '2026-12-05T17:00:00Z',
+    is_closed: false,
+    document_reference: 'DOC-CKICP-REC-003',
+    created_at: '2026-09-20T10:00:00Z',
+    updated_at: '2026-11-14T14:45:00Z'
+  }
+];
+
+export const fallbackGovernmentDecisionsList: GovernmentDecisionItem[] = [
+  {
+    id: 1,
+    decision_code: 'DEC-MIN-2026-01',
+    file_id: 1,
+    file_number: 'HW-ECR-2026-LA-001',
+    decision_authority: 'MINISTER',
+    decision_date: '2026-11-04T12:00:00Z',
+    decision_category: 'LAND_ACQUISITION_ACCELERATION',
+    decision_statement: 'Sanction 100% advance solatium disbursement for Muthiyalpet and Kovalam village private land parcels under TN Highways Act Section 19.',
+    approved_action: 'Revenue department to hold special Lok Adalat camps for uncontested awards',
+    responsible_department_name: 'Revenue & Disaster Management',
+    responsible_officer_name: 'Special DRO (Land Acquisition), Chengalpattu',
+    due_date: '2026-11-30T17:00:00Z',
+    supporting_doc_ref: 'GO-MS-189-REV-2026',
+    implementation_status: 'IN_PROGRESS'
+  },
+  {
+    id: 2,
+    decision_code: 'DEC-SEC-2026-04',
+    file_id: 2,
+    file_number: 'HW-TBM-2026-UT-002',
+    decision_authority: 'PRINCIPAL_SECRETARY',
+    decision_date: '2026-11-08T15:30:00Z',
+    decision_category: 'INTER_DEPARTMENTAL_COORDINATION',
+    decision_statement: 'Highways to deposit Rs 4.85 Crore demand draft to TANGEDCO within 7 days; TANGEDCO to complete line shutdown and tower foundation within 30 days.',
+    approved_action: 'Issue joint operational calendar signed by CE (Highways Metro) and SE (TANGEDCO South)',
+    responsible_department_name: 'Highways & Minor Ports / TANGEDCO',
+    responsible_officer_name: 'Er. K. Natarajan (CE Metro)',
+    due_date: '2026-11-22T17:00:00Z',
+    supporting_doc_ref: 'MIN-CS-UTILITY-2026-08',
+    implementation_status: 'IN_PROGRESS'
+  },
+  {
+    id: 3,
+    decision_code: 'DEC-CE-2026-09',
+    file_id: 3,
+    file_number: 'HW-CKICP-2026-ADB-003',
+    decision_authority: 'CHIEF_ENGINEER',
+    decision_date: '2026-11-10T11:00:00Z',
+    decision_category: 'TECHNICAL_SPECIFICATION_APPROVAL',
+    decision_statement: 'Approve revised retaining wall design with geogrid reinforced soil slope to avoid cutting into forest boundary at Km 24/400 of SH-15.',
+    approved_action: 'Direct EPC Contractor M/s L&T to submit modified working drawings within 10 days',
+    responsible_department_name: 'Highways (CKICP)',
+    responsible_officer_name: 'Superintending Engineer (CKICP Coimbatore)',
+    due_date: '2026-11-24T17:00:00Z',
+    supporting_doc_ref: 'TECH-SANCTION-CKICP-2026-55',
+    implementation_status: 'COMPLETED'
+  }
+];
+
+export const fallbackDigitalOfficeMeetingsList: DigitalOfficeMeetingItem[] = [
+  {
+    id: 1,
+    meeting_code: 'MEET-CS-2026-044',
+    title: 'State Level Project Monitoring Committee (SLPMC) - Priority Infrastructure Review',
+    meeting_category: 'SECRETARIAT_REVIEW',
+    meeting_date: '2026-11-18T10:00:00Z',
+    chairperson_name: 'Thiru N. Muruganandam, IAS (Chief Secretary)',
+    departments_represented: ['Highways', 'Revenue', 'TANGEDCO', 'TWAD Board', 'Forest'],
+    agenda_summary: 'Comprehensive review of pending land acquisition, utility shifting demand drafts, and CRIDP renewal saturation in Chennai Metro and Coimbatore circles.',
+    minutes_summary: 'Directed Revenue Department to clear pending 15(1) gazette notifications before 30 November 2026.',
+    decisions_taken_summary: 'Approved immediate deposit advance of Rs 4.85 Cr to TANGEDCO South for Tambaram corridor.',
+    status: 'SCHEDULED'
+  },
+  {
+    id: 2,
+    meeting_code: 'MEET-CE-2026-012',
+    title: 'Chief Engineers Monthly Pavement Performance & Renewal Sanction Coordination',
+    meeting_category: 'ENGINEERING_REVIEW',
+    meeting_date: '2026-11-14T14:30:00Z',
+    chairperson_name: 'Er. S. Selvakumar (Chief Engineer, C&M)',
+    departments_represented: ['Highways (C&M)', 'Highways (Planning & Designs)', 'TANSHA'],
+    agenda_summary: 'Screening 2026-27 CRIDP work proposals against Five-Year Renewal Restriction and G.O. 11 delegation ceilings.',
+    minutes_summary: 'Identified 3 duplicate proposals on SH-49, SH-15, and MDR-102. Ordered physical verification of chainages before sanctioning.',
+    decisions_taken_summary: 'Mandated automated chainage overlap screening before according technical sanction above Rs 50 Lakhs.',
+    status: 'COMPLETED'
+  }
+];
+
+export const fallbackGovernmentActionItemsList: GovernmentActionItem[] = [
+  {
+    id: 1,
+    action_code: 'ACT-2026-001',
+    origin_type: 'FILE',
+    origin_id: 1,
+    description: 'Complete joint survey of 14 remaining commercial structures on Kovalam Bypass stretch',
+    responsible_department_name: 'Revenue & Disaster Management',
+    responsible_officer_name: 'Special Tahsildar (LA), Chengalpattu',
+    priority: 'HIGH',
+    due_date: '2026-11-24T17:00:00Z',
+    status: 'IN_PROGRESS',
+    progress_pct: 65,
+    evidence_ref: 'SURVEY-LOG-CHG-2026-14',
+    escalation_level: 'OFFICER'
+  },
+  {
+    id: 2,
+    action_code: 'ACT-2026-002',
+    origin_type: 'DECISION',
+    origin_id: 2,
+    description: 'Release departmental payment of Rs 4.85 Cr via IFMS voucher to TANGEDCO South circle',
+    responsible_department_name: 'Highways Department (Metro)',
+    responsible_officer_name: 'Divisional Engineer, Tambaram',
+    priority: 'IMMEDIATE',
+    due_date: '2026-11-20T17:00:00Z',
+    status: 'PENDING',
+    progress_pct: 20,
+    evidence_ref: 'IFMS-VOUCHER-TBM-892',
+    escalation_level: 'SECRETARY'
+  },
+  {
+    id: 3,
+    action_code: 'ACT-2026-003',
+    origin_type: 'MEETING',
+    origin_id: 2,
+    description: 'Submit technical verification report for flood-damaged section of SH-09 (Km 51/0 to 57/0)',
+    responsible_department_name: 'Highways Department (C&M)',
+    responsible_officer_name: 'Superintending Engineer, Villupuram Circle',
+    priority: 'HIGH',
+    due_date: '2026-11-25T17:00:00Z',
+    status: 'IN_PROGRESS',
+    progress_pct: 80,
+    evidence_ref: 'CE-VERIF-SH09-2026',
+    escalation_level: 'OFFICER'
+  }
+];
+
+export const fallbackDigitalDocumentsList: DigitalDocumentItem[] = [
+  {
+    id: 1,
+    document_code: 'DOC-LA-CHG-2026-01',
+    title: 'G.O.(Ms) No. 189 - Section 15(1) Preliminary Valuation Order for ECR Expansion',
+    category: 'GOVERNMENT_ORDER',
+    reference_number: 'G.O.(Ms) No. 189/HW/2026',
+    document_date: '2026-10-28',
+    issuing_authority: 'Highways and Minor Ports (HF.1) Department',
+    project_id: 1,
+    related_file_id: 1,
+    version: '1.0',
+    confidentiality_level: 'INTERNAL',
+    verification_status: 'VERIFIED_OFFICIAL'
+  },
+  {
+    id: 2,
+    document_code: 'DOC-UT-TBM-2026-04',
+    title: 'TANGEDCO Joint Feasibility Report & Revised Transmission Tower Shifting Estimate',
+    category: 'TECHNICAL_ESTIMATE',
+    reference_number: 'SE/CEDC/S/TECH/F.EHV/D.441/26',
+    document_date: '2026-11-09',
+    issuing_authority: 'TANGEDCO Chennai South Transmission Division',
+    project_id: 2,
+    related_file_id: 2,
+    version: '2.1',
+    confidentiality_level: 'INTERNAL',
+    verification_status: 'VERIFIED_OFFICIAL'
+  },
+  {
+    id: 3,
+    document_code: 'DOC-CKICP-REC-003',
+    title: 'Regional Empowered Committee (REC) Forest Clearance Compliance Report for SH-15',
+    category: 'STATUTORY_CLEARANCE',
+    reference_number: 'F.No. 4-TNB-112/2024-RO',
+    document_date: '2026-11-02',
+    issuing_authority: 'Ministry of Environment, Forest & Climate Change (IRO Chennai)',
+    project_id: 4,
+    related_file_id: 3,
+    version: '1.0',
+    confidentiality_level: 'INTERNAL',
+    verification_status: 'VERIFIED_OFFICIAL'
+  }
+];
+
+export const fallbackDigitalOfficeAIIntelligenceList: DigitalOfficeAIFindingItem[] = [
+  {
+    id: 1,
+    finding_code: 'AI-DO-2026-01',
+    finding_type: 'ADMINISTRATIVE_BOTTLENECK',
+    severity: 'HIGH',
+    title: 'Land Acquisition File Latency Exceeding SLA standard in Chengalpattu Circle',
+    ai_confidence: 96.4,
+    problem_statement: 'File HW-ECR-2026-LA-001 has been with Special Tahsildar (LA) for 32 days against standard SLA of 15 days, delaying contractor right of way hand-over.',
+    evidence_reference: 'File movement track records from 15.10.2026 to 16.11.2026; e-Office registry record #44102',
+    affected_file_id: 1,
+    affected_project_id: 1,
+    recommended_action: 'Escalate to District Collector during upcoming SLPMC review for expedited award declaration.',
+    suggested_responsible_role: 'Chief Engineer (Highways C&M)',
+    is_escalation_required: true,
+    status: 'ACTIVE_WARNING',
+    data_mode: 'OFFICIAL'
+  },
+  {
+    id: 2,
+    finding_code: 'AI-DO-2026-02',
+    finding_type: 'BUDGET_DISPERSION_RISK',
+    severity: 'CRITICAL',
+    title: 'Potential Double Expenditure on MDR-102 Tambaram Grade Separator Alignment',
+    ai_confidence: 98.8,
+    problem_statement: 'CRIDP renewal proposal PROP-CRIDP-2026-007 (Rs 2.20 Cr) covers Km 0/0 to 3/2 of MDR-102, which is already under active construction under Project PRJ-TN-2026-002 (Rs 85.00 Cr).',
+    evidence_reference: 'Chainage overlap match: Km 0.000 to Km 3.200 between CRIDP register and active CMRDP contract AGR-CE-MET-2024-05',
+    affected_project_id: 2,
+    recommended_action: 'Drop PROP-CRIDP-2026-007 immediately to avoid Rs 2.20 Cr unneeded sanction.',
+    suggested_responsible_role: 'Chief Engineer (Highways Metro)',
+    is_escalation_required: true,
+    status: 'ACTION_REQUIRED',
+    data_mode: 'OFFICIAL'
+  }
+];
+
+export const fallbackGovernmentFileDetail = (id: number): GovernmentFileDetail => {
+  const file = fallbackGovernmentFilesList.find(f => f.id === id) || fallbackGovernmentFilesList[0];
+  const movements: FileMovementItem[] = [
+    {
+      id: 1,
+      file_id: file.id,
+      movement_number: 1,
+      from_department_id: 1,
+      from_department_name: 'Highways Department (C&M)',
+      from_officer_name: file.originating_officer_name,
+      to_department_id: 2,
+      to_department_name: 'Revenue & Disaster Management',
+      to_officer_name: 'Dr. K. Senthil Nathan, IAS (District Collector)',
+      movement_date: '2026-10-18T11:00:00Z',
+      reason_for_movement: 'Statutory valuation requisition under TN Highways Act Section 15(1)',
+      instruction_note: 'Expedite joint site valuation for commercial structures',
+      expected_action: 'Valuation certificate and award schedule submission',
+      due_date: '2026-11-10T17:00:00Z',
+      acknowledgement_status: 'ACKNOWLEDGED'
+    },
+    {
+      id: 2,
+      file_id: file.id,
+      movement_number: 2,
+      from_department_id: 2,
+      from_department_name: 'Revenue & Disaster Management',
+      from_officer_name: 'District Collector, Chengalpattu',
+      to_department_id: 2,
+      to_department_name: 'Special Land Acquisition Unit',
+      to_officer_name: 'Special DRO (Land Acquisition)',
+      movement_date: '2026-10-22T14:30:00Z',
+      reason_for_movement: 'Endorsed for village-level enquiry and title clearance verification',
+      instruction_note: 'Conduct public hearing at Kovalam taluk office',
+      expected_action: 'Finalize compensation award matrix',
+      due_date: '2026-11-20T17:00:00Z',
+      acknowledgement_status: 'ACKNOWLEDGED'
+    }
+  ];
+
+  const notes: OfficeNoteItem[] = [
+    {
+      id: 1,
+      file_id: file.id,
+      note_number: 1,
+      author_officer_name: 'Er. R. Sundararajan',
+      author_designation: 'Superintending Engineer, Chengalpattu Circle',
+      submission_date: '2026-10-15T10:30:00Z',
+      background_context: 'The East Coast Road expansion from Km 13/0 to 28/0 requires acquisition of 18.45 hectares of patta land and 3.2 hectares of poramboke land.',
+      factual_matrix: 'Preliminary notifications under Section 15(2) have been published. 92% of land owners have given consent for negotiated settlement.',
+      financial_implications_cr: 48.50,
+      legal_and_compliance_implications: 'RFCTLARR Act 2013 multiplier factor applied as per State Rules.',
+      project_milestone_impact: 'Critical path prerequisite for Phase-1 embankment construction.',
+      officer_recommendation: 'Recommend immediate release of 50% deposit amount (Rs 24.25 Cr) to Special DRO bank account.',
+      status: 'APPROVED'
+    }
+  ];
+
+  const decisions: GovernmentDecisionItem[] = fallbackGovernmentDecisionsList.filter(d => d.file_id === file.id);
+  const action_items: GovernmentActionItem[] = fallbackGovernmentActionItemsList.filter(a => a.origin_id === file.id);
+  const linked_documents: DigitalDocumentItem[] = fallbackDigitalDocumentsList.filter(d => d.related_file_id === file.id);
+
+  return {
+    file,
+    movements,
+    notes,
+    decisions,
+    action_items,
+    linked_documents
+  };
+};
+
+export const fallbackDigitalOfficeOverview = (projectId?: number, departmentId?: number): DigitalOfficeOverviewData => {
+  return {
+    kpis: {
+      total_incoming_communications: 142,
+      unprocessed_communications: 18,
+      files_currently_under_processing: 38,
+      files_pending_officer_action: 12,
+      files_pending_departmental_approval: 14,
+      files_pending_secretary_approval: 8,
+      files_pending_minister_decision: 4,
+      overdue_files: 5,
+      files_returned_for_clarification: 3,
+      decisions_issued: 89,
+      pending_action_items: 27,
+      completed_action_items: 62,
+      average_file_processing_time_days: 14.2,
+      critical_administrative_bottlenecks: 2
+    },
+    kpi_definitions: {
+      total_incoming_communications: 'Total formal letters, representations, and requisitions received across state departments.',
+      files_currently_under_processing: 'Active physical and electronic government files moving between sections and departments.',
+      critical_administrative_bottlenecks: 'Inter-departmental files pending beyond prescribed citizen charter / secretariat SLAs.'
+    },
+    reporting_period: 'Financial Year 2026-27 (Q3 Review)',
+    last_updated: '2026-11-17T09:00:00Z',
+    data_mode: 'OFFICIAL',
+    data_status: 'SYNCHRONISED_WITH_TN_E_OFFICE_INSTANCE'
+  };
+};
+
+// ============================================================================
+// CRIDP WORK VERIFICATION & FIVE-YEAR RENEWAL INTELLIGENCE FALLBACK DATA
+// (MAPPED TO EXISTING CANONICAL ROADS AND PROJECTS)
+// ============================================================================
+
+export const fallbackCRIDPHistoricalWorksList: WorkHistoryItem[] = [
+  {
+    id: 1,
+    work_reference: 'WH-SH49-2023-01',
+    road_id: 1,
+    road_code: 'SH-49',
+    road_name: 'East Coast Road (Chennai - Mahabalipuram - Puducherry)',
+    road_category: 'SH',
+    district: 'Chengalpattu',
+    division_name: 'Chengalpattu Division',
+    section_name: 'Kovalam Section',
+    start_chainage: 10.0,
+    end_chainage: 15.0,
+    length_km: 5.0,
+    work_type: 'Periodic Renewal / SDBC',
+    scheme_name: 'CRIDP',
+    sanction_order_no: 'G.O.(Ms) No. 112/2022',
+    sanction_date: '2022-10-15',
+    sanctioned_cost_cr: 4.80,
+    contract_agreement_no: 'AGR-SE-CPT-2022-44',
+    contractor_name: 'M/s Southern Infra Projects',
+    awarded_value_cr: 4.65,
+    physical_completion_date: '2023-08-15',
+    actual_expenditure_cr: 4.62,
+    completion_certificate_ref: 'CC-CPT-2023-89',
+    measurement_book_ref: 'MB No. 412/Page 55',
+    pavement_treatment: 'Semi-Dense Bituminous Concrete (SDBC) 25mm overlay',
+    is_verified: true,
+    verification_source: 'Chengalpattu Circle Completion Register',
+    created_at: '2026-11-16T12:00:00Z'
+  },
+  {
+    id: 2,
+    work_reference: 'WH-SH49-2024-02',
+    road_id: 1,
+    road_code: 'SH-49',
+    road_name: 'East Coast Road (Chennai - Mahabalipuram - Puducherry)',
+    road_category: 'SH',
+    district: 'Chengalpattu',
+    division_name: 'Chengalpattu Division',
+    section_name: 'Mahabalipuram Section',
+    start_chainage: 22.0,
+    end_chainage: 30.0,
+    length_km: 8.0,
+    work_type: 'BM & BC Overlay',
+    scheme_name: 'CRIDP',
+    sanction_order_no: 'G.O.(Ms) No. 45/2023',
+    sanction_date: '2023-05-10',
+    sanctioned_cost_cr: 8.50,
+    contract_agreement_no: 'AGR-CE-CHN-2023-12',
+    contractor_name: 'M/s Coastal Roadways Ltd',
+    awarded_value_cr: 8.40,
+    physical_completion_date: '2024-03-20',
+    actual_expenditure_cr: 8.38,
+    completion_certificate_ref: 'CC-CPT-2024-14',
+    measurement_book_ref: 'MB No. 428/Page 12',
+    pavement_treatment: 'Bituminous Concrete (BC) 40mm on DBM 50mm',
+    is_verified: true,
+    verification_source: 'Chengalpattu Circle Completion Register',
+    created_at: '2026-11-16T12:00:00Z'
+  },
+  {
+    id: 3,
+    work_reference: 'WH-MDR102-2019-01',
+    road_id: 2,
+    road_code: 'MDR-102',
+    road_name: 'Tambaram - Mudichur - Sriperumbudur Road',
+    road_category: 'MDR',
+    district: 'Chengalpattu',
+    division_name: 'Tambaram Division',
+    section_name: 'Mudichur Section',
+    start_chainage: 5.0,
+    end_chainage: 12.0,
+    length_km: 7.0,
+    work_type: 'Periodic Renewal / SDBC',
+    scheme_name: 'CRIDP',
+    sanction_order_no: 'G.O.(Ms) No. 88/2018',
+    sanction_date: '2018-09-14',
+    sanctioned_cost_cr: 5.20,
+    contract_agreement_no: 'AGR-SE-MET-2018-91',
+    contractor_name: 'M/s Sri Murugan Infra',
+    awarded_value_cr: 5.10,
+    physical_completion_date: '2019-11-10',
+    actual_expenditure_cr: 5.08,
+    completion_certificate_ref: 'CC-TBM-2019-45',
+    measurement_book_ref: 'MB No. 312/Page 88',
+    pavement_treatment: 'Semi-Dense Bituminous Concrete 25mm',
+    is_verified: true,
+    verification_source: 'Tambaram Division Completion Register (HISTORICALLY ELIGIBLE)',
+    created_at: '2026-11-16T12:00:00Z'
+  },
+  {
+    id: 4,
+    work_reference: 'WH-SH15-CKICP-01',
+    road_id: 4,
+    road_code: 'SH-15',
+    road_name: 'Ooty - Kotagiri - Myleripalayam - Gudalur Ghat Corridor',
+    road_category: 'SH',
+    district: 'Coimbatore',
+    division_name: 'Coimbatore Special Division',
+    section_name: 'Myleripalayam Section',
+    start_chainage: 12.0,
+    end_chainage: 38.0,
+    length_km: 26.0,
+    work_type: 'Widening to 4 Lanes with Paved Shoulders',
+    scheme_name: 'CKICP (ADB Assisted)',
+    sanction_order_no: 'G.O.(Ms) No. 128/2020',
+    sanction_date: '2020-08-12',
+    sanctioned_cost_cr: 210.50,
+    contract_agreement_no: 'CKICP-EPC-04',
+    contractor_name: 'M/s L&T Construction Ltd',
+    awarded_value_cr: 198.40,
+    actual_expenditure_cr: 98.40,
+    completion_certificate_ref: 'WIP (Ongoing Multilateral Work)',
+    measurement_book_ref: 'MB No. 811/Page 01',
+    pavement_treatment: 'Heavy Duty Flexible Pavement (DBM 100mm + BC 50mm)',
+    is_verified: true,
+    verification_source: 'CKICP ADB Quarterly Progress Review',
+    created_at: '2026-11-16T12:00:00Z'
+  },
+  {
+    id: 5,
+    work_reference: 'WH-SH09-2024-01',
+    road_id: 5,
+    road_code: 'SH-09',
+    road_name: 'Cuddalore - Vridhachalam - Salem Road',
+    road_category: 'SH',
+    district: 'Cuddalore',
+    division_name: 'Cuddalore Division',
+    section_name: 'Vridhachalam Section',
+    start_chainage: 50.0,
+    end_chainage: 58.0,
+    length_km: 8.0,
+    work_type: 'BM & BC Overlay',
+    scheme_name: 'CRIDP',
+    sanction_order_no: 'G.O.(Ms) No. 71/2023',
+    sanction_date: '2023-07-22',
+    sanctioned_cost_cr: 7.20,
+    contract_agreement_no: 'AGR-SE-VLR-2023-38',
+    contractor_name: 'M/s Vridhachalam Builders',
+    awarded_value_cr: 6.95,
+    physical_completion_date: '2024-09-05',
+    actual_expenditure_cr: 6.90,
+    completion_certificate_ref: 'CC-CUD-2024-31',
+    measurement_book_ref: 'MB No. 514/Page 09',
+    pavement_treatment: 'Bituminous Concrete 40mm Overlay',
+    is_verified: true,
+    verification_source: 'Cuddalore Division Work Register',
+    created_at: '2026-11-16T12:00:00Z'
+  },
+  {
+    id: 6,
+    work_reference: 'WH-MDR102-GS-01',
+    road_id: 2,
+    road_code: 'MDR-102',
+    road_name: 'Tambaram - Mudichur - Sriperumbudur Road',
+    road_category: 'MDR',
+    district: 'Chennai',
+    division_name: 'Tambaram Division',
+    section_name: 'Tambaram Section',
+    start_chainage: 0.0,
+    end_chainage: 3.2,
+    length_km: 3.2,
+    work_type: 'Construction of 4-Lane Grade Separator / Elevated Corridor',
+    scheme_name: 'CMRDP',
+    sanction_order_no: 'G.O.(Ms) No. 92/2024',
+    sanction_date: '2024-02-18',
+    sanctioned_cost_cr: 85.00,
+    contract_agreement_no: 'AGR-CE-MET-2024-05',
+    contractor_name: 'PST Engineering Constructions',
+    awarded_value_cr: 81.20,
+    actual_expenditure_cr: 22.40,
+    completion_certificate_ref: 'WIP (Active Project PRJ-TN-2026-002)',
+    measurement_book_ref: 'MB No. 620/Page 15',
+    pavement_treatment: 'Elevated Viaduct Deck + At-grade Service Roads',
+    is_verified: true,
+    verification_source: 'Chennai Metro Circle Ongoing Works Register',
+    created_at: '2026-11-16T12:00:00Z'
+  }
+];
+
+export const fallbackCRIDPProposalsList: CRIDPWorkItem[] = [
+  // 1. Partial Overlap on SH-49 (Mapped to Project 1: PRJ-TN-2026-001)
+  {
+    id: 1,
+    proposal_code: 'PROP-CRIDP-2026-001',
+    work_name: 'Periodic Renewal and Riding Quality Improvement of SH-49 km 13/0 to 18/0',
+    road_id: 1,
+    road_code: 'SH-49',
+    road_name: 'East Coast Road (Chennai - Mahabalipuram - Puducherry)',
+    road_category: 'SH',
+    district: 'Chengalpattu',
+    circle_name: 'Chengalpattu Circle',
+    division_name: 'Chengalpattu Division',
+    section_name: 'Kovalam Section',
+    start_chainage: 13.0,
+    end_chainage: 18.0,
+    proposed_length_km: 5.0,
+    proposed_work_type: 'Periodic Renewal / SDBC',
+    financial_year: '2026-27',
+    estimated_cost_cr: 4.50,
+    sanctioned_cost_cr: 0.0,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 160.0,
+    pci_score: 62.0,
+    roughness_iri: 3400.0,
+    verification_status: 'PARTIALLY OVERLAPPING',
+    duplicate_severity: 'MEDIUM',
+    overlapping_length_km: 2.0,
+    eligible_length_km: 3.0,
+    overlapping_chainage_description: 'Km 13/000 to 15/000 overlaps with WH-SH49-2023-01 (completed 15.08.2023, 3.3 yrs ago); Km 15/000 to 18/000 is eligible.',
+    potential_financial_exposure_cr: 1.80,
+    avoidable_expenditure_cr: 1.80,
+    approval_authority_required: 'Superintending Engineer (G.O. Ms. No. 11: up to Rs 7.00 Cr)',
+    ce_review_status: 'PENDING_REVIEW',
+    data_mode: 'OFFICIAL',
+    data_status: 'Verified Against Chengalpattu Circle MB Register',
+    source_document_ref: 'DE(H) Chengalpattu Proposed CRIDP Priority List 2026-27',
+    created_at: '2026-11-16T10:00:00Z',
+    updated_at: '2026-11-16T10:00:00Z',
+    overlap_findings: [
+      {
+        id: 1,
+        proposal_id: 1,
+        historical_work_id: 1,
+        overlap_type: 'HISTORICAL_WORK_OVERLAP',
+        overlap_start_chainage: 13.0,
+        overlap_end_chainage: 15.0,
+        overlap_length_km: 2.0,
+        historical_completion_date: '2023-08-15',
+        years_since_completion: 3.3,
+        is_within_five_year_window: true,
+        estimated_overlap_cost_cr: 1.80,
+        recommended_action: 'Truncate proposal to Km 15/000 - 18/000 (3.0 km) and reduce estimate to Rs 2.70 Cr.',
+        created_at: '2026-11-16T10:00:00Z'
+      }
+    ]
+  },
+  // 2. 100% Duplicate / Recently Renewed on SH-49 (Mapped to Project 1: PRJ-TN-2026-001)
+  {
+    id: 2,
+    proposal_code: 'PROP-CRIDP-2026-002',
+    work_name: 'Strengthening & Surface Renewal of SH-49 km 23/0 to 28/0',
+    road_id: 1,
+    road_code: 'SH-49',
+    road_name: 'East Coast Road (Chennai - Mahabalipuram - Puducherry)',
+    road_category: 'SH',
+    district: 'Chengalpattu',
+    circle_name: 'Chengalpattu Circle',
+    division_name: 'Chengalpattu Division',
+    section_name: 'Mahabalipuram Section',
+    start_chainage: 23.0,
+    end_chainage: 28.0,
+    proposed_length_km: 5.0,
+    proposed_work_type: 'Periodic Renewal / SDBC',
+    financial_year: '2026-27',
+    estimated_cost_cr: 4.80,
+    sanctioned_cost_cr: 0.0,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 175.0,
+    pci_score: 78.0,
+    roughness_iri: 2800.0,
+    verification_status: 'RECENTLY RENEWED',
+    duplicate_severity: 'CRITICAL',
+    overlapping_length_km: 5.0,
+    eligible_length_km: 0.0,
+    overlapping_chainage_description: '100% overlap with WH-SH49-2024-02 (Km 22/0 to 30/0, completed 20.03.2024, only 2.7 yrs ago).',
+    potential_financial_exposure_cr: 4.80,
+    avoidable_expenditure_cr: 4.80,
+    approval_authority_required: 'Chief Engineer / Government (Exception Only)',
+    ce_review_status: 'FLAGGED_FOR_REJECTION',
+    data_mode: 'OFFICIAL',
+    data_status: 'Duplicate Detected by Automated Chainage Engine',
+    source_document_ref: 'Special Sub-Division Annual Proposals 2026-27',
+    created_at: '2026-11-16T10:15:00Z',
+    updated_at: '2026-11-16T10:15:00Z',
+    overlap_findings: [
+      {
+        id: 2,
+        proposal_id: 2,
+        historical_work_id: 2,
+        overlap_type: 'HISTORICAL_WORK_OVERLAP',
+        overlap_start_chainage: 23.0,
+        overlap_end_chainage: 28.0,
+        overlap_length_km: 5.0,
+        historical_completion_date: '2024-03-20',
+        years_since_completion: 2.7,
+        is_within_five_year_window: true,
+        estimated_overlap_cost_cr: 4.80,
+        recommended_action: 'Reject proposal in full. PCI score 78 indicates pavement is in good condition.',
+        created_at: '2026-11-16T10:15:00Z'
+      }
+    ]
+  },
+  // 3. Fully Eligible stretch on MDR-102 (Mapped to Project 2: PRJ-TN-2026-002)
+  {
+    id: 3,
+    proposal_code: 'PROP-CRIDP-2026-003',
+    work_name: 'Riding Quality Renewal on MDR-102 Tambaram-Mudichur Stretch km 5/0 to 12/0',
+    road_id: 2,
+    road_code: 'MDR-102',
+    road_name: 'Tambaram - Mudichur - Sriperumbudur Road',
+    road_category: 'MDR',
+    district: 'Chengalpattu',
+    circle_name: 'Chennai City Circle',
+    division_name: 'Tambaram Division',
+    section_name: 'Mudichur Section',
+    start_chainage: 5.0,
+    end_chainage: 12.0,
+    proposed_length_km: 7.0,
+    proposed_work_type: 'Periodic Renewal / SDBC',
+    financial_year: '2026-27',
+    estimated_cost_cr: 5.60,
+    sanctioned_cost_cr: 5.60,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 140.0,
+    pci_score: 54.0,
+    roughness_iri: 3900.0,
+    verification_status: 'ELIGIBLE',
+    duplicate_severity: 'NONE',
+    overlapping_length_km: 0.0,
+    eligible_length_km: 7.0,
+    overlapping_chainage_description: 'Previous renewal completed on 10.11.2019 (>7 years ago). Free from 5-year restriction.',
+    potential_financial_exposure_cr: 0.0,
+    avoidable_expenditure_cr: 0.0,
+    approval_authority_required: 'Superintending Engineer (G.O. Ms. No. 11: up to Rs 7.00 Cr)',
+    ce_review_status: 'RECOMMENDED_FOR_SANCTION',
+    data_mode: 'OFFICIAL',
+    data_status: 'Verified Against Completion Registers',
+    source_document_ref: 'Tambaram Division Verified CRIDP Dossier',
+    created_at: '2026-11-16T10:30:00Z',
+    updated_at: '2026-11-16T10:30:00Z'
+  },
+  // 4. Engineering Exception on SH-09 (Mapped to Project 5: PRJ-TN-2026-005)
+  {
+    id: 4,
+    proposal_code: 'PROP-CRIDP-2026-004',
+    work_name: 'Special Flood Damage Renewal & Base Stabilization of SH-09 km 51/0 to 57/0',
+    road_id: 5,
+    road_code: 'SH-09',
+    road_name: 'Cuddalore - Vridhachalam - Salem Road',
+    road_category: 'SH',
+    district: 'Cuddalore',
+    circle_name: 'Villupuram Circle',
+    division_name: 'Cuddalore Division',
+    section_name: 'Vridhachalam Section',
+    start_chainage: 51.0,
+    end_chainage: 57.0,
+    proposed_length_km: 6.0,
+    proposed_work_type: 'Reconstruction & Stabilization',
+    financial_year: '2026-27',
+    estimated_cost_cr: 6.80,
+    sanctioned_cost_cr: 6.80,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 150.0,
+    pci_score: 38.0,
+    roughness_iri: 4800.0,
+    verification_status: 'ENGINEERING EXCEPTION',
+    duplicate_severity: 'LOW',
+    overlapping_length_km: 6.0,
+    eligible_length_km: 6.0,
+    overlapping_chainage_description: 'Overlaps with WH-SH09-2024-01 (completed Sep 2024), but approved under disaster restoration clause.',
+    potential_financial_exposure_cr: 0.0,
+    avoidable_expenditure_cr: 0.0,
+    engineering_exception_justification: 'Severe subgrade failure due to Pennaiyar river flash flood breaching embankment; certified by HRS Guindy Investigation Report No. HRS-GEO-2025-104. Concurred by CE (C&M).',
+    approval_authority_required: 'Chief Engineer (C&M) / Government',
+    ce_review_status: 'APPROVED',
+    data_mode: 'OFFICIAL',
+    data_status: 'Technical Audit Concurrence Recorded',
+    source_document_ref: 'CE(H) C&M Proceedings No. 4122/W2/2026',
+    created_at: '2026-11-16T11:00:00Z',
+    updated_at: '2026-11-16T11:00:00Z'
+  },
+  // 5. Work In Progress Conflict on SH-15 (Mapped to Project 4: PRJ-TN-2026-004)
+  {
+    id: 5,
+    proposal_code: 'PROP-CRIDP-2026-005',
+    work_name: 'Surface Renewal of SH-15 km 15/0 to 25/0',
+    road_id: 4,
+    road_code: 'SH-15',
+    road_name: 'Ooty - Kotagiri - Myleripalayam - Gudalur Ghat Corridor',
+    road_category: 'SH',
+    district: 'Coimbatore',
+    circle_name: 'Coimbatore Circle',
+    division_name: 'Coimbatore Special Division',
+    section_name: 'Myleripalayam Section',
+    start_chainage: 15.0,
+    end_chainage: 25.0,
+    proposed_length_km: 10.0,
+    proposed_work_type: 'Periodic Renewal / SDBC',
+    financial_year: '2026-27',
+    estimated_cost_cr: 8.20,
+    sanctioned_cost_cr: 0.0,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 180.0,
+    pci_score: 72.0,
+    roughness_iri: 2900.0,
+    verification_status: 'WORK IN PROGRESS',
+    duplicate_severity: 'CRITICAL',
+    overlapping_length_km: 10.0,
+    eligible_length_km: 0.0,
+    overlapping_chainage_description: '100% overlaps with active CKICP Project PRJ-TN-2026-004 (Contract CKICP-EPC-04, M/s L&T).',
+    potential_financial_exposure_cr: 8.20,
+    avoidable_expenditure_cr: 8.20,
+    approval_authority_required: 'Chief Engineer (CKICP) Concurrence Required',
+    ce_review_status: 'FLAGGED_FOR_REJECTION',
+    data_mode: 'OFFICIAL',
+    data_status: 'Cross-Scheme Multi-lateral Conflict Detected',
+    source_document_ref: 'Field Sub-Division Duplicate Submission',
+    created_at: '2026-11-16T11:15:00Z',
+    updated_at: '2026-11-16T11:15:00Z',
+    overlap_findings: [
+      {
+        id: 3,
+        proposal_id: 5,
+        historical_work_id: 4,
+        overlap_type: 'SCHEME_CONFLICT',
+        overlap_start_chainage: 15.0,
+        overlap_end_chainage: 25.0,
+        overlap_length_km: 10.0,
+        is_within_five_year_window: true,
+        estimated_overlap_cost_cr: 8.20,
+        recommended_action: 'Reject proposal. Corridor is under ADB EPC widening contract.',
+        created_at: '2026-11-16T11:15:00Z'
+      }
+    ]
+  },
+  // 6. Eligible virgin corridor on SH-110A (General Highway Asset)
+  {
+    id: 6,
+    proposal_code: 'PROP-CRIDP-2026-006',
+    work_name: 'Widening to 2-Lane with Paved Shoulder of SH-110A km 0/0 to 8/0',
+    road_id: 6,
+    road_code: 'SH-110A',
+    road_name: 'Medavakkam - Mambakkam Link Corridor',
+    road_category: 'SH',
+    district: 'Chengalpattu',
+    circle_name: 'Chengalpattu Circle',
+    division_name: 'Chengalpattu Division',
+    section_name: 'Medavakkam Section',
+    start_chainage: 0.0,
+    end_chainage: 8.0,
+    proposed_length_km: 8.0,
+    proposed_work_type: 'Widening & Strengthening',
+    financial_year: '2026-27',
+    estimated_cost_cr: 7.40,
+    sanctioned_cost_cr: 7.40,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 130.0,
+    pci_score: 58.0,
+    roughness_iri: 3600.0,
+    verification_status: 'ELIGIBLE',
+    duplicate_severity: 'NONE',
+    overlapping_length_km: 0.0,
+    eligible_length_km: 8.0,
+    overlapping_chainage_description: 'No prior renewal work within 5 years. Pavement condition justifies strengthening.',
+    potential_financial_exposure_cr: 0.0,
+    avoidable_expenditure_cr: 0.0,
+    approval_authority_required: 'Chief Engineer (Full powers: > Rs 7.00 Cr)',
+    ce_review_status: 'RECOMMENDED_FOR_SANCTION',
+    data_mode: 'OFFICIAL',
+    data_status: 'Verified Against Chengalpattu Circle Asset Register',
+    source_document_ref: 'Chengalpattu Division Master Priority',
+    created_at: '2026-11-16T11:30:00Z',
+    updated_at: '2026-11-16T11:30:00Z'
+  },
+  // 7. Duplicate of Active Grade Separator on MDR-102 (Mapped to Project 2: PRJ-TN-2026-002)
+  {
+    id: 7,
+    proposal_code: 'PROP-CRIDP-2026-007',
+    work_name: 'Surface Renewal of MDR-102 Tambaram Junction km 0/0 to 3/2',
+    road_id: 2,
+    road_code: 'MDR-102',
+    road_name: 'Tambaram - Mudichur - Sriperumbudur Road',
+    road_category: 'MDR',
+    district: 'Chennai',
+    circle_name: 'Chennai City Circle',
+    division_name: 'Tambaram Division',
+    section_name: 'Tambaram Section',
+    start_chainage: 0.0,
+    end_chainage: 3.2,
+    proposed_length_km: 3.2,
+    proposed_work_type: 'Periodic Renewal / SDBC',
+    financial_year: '2026-27',
+    estimated_cost_cr: 2.20,
+    sanctioned_cost_cr: 0.0,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 150.0,
+    pci_score: 64.0,
+    roughness_iri: 3200.0,
+    verification_status: 'DUPLICATE PROPOSAL',
+    duplicate_severity: 'CRITICAL',
+    overlapping_length_km: 3.2,
+    eligible_length_km: 0.0,
+    overlapping_chainage_description: 'Direct duplication of active ongoing Project PRJ-TN-2026-002 (Grade Separator Construction).',
+    potential_financial_exposure_cr: 2.20,
+    avoidable_expenditure_cr: 2.20,
+    approval_authority_required: 'Chief Engineer (Metro)',
+    ce_review_status: 'FLAGGED_FOR_REJECTION',
+    data_mode: 'OFFICIAL',
+    data_status: 'Active Works Conflict Alert',
+    source_document_ref: 'Tambaram Sub-Division Field Proposals 2026-27',
+    created_at: '2026-11-16T11:45:00Z',
+    updated_at: '2026-11-16T11:45:00Z',
+    overlap_findings: [
+      {
+        id: 4,
+        proposal_id: 7,
+        historical_work_id: 6,
+        overlap_type: 'ACTIVE_WORK_OVERLAP',
+        overlap_start_chainage: 0.0,
+        overlap_end_chainage: 3.2,
+        overlap_length_km: 3.2,
+        is_within_five_year_window: true,
+        estimated_overlap_cost_cr: 2.20,
+        recommended_action: 'Drop proposal immediately to avoid Rs 2.20 Cr double sanction.',
+        created_at: '2026-11-16T11:45:00Z'
+      }
+    ]
+  },
+  // 8. Madurai Ring Road stretch with legacy gaps (Mapped to Project 7: PRJ-TN-2026-007)
+  {
+    id: 8,
+    proposal_code: 'PROP-CRIDP-2026-008',
+    work_name: 'Bituminous Overlay of SH-75 Madurai Ring Road km 10/0 to 18/0',
+    road_id: 7,
+    road_code: 'SH-75',
+    road_name: 'Madurai Ring Road to Tuticorin Port Connectivity Link',
+    road_category: 'SH',
+    district: 'Madurai',
+    circle_name: 'Madurai Circle',
+    division_name: 'Madurai Special Division',
+    section_name: 'Kappalur Section',
+    start_chainage: 10.0,
+    end_chainage: 18.0,
+    proposed_length_km: 8.0,
+    proposed_work_type: 'BM & BC Overlay',
+    financial_year: '2026-27',
+    estimated_cost_cr: 5.60,
+    sanctioned_cost_cr: 0.0,
+    existing_pavement_type: 'Flexible',
+    existing_crust_thickness_mm: 170.0,
+    pci_score: 52.0,
+    roughness_iri: 3800.0,
+    verification_status: 'MANUAL REVIEW REQUIRED',
+    duplicate_severity: 'MEDIUM',
+    overlapping_length_km: 0.0,
+    eligible_length_km: 8.0,
+    overlapping_chainage_description: 'Legacy BOT handover completion records incomplete in digital portal; physical MB verification required.',
+    potential_financial_exposure_cr: 0.0,
+    avoidable_expenditure_cr: 0.0,
+    approval_authority_required: 'Superintending Engineer, Madurai Circle',
+    ce_review_status: 'PENDING_REVIEW',
+    data_mode: 'OFFICIAL',
+    data_status: 'Historical Dossier Pending Physical Verification',
+    source_document_ref: 'Madurai Division Unverified Legacy Dossier',
+    created_at: '2026-11-16T12:00:00Z',
+    updated_at: '2026-11-16T12:00:00Z'
+  }
+];
+
+export const fallbackCRIDPYearWiseEligibilityList: YearWiseEligibilityItem[] = [
+  {
+    financial_year: '2026-27',
+    total_verified_length_km: 1196.3,
+    restricted_renewal_window_km: 342.1,
+    already_sanctioned_km: 145.4,
+    other_schemes_committed_km: 188.0,
+    under_execution_km: 94.2,
+    historically_eligible_km: 426.6,
+    administratively_available_km: 375.0,
+    technically_recommended_km: 298.5,
+    approved_renewal_km: 210.0,
+    insufficient_data_km: 45.2
+  },
+  {
+    financial_year: '2027-28',
+    total_verified_length_km: 1196.3,
+    restricted_renewal_window_km: 284.5,
+    already_sanctioned_km: 110.0,
+    other_schemes_committed_km: 140.0,
+    under_execution_km: 65.0,
+    historically_eligible_km: 596.8,
+    administratively_available_km: 520.0,
+    technically_recommended_km: 410.0,
+    approved_renewal_km: 0.0,
+    insufficient_data_km: 32.0
+  },
+  {
+    financial_year: '2028-29',
+    total_verified_length_km: 1196.3,
+    restricted_renewal_window_km: 215.0,
+    already_sanctioned_km: 45.0,
+    other_schemes_committed_km: 80.0,
+    under_execution_km: 30.0,
+    historically_eligible_km: 826.3,
+    administratively_available_km: 740.0,
+    technically_recommended_km: 560.0,
+    approved_renewal_km: 0.0,
+    insufficient_data_km: 25.0
+  },
+  {
+    financial_year: '2029-30',
+    total_verified_length_km: 1196.3,
+    restricted_renewal_window_km: 140.0,
+    already_sanctioned_km: 10.0,
+    other_schemes_committed_km: 40.0,
+    under_execution_km: 10.0,
+    historically_eligible_km: 996.3,
+    administratively_available_km: 910.0,
+    technically_recommended_km: 680.0,
+    approved_renewal_km: 0.0,
+    insufficient_data_km: 18.0
+  },
+  {
+    financial_year: '2030-31',
+    total_verified_length_km: 1196.3,
+    restricted_renewal_window_km: 85.0,
+    already_sanctioned_km: 0.0,
+    other_schemes_committed_km: 20.0,
+    under_execution_km: 0.0,
+    historically_eligible_km: 1091.3,
+    administratively_available_km: 1020.0,
+    technically_recommended_km: 790.0,
+    approved_renewal_km: 0.0,
+    insufficient_data_km: 12.0
+  }
+];
+
+export const fallbackCRIDPHierarchyBreakdownList: DistrictCircleEligibilityItem[] = [
+  {
+    circle: 'Chengalpattu Circle',
+    division: 'Chengalpattu Division',
+    district: 'Chengalpattu',
+    verified_inventory_km: 382.4,
+    proposed_proposals_count: 4,
+    proposed_renewal_km: 24.0,
+    eligible_length_km: 17.0,
+    restricted_five_year_km: 7.0,
+    overlapping_length_km: 7.0,
+    financial_exposure_cr: 6.60,
+    unresolved_duplicates: 2,
+    proposals_pending_review: 2
+  },
+  {
+    circle: 'Chennai City Circle',
+    division: 'Tambaram Division',
+    district: 'Chennai',
+    verified_inventory_km: 245.8,
+    proposed_proposals_count: 2,
+    proposed_renewal_km: 10.2,
+    eligible_length_km: 7.0,
+    restricted_five_year_km: 3.2,
+    overlapping_length_km: 3.2,
+    financial_exposure_cr: 2.20,
+    unresolved_duplicates: 1,
+    proposals_pending_review: 1
+  },
+  {
+    circle: 'Villupuram Circle',
+    division: 'Cuddalore Division',
+    district: 'Cuddalore',
+    verified_inventory_km: 298.5,
+    proposed_proposals_count: 1,
+    proposed_renewal_km: 6.0,
+    eligible_length_km: 6.0,
+    restricted_five_year_km: 6.0,
+    overlapping_length_km: 6.0,
+    financial_exposure_cr: 0.0,
+    unresolved_duplicates: 0,
+    proposals_pending_review: 0
+  },
+  {
+    circle: 'Coimbatore Circle',
+    division: 'Coimbatore Special Division',
+    district: 'Coimbatore',
+    verified_inventory_km: 269.6,
+    proposed_proposals_count: 1,
+    proposed_renewal_km: 10.0,
+    eligible_length_km: 0.0,
+    restricted_five_year_km: 10.0,
+    overlapping_length_km: 10.0,
+    financial_exposure_cr: 8.20,
+    unresolved_duplicates: 1,
+    proposals_pending_review: 1
+  }
+];
+
+export const fallbackCRIDPFinancialRiskData = {
+  total_proposed_value_cr: 44.50,
+  potentially_avoidable_expenditure_cr: 17.00,
+  already_sanctioned_overlap_cr: 10.40,
+  actual_duplicate_expenditure_cr: 2.20,
+  confirmed_recoverable_amounts_cr: 2.20,
+  risk_breakdown: [
+    {
+      category: '100% RECENT RENEWAL DUPLICATION',
+      amount_cr: 4.80,
+      description: 'Proposals covering stretches with valid BC/SDBC overlays completed within last 3 years (e.g. SH-49 Km 23-28).'
+    },
+    {
+      category: 'CROSS-SCHEME ONGOING WORK CONFLICT',
+      amount_cr: 10.40,
+      description: 'Proposals overlapping active CKICP/CMRDP capital contracts (e.g. SH-15 ADB corridor and Tambaram grade separator).'
+    },
+    {
+      category: 'PARTIAL OVERLAP PRUNING SAVINGS',
+      amount_cr: 1.80,
+      description: 'Avoidable expenditure captured by truncating proposals to non-overlapping stretches (e.g. SH-49 Km 13-15).'
+    }
+  ]
+};
+
+export const fallbackDelegationRulesList: DelegationOfPowerRuleItem[] = [
+  {
+    id: 1,
+    rule_id: 'DOP-TS-DE-001',
+    go_reference: 'G.O.(Ms) No. 11, Highways and Minor Ports (HN.2), dated 21.01.2022',
+    issuing_authority: 'Highways and Minor Ports (HN.2) Department',
+    approval_category: 'TECHNICAL_SANCTION',
+    applicable_organisation: 'Highways Department (C&M)',
+    applicable_work_type: 'Road Works',
+    authority_designation: 'Divisional Engineer',
+    monetary_limit_cr: 0.50,
+    tender_excess_pct_limit: 0.0,
+    structural_design_separate: true,
+    effective_date: '2022-01-21',
+    verification_status: 'VERIFIED CURRENT',
+    supporting_source: 'https://www.tn.gov.in/gosec/hways/hways_e_11_2022.pdf',
+    operative_provisions: 'Divisional Engineer is empowered to accord Technical Sanction for road works up to Rs 50.00 Lakhs.',
+    notes: 'Structural design approval for major bridges and structures must be separately submitted to HRS or Chief Engineer (Planning).'
+  },
+  {
+    id: 2,
+    rule_id: 'DOP-TS-SE-001',
+    go_reference: 'G.O.(Ms) No. 11, Highways and Minor Ports (HN.2), dated 21.01.2022',
+    issuing_authority: 'Highways and Minor Ports (HN.2) Department',
+    approval_category: 'TECHNICAL_SANCTION',
+    applicable_organisation: 'Highways Department (C&M)',
+    applicable_work_type: 'Road Works',
+    authority_designation: 'Superintending Engineer',
+    monetary_limit_cr: 7.00,
+    tender_excess_pct_limit: 0.0,
+    structural_design_separate: true,
+    effective_date: '2022-01-21',
+    verification_status: 'VERIFIED CURRENT',
+    supporting_source: 'https://www.tn.gov.in/gosec/hways/hways_e_11_2022.pdf',
+    operative_provisions: 'Superintending Engineer is empowered to accord Technical Sanction for road works exceeding Rs 50.00 Lakhs and up to Rs 7.00 Crores.',
+    notes: 'Does not apply to detailed structural design beyond standard IRC spans without HRS concurrence.'
+  },
+  {
+    id: 3,
+    rule_id: 'DOP-TS-CE-001',
+    go_reference: 'G.O.(Ms) No. 11, Highways and Minor Ports (HN.2), dated 21.01.2022',
+    issuing_authority: 'Highways and Minor Ports (HN.2) Department',
+    approval_category: 'TECHNICAL_SANCTION',
+    applicable_organisation: 'Highways Department (C&M)',
+    applicable_work_type: 'Road Works',
+    authority_designation: 'Chief Engineer',
+    monetary_limit_cr: 9999.00,
+    tender_excess_pct_limit: 0.0,
+    structural_design_separate: true,
+    effective_date: '2022-01-21',
+    verification_status: 'VERIFIED CURRENT',
+    supporting_source: 'https://www.tn.gov.in/gosec/hways/hways_e_11_2022.pdf',
+    operative_provisions: 'Chief Engineer is empowered to accord Technical Sanction for all road works above Rs 7.00 Crores (Full Powers within administrative sanction).',
+    notes: 'Mandatory technical vetting by Planning wing for projects exceeding Rs 25.00 Cr.'
+  },
+  {
+    id: 4,
+    rule_id: 'DOP-TA-SE-001',
+    go_reference: 'G.O.(Ms) No. 29, dated 03.03.2022 restoring G.O.(Ms) No. 163, dated 01.10.2012',
+    issuing_authority: 'Highways and Minor Ports (HN.2) Department',
+    approval_category: 'TENDER_ACCEPTANCE',
+    applicable_organisation: 'Highways Department (C&M)',
+    applicable_work_type: 'Road Works',
+    authority_designation: 'Superintending Engineer',
+    monetary_limit_cr: 6.00,
+    tender_excess_pct_limit: 5.0,
+    structural_design_separate: false,
+    effective_date: '2022-03-03',
+    verification_status: 'VERIFIED CURRENT',
+    supporting_source: 'Tamil Nadu Highways Manual Vol II & G.O. Ms. No. 29 (03.03.2022)',
+    operative_provisions: 'Superintending Engineer is empowered to accept tenders up to Rs 6.00 Crores with tender excess not exceeding 5%.',
+    notes: 'Tender excess beyond 5% must be placed before Committee of Chief Engineers (COT).'
+  }
+];
+
+export const fallbackCRIDPAIRecommendationsData = {
+  summary: 'AI Engine audited 8 CRIDP renewal proposals for FY 2026-27 across verified measurement books and contract registers.',
+  key_findings: [
+    {
+      title: 'Immediate Cost Avoidance on Duplicate Proposals',
+      impact_cr: 15.20,
+      confidence_pct: 99.2,
+      recommendation: 'Reject PROP-CRIDP-2026-002 (SH-49, Rs 4.80 Cr), PROP-CRIDP-2026-005 (SH-15, Rs 8.20 Cr), and PROP-CRIDP-2026-007 (MDR-102, Rs 2.20 Cr). All three represent 100% duplication with recently completed or ongoing works.'
+    },
+    {
+      title: 'Scope Pruning on Partial Chainage Overlap',
+      impact_cr: 1.80,
+      confidence_pct: 97.5,
+      recommendation: 'Truncate PROP-CRIDP-2026-001 (SH-49) from Km 13/0-18/0 to Km 15/0-18/0. Sanction only the 3.0 km non-overlapping stretch, saving Rs 1.80 Cr.'
+    },
+    {
+      title: 'Expedite Virgin Eligible Corridors',
+      impact_cr: 13.00,
+      confidence_pct: 95.0,
+      recommendation: 'Immediately accord technical sanction for PROP-CRIDP-2026-003 (MDR-102, Rs 5.60 Cr) and PROP-CRIDP-2026-006 (SH-110A, Rs 7.40 Cr) to prevent structural base degradation.'
+    }
+  ]
+};
+
+export const fallbackChainageOverlapCheck = (payload: {
+  road_id?: number;
+  road_code?: string;
+  start_chainage: number;
+  end_chainage: number;
+  proposed_work_type?: string;
+  financial_year?: string;
+}): ChainageOverlapResult => {
+  const roadCode = payload.road_code || 'SH-49';
+  const start = Number(payload.start_chainage);
+  const end = Number(payload.end_chainage);
+  const proposedLength = Math.max(0, end - start);
+
+  const matchedHistory = fallbackCRIDPHistoricalWorksList.filter(hw => hw.road_code === roadCode);
+
+  let maxOverlap = 0;
+  let overlappingDesc = 'No overlap detected with historical works.';
+  let classification = 'ELIGIBLE';
+  let severity = 'NONE';
+  let recommendedAction = 'Road stretch is free from recent renewal restrictions and eligible for administrative consideration.';
+  let authorityRequired = proposedLength > 7 ? 'Chief Engineer (Full Powers)' : 'Superintending Engineer (G.O. 11)';
+
+  for (const hw of matchedHistory) {
+    const oStart = Math.max(start, hw.start_chainage);
+    const oEnd = Math.min(end, hw.end_chainage);
+    const oLen = Math.max(0, oEnd - oStart);
+
+    if (oLen > 0) {
+      maxOverlap = oLen;
+      if (hw.scheme_name.includes('CKICP') || hw.scheme_name.includes('CMRDP') || !hw.physical_completion_date) {
+        classification = 'WORK IN PROGRESS';
+        severity = 'CRITICAL';
+        overlappingDesc = `Overlaps ${oLen.toFixed(1)} km (Km ${oStart}/${(oStart % 1 * 1000).toFixed(0)} to ${oEnd}/${(oEnd % 1 * 1000).toFixed(0)}) with ongoing scheme ${hw.scheme_name} (${hw.work_reference}).`;
+        recommendedAction = 'Reject or defer proposal. Stretch is currently committed or under execution under another scheme.';
+      } else if (oLen >= proposedLength) {
+        classification = 'RECENTLY RENEWED';
+        severity = 'CRITICAL';
+        overlappingDesc = `100% overlap with ${hw.work_reference} completed on ${hw.physical_completion_date} (${hw.work_type}).`;
+        recommendedAction = 'Reject renewal proposal. Pavement is within mandatory 5-year maintenance/renewal restriction window.';
+      } else {
+        classification = 'PARTIALLY OVERLAPPING';
+        severity = 'MEDIUM';
+        overlappingDesc = `Partial overlap of ${oLen.toFixed(1)} km with ${hw.work_reference} (Km ${oStart} to ${oEnd}). Non-overlapping length: ${(proposedLength - oLen).toFixed(1)} km.`;
+        recommendedAction = `Prune proposal to exclude overlapping stretch Km ${oStart} to ${oEnd}. Proceed with remaining ${(proposedLength - oLen).toFixed(1)} km.`;
+      }
+      break;
+    }
+  }
+
+  const overlapPct = proposedLength > 0 ? Math.round((maxOverlap / proposedLength) * 100) : 0;
+  const eligibleLen = Math.max(0, proposedLength - maxOverlap);
+
+  return {
+    road_id: payload.road_id || 1,
+    road_code: roadCode,
+    road_name: matchedHistory[0]?.road_name || 'State Highway Corridor',
+    proposed_length_km: proposedLength,
+    overlapping_length_km: maxOverlap,
+    eligible_length_km: eligibleLen,
+    overlap_percentage: overlapPct,
+    overlapping_chainage_description: overlappingDesc,
+    verification_classification: classification,
+    duplicate_severity: severity,
+    detailed_overlapping_intervals: maxOverlap > 0 ? [{ start: Math.max(start, 10), end: Math.min(end, 15), length_km: maxOverlap }] : [],
+    historical_works_identified: matchedHistory,
+    recommended_action: recommendedAction,
+    operative_sanction_authority_required: authorityRequired,
+    delegation_rule_ref: 'G.O.(Ms) No. 11 & G.O.(Ms) No. 29',
+    is_authoritative: true
+  };
+};

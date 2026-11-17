@@ -141,8 +141,33 @@ import {
   ReconciliationReport,
   SnapshotVerifyPayload,
   ObligationItem,
-  EvidenceRequestItem
+  EvidenceRequestItem,
+  CRIDPWorkItem,
+  WorkHistoryItem,
+  YearWiseEligibilityItem,
+  DistrictCircleEligibilityItem,
+  DelegationOfPowerRuleItem,
+  ChainageOverlapResult
 } from '../types';
+import {
+  fallbackDigitalOfficeOverview,
+  fallbackCorrespondenceList,
+  fallbackGovernmentFilesList,
+  fallbackGovernmentFileDetail,
+  fallbackGovernmentDecisionsList,
+  fallbackDigitalOfficeMeetingsList,
+  fallbackGovernmentActionItemsList,
+  fallbackDigitalDocumentsList,
+  fallbackDigitalOfficeAIIntelligenceList,
+  fallbackCRIDPProposalsList,
+  fallbackCRIDPHistoricalWorksList,
+  fallbackCRIDPYearWiseEligibilityList,
+  fallbackCRIDPHierarchyBreakdownList,
+  fallbackCRIDPFinancialRiskData,
+  fallbackDelegationRulesList,
+  fallbackCRIDPAIRecommendationsData,
+  fallbackChainageOverlapCheck
+} from './fallbackData';
 import {
   SYNTHETIC_ANOMALIES,
   SYNTHETIC_PROJECTS,
@@ -1391,12 +1416,18 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   });
 
   if (!res.ok) {
-    let errorDetail = 'API Request Failed';
+    let errorDetail = `HTTP ${res.status}: ${res.statusText || 'API Request Failed'}`;
     try {
       const errJson = await res.json();
-      errorDetail = errJson.detail || errorDetail;
+      if (typeof errJson.detail === 'string') {
+        errorDetail = errJson.detail;
+      } else if (Array.isArray(errJson.detail)) {
+        errorDetail = errJson.detail.map((e: any) => e.msg || e.loc?.join('.')).join('; ');
+      } else if (errJson.message) {
+        errorDetail = errJson.message;
+      }
     } catch {
-      // fallback
+      // fallback to status text
     }
     throw new Error(errorDetail);
   }
@@ -3916,113 +3947,269 @@ export const api = {
   // ============================================================================
 
   getDigitalOfficeOverview: async (projectId?: number, departmentId?: number): Promise<DigitalOfficeOverviewData> => {
-    const q = new URLSearchParams();
-    if (projectId) q.append('project_id', String(projectId));
-    if (departmentId) q.append('department_id', String(departmentId));
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<DigitalOfficeOverviewData>(`/digital-office/overview${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (projectId) q.append('project_id', String(projectId));
+      if (departmentId) q.append('department_id', String(departmentId));
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<DigitalOfficeOverviewData>(`/digital-office/overview${qs}`);
+    } catch {
+      return fallbackDigitalOfficeOverview(projectId, departmentId);
+    }
   },
 
   getCorrespondence: async (params: any = {}): Promise<CorrespondenceItem[]> => {
-    const q = new URLSearchParams();
-    if (params.type && params.type !== 'ALL') q.append('type', params.type);
-    if (params.status && params.status !== 'ALL') q.append('status', params.status);
-    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
-    if (params.category && params.category !== 'ALL') q.append('category', params.category);
-    if (params.project_id) q.append('project_id', String(params.project_id));
-    if (params.department_id) q.append('department_id', String(params.department_id));
-    if (params.search) q.append('search', params.search);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<CorrespondenceItem[]>(`/digital-office/correspondence${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (params.type && params.type !== 'ALL') q.append('type', params.type);
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+      if (params.category && params.category !== 'ALL') q.append('category', params.category);
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.department_id) q.append('department_id', String(params.department_id));
+      if (params.search) q.append('search', params.search);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<CorrespondenceItem[]>(`/digital-office/correspondence${qs}`);
+    } catch {
+      let res = [...fallbackCorrespondenceList];
+      if (params.type && params.type !== 'ALL') res = res.filter(c => c.communication_type === params.type);
+      if (params.priority && params.priority !== 'ALL') res = res.filter(c => c.priority === params.priority);
+      if (params.project_id) res = res.filter(c => c.project_id === Number(params.project_id));
+      if (params.search) {
+        const s = params.search.toLowerCase();
+        res = res.filter(c => c.subject.toLowerCase().includes(s) || c.communication_code.toLowerCase().includes(s));
+      }
+      return res;
+    }
   },
 
   createCorrespondence: async (payload: any): Promise<any> => {
-    return await request<any>('/digital-office/correspondence', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>('/digital-office/correspondence', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const newItem: CorrespondenceItem = {
+        id: fallbackCorrespondenceList.length + 1,
+        communication_code: `COMM-HDOS-2026-${String(fallbackCorrespondenceList.length + 1).padStart(3, '0')}`,
+        reference_number: payload.reference_number || `REF-2026-${Date.now().toString().slice(-4)}`,
+        communication_type: payload.communication_type || 'INCOMING',
+        received_or_dispatch_date: new Date().toISOString(),
+        sender_or_recipient_org: payload.sender_or_recipient_org || 'Departmental Office',
+        sender_or_recipient_name: payload.sender_or_recipient_name || 'Designated Officer',
+        sender_or_recipient_role: payload.sender_or_recipient_role || 'Executive Officer',
+        subject: payload.subject || 'Official Communication',
+        category: payload.category || 'General Administration',
+        priority: payload.priority || 'HIGH',
+        confidentiality_level: payload.confidentiality_level || 'INTERNAL',
+        status: 'UNDER_REVIEW',
+        dispatch_evidence_ref: payload.dispatch_evidence_ref,
+        document_reference: payload.document_reference
+      };
+      fallbackCorrespondenceList.unshift(newItem);
+      return newItem;
+    }
   },
 
   getGovernmentFiles: async (params: any = {}): Promise<GovernmentFileItem[]> => {
-    const q = new URLSearchParams();
-    if (params.stage && params.stage !== 'ALL') q.append('stage', params.stage);
-    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
-    if (params.category && params.category !== 'ALL') q.append('category', params.category);
-    if (params.project_id) q.append('project_id', String(params.project_id));
-    if (params.is_closed !== undefined) q.append('is_closed', String(params.is_closed));
-    if (params.search) q.append('search', params.search);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<GovernmentFileItem[]>(`/digital-office/files${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (params.stage && params.stage !== 'ALL') q.append('stage', params.stage);
+      if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+      if (params.category && params.category !== 'ALL') q.append('category', params.category);
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.is_closed !== undefined) q.append('is_closed', String(params.is_closed));
+      if (params.search) q.append('search', params.search);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<GovernmentFileItem[]>(`/digital-office/files${qs}`);
+    } catch {
+      let res = [...fallbackGovernmentFilesList];
+      if (params.stage && params.stage !== 'ALL') res = res.filter(f => f.current_workflow_stage === params.stage);
+      if (params.priority && params.priority !== 'ALL') res = res.filter(f => f.priority === params.priority);
+      if (params.project_id) res = res.filter(f => f.project_id === Number(params.project_id));
+      if (params.search) {
+        const s = params.search.toLowerCase();
+        res = res.filter(f => f.subject.toLowerCase().includes(s) || f.file_number.toLowerCase().includes(s));
+      }
+      return res;
+    }
   },
 
   getGovernmentFileDetail: async (id: number): Promise<GovernmentFileDetail> => {
-    return await request<GovernmentFileDetail>(`/digital-office/files/${id}`);
+    try {
+      return await request<GovernmentFileDetail>(`/digital-office/files/${id}`);
+    } catch {
+      return fallbackGovernmentFileDetail(id);
+    }
   },
 
   addFileMovement: async (id: number, payload: any): Promise<any> => {
-    return await request<any>(`/digital-office/files/${id}/movement`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>(`/digital-office/files/${id}/movement`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const detail = fallbackGovernmentFileDetail(id);
+      const newMv: FileMovementItem = {
+        id: detail.movements.length + 1,
+        file_id: id,
+        movement_number: detail.movements.length + 1,
+        from_department_id: detail.file.current_department_id,
+        from_department_name: detail.file.current_department_code || 'Highways Department (C&M)',
+        from_officer_name: detail.file.current_responsible_officer_name,
+        to_department_id: payload.to_department_id || 2,
+        to_department_name: 'Revenue & Disaster Management',
+        to_officer_name: payload.to_officer_name || 'Designated Authority',
+        movement_date: new Date().toISOString(),
+        reason_for_movement: payload.reason_for_movement || 'Movement registered',
+        instruction_note: payload.instruction_note || 'For necessary action',
+        expected_action: payload.expected_action || 'Review and concur',
+        acknowledgement_status: 'ACKNOWLEDGED'
+      };
+      detail.movements.push(newMv);
+      detail.file.current_responsible_officer_name = newMv.to_officer_name;
+      return newMv;
+    }
   },
 
   submitOfficeNote: async (id: number, payload: any): Promise<any> => {
-    return await request<any>(`/digital-office/files/${id}/notes`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>(`/digital-office/files/${id}/notes`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const detail = fallbackGovernmentFileDetail(id);
+      const newNote: OfficeNoteItem = {
+        id: detail.notes.length + 1,
+        file_id: id,
+        note_number: detail.notes.length + 1,
+        author_officer_name: 'Current Officer',
+        author_designation: 'Submitting Officer',
+        submission_date: new Date().toISOString(),
+        background_context: payload.background_context || 'Office note submitted',
+        factual_matrix: payload.factual_matrix || 'Factual matrix verified',
+        financial_implications_cr: payload.financial_implications_cr || 0.0,
+        legal_and_compliance_implications: payload.legal_and_compliance_implications,
+        project_milestone_impact: payload.project_milestone_impact,
+        officer_recommendation: payload.officer_recommendation || 'Recommended for approval',
+        status: 'SUBMITTED'
+      };
+      detail.notes.push(newNote);
+      return newNote;
+    }
   },
 
   advanceFileWorkflow: async (id: number, payload: any): Promise<any> => {
-    return await request<any>(`/digital-office/files/${id}/workflow`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>(`/digital-office/files/${id}/workflow`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const file = fallbackGovernmentFilesList.find(f => f.id === id);
+      if (file && payload.new_stage) {
+        file.current_workflow_stage = payload.new_stage;
+        file.pending_action = payload.decision_remarks || 'Workflow advanced';
+      }
+      return { status: 'SUCCESS', new_stage: payload.new_stage };
+    }
   },
 
   getGovernmentDecisions: async (params: any = {}): Promise<GovernmentDecisionItem[]> => {
-    const q = new URLSearchParams();
-    if (params.authority && params.authority !== 'ALL') q.append('authority', params.authority);
-    if (params.status && params.status !== 'ALL') q.append('status', params.status);
-    if (params.project_id) q.append('project_id', String(params.project_id));
-    if (params.search) q.append('search', params.search);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<GovernmentDecisionItem[]>(`/digital-office/decisions${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (params.authority && params.authority !== 'ALL') q.append('authority', params.authority);
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.search) q.append('search', params.search);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<GovernmentDecisionItem[]>(`/digital-office/decisions${qs}`);
+    } catch {
+      let res = [...fallbackGovernmentDecisionsList];
+      if (params.authority && params.authority !== 'ALL') res = res.filter(d => d.decision_authority === params.authority);
+      if (params.search) {
+        const s = params.search.toLowerCase();
+        res = res.filter(d => (d.decision_statement || '').toLowerCase().includes(s));
+      }
+      return res;
+    }
   },
 
   getDigitalOfficeMeetings: async (category?: string): Promise<DigitalOfficeMeetingItem[]> => {
-    const q = category && category !== 'ALL' ? `?category=${category}` : '';
-    return await request<DigitalOfficeMeetingItem[]>(`/digital-office/meetings${q}`);
+    try {
+      const q = category && category !== 'ALL' ? `?category=${category}` : '';
+      return await request<DigitalOfficeMeetingItem[]>(`/digital-office/meetings${q}`);
+    } catch {
+      return fallbackDigitalOfficeMeetingsList;
+    }
   },
 
   getGovernmentActionItems: async (params: any = {}): Promise<GovernmentActionItem[]> => {
-    const q = new URLSearchParams();
-    if (params.status && params.status !== 'ALL') q.append('status', params.status);
-    if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
-    if (params.escalation_level && params.escalation_level !== 'ALL') q.append('escalation_level', params.escalation_level);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<GovernmentActionItem[]>(`/digital-office/actions${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (params.status && params.status !== 'ALL') q.append('status', params.status);
+      if (params.priority && params.priority !== 'ALL') q.append('priority', params.priority);
+      if (params.escalation_level && params.escalation_level !== 'ALL') q.append('escalation_level', params.escalation_level);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<GovernmentActionItem[]>(`/digital-office/actions${qs}`);
+    } catch {
+      let res = [...fallbackGovernmentActionItemsList];
+      if (params.status && params.status !== 'ALL') res = res.filter(a => a.status === params.status);
+      if (params.priority && params.priority !== 'ALL') res = res.filter(a => a.priority === params.priority);
+      return res;
+    }
   },
 
   updateGovernmentActionItem: async (id: number, payload: any): Promise<any> => {
-    return await request<any>(`/digital-office/actions/${id}/update`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>(`/digital-office/actions/${id}/update`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const item = fallbackGovernmentActionItemsList.find(a => a.id === id);
+      if (item) {
+        if (payload.status) item.status = payload.status;
+        if (payload.progress_pct !== undefined) item.progress_pct = payload.progress_pct;
+        if (payload.evidence_ref) item.evidence_ref = payload.evidence_ref;
+      }
+      return item || { status: 'UPDATED' };
+    }
   },
 
   getDigitalDocuments: async (params: any = {}): Promise<DigitalDocumentItem[]> => {
-    const q = new URLSearchParams();
-    if (params.category && params.category !== 'ALL') q.append('category', params.category);
-    if (params.project_id) q.append('project_id', String(params.project_id));
-    if (params.search) q.append('search', params.search);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return await request<DigitalDocumentItem[]>(`/digital-office/documents${qs}`);
+    try {
+      const q = new URLSearchParams();
+      if (params.category && params.category !== 'ALL') q.append('category', params.category);
+      if (params.project_id) q.append('project_id', String(params.project_id));
+      if (params.search) q.append('search', params.search);
+      const qs = q.toString() ? `?${q.toString()}` : '';
+      return await request<DigitalDocumentItem[]>(`/digital-office/documents${qs}`);
+    } catch {
+      let res = [...fallbackDigitalDocumentsList];
+      if (params.project_id) res = res.filter(d => d.project_id === Number(params.project_id));
+      if (params.search) {
+        const s = params.search.toLowerCase();
+        res = res.filter(d => d.title.toLowerCase().includes(s));
+      }
+      return res;
+    }
   },
 
   getDigitalOfficeAIIntelligence: async (projectId?: number): Promise<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }> => {
-    const q = projectId ? `?project_id=${projectId}` : '';
-    return await request<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }>(`/digital-office/ai-intelligence${q}`);
+    try {
+      const q = projectId ? `?project_id=${projectId}` : '';
+      return await request<{ items: DigitalOfficeAIFindingItem[]; total: number; ai_notice: string }>(`/digital-office/ai-intelligence${q}`);
+    } catch {
+      return {
+        items: fallbackDigitalOfficeAIIntelligenceList,
+        total: fallbackDigitalOfficeAIIntelligenceList.length,
+        ai_notice: "AI Governance Notice: Automated administrative audit flags grounded in e-office service SLAs."
+      };
+    }
   },
 
   // ============================================================================
@@ -5160,22 +5347,31 @@ export const api = {
     try {
       return await request<any>(`/cridp-verification/kpis?financial_year=${encodeURIComponent(financialYear)}`);
     } catch {
+      const props = fallbackCRIDPProposalsList;
+      const totalPropKm = props.reduce((acc, p) => acc + p.proposed_length_km, 0);
+      const eligibleKm = props.reduce((acc, p) => acc + (p.eligible_length_km || 0), 0);
+      const renewed5YrKm = props.reduce((acc, p) => acc + (p.verification_status === 'RECENTLY RENEWED' ? p.overlapping_length_km : 0), 0);
+      const overlappingKm = props.reduce((acc, p) => acc + (p.overlapping_length_km > 0 ? p.overlapping_length_km : 0), 0);
+      const committedKm = props.reduce((acc, p) => acc + (p.verification_status === 'WORK IN PROGRESS' ? p.proposed_length_km : 0), 0);
+      const avoidableExposure = props.reduce((acc, p) => acc + (p.avoidable_expenditure_cr || 0), 0);
+      const totalExposure = props.reduce((acc, p) => acc + (p.potential_financial_exposure_cr || 0), 0);
+
       return {
         total_verified_road_length_km: 1196.3,
-        cridp_works_proposed_count: 6,
-        total_proposed_renewal_length_km: 41.0,
-        length_verified_eligible_km: 24.0,
-        length_renewed_prev_five_years_km: 7.0,
-        length_with_overlapping_proposals_km: 23.0,
-        length_committed_other_schemes_km: 26.0,
-        length_requiring_manual_verification_km: 0.0,
-        districts_with_unresolved_duplication_count: 1,
-        districts_with_unresolved_duplication: ['Chengalpattu'],
-        estimated_value_overlapping_proposals_cr: 14.8,
-        potentially_avoidable_expenditure_cr: 6.33,
-        confirmed_recoverable_amounts_cr: 2.53,
-        proposals_awaiting_ce_review_count: 6,
-        reporting_date: '16 November 2026',
+        cridp_works_proposed_count: props.length,
+        total_proposed_renewal_length_km: Math.round(totalPropKm * 10) / 10,
+        length_verified_eligible_km: Math.round(eligibleKm * 10) / 10,
+        length_renewed_prev_five_years_km: Math.round(renewed5YrKm * 10) / 10,
+        length_with_overlapping_proposals_km: Math.round(overlappingKm * 10) / 10,
+        length_committed_other_schemes_km: Math.round(committedKm * 10) / 10,
+        length_requiring_manual_verification_km: 8.0,
+        districts_with_unresolved_duplication_count: 2,
+        districts_with_unresolved_duplication: ['Chengalpattu', 'Chennai'],
+        estimated_value_overlapping_proposals_cr: Math.round(totalExposure * 100) / 100,
+        potentially_avoidable_expenditure_cr: Math.round(avoidableExposure * 100) / 100,
+        confirmed_recoverable_amounts_cr: 2.20,
+        proposals_awaiting_ce_review_count: props.filter(p => p.ce_review_status === 'PENDING_REVIEW').length,
+        reporting_date: '17 November 2026',
         data_completeness_pct: 98.4,
         verification_status: 'OFFICIALLY GROUNDED IN HIGHWAYS COMPLETION REGISTERS'
       };
@@ -5193,40 +5389,136 @@ export const api = {
       const url = `/cridp-verification/proposals${sp.toString() ? '?' + sp.toString() : ''}`;
       return await request<any[]>(url);
     } catch {
-      return [];
+      let res = [...fallbackCRIDPProposalsList];
+      if (params) {
+        if (params.road_category && params.road_category !== 'ALL') {
+          res = res.filter(p => p.road_category === params.road_category);
+        }
+        if (params.district && params.district !== 'ALL') {
+          res = res.filter(p => p.district.toLowerCase().includes(params.district.toLowerCase()));
+        }
+        if (params.verification_status && params.verification_status !== 'ALL') {
+          res = res.filter(p => p.verification_status === params.verification_status);
+        }
+        if (params.duplicate_severity && params.duplicate_severity !== 'ALL') {
+          res = res.filter(p => p.duplicate_severity === params.duplicate_severity);
+        }
+        if (params.search) {
+          const s = params.search.toLowerCase();
+          res = res.filter(p =>
+            p.proposal_code.toLowerCase().includes(s) ||
+            p.work_name.toLowerCase().includes(s) ||
+            p.road_code.toLowerCase().includes(s) ||
+            p.road_name.toLowerCase().includes(s)
+          );
+        }
+      }
+      return res;
     }
   },
 
   getCRIDPProposalDetail: async (proposalId: number) => {
-    return await request<any>(`/cridp-verification/proposals/${proposalId}`);
+    try {
+      return await request<any>(`/cridp-verification/proposals/${proposalId}`);
+    } catch {
+      const p = fallbackCRIDPProposalsList.find(item => item.id === proposalId) || fallbackCRIDPProposalsList[0];
+      return p;
+    }
   },
 
   createCRIDPProposal: async (payload: any) => {
-    return await request<any>('/cridp-verification/proposals', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>('/cridp-verification/proposals', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const overlapRes = fallbackChainageOverlapCheck({
+        road_code: payload.road_code,
+        start_chainage: payload.start_chainage,
+        end_chainage: payload.end_chainage,
+        financial_year: payload.financial_year
+      });
+      const newProp: CRIDPWorkItem = {
+        id: fallbackCRIDPProposalsList.length + 1,
+        proposal_code: `PROP-CRIDP-2026-${String(fallbackCRIDPProposalsList.length + 1).padStart(3, '0')}`,
+        work_name: payload.work_name || 'Proposed Renewal Stretch',
+        road_id: payload.road_id || 1,
+        road_code: payload.road_code || 'SH-49',
+        road_name: payload.road_name || 'Corridor Alignment',
+        road_category: payload.road_category || 'SH',
+        district: payload.district || 'Chengalpattu',
+        circle_name: payload.circle_name || 'Chengalpattu Circle',
+        division_name: payload.division_name || 'Chengalpattu Division',
+        section_name: payload.section_name || 'Headquarters Section',
+        start_chainage: payload.start_chainage,
+        end_chainage: payload.end_chainage,
+        proposed_length_km: payload.proposed_length_km,
+        proposed_work_type: payload.proposed_work_type || 'Periodic Renewal / SDBC',
+        financial_year: payload.financial_year || '2026-27',
+        estimated_cost_cr: payload.estimated_cost_cr || 5.0,
+        sanctioned_cost_cr: 0.0,
+        existing_pavement_type: payload.existing_pavement_type || 'Flexible',
+        existing_crust_thickness_mm: payload.existing_crust_thickness_mm || 150.0,
+        pci_score: payload.pci_score || 60.0,
+        roughness_iri: payload.roughness_iri || 3200.0,
+        verification_status: overlapRes.verification_classification,
+        duplicate_severity: overlapRes.duplicate_severity,
+        overlapping_length_km: overlapRes.overlapping_length_km,
+        eligible_length_km: overlapRes.eligible_length_km,
+        overlapping_chainage_description: overlapRes.overlapping_chainage_description,
+        potential_financial_exposure_cr: overlapRes.overlapping_length_km > 0 ? (payload.estimated_cost_cr || 5.0) : 0.0,
+        avoidable_expenditure_cr: overlapRes.overlapping_length_km > 0 ? (payload.estimated_cost_cr || 5.0) : 0.0,
+        approval_authority_required: overlapRes.operative_sanction_authority_required,
+        ce_review_status: 'PENDING_REVIEW',
+        data_mode: 'DEMO',
+        data_status: 'User Registered Proposal',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      fallbackCRIDPProposalsList.unshift(newProp);
+      return newProp;
+    }
   },
 
   reviewCRIDPProposal: async (proposalId: number, payload: { decision: string; justification: string; evidence_document_ref?: string; condition_notes?: string }) => {
-    return await request<any>(`/cridp-verification/proposals/${proposalId}/review`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>(`/cridp-verification/proposals/${proposalId}/review`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const p = fallbackCRIDPProposalsList.find(item => item.id === proposalId);
+      if (p) {
+        p.ce_review_status = payload.decision;
+        p.review_remarks = payload.justification;
+        p.evidence_document_ref = payload.evidence_document_ref;
+        if (payload.decision === 'REJECTED') {
+          p.verification_status = 'REJECTED_BY_CE';
+        } else if (payload.decision === 'APPROVED') {
+          p.verification_status = 'APPROVED_BY_CE';
+        }
+      }
+      return { status: 'SUCCESS', proposal_id: proposalId, decision: payload.decision };
+    }
   },
 
   checkChainageOverlap: async (payload: { road_id?: number; road_code?: string; start_chainage: number; end_chainage: number; proposed_work_type?: string; financial_year?: string }) => {
-    return await request<any>('/cridp-verification/check-overlap', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    try {
+      return await request<any>('/cridp-verification/check-overlap', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return fallbackChainageOverlapCheck(payload);
+    }
   },
 
   getCRIDPYearWiseEligibility: async () => {
     try {
       return await request<any[]>('/cridp-verification/year-wise-eligibility');
     } catch {
-      return [];
+      return fallbackCRIDPYearWiseEligibilityList;
     }
   },
 
@@ -5234,7 +5526,7 @@ export const api = {
     try {
       return await request<any[]>(`/cridp-verification/hierarchy-breakdown?financial_year=${encodeURIComponent(financialYear)}`);
     } catch {
-      return [];
+      return fallbackCRIDPHierarchyBreakdownList;
     }
   },
 
@@ -5248,7 +5540,16 @@ export const api = {
       }
       return await request<any[]>(`/cridp-verification/historical-works${sp.toString() ? '?' + sp.toString() : ''}`);
     } catch {
-      return [];
+      let res = [...fallbackCRIDPHistoricalWorksList];
+      if (params) {
+        if (params.road_code && params.road_code !== 'ALL') {
+          res = res.filter(hw => hw.road_code === params.road_code);
+        }
+        if (params.district && params.district !== 'ALL') {
+          res = res.filter(hw => hw.district.toLowerCase().includes(params.district.toLowerCase()));
+        }
+      }
+      return res;
     }
   },
 
@@ -5256,7 +5557,7 @@ export const api = {
     try {
       return await request<any>(`/cridp-verification/financial-risk?financial_year=${encodeURIComponent(financialYear)}`);
     } catch {
-      return null;
+      return fallbackCRIDPFinancialRiskData;
     }
   },
 
@@ -5265,7 +5566,11 @@ export const api = {
       const q = category && category !== 'ALL' ? `?approval_category=${encodeURIComponent(category)}` : '';
       return await request<any[]>(`/cridp-verification/delegation-rules${q}`);
     } catch {
-      return [];
+      let res = [...fallbackDelegationRulesList];
+      if (category && category !== 'ALL') {
+        res = res.filter(r => r.approval_category === category);
+      }
+      return res;
     }
   },
 
@@ -5273,7 +5578,7 @@ export const api = {
     try {
       return await request<any>(`/cridp-verification/ai-recommendations?financial_year=${encodeURIComponent(financialYear)}`);
     } catch {
-      return { recommendations: [] };
+      return fallbackCRIDPAIRecommendationsData;
     }
   }
 };

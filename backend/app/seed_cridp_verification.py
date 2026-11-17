@@ -321,6 +321,8 @@ def seed_cridp_verification_data(db_session=None):
         {"code": "ODR-045", "name": "Guduvanchery - Thiruporur Hub Link Road", "road_type": "ODR", "start": 0.0, "end": 18.2, "district": "Chengalpattu"},
         {"code": "ODR-112", "name": "Pollachi - Anaimalai Connector", "road_type": "ODR", "start": 0.0, "end": 16.8, "district": "Coimbatore"},
         {"code": "ODR-088", "name": "Tiruchirappalli - Thuraiyur Link", "road_type": "ODR", "start": 0.0, "end": 22.0, "district": "Tiruchirappalli"},
+        {"code": "SH-75", "name": "Madurai Ring Road to Tuticorin Port Connectivity Link", "road_type": "SH", "start": 0.0, "end": 64.0, "district": "Madurai"},
+        {"code": "SH-162", "name": "Coimbatore Western Ring Road (Sugunapuram to Madukkarai)", "road_type": "SH", "start": 0.0, "end": 32.4, "district": "Coimbatore"},
     ]
 
     for cr in canonical_roads:
@@ -484,6 +486,34 @@ def seed_cridp_verification_data(db_session=None):
             "pavement_treatment": "Bituminous Concrete 40mm Overlay",
             "is_verified": True,
             "verification_source": "Cuddalore Division Work Register"
+        },
+        # MDR-102: Km 0/000 to 3/200 under active Grade Separator construction (PRJ-TN-2026-002)
+        {
+            "work_reference": "WH-MDR102-GS-01",
+            "road_code": "MDR-102",
+            "road_name": "Tambaram - Mudichur - Sriperumbudur Road",
+            "road_category": "MDR",
+            "district": "Chennai",
+            "division_name": "Tambaram Division",
+            "section_name": "Tambaram Section",
+            "start_chainage": 0.0,
+            "end_chainage": 3.2,
+            "length_km": 3.2,
+            "work_type": "Construction of 4-Lane Grade Separator / Elevated Corridor",
+            "scheme_name": "CMRDP",
+            "sanction_order_no": "G.O.(Ms) No. 92/2024",
+            "sanction_date": datetime.datetime(2024, 2, 18),
+            "sanctioned_cost_cr": 85.00,
+            "contract_agreement_no": "AGR-CE-MET-2024-05",
+            "contractor_name": "PST Engineering Constructions",
+            "awarded_value_cr": 81.20,
+            "physical_completion_date": None,  # Ongoing active work site
+            "actual_expenditure_cr": 22.40,
+            "completion_certificate_ref": "WIP",
+            "measurement_book_ref": "MB No. 620/Page 15",
+            "pavement_treatment": "Elevated Viaduct Deck + At-grade Service Roads",
+            "is_verified": True,
+            "verification_source": "Chennai Metro Circle Ongoing Works Register"
         }
     ]
 
@@ -660,6 +690,56 @@ def seed_cridp_verification_data(db_session=None):
             "engineering_exception_justification": None,
             "data_mode": "OFFICIAL",
             "source_document_ref": "Chengalpattu Division Master Priority"
+        },
+        # Proposal 7: MDR-102 Km 0/000 to 3/200 (100% duplicate of active project PRJ-TN-2026-002)
+        {
+            "proposal_code": "PROP-CRIDP-2026-007",
+            "work_name": "Surface Renewal of MDR-102 Tambaram Junction km 0/0 to 3/2",
+            "road_code": "MDR-102",
+            "road_name": "Tambaram - Mudichur - Sriperumbudur Road",
+            "road_category": "MDR",
+            "district": "Chennai",
+            "circle_name": "Chennai City Circle",
+            "division_name": "Tambaram Division",
+            "section_name": "Tambaram Section",
+            "start_chainage": 0.0,
+            "end_chainage": 3.2,
+            "proposed_length_km": 3.2,
+            "proposed_work_type": "Periodic Renewal / SDBC",
+            "financial_year": "2026-27",
+            "estimated_cost_cr": 2.20,
+            "existing_pavement_type": "Flexible",
+            "existing_crust_thickness_mm": 150.0,
+            "pci_score": 64.0,
+            "roughness_iri": 3200.0,
+            "engineering_exception_justification": None,
+            "data_mode": "OFFICIAL",
+            "source_document_ref": "Tambaram Sub-Division Field Proposals 2026-27"
+        },
+        # Proposal 8: SH-75 Km 10/000 to 18/000 (Madurai Ring Road PRJ-TN-2026-007 - Missing legacy completion record)
+        {
+            "proposal_code": "PROP-CRIDP-2026-008",
+            "work_name": "Bituminous Overlay of SH-75 Madurai Ring Road km 10/0 to 18/0",
+            "road_code": "SH-75",
+            "road_name": "Madurai Ring Road to Tuticorin Port Connectivity Link",
+            "road_category": "SH",
+            "district": "Madurai",
+            "circle_name": "Madurai Circle",
+            "division_name": "Madurai Special Division",
+            "section_name": "Kappalur Section",
+            "start_chainage": 10.0,
+            "end_chainage": 18.0,
+            "proposed_length_km": 8.0,
+            "proposed_work_type": "BM & BC Overlay",
+            "financial_year": "2026-27",
+            "estimated_cost_cr": 5.60,
+            "existing_pavement_type": "Flexible",
+            "existing_crust_thickness_mm": 170.0,
+            "pci_score": 52.0,
+            "roughness_iri": 3800.0,
+            "engineering_exception_justification": None,
+            "data_mode": "OFFICIAL",
+            "source_document_ref": "Madurai Division Unverified Legacy Dossier"
         }
     ]
 
