@@ -3602,3 +3602,270 @@ class OrganisationResolveExceptionPayload(BaseModel):
     review_status: str  # VERIFIED_APPROVED, EXCEPTION_OVERRULED
     reviewed_by: str
     correction_notes: Optional[str] = None
+
+
+# -------------------------------------------------------------
+# Schedule of Rates, Work Estimation & Cost Intelligence (SoR-WECI) Schemas
+# -------------------------------------------------------------
+
+class SoRVersionOut(BaseModel):
+    id: str
+    code: str
+    title: str
+    volume: str
+    effective_from: datetime.date
+    effective_to: Optional[datetime.date] = None
+    go_reference: str
+    status: str
+    is_current: bool
+    published_at: datetime.datetime
+    published_by: str
+
+    class Config:
+        from_attributes = True
+
+
+class SoRItemOut(BaseModel):
+    id: str
+    sor_version_id: str
+    unique_code: str
+    department_scope: str
+    annexure_code: str
+    category: str
+    sub_category: Optional[str] = None
+    description: str
+    unit_raw: str
+    unit_canonical: str
+    basic_rate: float
+    rate_type: str
+    source_pdf_page: Optional[int] = None
+    source_printed_page: Optional[int] = None
+    tax_inclusive: bool
+    validation_status: str
+    notes_json: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SoRAllowanceRuleOut(BaseModel):
+    id: str
+    sor_version_id: str
+    rule_code: str
+    rule_title: str
+    category: str
+    percentage_value: float
+    applies_to_component: str
+    condition_expr_json: Optional[str] = None
+    excluded_items_json: Optional[str] = None
+    source_citation: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class SoREstimateLineCreate(BaseModel):
+    sor_item_id: str
+    structural_component_type: Optional[str] = "GENERAL"  # STRUCTURAL_BRIDGE, DRAIN, CULVERT, RETAINING_WALL, REPAIR, ROAD_PAVEMENT, EARTHWORK
+    quantity: float
+    lead_km: Optional[float] = 0.0
+    lift_meters: Optional[float] = 0.0
+
+
+class SoREstimateLineOut(BaseModel):
+    id: str
+    estimate_id: str
+    line_no: int
+    sor_item_id: str
+    item_code: str
+    description: str
+    structural_component_type: str
+    quantity: float
+    unit: str
+    lead_km: float
+    lift_meters: float
+    basic_rate_snapshot: float
+    conveyance_rate_snapshot: float
+    allowance_rate_snapshot: float
+    effective_rate: float
+    line_total: float
+    calculation_trace_json: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SoREstimateCreate(BaseModel):
+    estimate_code: str
+    project_id: Optional[int] = None
+    package_id: Optional[int] = None
+    project_code: Optional[str] = None
+    estimate_type: Optional[str] = "TECHNICAL"  # PRELIMINARY, DPR, TECHNICAL, REVISED
+    sor_version_id: Optional[str] = "SOR-2026-27-V1"
+    title: str
+    division_name: str
+    circle_name: str
+    road_category: Optional[str] = "SH"
+    is_corporation_area: Optional[bool] = False
+    corporation_type: Optional[str] = "NONE"  # CHENNAI_32KM, MADURAI_CBE_HOSUR, OTHER_CORP, NONE
+    is_night_work_allowed: Optional[bool] = False
+    night_work_tender_clause: Optional[str] = None
+    is_bridge_work: Optional[bool] = False
+    bridge_cost_share_pct: Optional[float] = 0.0
+    lines: Optional[List[SoREstimateLineCreate]] = []
+
+
+class SoREstimateOut(BaseModel):
+    id: str
+    estimate_code: str
+    project_id: Optional[int] = None
+    package_id: Optional[int] = None
+    project_code: Optional[str] = None
+    estimate_type: str
+    sor_version_id: str
+    title: str
+    division_name: str
+    circle_name: str
+    road_category: str
+    is_corporation_area: bool
+    corporation_type: Optional[str] = None
+    is_night_work_allowed: bool
+    night_work_tender_clause: Optional[str] = None
+    is_bridge_work: bool
+    bridge_cost_share_pct: float
+    total_basic_amount: float
+    total_allowance_amount: float
+    total_tax_amount: float
+    grand_total: float
+    status: str
+    sanction_authority_post: Optional[str] = None
+    sanction_order_ref: Optional[str] = None
+    created_by: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    lines: Optional[List[SoREstimateLineOut]] = []
+
+    class Config:
+        from_attributes = True
+
+
+class SoRBOQItemOut(BaseModel):
+    id: str
+    estimate_id: str
+    project_id: Optional[int] = None
+    boq_item_no: str
+    item_code: str
+    description: str
+    unit: str
+    estimated_qty: float
+    estimated_rate: float
+    estimated_amount: float
+    tender_quoted_rate: Optional[float] = None
+    tender_amount: Optional[float] = None
+    contractor_rate_variance_pct: float
+    status: str
+
+    class Config:
+        from_attributes = True
+
+
+class SoRReconciliationEntryOut(BaseModel):
+    id: str
+    estimate_id: str
+    boq_item_id: str
+    project_id: Optional[int] = None
+    boq_item_no: str
+    item_code: str
+    mb_record_ref: Optional[str] = None
+    bill_voucher_no: Optional[str] = None
+    boq_qty: float
+    measured_qty: float
+    billed_qty: float
+    boq_rate: float
+    billed_rate: float
+    qty_delta: float
+    amount_delta: float
+    variance_pct: float
+    reconciliation_status: str
+
+    class Config:
+        from_attributes = True
+
+
+class SoRAnomalyFindingOut(BaseModel):
+    id: str
+    finding_code: str
+    project_id: Optional[int] = None
+    estimate_id: Optional[str] = None
+    finding_type: str
+    severity: str
+    item_code: Optional[str] = None
+    what_should_have_happened: str
+    what_actually_happened: str
+    applicable_rule_control: str
+    difference_amount: float
+    potential_exposure_amount: float
+    probable_cause: Optional[str] = None
+    contractor_justification: Optional[str] = None
+    evidence_summary: Optional[str] = None
+    investigating_official: Optional[str] = None
+    preventive_action: Optional[str] = None
+    review_status: str
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[datetime.datetime] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SoRAnomalyReviewPayload(BaseModel):
+    finding_id: str
+    review_status: str  # JUSTIFIED_EXCEPTION, REQUIRES_REVISION, ESCALATED_FOR_REVIEW
+    reviewed_by: str
+    justification_notes: str
+    preventive_action: Optional[str] = None
+
+
+class SoREvidenceLinkOut(BaseModel):
+    id: str
+    finding_id: Optional[str] = None
+    document_title: str
+    document_ref: str
+    source_pdf_page: Optional[int] = None
+    source_printed_page: Optional[int] = None
+    excerpt_text: str
+    uploaded_by: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SoRAuditEventOut(BaseModel):
+    id: str
+    event_time: datetime.datetime
+    actor_username: str
+    actor_role: str
+    jurisdiction: str
+    action_type: str
+    target_entity_type: str
+    target_entity_id: str
+    summary: str
+    before_state_json: Optional[str] = None
+    after_state_json: Optional[str] = None
+    ip_address: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SoRBenchmarkSummaryOut(BaseModel):
+    category: str
+    total_items_count: int
+    avg_unit_rate: float
+    min_unit_rate: float
+    max_unit_rate: float
+    road_class_breakdown: Dict[str, float]
+    division_variances: List[Dict[str, Any]]

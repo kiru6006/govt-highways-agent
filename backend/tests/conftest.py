@@ -18,6 +18,7 @@ from app.seed_major_works_blockers import seed_major_works_blockers_data
 from app.seed_cridp_verification import seed_cridp_verification_data
 from app.seed_works_analytics import seed_works_analytics_data
 from app.seed_organisation_master import seed_organisation_master_data
+from app.seed_sor_2026_data import seed_sor_master_data
 
 # Use in-memory or dedicated test database
 TEST_DATABASE_URL = "sqlite:///./test_tn_hdos.db"
@@ -42,6 +43,7 @@ def setup_test_db():
     seed_cridp_verification_data(db_session=db)
     seed_works_analytics_data(db_session=db)
     seed_organisation_master_data(db_session=db)
+    seed_sor_master_data(db=db)
     db.close()
     yield
     Base.metadata.drop_all(bind=test_engine)

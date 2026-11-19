@@ -172,8 +172,29 @@ import {
   HistoricalOrganisationMappingItem,
   DataQualityMappingExceptionItem,
   OrganisationFilterOptions,
-  OrganisationKPIs
+  OrganisationKPIs,
+  SoRVersionItem,
+  SoRItem,
+  SoRAllowanceRule,
+  SoREstimate,
+  SoREstimateLine,
+  SoRBOQItem,
+  SoRReconciliationEntry,
+  SoRAnomalyFinding,
+  SoRBenchmarkItem,
+  SoRAuditEvent
 } from '../types';
+import {
+  fallbackSoRVersions,
+  fallbackSoRAllowanceRules,
+  fallbackSoRItems,
+  fallbackSoREstimates,
+  fallbackSoRBOQItems,
+  fallbackSoRReconciliationEntries,
+  fallbackSoRAnomalyFindings,
+  fallbackSoRBenchmarks,
+  fallbackSoRAuditEvents
+} from '../data/fallbackSoR';
 import {
   fallbackOrganisationKPIs,
   fallbackHistoricalMappings,
@@ -6107,6 +6128,248 @@ export const organisationAPI = {
     }
   }
 };
+
+export const sorAPI = {
+  getVersions: async (): Promise<SoRVersionItem[]> => {
+    try {
+      return await request<SoRVersionItem[]>('/sor-weci/versions');
+    } catch {
+      return fallbackSoRVersions;
+    }
+  },
+
+  getItems: async (params?: { category?: string; query?: string; annexure?: string; skip?: number; limit?: number }): Promise<{ items: SoRItem[]; total: number }> => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.category) searchParams.append('category', params.category);
+      if (params?.query) searchParams.append('query', params.query);
+      if (params?.annexure) searchParams.append('annexure', params.annexure);
+      if (params?.skip !== undefined) searchParams.append('skip', String(params.skip));
+      if (params?.limit !== undefined) searchParams.append('limit', String(params.limit));
+      return await request<{ items: SoRItem[]; total: number }>(`/sor-weci/items?${searchParams.toString()}`);
+    } catch {
+      let filtered = [...fallbackSoRItems];
+      if (params?.category) {
+        filtered = filtered.filter(it => it.category === params.category);
+      }
+      if (params?.query) {
+        const q = params.query.toLowerCase();
+        filtered = filtered.filter(it => it.description.toLowerCase().includes(q) || it.item_code.toLowerCase().includes(q));
+      }
+      return { items: filtered, total: filtered.length };
+    }
+  },
+
+  getItemByCode: async (uniqueCode: string): Promise<SoRItem> => {
+    try {
+      return await request<SoRItem>(`/sor-weci/items/${encodeURIComponent(uniqueCode)}`);
+    } catch {
+      return fallbackSoRItems.find(it => it.unique_code === uniqueCode || it.item_code === uniqueCode) || fallbackSoRItems[0];
+    }
+  },
+
+  getAllowanceRules: async (): Promise<SoRAllowanceRule[]> => {
+    try {
+      return await request<SoRAllowanceRule[]>('/sor-weci/allowance-rules');
+    } catch {
+      return fallbackSoRAllowanceRules;
+    }
+  },
+
+  getEstimates: async (projectId?: number): Promise<SoREstimate[]> => {
+    try {
+      const url = projectId ? `/sor-weci/estimates?project_id=${projectId}` : '/sor-weci/estimates';
+      return await request<SoREstimate[]>(url);
+    } catch {
+      if (projectId) {
+        return fallbackSoREstimates.filter(e => e.project_id === projectId);
+      }
+      return fallbackSoREstimates;
+    }
+  },
+
+  getEstimate: async (id: number): Promise<SoREstimate> => {
+    try {
+      return await request<SoREstimate>(`/sor-weci/estimates/${id}`);
+    } catch {
+      return fallbackSoREstimates.find(e => e.id === id) || fallbackSoREstimates[0];
+    }
+  },
+
+  createEstimate: async (payload: {
+    title: string;
+    project_id?: number;
+    road_category?: string;
+    division_name?: string;
+    circle_name?: string;
+    is_corporation_area?: boolean;
+    corporation_tier?: string;
+    is_night_work_approved?: boolean;
+    tender_night_work_clause?: string;
+    is_bridge_work?: boolean;
+    bridge_cost_share_pct?: number;
+    gst_percentage?: number;
+    lines: Array<{
+      sor_item_id: number;
+      quantity: number;
+      lead_km?: number;
+      lift_m?: number;
+      structural_type?: string;
+    }>;
+  }): Promise<SoREstimate> => {
+    try {
+      return await request<SoREstimate>('/sor-weci/estimates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const newEst: SoREstimate = {
+        id: fallbackSoREstimates.length + 1,
+        estimate_code: `EST-2026-MOCK-${fallbackSoREstimates.length + 1}`,
+        title: payload.title,
+        project_id: payload.project_id || 1,
+        project_title: 'SH-49 East Coast Road Four Laning',
+        sor_version_code: 'SOR-2026-27-V1',
+        road_category: payload.road_category || 'SH',
+        division_name: payload.division_name || 'Chengalpattu',
+        circle_name: payload.circle_name || 'Chennai',
+        is_corporation_area: !!payload.is_corporation_area,
+        corporation_tier: payload.corporation_tier,
+        is_night_work_approved: !!payload.is_night_work_approved,
+        tender_night_work_clause: payload.tender_night_work_clause,
+        is_bridge_work: !!payload.is_bridge_work,
+        bridge_cost_share_pct: payload.bridge_cost_share_pct || 0,
+        base_total_amount: 5000000,
+        allowance_total_amount: 500000,
+        conveyance_total_amount: 250000,
+        sub_total_before_tax: 5750000,
+        gst_percentage: payload.gst_percentage || 18.0,
+        gst_amount: 1035000,
+        grand_total_amount: 6785000,
+        status: 'DRAFT',
+        created_at: new Date().toISOString(),
+        lines: payload.lines.map((l, idx) => {
+          const item = fallbackSoRItems.find(it => it.id === l.sor_item_id) || fallbackSoRItems[0];
+          return {
+            id: idx + 1,
+            line_number: idx + 1,
+            sor_item_id: item.id,
+            sor_item: item,
+            item_code_snapshot: item.item_code,
+            description_snapshot: item.description,
+            unit_snapshot: item.unit,
+            quantity: l.quantity,
+            basic_rate_snapshot: item.basic_rate,
+            lead_km: l.lead_km || 0,
+            lift_m: l.lift_m || 0,
+            conveyance_charge: (l.lead_km || 0) * 18.5 * l.quantity,
+            head_load_charge: 0,
+            allowance_pct_applied: 0,
+            allowance_amount: 0,
+            structural_type: l.structural_type,
+            effective_rate: item.basic_rate,
+            line_total: item.basic_rate * l.quantity
+          };
+        })
+      };
+      return newEst;
+    }
+  },
+
+  generateBOQ: async (estimateId: number): Promise<SoRBOQItem[]> => {
+    try {
+      return await request<SoRBOQItem[]>(`/sor-weci/estimates/${estimateId}/boq/generate`, {
+        method: 'POST'
+      });
+    } catch {
+      return fallbackSoRBOQItems;
+    }
+  },
+
+  getReconciliation: async (projectId: number): Promise<{ project_id: number; project_title: string; reconciliation_summary: any; lines: SoRReconciliationEntry[] }> => {
+    try {
+      return await request<{ project_id: number; project_title: string; reconciliation_summary: any; lines: SoRReconciliationEntry[] }>(`/sor-weci/reconciliation/${projectId}`);
+    } catch {
+      const lines = fallbackSoRReconciliationEntries.filter(r => r.project_id === projectId);
+      const activeLines = lines.length > 0 ? lines : fallbackSoRReconciliationEntries;
+      return {
+        project_id: projectId,
+        project_title: activeLines[0]?.project_title || 'State Highway Project',
+        reconciliation_summary: {
+          total_boq_amount: activeLines.reduce((s, x) => s + x.boq_amount, 0),
+          total_mb_amount: activeLines.reduce((s, x) => s + x.mb_amount, 0),
+          total_billed_amount: activeLines.reduce((s, x) => s + x.billed_amount, 0),
+          net_variance_amount: activeLines.reduce((s, x) => s + x.amount_variance, 0),
+          net_variance_pct: 26.5
+        },
+        lines: activeLines
+      };
+    }
+  },
+
+  getFindings: async (params?: { project_id?: number; severity?: string; status?: string }): Promise<SoRAnomalyFinding[]> => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.project_id) searchParams.append('project_id', String(params.project_id));
+      if (params?.severity) searchParams.append('severity', params.severity);
+      if (params?.status) searchParams.append('status', params.status);
+      return await request<SoRAnomalyFinding[]>(`/sor-weci/intelligence/findings?${searchParams.toString()}`);
+    } catch {
+      let filtered = [...fallbackSoRAnomalyFindings];
+      if (params?.project_id) {
+        filtered = filtered.filter(f => f.project_id === params.project_id);
+      }
+      if (params?.severity) {
+        filtered = filtered.filter(f => f.severity === params.severity);
+      }
+      if (params?.status) {
+        filtered = filtered.filter(f => f.current_status === params.status);
+      }
+      return filtered;
+    }
+  },
+
+  reviewFinding: async (findingId: number, payload: {
+    disposition: string;
+    review_notes: string;
+    user_id?: number;
+    user_name?: string;
+  }): Promise<SoRAnomalyFinding> => {
+    try {
+      return await request<SoRAnomalyFinding>(`/sor-weci/intelligence/findings/${findingId}/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const finding = fallbackSoRAnomalyFindings.find(f => f.id === findingId) || fallbackSoRAnomalyFindings[0];
+      return {
+        ...finding,
+        current_status: payload.disposition as any,
+        review_notes: payload.review_notes,
+        reviewed_at: new Date().toISOString()
+      };
+    }
+  },
+
+  getBenchmarks: async (): Promise<SoRBenchmarkItem[]> => {
+    try {
+      return await request<SoRBenchmarkItem[]>('/sor-weci/intelligence/benchmarks');
+    } catch {
+      return fallbackSoRBenchmarks;
+    }
+  },
+
+  getAuditEvents: async (limit: number = 50): Promise<SoRAuditEvent[]> => {
+    try {
+      return await request<SoRAuditEvent[]>(`/sor-weci/audit/events?limit=${limit}`);
+    } catch {
+      return fallbackSoRAuditEvents;
+    }
+  }
+};
+
 
 export const fallbackGovernmentDocuments: GovernmentDocumentItem[] = [
   {

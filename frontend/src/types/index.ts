@@ -4423,3 +4423,218 @@ export interface OrganisationKPIs {
   exceptions_count: number;
   historical_redesignations_count: number;
 }
+
+// ==========================================
+// Schedule of Rates, Work Estimation & Cost Intelligence (SoR-WECI)
+// Tamil Nadu SoR 2026–2027 Volume I (w.e.f. 13/11/2026)
+// ==========================================
+
+export interface SoRVersionItem {
+  id: number;
+  version_code: string;
+  volume_number: number;
+  title: string;
+  effective_from: string;
+  is_active: boolean;
+  notes?: string;
+  pdf_reference?: string;
+}
+
+export interface SoRItem {
+  id: number;
+  item_code: string;
+  unique_code: string;
+  category: string;
+  sub_category?: string;
+  description: string;
+  unit: string;
+  basic_rate: number;
+  labour_component_rate: number;
+  material_component_rate: number;
+  machinery_component_rate: number;
+  printed_page_number?: number;
+  pdf_page_number?: number;
+  specification_code?: string;
+  annexure_name?: string;
+  section_header?: string;
+  is_bridge_structural_eligible: boolean;
+  notes?: string;
+}
+
+export interface SoRAllowanceRule {
+  id: number;
+  rule_code: string;
+  name: string;
+  category: string;
+  percentage_rate: number;
+  applicability_scope: string;
+  statutory_citation: string;
+  requires_tender_clause: boolean;
+  description: string;
+  is_active: boolean;
+}
+
+export interface SoREstimateLine {
+  id: number;
+  line_number: number;
+  sor_item_id: number;
+  sor_item?: SoRItem;
+  item_code_snapshot: string;
+  description_snapshot: string;
+  unit_snapshot: string;
+  quantity: number;
+  basic_rate_snapshot: number;
+  lead_km: number;
+  lift_m: number;
+  conveyance_charge: number;
+  head_load_charge: number;
+  allowance_pct_applied: number;
+  allowance_amount: number;
+  allowance_rule_codes?: string[];
+  structural_type?: string;
+  effective_rate: number;
+  line_total: number;
+  calculation_trace?: {
+    item_code: string;
+    quantity: number;
+    basic_rate: number;
+    base_cost: number;
+    conveyance_rate: number;
+    lead_km: number;
+    conveyance_charge: number;
+    lift_m: number;
+    head_load_charge: number;
+    allowances_applied: Array<{
+      rule_code: string;
+      percentage: number;
+      amount: number;
+      basis: string;
+    }>;
+    total_allowance: number;
+    effective_rate: number;
+    line_total: number;
+  };
+}
+
+export interface SoREstimate {
+  id: number;
+  estimate_code: string;
+  title: string;
+  project_id?: number;
+  project_title?: string;
+  sor_version_code: string;
+  road_category: string;
+  division_name: string;
+  circle_name: string;
+  is_corporation_area: boolean;
+  corporation_tier?: string;
+  is_night_work_approved: boolean;
+  tender_night_work_clause?: string;
+  is_bridge_work: boolean;
+  bridge_cost_share_pct: number;
+  base_total_amount: number;
+  allowance_total_amount: number;
+  conveyance_total_amount: number;
+  sub_total_before_tax: number;
+  gst_percentage: number;
+  gst_amount: number;
+  grand_total_amount: number;
+  status: string;
+  prepared_by_user_id?: number;
+  created_at: string;
+  lines: SoREstimateLine[];
+}
+
+export interface SoRBOQItem {
+  id: number;
+  estimate_id: number;
+  schedule_number: string;
+  item_code: string;
+  description: string;
+  unit: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+  specification_clause?: string;
+}
+
+export interface SoRReconciliationEntry {
+  id: number;
+  project_id: number;
+  project_title?: string;
+  item_code: string;
+  description: string;
+  unit: string;
+  boq_quantity: number;
+  boq_rate: number;
+  boq_amount: number;
+  mb_quantity: number;
+  mb_rate: number;
+  mb_amount: number;
+  billed_quantity: number;
+  billed_rate: number;
+  billed_amount: number;
+  quantity_variance: number;
+  rate_variance: number;
+  amount_variance: number;
+  variance_percentage: number;
+  variance_category: 'NORMAL' | 'RATE_SPIKE' | 'QUANTITY_SPIKE' | 'SCOPE_CREEP';
+  audit_note?: string;
+}
+
+export interface SoREvidenceLink {
+  id: number;
+  evidence_type: string;
+  reference_identifier: string;
+  document_name: string;
+  page_number?: number;
+  excerpt_text?: string;
+}
+
+export interface SoRAnomalyFinding {
+  id: number;
+  finding_code: string;
+  project_id: number;
+  project_title?: string;
+  item_code?: string;
+  finding_type: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  title: string;
+  rule_violated?: string;
+  estimated_excess_amount: number;
+  current_status: 'UNDER_REVIEW' | 'CLARIFICATION_REQUESTED' | 'JUSTIFIED' | 'ADMISSIBLE' | 'REVERTED_TO_BASE';
+  review_notes?: string;
+  reviewed_by_user_id?: number;
+  reviewed_at?: string;
+  created_at: string;
+  evidence_links: SoREvidenceLink[];
+}
+
+export interface SoRBenchmarkItem {
+  item_code: string;
+  unique_code: string;
+  description: string;
+  unit: string;
+  canonical_sor_rate: number;
+  state_min_billed_rate: number;
+  state_max_billed_rate: number;
+  state_avg_billed_rate: number;
+  historical_variance_pct: number;
+  projects_analyzed_count: number;
+  trend: 'STABLE' | 'ELEVATED' | 'VOLATILE';
+}
+
+export interface SoRAuditEvent {
+  id: number;
+  event_time: string;
+  user_name: string;
+  user_role: string;
+  action_type: string;
+  entity_type: string;
+  entity_id: string;
+  old_value_json?: string;
+  new_value_json?: string;
+  justification_text: string;
+  ip_address?: string;
+}
+

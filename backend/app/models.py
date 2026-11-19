@@ -3025,3 +3025,255 @@ class DataQualityMappingException(Base):
     reviewed_at = Column(DateTime, nullable=True)
 
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+# -------------------------------------------------------------
+# Schedule of Rates, Work Estimation & Cost Intelligence (SoR-WECI)
+# Governing Ref: TN SoR 2026-2027 Volume I w.e.f. 13/11/2026
+# -------------------------------------------------------------
+
+class SoRVersion(Base):
+    """Tamil Nadu Schedule of Rates Master Version Header."""
+    __tablename__ = "sor_versions"
+
+    id = Column(String(50), primary_key=True, index=True)
+    code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(255), nullable=False)
+    volume = Column(String(50), default="Volume I")
+    effective_from = Column(Date, default=datetime.date(2026, 11, 13))
+    effective_to = Column(Date, nullable=True)
+    go_reference = Column(String(255), default="G.O. (Ms) No. PWD/Highways SoR 2026-2027 dt. 13.11.2026")
+    status = Column(String(50), default="ACTIVE")
+    is_current = Column(Boolean, default=True)
+    published_at = Column(DateTime, default=datetime.datetime.utcnow)
+    published_by = Column(String(150), default="Superintending Engineer (H), P&D / PWD Board")
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SoRItem(Base):
+    """Canonical Schedule of Rates Master Item."""
+    __tablename__ = "sor_items"
+
+    id = Column(String(100), primary_key=True, index=True)
+    sor_version_id = Column(String(50), ForeignKey("sor_versions.id"), nullable=False, index=True)
+    unique_code = Column(String(50), index=True, nullable=False)
+    department_scope = Column(String(50), default="HIGHWAYS", index=True)  # HIGHWAYS, PWD, WRD, COMMON
+    annexure_code = Column(String(50), index=True, nullable=False)  # ANNEXURE-I .. ANNEXURE-IX, GEN-NOTES
+    category = Column(String(100), index=True, nullable=False)  # Labour, Material, Highways Works, Road Furniture & QC, Tools & Plant Hire, Conveyance
+    sub_category = Column(String(100), nullable=True)
+    description = Column(Text, nullable=False)
+    unit_raw = Column(String(50), nullable=False)  # cum., sqm., RM, MT, Each, etc.
+    unit_canonical = Column(String(50), nullable=False, index=True)  # CUM, SQM, MTR, MT, NOS, etc.
+    basic_rate = Column(Float, nullable=False)  # Excl. GST & taxes
+    rate_type = Column(String(50), default="BASIC_RATE")  # BASIC_RATE, COMPOSITE_WORK, HIRE_PER_DAY, CONVEYANCE_SLAB
+    source_pdf_page = Column(Integer, nullable=True)
+    source_printed_page = Column(Integer, nullable=True)
+    tax_inclusive = Column(Boolean, default=False)
+    validation_status = Column(String(50), default="VERIFIED", index=True)  # VERIFIED, TO_VALIDATE
+    notes_json = Column(Text, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    version = relationship("SoRVersion", backref="items")
+
+
+class SoRAllowanceRule(Base):
+    """Deterministic Statutory Allowance & Area Rules."""
+    __tablename__ = "sor_allowance_rules"
+
+    id = Column(String(100), primary_key=True, index=True)
+    sor_version_id = Column(String(50), ForeignKey("sor_versions.id"), nullable=False, index=True)
+    rule_code = Column(String(50), unique=True, index=True, nullable=False)
+    rule_title = Column(String(255), nullable=False)
+    category = Column(String(100), index=True, nullable=False)  # CORPORATION_LIMIT, NIGHT_WORK, BRIDGE_PROVISIONAL, RESTRICTED_AREA, HILLS_ISLANDS, CONVEYANCE
+    percentage_value = Column(Float, nullable=False)
+    applies_to_component = Column(String(50), default="ALL_COMPONENTS")  # LABOUR_ONLY, WORKS_AND_LABOUR, STRUCTURAL_BRIDGE, ALL_COMPONENTS
+    condition_expr_json = Column(Text, nullable=True)
+    excluded_items_json = Column(Text, nullable=True)  # e.g., drains, culverts, retaining walls, repairs for Bridge 3%
+    source_citation = Column(String(255), nullable=False)  # e.g., "General Note 10, pp. 3; General Note Table pp. 7-9"
+    is_active = Column(Boolean, default=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    version = relationship("SoRVersion", backref="rules")
+
+
+class SoREstimate(Base):
+    """Project Work Estimate Header."""
+    __tablename__ = "sor_estimates"
+
+    id = Column(String(100), primary_key=True, index=True)
+    estimate_code = Column(String(100), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    package_id = Column(Integer, ForeignKey("work_packages.id"), nullable=True, index=True)
+    project_code = Column(String(100), nullable=True, index=True)
+    estimate_type = Column(String(50), default="TECHNICAL")  # PRELIMINARY, DPR, TECHNICAL, REVISED
+    sor_version_id = Column(String(50), ForeignKey("sor_versions.id"), nullable=False)
+    title = Column(String(255), nullable=False)
+    division_name = Column(String(100), nullable=False)
+    circle_name = Column(String(100), nullable=False)
+    road_category = Column(String(50), default="SH")  # SH, MDR, ODR, BRIDGE
+    is_corporation_area = Column(Boolean, default=False)
+    corporation_type = Column(String(50), nullable=True)  # CHENNAI_32KM, MADURAI_CBE_HOSUR, OTHER_CORP, NONE
+    is_night_work_allowed = Column(Boolean, default=False)
+    night_work_tender_clause = Column(String(100), nullable=True)
+    is_bridge_work = Column(Boolean, default=False)
+    bridge_cost_share_pct = Column(Float, default=0.0)  # Must be >50% for road works applying 3% bridge allowance
+    total_basic_amount = Column(Float, default=0.0)
+    total_allowance_amount = Column(Float, default=0.0)
+    total_tax_amount = Column(Float, default=0.0)
+    grand_total = Column(Float, default=0.0)
+    status = Column(String(50), default="DRAFT", index=True)  # DRAFT, SCRUTINY_PASSED, SANCTIONED, REVISED
+    sanction_authority_post = Column(String(150), nullable=True)
+    sanction_order_ref = Column(String(100), nullable=True)
+    created_by = Column(String(100), nullable=False)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+    version = relationship("SoRVersion")
+
+
+class SoREstimateLine(Base):
+    """Estimate Item Line with Deterministic Calculation Trace."""
+    __tablename__ = "sor_estimate_lines"
+
+    id = Column(String(100), primary_key=True, index=True)
+    estimate_id = Column(String(100), ForeignKey("sor_estimates.id"), nullable=False, index=True)
+    line_no = Column(Integer, nullable=False)
+    sor_item_id = Column(String(100), ForeignKey("sor_items.id"), nullable=False)
+    item_code = Column(String(50), nullable=False)
+    description = Column(Text, nullable=False)
+    structural_component_type = Column(String(50), default="GENERAL")  # STRUCTURAL_BRIDGE, DRAIN, CULVERT, RETAINING_WALL, REPAIR, ROAD_PAVEMENT, EARTHWORK
+    quantity = Column(Float, default=0.0)
+    unit = Column(String(50), nullable=False)
+    lead_km = Column(Float, default=0.0)
+    lift_meters = Column(Float, default=0.0)
+    basic_rate_snapshot = Column(Float, default=0.0)
+    conveyance_rate_snapshot = Column(Float, default=0.0)
+    allowance_rate_snapshot = Column(Float, default=0.0)
+    effective_rate = Column(Float, default=0.0)
+    line_total = Column(Float, default=0.0)
+    calculation_trace_json = Column(Text, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    estimate = relationship("SoREstimate", backref="lines")
+    sor_item = relationship("SoRItem")
+
+
+class SoRBOQItem(Base):
+    """Bill of Quantities Schedule Item."""
+    __tablename__ = "sor_boq_items"
+
+    id = Column(String(100), primary_key=True, index=True)
+    estimate_id = Column(String(100), ForeignKey("sor_estimates.id"), nullable=False, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    boq_item_no = Column(String(50), nullable=False)
+    item_code = Column(String(50), nullable=False)
+    description = Column(Text, nullable=False)
+    unit = Column(String(50), nullable=False)
+    estimated_qty = Column(Float, default=0.0)
+    estimated_rate = Column(Float, default=0.0)
+    estimated_amount = Column(Float, default=0.0)
+    tender_quoted_rate = Column(Float, nullable=True)
+    tender_amount = Column(Float, nullable=True)
+    contractor_rate_variance_pct = Column(Float, default=0.0)
+    status = Column(String(50), default="SANCTIONED")
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    estimate = relationship("SoREstimate", backref="boq_items")
+
+
+class SoRReconciliationEntry(Base):
+    """BOQ vs Measurement Book vs Billing Reconciliation."""
+    __tablename__ = "sor_reconciliation_entries"
+
+    id = Column(String(100), primary_key=True, index=True)
+    estimate_id = Column(String(100), ForeignKey("sor_estimates.id"), nullable=False, index=True)
+    boq_item_id = Column(String(100), ForeignKey("sor_boq_items.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    boq_item_no = Column(String(50), nullable=False)
+    item_code = Column(String(50), nullable=False)
+    mb_record_ref = Column(String(100), nullable=True)  # e.g., MB-402/p.45
+    bill_voucher_no = Column(String(100), nullable=True)  # e.g., CC-03/RA-02
+    boq_qty = Column(Float, default=0.0)
+    measured_qty = Column(Float, default=0.0)
+    billed_qty = Column(Float, default=0.0)
+    boq_rate = Column(Float, default=0.0)
+    billed_rate = Column(Float, default=0.0)
+    qty_delta = Column(Float, default=0.0)
+    amount_delta = Column(Float, default=0.0)
+    variance_pct = Column(Float, default=0.0)
+    reconciliation_status = Column(String(50), default="MATCHED", index=True)  # MATCHED, QUANTITY_VARIANCE, RATE_MISMATCH, UNRECORDED_MB_CLAIM
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    boq_item = relationship("SoRBOQItem")
+
+
+class SoRAnomalyFinding(Base):
+    """10-Point Structured Cost Anomaly & Exception Record."""
+    __tablename__ = "sor_anomaly_findings"
+
+    id = Column(String(100), primary_key=True, index=True)
+    finding_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    estimate_id = Column(String(100), ForeignKey("sor_estimates.id"), nullable=True, index=True)
+    finding_type = Column(String(100), index=True, nullable=False)  # INELIGIBLE_BRIDGE_ALLOWANCE, EXCESS_NIGHT_WORK_ALLOWANCE, OUTDATED_RATE_APPLIED, etc.
+    severity = Column(String(20), default="MEDIUM", index=True)  # CRITICAL, HIGH, MEDIUM, LOW
+    item_code = Column(String(50), nullable=True)
+    what_should_have_happened = Column(Text, nullable=False)
+    what_actually_happened = Column(Text, nullable=False)
+    applicable_rule_control = Column(Text, nullable=False)
+    difference_amount = Column(Float, default=0.0)
+    potential_exposure_amount = Column(Float, default=0.0)
+    probable_cause = Column(Text, nullable=True)
+    contractor_justification = Column(Text, nullable=True)
+    evidence_summary = Column(Text, nullable=True)
+    investigating_official = Column(String(150), nullable=True)
+    preventive_action = Column(Text, nullable=True)
+    review_status = Column(String(50), default="OPEN", index=True)  # OPEN, JUSTIFIED_EXCEPTION, REQUIRES_REVISION, ESCALATED_FOR_REVIEW
+    reviewed_by = Column(String(150), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    project = relationship("Project")
+
+
+class SoREvidenceLink(Base):
+    """Supporting Documentary Evidence Link."""
+    __tablename__ = "sor_evidence_links"
+
+    id = Column(String(100), primary_key=True, index=True)
+    finding_id = Column(String(100), ForeignKey("sor_anomaly_findings.id"), nullable=True, index=True)
+    document_title = Column(String(255), nullable=False)
+    document_ref = Column(String(150), nullable=False)
+    source_pdf_page = Column(Integer, nullable=True)
+    source_printed_page = Column(Integer, nullable=True)
+    excerpt_text = Column(Text, nullable=False)
+    uploaded_by = Column(String(150), nullable=False)
+
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SoRAuditEvent(Base):
+    """Immutable Append-Only Audit Trail for SoR and Estimator."""
+    __tablename__ = "sor_audit_events"
+
+    id = Column(String(100), primary_key=True, index=True)
+    event_time = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+    actor_username = Column(String(100), nullable=False)
+    actor_role = Column(String(100), nullable=False)
+    jurisdiction = Column(String(100), nullable=False)
+    action_type = Column(String(100), index=True, nullable=False)  # ESTIMATE_CREATED, LINES_CALCULATED, ALLOWANCE_OVERRULED, FINDING_DISPOSED, etc.
+    target_entity_type = Column(String(100), nullable=False)
+    target_entity_id = Column(String(100), nullable=False)
+    summary = Column(Text, nullable=False)
+    before_state_json = Column(Text, nullable=True)
+    after_state_json = Column(Text, nullable=True)
+    ip_address = Column(String(50), nullable=True)

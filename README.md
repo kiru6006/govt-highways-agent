@@ -77,7 +77,10 @@ SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
 │   ├── Field Operations                      → /field-ops
 │   ├── Engineering Quality                   → /quality
 │   └── Road & Bridge Assets                  → /assets
-├── 💰 Domain 4: Commercial & Resource Mgmt (Support Layer - 3 items)
+├── 💰 Domain 4: Commercial & Resource Mgmt (Support Layer - 6 items)
+│   ├── Schedule of Rates (SoR) [2026-27]     → /sor-catalogue
+│   ├── Work Estimator & BOQ [Deterministic]  → /work-estimator
+│   ├── Cost Audit & Exceptions [10-Point]    → /cost-audit
 │   ├── Finance & Procurement                 → /finance
 │   ├── Contractor Intelligence               → /contractors
 │   └── People & Directory                    → /directory
@@ -396,6 +399,35 @@ TOP HEADER UTILITY BAR
 ---
 
 ### Group 4: Commercial, Contractors & Field Workspaces
+
+#### 18a. Schedule of Rates (SoR) Explorer (`#/sor-catalogue`)
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Estimators, Quantity Surveyors.
+* **Key Capabilities & How to Use**:
+  * **Volume I Master Items (pp. 311–352)**: Searchable canonical catalog of Tamil Nadu Highways SoR 2026–2027 (w.e.f. 13/11/2026) items across Earthwork, Sub-Base, Base Courses, Bituminous Pavements, Bridge Superstructure/Substructure, Cross Drainage, and Safety Furniture.
+  * **Strict Tax Separation**: Basic rates are strictly exclusive of GST; labour, material, and machinery components itemized with printed and PDF page citations.
+  * **General Notes 1–10 & Allowances**: Corporation Tier-1 (+10%) & Tier-2 (+5%), Night Work (+25% labour-only with mandatory tender clause guardrail), Bridge 3% provisional allowance (structural components & $\ge 50\%$ cost share only), Ghat roads (+15%), and running water (+5%).
+  * **Conveyance & Head Load Slabs**: Table-I mechanical transport conveyance rates (1st km ₹140.00/cum, subsequent ₹18.50/cum/km) with interactive haulage sandbox and 10m/2m free lead/lift parameters.
+  * **Common / PWD Cross-References**: Cross-reference items for administrative structures, toll plazas, and electrical illumination.
+* **Endpoints**: `GET /api/v1/sor-weci/versions`, `GET /api/v1/sor-weci/items`, `GET /api/v1/sor-weci/allowance-rules`.
+
+#### 18b. Work Estimator & BOQ Builder (`#/work-estimator`)
+* **Target Audience**: Divisional Engineers, Assistant Executive Engineers, Tender Drafting Cells.
+* **Key Capabilities & How to Use**:
+  * **Deterministic Cost Calculation Engine**: Pure Python `Decimal` (`ROUND_HALF_UP`) arithmetic ensuring zero floating-point drift or LLM hallucination in government estimates.
+  * **Interactive Line Item Builder**: Add line items with dynamic lead distance, lift height, and structural component classification.
+  * **Statutory Rule Matrix**: Automatic verification preventing unauthorized allowance claims (hard block on bridge allowance for drains/culverts or night work without verified tender clause).
+  * **Tender BOQ Schedule Generator**: One-click generation of Schedule-A tender schedules with isolated 18% GST summary.
+  * **3-Way MB & Billed Variance Reconciliation**: Reconcile sanctioned BOQ vs. Measurement Book (MB) recorded quantities vs. Contractor running invoice quantities and rates with variance classification (`NORMAL`, `RATE_SPIKE`, `QUANTITY_SPIKE`, `SCOPE_CREEP`).
+* **Endpoints**: `GET /api/v1/sor-weci/estimates`, `POST /api/v1/sor-weci/estimates`, `POST /api/v1/sor-weci/estimates/{id}/boq/generate`, `GET /api/v1/sor-weci/reconciliation/{project_id}`.
+
+#### 18c. Cost Audit, Exceptions & Audit Trail (`#/cost-audit`)
+* **Target Audience**: Government Financial Auditors, Vigilance & Quality Control Wings, Chief Engineers.
+* **Key Capabilities & How to Use**:
+  * **Cross-Division Rate Benchmarking**: Compare canonical SoR basic rates against state minimum, average, and maximum billed rates across monitored highway packages with cost dispersion and volatility indicators.
+  * **10-Point Structured Anomaly Queue**: Neutral, auditable exception records for unapproved rate inflations, unauthorized night allowances, quarry lead distance deviations, and misclassified bridge items.
+  * **Neutral Review Disposition**: Governance states (`UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `JUSTIFIED`, `ADMISSIBLE`, `REVERTED_TO_BASE`) with regulatory justification recording.
+  * **Immutable Append-Only Audit Trail**: Write-Once-Read-Many (WORM) event ledger recording every user action, entity change, and justification note.
+* **Endpoints**: `GET /api/v1/sor-weci/intelligence/benchmarks`, `GET /api/v1/sor-weci/intelligence/findings`, `POST /api/v1/sor-weci/intelligence/findings/{id}/review`, `GET /api/v1/sor-weci/audit/events`.
 
 #### 19. Finance & Procurement (`#/finance`)
 * **Target Audience**: Accounts Officers, Financial Advisers, Tender Scrutiny Committees.

@@ -28,6 +28,9 @@ import { CRIDPVerificationPage } from './pages/CRIDPVerificationPage';
 import { CRIDPRiskIntelligencePage } from './pages/CRIDPRiskIntelligencePage';
 import { WorksAnalyticsPage } from './pages/WorksAnalyticsPage';
 import { OrganisationIntelligencePage } from './pages/OrganisationIntelligencePage';
+import { SoRCataloguePage } from './pages/SoRCataloguePage';
+import { WorkEstimatorPage } from './pages/WorkEstimatorPage';
+import { CostAuditPage } from './pages/CostAuditPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { MessagesPage } from './pages/MessagesPage';
@@ -93,6 +96,9 @@ const AppLayout: React.FC = () => {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/major-works" element={<MajorWorksPortfolioPage />} />
             <Route path="/works-analytics" element={<WorksAnalyticsPage />} />
+            <Route path="/sor-catalogue" element={<SoRCataloguePage />} />
+            <Route path="/work-estimator" element={<WorkEstimatorPage />} />
+            <Route path="/cost-audit" element={<CostAuditPage />} />
             <Route path="/cridp-risk-intelligence" element={<CRIDPRiskIntelligencePage />} />
             <Route path="/cridp-verification" element={<CRIDPRiskIntelligencePage />} />
             <Route path="/leakage" element={<LeakageIntelligencePage />} />
