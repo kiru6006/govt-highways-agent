@@ -16,6 +16,7 @@
 | **Phase 3** | Automated Pytest Suite (Unit, Decimal Math, Rules & Limits) | **COMPLETED** | `test_sor_weci.py` (15 tests passing 100%) |
 | **Phase 4** | Frontend UI: 3 Screens (`/sor-catalogue`, `/work-estimator`, `/cost-audit`) | **COMPLETED** | `SoRCataloguePage.tsx`, `WorkEstimatorPage.tsx`, `CostAuditPage.tsx`, `fallbackSoR.ts`, `Sidebar.tsx`, `App.tsx` |
 | **Phase 5** | Regression Verification, Documentation, Git Commit & Push | **COMPLETED** | `pytest` 100%, `tsc && vite build` (45s, 0 errors), `README.md`, Git commit & push |
+| **Phase 6** | Rate Calculator (`/rate-calculator`): 10 Modes, Pure Decimal Math, 25 Statutory Tests, Drawer Breakdown & Sheet | **COMPLETED** | `RateCalculatorPage.tsx`, `sor_calculation_service.py`, `rate_calculator.py`, `test_rate_calculator.py` (25/25 passing) |
 
 ---
 
@@ -90,3 +91,50 @@
 - [x] Navigation entries mounted in `frontend/src/components/Sidebar.tsx` under Domain 4: Commercial & Resource Mgmt.
 - [x] Routes wired in `frontend/src/App.tsx`.
 - [x] Production build verified (`tsc && vite build`: built in 45.35s with 0 errors).
+
+---
+
+## 5. Phase 6 Rate Calculator (`/rate-calculator`) Implementation Details
+- [x] **Database & Models (`backend/app/models.py`)**:
+  - `CalculationSession`, `CalculationLine`, `CalculationAdjustment`, `CalculationResult`, `CalculationAudit`.
+- [x] **Pydantic Schemas (`backend/app/schemas.py`)**:
+  - `RateCalculateRequest`, `RateCalculateResponse`, `BatchCalculateRequest`, `BatchCalculateResponse`, `RateValidationRequest`, `RateValidationResponse`, `RateExportRequest`, `RateExportResponse`.
+- [x] **Calculation Service Engine (`backend/app/services/sor_calculation_service.py`)**:
+  - Pure Python `Decimal` (`ROUND_HALF_UP`) math.
+  - Implemented all 10 engineering modes:
+    1. Material Cost: $Q \times \text{Rate}$
+    2. Labour Cost: $\text{Workers} \times \text{Days} \times \text{Rate}$
+    3. Work Item Cost: $Q \times \text{Work Rate}$
+    4. Equipment Hire: $\text{Duration} \times \text{Hire Rate}$
+    5. Road Furniture: $Q \times \text{Item Rate}$
+    6. Survey and DPR: $Q / \text{km} \times \text{Rate}$
+    7. Plantation: $Q \times \text{Rate}$
+    8. Quantity Calculator: Geometric formulas (Road area $L \times W$, Layer volume $L \times W \times \text{thick mm} / 1000$, Embankment earthwork, Concrete, Drains)
+    9. Conveyance & Head Load: Table-I mechanical transport conveyance rates (1st km ₹140.00/cum, subsequent ₹18.50/cum/km), Ghat / Hill roads (+20%), Head load lift (>2m @ ₹13.00/cum/m)
+    10. Combined Multi-Item Calculation Sheet: Add, clone, remove, recalculate, reset, export, and transfer to Estimate/BOQ
+  - Negative quantity hard rejection.
+  - Night work allowance: +25% strictly restricted to Labour component with tender clause validation.
+  - Bridge 3% provisional allowance: Admissible strictly for bridge structural items ($\ge 50\%$ cost share); hard block on drains, culverts, retaining walls, and minor repairs.
+- [x] **FastAPI Router (`backend/app/routers/rate_calculator.py`)**:
+  - Mounted at `/api/v1/sor`:
+    - `GET /publications`
+    - `GET /items`
+    - `GET /items/{itemCode}`
+    - `GET /rules`
+    - `POST /calculate`
+    - `POST /calculate-batch`
+    - `POST /validate`
+    - `POST /export`
+- [x] **Seeded Official Master Items (`backend/app/seed_sor_2026_data.py`)**:
+  - Seeded official Annexure items: `M-0093` (HBGS 90mm @ ₹544/cum), `L-0099` (Heat Master Operator @ ₹1,001/day), `W-0055` (Earthwork SS20B @ ₹88.10/cum), `H-0001` (Excavator @ ₹2,450/hr), `RF-0001` (Signboard @ ₹3,850/sqm), `SV-0001` (Survey @ ₹18,500/km), `PL-0001` (Plantation @ ₹1,250/plant), `QC-0001` (Core cutter @ ₹450), `C-0001` (Conveyance 1st km @ ₹140.00).
+- [x] **Automated Test Suite (`backend/tests/test_rate_calculator.py`)**:
+  - 25 automated tests covering all statutory scenarios from Section 17, running at 100% pass rate.
+- [x] **Frontend Screen (`frontend/src/pages/RateCalculatorPage.tsx`)**:
+  - 10 Calculator Modes in compact tabs.
+  - Live calculation cards with detailed formula preview.
+  - Step-by-Step 18-Point Calculation Breakdown Modal Drawer.
+  - Multi-Item Calculation Sheet with Add, Clone, Remove, Recalculate, Reset, CSV/JSON Export, and Transfer to Estimate/BOQ.
+- [x] **Navigation & Production Build**:
+  - Mounted `/rate-calculator` in `frontend/src/App.tsx`.
+  - Added Rate Calculator under Domain 4 in `frontend/src/components/Sidebar.tsx`.
+  - Frontend production build verified (`tsc && vite build`: built in 18.38s with 0 errors).

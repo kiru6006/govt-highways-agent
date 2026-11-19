@@ -79,6 +79,7 @@ export const navigationItems: NavItem[] = [
 
   // Domain 4: Commercial & Resource Mgmt (Support Layer)
   { id: 'sor_catalogue', name: 'Schedule of Rates (SoR)', path: '/sor-catalogue', icon: BookOpen, badge: '2026-27', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'commercial' },
+  { id: 'rate_calculator', name: 'Rate Calculator', path: '/rate-calculator', icon: Calculator, badge: 'SoR 26-27', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'commercial' },
   { id: 'work_estimator', name: 'Work Estimator & BOQ', path: '/work-estimator', icon: Calculator, badge: 'Deterministic', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'commercial' },
   { id: 'cost_audit', name: 'Cost Audit & Exceptions', path: '/cost-audit', icon: Scale, badge: '10-Point', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'commercial' },
   { id: '8', name: 'Finance & Procurement', path: '/finance', icon: CircleDollarSign, groupId: 'commercial' },

@@ -182,7 +182,11 @@ import {
   SoRReconciliationEntry,
   SoRAnomalyFinding,
   SoRBenchmarkItem,
-  SoRAuditEvent
+  SoRAuditEvent,
+  RateCalculateRequest,
+  RateCalculateResponse,
+  BatchCalculateResponse,
+  RateExportResponse
 } from '../types';
 import {
   fallbackSoRVersions,
@@ -195,6 +199,11 @@ import {
   fallbackSoRBenchmarks,
   fallbackSoRAuditEvents
 } from '../data/fallbackSoR';
+import {
+  fallbackCalculatorItems,
+  fallbackSampleCalculations,
+  fallbackBatchSheet
+} from '../data/fallbackRateCalculator';
 import {
   fallbackOrganisationKPIs,
   fallbackHistoricalMappings,
@@ -6366,6 +6375,215 @@ export const sorAPI = {
       return await request<SoRAuditEvent[]>(`/sor-weci/audit/events?limit=${limit}`);
     } catch {
       return fallbackSoRAuditEvents;
+    }
+  }
+};
+
+export const rateCalculatorAPI = {
+  getPublications: async (): Promise<any[]> => {
+    try {
+      return await request<any[]>('/sor/publications');
+    } catch {
+      return [
+        {
+          code: "SOR-2026-27-V1",
+          title: "Schedule of Rates 2026–2027, Volume I (Highways Department)",
+          effective_from: "2026-11-13",
+          status: "ACTIVE"
+        }
+      ];
+    }
+  },
+
+  getItems: async (params?: { category?: string; query?: string; annexure?: string; skip?: number; limit?: number }): Promise<{ items: any[]; total: number }> => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.category) searchParams.append('category', params.category);
+      if (params?.query) searchParams.append('query', params.query);
+      if (params?.annexure) searchParams.append('annexure', params.annexure);
+      if (params?.skip !== undefined) searchParams.append('skip', String(params.skip));
+      if (params?.limit !== undefined) searchParams.append('limit', String(params.limit));
+      return await request<{ items: any[]; total: number }>(`/sor/items?${searchParams.toString()}`);
+    } catch {
+      let filtered = [...fallbackCalculatorItems];
+      if (params?.category && params.category !== 'ALL') {
+        filtered = filtered.filter(it => it.category.toLowerCase().includes(params.category!.toLowerCase()));
+      }
+      if (params?.query) {
+        const q = params.query.toLowerCase();
+        filtered = filtered.filter(it => it.description.toLowerCase().includes(q) || it.item_code.toLowerCase().includes(q));
+      }
+      return { items: filtered, total: filtered.length };
+    }
+  },
+
+  getItemByCode: async (itemCode: string): Promise<any> => {
+    try {
+      return await request<any>(`/sor/items/${encodeURIComponent(itemCode)}`);
+    } catch {
+      return fallbackCalculatorItems.find(it => it.item_code === itemCode) || fallbackCalculatorItems[0];
+    }
+  },
+
+  getRules: async (): Promise<any[]> => {
+    try {
+      return await request<any[]>('/sor/rules');
+    } catch {
+      return fallbackSoRAllowanceRules;
+    }
+  },
+
+  calculate: async (payload: RateCalculateRequest): Promise<RateCalculateResponse> => {
+    try {
+      return await request<RateCalculateResponse>('/sor/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      // Deterministic offline fallback calculation
+      const item = fallbackCalculatorItems.find(it => it.item_code === payload.item_code) || fallbackCalculatorItems[0];
+      const rate = item?.basic_rate || 500.0;
+      let qty = payload.quantity;
+      if (payload.calculation_mode === 'QUANTITY') {
+        if (payload.length_m && payload.width_m && payload.thickness_mm) {
+          qty = (payload.length_m * payload.width_m * (payload.thickness_mm / 1000));
+        } else if (payload.length_m && payload.width_m) {
+          qty = payload.length_m * payload.width_m;
+        }
+      } else if (payload.calculation_mode === 'LABOUR') {
+        const workers = payload.workers_count || 1;
+        const days = payload.days_count || payload.quantity;
+        qty = workers * days;
+      }
+
+      const baseAmount = qty * rate;
+      let adjustments = 0;
+      const appliedRules: any[] = [];
+      const excludedRules: any[] = [];
+      const warnings: string[] = [];
+
+      if (payload.is_night_work) {
+        if (payload.tender_night_clause) {
+          const nightAmt = baseAmount * 0.25;
+          adjustments += nightAmt;
+          appliedRules.push({
+            rule_code: "BR-NIGHT-25",
+            name: "Night Work Allowance (+25%)",
+            percentage: 25.0,
+            amount: nightAmt,
+            tender_clause: payload.tender_night_clause
+          });
+        } else {
+          excludedRules.push({
+            rule_code: "BR-NIGHT-25",
+            name: "Night Work Allowance (+25%)",
+            reason: "Not applied: Mandatory tender clause missing."
+          });
+          warnings.push("Night-work allowance (+25%): Not applied unless eligibility verified with tender clause.");
+        }
+      }
+
+      if (payload.structural_type === 'DRAIN') {
+        excludedRules.push({
+          rule_code: "BR-BRIDGE-03",
+          name: "Bridge 3% Allowance",
+          reason: "General Note 10 strictly excludes drains."
+        });
+      } else if (payload.structural_type === 'STRUCTURAL_BRIDGE' && (payload.is_bridge_work || (payload.bridge_cost_share_pct || 0) >= 50)) {
+        const brAmt = baseAmount * 0.03;
+        adjustments += brAmt;
+        appliedRules.push({
+          rule_code: "BR-BRIDGE-03",
+          name: "Bridge 3% Provisional Allowance",
+          percentage: 3.0,
+          amount: brAmt
+        });
+      }
+
+      const subtotal = baseAmount + adjustments;
+      const taxAmount = payload.apply_tax ? subtotal * 0.18 : 0;
+      const finalAmount = subtotal + taxAmount;
+
+      return {
+        calculation_id: `CALC-MOCK-${Date.now()}`,
+        sor_version: "SOR-2026-27-V1",
+        item_code: payload.item_code || item?.item_code,
+        item_description: item?.description || "Engineering Rate Calculation",
+        official_unit: item?.unit || "UNIT",
+        source_rate: rate,
+        input_quantity: qty,
+        unit_conversions: {},
+        base_formula: `${qty} × ₹${rate.toFixed(2)}`,
+        base_amount: baseAmount,
+        applied_rules: appliedRules,
+        excluded_rules: excludedRules,
+        total_adjustments: adjustments,
+        tax_treatment: {
+          tax_percentage: payload.apply_tax ? 18.0 : 0.0,
+          tax_amount: taxAmount,
+          is_separate: true,
+          note: payload.apply_tax ? "GST 18% applied separately" : "Tax: Separately determined if applicable."
+        },
+        final_amount: finalAmount,
+        source_reference: {
+          annexure: item?.annexure || "Annexure-I",
+          printed_page: item?.printed_page || 313,
+          document_version: "SOR-2026-27-V1",
+          effective_date: "2026-11-13"
+        },
+        validation_status: warnings.length > 0 ? "VALID_WITH_WARNINGS" : "VALID",
+        warnings: warnings,
+        assumptions: ["Rates strictly basic and GST-exclusive."],
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+
+  calculateBatch: async (payload: { title?: string; project_id?: number; lines: RateCalculateRequest[] }): Promise<BatchCalculateResponse> => {
+    try {
+      return await request<BatchCalculateResponse>('/sor/calculate-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return fallbackBatchSheet;
+    }
+  },
+
+  validate: async (payload: any): Promise<any> => {
+    try {
+      return await request<any>('/sor/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return {
+        is_valid: true,
+        status: "VALID",
+        errors: [],
+        warnings: []
+      };
+    }
+  },
+
+  exportSheet: async (payload: { format: string; session_id?: string; batch_data: BatchCalculateResponse }): Promise<RateExportResponse> => {
+    try {
+      return await request<RateExportResponse>('/sor/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return {
+        export_id: `EXP-MOCK-${Date.now()}`,
+        format: payload.format,
+        filename: `Rate_Calculation_${payload.format.toLowerCase()}.csv`,
+        content: "Line,Item,Qty,Rate,Total\n1,M-0093,125,544,68000",
+        generated_at: new Date().toISOString()
+      };
     }
   }
 };

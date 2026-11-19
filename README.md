@@ -429,6 +429,28 @@ TOP HEADER UTILITY BAR
   * **Immutable Append-Only Audit Trail**: Write-Once-Read-Many (WORM) event ledger recording every user action, entity change, and justification note.
 * **Endpoints**: `GET /api/v1/sor-weci/intelligence/benchmarks`, `GET /api/v1/sor-weci/intelligence/findings`, `POST /api/v1/sor-weci/intelligence/findings/{id}/review`, `GET /api/v1/sor-weci/audit/events`.
 
+#### 18d. Engineering Material, Labour & Work Rate Calculator (`#/rate-calculator`)
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Quantity Surveyors, Estimators.
+* **Statutory Document Reference**: Tamil Nadu Schedule of Rates (SoR) 2026–2027, Volume I (w.e.f. 13 November 2026).
+* **10 Engineering Calculation Modes**:
+  1. *Material Cost*: Quantity $\times$ Material Rate (e.g. M-0093 HBGS 90mm @ ₹544/cum).
+  2. *Labour Cost*: Workers $\times$ Eligible Days $\times$ Daily Rate (e.g. L-0099 Heat Master Operator @ ₹1,001/day).
+  3. *Work Item Cost*: Quantity $\times$ Composite Work Item Rate (e.g. W-0055 Earthwork SS20B @ ₹88.10/cum).
+  4. *Equipment Hire*: Duration (hours/days) $\times$ Machine Hire Rate (e.g. H-0001 Excavator @ ₹2,450/hr).
+  5. *Road Furniture*: Quantity $\times$ Unit Rate (e.g. RF-0001 Retroreflective Signboard @ ₹3,850/sqm).
+  6. *Survey and DPR*: Alignment Distance / Units $\times$ Rate (e.g. SV-0001 Topographic Survey @ ₹18,500/km).
+  7. *Plantation*: Saplings / Plants $\times$ Rate (e.g. PL-0001 Median Avenue Tree Plantation @ ₹1,250/plant).
+  8. *Quantity Calculator*: Geometric engineering quantities (Pavement area $L \times W$, Layer volume $L \times W \times \text{thickness mm} / 1000$, Trapezoidal Earthwork embankment, Concrete structures, Drains & Culverts).
+  9. *Conveyance and Head Load*: Table-I haulage slabs (1st km ₹140.00/cum, subsequent ₹18.50/cum/km), Ghat / Hill roads (+20%), Head load lift (>2m @ ₹13.00/cum/m).
+  10. *Combined Multi-Item Sheet*: Interactive multi-item estimation workbench with line item additions, cloning, deletion, recalculation, 18% separate GST, statutory guardrails, and export/transfer to Estimate/BOQ.
+* **Key Capabilities & Statutory Guardrails**:
+  * **Deterministic Pure Decimal Math**: Python `Decimal` (`ROUND_HALF_UP`) ensuring 100% calculation correctness and reproducibility.
+  * **Negative Quantity Rejection**: Strict validation disallowing negative quantities across all modes.
+  * **Night Work Allowance**: +25% strictly restricted to Labour component with mandatory tender clause reference.
+  * **Bridge 3% Allowance**: Admissible strictly for bridge structural items ($\ge 50\%$ package cost share); hard-blocked for drains, culverts, retaining walls, and minor repairs.
+  * **Step-by-Step Calculation Breakdown**: 18-point transparent breakdown drawer detailing statutory citations, intermediate multipliers, and subtotal steps.
+* **Endpoints**: `GET /api/v1/sor/publications`, `GET /api/v1/sor/items`, `GET /api/v1/sor/items/{itemCode}`, `GET /api/v1/sor/rules`, `POST /api/v1/sor/calculate`, `POST /api/v1/sor/calculate-batch`, `POST /api/v1/sor/validate`, `POST /api/v1/sor/export`.
+
 #### 19. Finance & Procurement (`#/finance`)
 * **Target Audience**: Accounts Officers, Financial Advisers, Tender Scrutiny Committees.
 * **Key Capabilities & How to Use**: Track Administrative Sanctions (AS), Technical Sanctions (TS), contractor running account (RA) bills, retention money, and Bank Guarantee (BG) expiry alerts.

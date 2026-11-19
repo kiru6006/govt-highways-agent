@@ -3277,3 +3277,125 @@ class SoRAuditEvent(Base):
     before_state_json = Column(Text, nullable=True)
     after_state_json = Column(Text, nullable=True)
     ip_address = Column(String(50), nullable=True)
+
+
+class CalculationSession(Base):
+    """Work Estimation & Rate Calculator Session."""
+    __tablename__ = "sor_calculation_sessions"
+
+    id = Column(String(100), primary_key=True, index=True)
+    session_code = Column(String(50), unique=True, index=True, nullable=False)
+    title = Column(String(255), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    sor_version_id = Column(String(50), ForeignKey("sor_versions.id"), nullable=False, default="SOR-2026-27-V1")
+    mode = Column(String(50), default="COMBINED", index=True)  # MATERIAL, LABOUR, WORK, EQUIPMENT, ROAD_FURNITURE, SURVEY_DPR, PLANTATION, QUANTITY, CONVEYANCE, COMBINED
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user_name = Column(String(100), nullable=True)
+    jurisdiction = Column(String(100), nullable=True)
+    total_basic_amount = Column(Float, default=0.0)
+    total_adjustment_amount = Column(Float, default=0.0)
+    total_tax_amount = Column(Float, default=0.0)
+    grand_total_amount = Column(Float, default=0.0)
+    validation_status = Column(String(50), default="VALID", index=True)  # VALID, VALID_WITH_WARNINGS, REQUIRES_VERIFICATION, INVALID
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    lines = relationship("CalculationLine", backref="session", cascade="all, delete-orphan")
+
+
+class CalculationLine(Base):
+    """Line item within a Calculation Session."""
+    __tablename__ = "sor_calculation_lines"
+
+    id = Column(String(100), primary_key=True, index=True)
+    session_id = Column(String(100), ForeignKey("sor_calculation_sessions.id"), nullable=False, index=True)
+    line_number = Column(Integer, nullable=False)
+    calculation_mode = Column(String(50), nullable=False)  # MATERIAL, LABOUR, WORK, EQUIPMENT, etc.
+    item_code = Column(String(50), index=True, nullable=True)
+    item_description = Column(Text, nullable=True)
+    official_unit = Column(String(50), nullable=True)
+    basic_rate = Column(Float, default=0.0)
+    quantity = Column(Float, nullable=False, default=1.0)
+    
+    # Contextual engineering inputs
+    workers_count = Column(Integer, nullable=True)
+    days_count = Column(Float, nullable=True)
+    duration_hours = Column(Float, nullable=True)
+    length_m = Column(Float, nullable=True)
+    width_m = Column(Float, nullable=True)
+    thickness_mm = Column(Float, nullable=True)
+    lead_km = Column(Float, nullable=True)
+    lift_m = Column(Float, nullable=True)
+    terrain = Column(String(50), default="PLAINS")  # PLAINS, HILLS
+    structural_component_type = Column(String(50), nullable=True)
+    
+    basic_amount = Column(Float, default=0.0)
+    adjustment_amount = Column(Float, default=0.0)
+    tax_amount = Column(Float, default=0.0)
+    line_total = Column(Float, default=0.0)
+    formula_text = Column(String(255), nullable=True)
+    validation_status = Column(String(50), default="VALID")  # VALID, VALID_WITH_WARNINGS, REQUIRES_VERIFICATION, INVALID
+    warnings_json = Column(Text, nullable=True)
+    calculation_trace_json = Column(Text, nullable=True)
+    source_reference_json = Column(Text, nullable=True)
+    
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class CalculationAdjustment(Base):
+    """Statutory Allowance, Area Addition, or Deduction Record."""
+    __tablename__ = "sor_calculation_adjustments"
+
+    id = Column(String(100), primary_key=True, index=True)
+    line_id = Column(String(100), ForeignKey("sor_calculation_lines.id"), nullable=False, index=True)
+    rule_code = Column(String(50), nullable=False)
+    rule_title = Column(String(255), nullable=False)
+    category = Column(String(50), nullable=False)  # CORPORATION, NIGHT_WORK, BRIDGE_PROVISIONAL, GHAT_ROAD, etc.
+    percentage_value = Column(Float, default=0.0)
+    calculated_amount = Column(Float, default=0.0)
+    is_admissible = Column(Boolean, default=True)
+    exclusion_reason = Column(String(255), nullable=True)
+    statutory_citation = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class CalculationResult(Base):
+    """Permanent immutable snapshot of an executed calculation."""
+    __tablename__ = "sor_calculation_results"
+
+    id = Column(String(100), primary_key=True, index=True)
+    calculation_id = Column(String(100), unique=True, index=True, nullable=False)
+    session_id = Column(String(100), ForeignKey("sor_calculation_sessions.id"), nullable=True, index=True)
+    sor_version_code = Column(String(50), default="SOR-2026-27-V1")
+    item_code = Column(String(50), nullable=True)
+    item_description = Column(Text, nullable=True)
+    official_unit = Column(String(50), nullable=True)
+    source_rate = Column(Float, default=0.0)
+    input_quantity = Column(Float, default=0.0)
+    base_formula = Column(String(255), nullable=False)
+    base_amount = Column(Float, default=0.0)
+    total_adjustments = Column(Float, default=0.0)
+    tax_percentage = Column(Float, default=18.0)
+    tax_amount = Column(Float, default=0.0)
+    final_amount = Column(Float, default=0.0)
+    validation_status = Column(String(50), default="VALID")
+    trace_json = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class CalculationAudit(Base):
+    """WORM Append-Only Audit Trail for Rate Calculations."""
+    __tablename__ = "sor_calculation_audits"
+
+    id = Column(String(100), primary_key=True, index=True)
+    event_time = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+    actor_username = Column(String(100), nullable=False)
+    actor_role = Column(String(100), nullable=False)
+    action_type = Column(String(100), index=True, nullable=False)  # CALCULATE, BATCH_CALCULATE, EXPORT, OVERRIDE_ATTEMPT
+    calculation_ref = Column(String(100), nullable=True)
+    item_code = Column(String(50), nullable=True)
+    inputs_summary = Column(Text, nullable=False)
+    result_summary = Column(Text, nullable=False)
+    validation_status = Column(String(50), nullable=False)
+    ip_address = Column(String(50), nullable=True)

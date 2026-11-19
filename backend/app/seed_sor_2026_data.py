@@ -397,6 +397,80 @@ def seed_sor_master_data(db: Session = None):
                 "unit_raw": "cum./km", "unit_canonical": "CUM_KM", "basic_rate": 18.5, "rate_type": "CONVEYANCE_SLAB",
                 "source_pdf_page": 98, "source_printed_page": 353, "validation_status": "VERIFIED",
                 "notes_json": '{"slab_2_to_20km": true}'
+            },
+
+            # Prompt-Specific Verified Items (Highways Annexures I to IX)
+            {
+                "id": "ITEM-M-0093", "unique_code": "M-0093", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-II", "category": "Material", "sub_category": "Aggregates",
+                "description": "HBGS Jelly 90 mm (Hard Broken Granite Stone)",
+                "unit_raw": "cum.", "unit_canonical": "CUM", "basic_rate": 544.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 318, "source_printed_page": 314, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"no_additional_incidental_charges": true, "tax_separate": true}'
+            },
+            {
+                "id": "ITEM-L-0099", "unique_code": "L-0099", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-I", "category": "Labour", "sub_category": "Plant Operations",
+                "description": "Bitumen Heat Master Operator",
+                "unit_raw": "Per Day", "unit_canonical": "DAY", "basic_rate": 1001.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 317, "source_printed_page": 313, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"night_work_restricted": true, "requires_tender_clause": true}'
+            },
+            {
+                "id": "ITEM-W-0055", "unique_code": "W-0055", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-III", "category": "Highways Works", "sub_category": "Earthwork",
+                "description": "Earth work ORDINARY SOIL (SS20B) initial lead 10m & lift 2m",
+                "unit_raw": "cum.", "unit_canonical": "CUM", "basic_rate": 88.10, "rate_type": "COMPOSITE_WORK",
+                "source_pdf_page": 320, "source_printed_page": 316, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"lead_10m_lift_2m_included": true}'
+            },
+            {
+                "id": "ITEM-H-0001", "unique_code": "H-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-IX", "category": "Tools & Plant Hire", "sub_category": "Earth Moving",
+                "description": "Hydraulic Excavator 0.9 cum bucket hire charges including crew and consumables",
+                "unit_raw": "Per Hour", "unit_canonical": "HOUR", "basic_rate": 2450.0, "rate_type": "HIRE_PER_HOUR",
+                "source_pdf_page": 353, "source_printed_page": 349, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"operator_included": true, "fuel_excluded": false}'
+            },
+            {
+                "id": "ITEM-RF-0001", "unique_code": "RF-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-V", "category": "Road Furniture & QC", "sub_category": "Traffic Signs",
+                "description": "Retro-reflective Cautionary Signboard 90cm Triangle High-Intensity Microprismatic Grade",
+                "unit_raw": "Each", "unit_canonical": "EACH", "basic_rate": 3850.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 333, "source_printed_page": 329, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"morth_section_800": true}'
+            },
+            {
+                "id": "ITEM-SV-0001", "unique_code": "SV-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-VI", "category": "Survey & DPR", "sub_category": "Topographic Survey",
+                "description": "Total Station Topographic Survey & Digital Ground Profiling for Highway Alignment",
+                "unit_raw": "km", "unit_canonical": "KM", "basic_rate": 18500.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 348, "source_printed_page": 344, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"digital_deliverables": true}'
+            },
+            {
+                "id": "ITEM-PL-0001", "unique_code": "PL-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-VII", "category": "Avenue Plantation", "sub_category": "Arboriculture",
+                "description": "Tree Sapling Planting along highway right-of-way with 1.5m protective tree guard",
+                "unit_raw": "Each", "unit_canonical": "EACH", "basic_rate": 1250.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 350, "source_printed_page": 346, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"watering_included_1_month": true}'
+            },
+            {
+                "id": "ITEM-QC-0001", "unique_code": "QC-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-IV", "category": "Road Furniture & QC", "sub_category": "Quality Testing",
+                "description": "Core Cutter Test Rig for in-situ Asphalt/Bituminous Pavement Density & Thickness Determination",
+                "unit_raw": "Per Test", "unit_canonical": "TEST", "basic_rate": 450.0, "rate_type": "BASIC_RATE",
+                "source_pdf_page": 332, "source_printed_page": 328, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"official_hrs_testing": true}'
+            },
+            {
+                "id": "ITEM-C-0001", "unique_code": "C-0001", "department_scope": "HIGHWAYS",
+                "annexure_code": "ANNEXURE-IX", "category": "Conveyance & Head Load", "sub_category": "Lead Slabs",
+                "description": "Mechanical Transport Conveyance of Aggregates and Earth for 1st km Initial Lead",
+                "unit_raw": "cum", "unit_canonical": "CUM", "basic_rate": 140.0, "rate_type": "CONVEYANCE_SLAB",
+                "source_pdf_page": 354, "source_printed_page": 350, "validation_status": "SOURCE_VERIFIED",
+                "notes_json": '{"table_1_highways": true}'
             }
         ]
 

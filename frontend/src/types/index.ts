@@ -4638,3 +4638,118 @@ export interface SoRAuditEvent {
   ip_address?: string;
 }
 
+// ==========================================
+// Engineering Material, Labour & Work Rate Calculator
+// Route: /rate-calculator
+// ==========================================
+
+export type CalculatorMode =
+  | 'MATERIAL'
+  | 'LABOUR'
+  | 'WORK'
+  | 'EQUIPMENT'
+  | 'ROAD_FURNITURE'
+  | 'SURVEY_DPR'
+  | 'PLANTATION'
+  | 'QUANTITY'
+  | 'CONVEYANCE'
+  | 'COMBINED';
+
+export interface RateCalculateRequest {
+  calculation_mode: CalculatorMode;
+  item_code?: string;
+  quantity: number;
+  unit?: string;
+  workers_count?: number;
+  days_count?: number;
+  duration_hours?: number;
+  length_m?: number;
+  width_m?: number;
+  thickness_mm?: number;
+  lead_km?: number;
+  lift_m?: number;
+  terrain?: 'PLAINS' | 'HILLS';
+  corporation_type?: string;
+  is_night_work?: boolean;
+  tender_night_clause?: string;
+  is_bridge_work?: boolean;
+  bridge_cost_share_pct?: number;
+  structural_type?: string;
+  tax_percentage?: number;
+  apply_tax?: boolean;
+}
+
+export interface AppliedRuleItem {
+  rule_code: string;
+  name: string;
+  percentage?: number;
+  amount: number;
+  citation?: string;
+  tender_clause?: string;
+  note?: string;
+}
+
+export interface ExcludedRuleItem {
+  rule_code: string;
+  name: string;
+  reason: string;
+}
+
+export interface RateCalculateResponse {
+  calculation_id: string;
+  sor_version: string;
+  item_code?: string;
+  item_description?: string;
+  official_unit?: string;
+  source_rate: number;
+  input_quantity: number;
+  unit_conversions: Record<string, any>;
+  base_formula: string;
+  base_amount: number;
+  applied_rules: AppliedRuleItem[];
+  excluded_rules: ExcludedRuleItem[];
+  total_adjustments: number;
+  tax_treatment: {
+    tax_percentage: number;
+    tax_amount: number;
+    is_separate: boolean;
+    note?: string;
+  };
+  final_amount: number;
+  source_reference: {
+    annexure?: string;
+    printed_page?: number;
+    pdf_page?: number;
+    document_version?: string;
+    effective_date?: string;
+  };
+  validation_status: 'VALID' | 'VALID_WITH_WARNINGS' | 'REQUIRES_VERIFICATION' | 'INVALID';
+  warnings: string[];
+  assumptions: string[];
+  timestamp: string;
+}
+
+export interface BatchCalculateResponse {
+  session_id: string;
+  sor_version: string;
+  title: string;
+  project_id?: number;
+  lines: RateCalculateResponse[];
+  total_basic_amount: number;
+  total_adjustment_amount: number;
+  total_tax_amount: number;
+  grand_total_amount: number;
+  validation_status: string;
+  warnings_count: number;
+  timestamp: string;
+}
+
+export interface RateExportResponse {
+  export_id: string;
+  format: string;
+  filename: string;
+  content: string;
+  generated_at: string;
+}
+
+

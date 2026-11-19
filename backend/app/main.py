@@ -31,7 +31,7 @@ from app.routers import (
     engineering_quality_assets, land_utility, digital_office,
     notifications, calendar, messaging, connectivity, cm_dashboard,
     land_litigation, major_works_blockers, cridp_verification,
-    works_analytics, organisation_blueprint, sor_weci
+    works_analytics, organisation_blueprint, sor_weci, rate_calculator
 )
 
 # Initialize schema tables
@@ -125,6 +125,7 @@ app.include_router(cridp_verification.router, prefix=settings.API_V1_STR)
 app.include_router(works_analytics.router, prefix=settings.API_V1_STR)
 app.include_router(organisation_blueprint.router, prefix=settings.API_V1_STR)
 app.include_router(sor_weci.router, prefix=settings.API_V1_STR)
+app.include_router(rate_calculator.router, prefix=settings.API_V1_STR)
 
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():

@@ -3869,3 +3869,111 @@ class SoRBenchmarkSummaryOut(BaseModel):
     max_unit_rate: float
     road_class_breakdown: Dict[str, float]
     division_variances: List[Dict[str, Any]]
+
+
+# ==========================================
+# Material, Labour & Work Rate Calculator Schemas
+# ==========================================
+
+class RateCalculateRequest(BaseModel):
+    calculation_mode: str = "WORK"  # MATERIAL, LABOUR, WORK, EQUIPMENT, ROAD_FURNITURE, SURVEY_DPR, PLANTATION, QUANTITY, CONVEYANCE, COMBINED
+    item_code: Optional[str] = None
+    quantity: float = 1.0
+    unit: Optional[str] = None
+    workers_count: Optional[int] = None
+    days_count: Optional[float] = None
+    duration_hours: Optional[float] = None
+    length_m: Optional[float] = None
+    width_m: Optional[float] = None
+    thickness_mm: Optional[float] = None
+    lead_km: Optional[float] = None
+    lift_m: Optional[float] = None
+    terrain: Optional[str] = "PLAINS"  # PLAINS, HILLS
+    corporation_type: Optional[str] = "NONE"  # NONE, CHENNAI_32KM, MADURAI_CBE_HOSUR, OTHER_CORP
+    is_night_work: Optional[bool] = False
+    tender_night_clause: Optional[str] = None
+    is_bridge_work: Optional[bool] = False
+    bridge_cost_share_pct: Optional[float] = 0.0
+    structural_type: Optional[str] = "ROADWAY"
+    tax_percentage: Optional[float] = 18.0
+    apply_tax: Optional[bool] = False
+
+
+class RateCalculateResponse(BaseModel):
+    calculation_id: str
+    sor_version: str = "SOR-2026-27-V1"
+    item_code: Optional[str] = None
+    item_description: Optional[str] = None
+    official_unit: Optional[str] = None
+    source_rate: float = 0.0
+    input_quantity: float = 0.0
+    unit_conversions: Dict[str, Any] = {}
+    base_formula: str = ""
+    base_amount: float = 0.0
+    applied_rules: List[Dict[str, Any]] = []
+    excluded_rules: List[Dict[str, Any]] = []
+    total_adjustments: float = 0.0
+    tax_treatment: Dict[str, Any] = {}
+    final_amount: float = 0.0
+    source_reference: Dict[str, Any] = {}
+    validation_status: str = "VALID"  # VALID, VALID_WITH_WARNINGS, REQUIRES_VERIFICATION, INVALID
+    warnings: List[str] = []
+    assumptions: List[str] = []
+    timestamp: str = ""
+
+
+class BatchCalculateRequest(BaseModel):
+    session_id: Optional[str] = None
+    title: Optional[str] = "Rate Calculation Sheet"
+    project_id: Optional[int] = None
+    lines: List[RateCalculateRequest]
+
+
+class BatchCalculateResponse(BaseModel):
+    session_id: str
+    sor_version: str = "SOR-2026-27-V1"
+    title: str = "Rate Calculation Sheet"
+    project_id: Optional[int] = None
+    lines: List[RateCalculateResponse]
+    total_basic_amount: float
+    total_adjustment_amount: float
+    total_tax_amount: float
+    grand_total_amount: float
+    validation_status: str
+    warnings_count: int
+    timestamp: str
+
+
+class RateValidationRequest(BaseModel):
+    calculation_mode: str = "WORK"
+    item_code: Optional[str] = None
+    quantity: float
+    lead_km: Optional[float] = None
+    lift_m: Optional[float] = None
+    structural_type: Optional[str] = None
+    is_night_work: Optional[bool] = False
+    tender_night_clause: Optional[str] = None
+
+
+class RateValidationResponse(BaseModel):
+    is_valid: bool
+    status: str  # VALID, VALID_WITH_WARNINGS, REQUIRES_VERIFICATION, INVALID
+    errors: List[str] = []
+    warnings: List[str] = []
+    admissible_allowances: List[Dict[str, Any]] = []
+    inadmissible_allowances: List[Dict[str, Any]] = []
+
+
+class RateExportRequest(BaseModel):
+    format: str = "JSON"  # JSON, CSV, SUMMARY
+    session_id: Optional[str] = None
+    batch_data: BatchCalculateResponse
+
+
+class RateExportResponse(BaseModel):
+    export_id: str
+    format: str
+    filename: str
+    content: str
+    generated_at: str
+
