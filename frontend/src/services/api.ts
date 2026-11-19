@@ -186,8 +186,17 @@ import {
   RateCalculateRequest,
   RateCalculateResponse,
   BatchCalculateResponse,
-  RateExportResponse
+  RateExportResponse,
+  ReconciliationLineageItem,
+  SoRContractVariationItem,
+  SoRQCTestLinkItem,
+  BillValidationResultData
 } from '../types';
+import {
+  fallbackLineageData,
+  fallbackContractVariations,
+  fallbackQCTestLinks
+} from '../data/fallbackReconciliation';
 import {
   fallbackSoRVersions,
   fallbackSoRAllowanceRules,
@@ -6588,6 +6597,157 @@ export const rateCalculatorAPI = {
   }
 };
 
+export const reconciliationAPI = {
+  getLineage: async (projectId: number): Promise<ReconciliationLineageItem[]> => {
+    try {
+      return await request<ReconciliationLineageItem[]>(`/sor-weci/reconciliation/lineage/${projectId}`);
+    } catch {
+      const match = fallbackLineageData.filter(l => l.project_id === projectId);
+      return match.length > 0 ? match : fallbackLineageData;
+    }
+  },
+
+  getVariations: async (projectId: number): Promise<SoRContractVariationItem[]> => {
+    try {
+      return await request<SoRContractVariationItem[]>(`/sor-weci/reconciliation/variations/${projectId}`);
+    } catch {
+      const match = fallbackContractVariations.filter(v => v.project_id === projectId);
+      return match.length > 0 ? match : fallbackContractVariations;
+    }
+  },
+
+  createVariation: async (payload: {
+    project_id?: number;
+    estimate_id?: string;
+    item_code: string;
+    description: string;
+    unit: string;
+    original_sanctioned_qty: number;
+    proposed_revised_qty: number;
+    original_rate: number;
+    proposed_rate: number;
+    justification_code: string;
+    justification_details: string;
+    delegation_order_ref?: string;
+  }): Promise<SoRContractVariationItem> => {
+    try {
+      return await request<SoRContractVariationItem>('/sor-weci/reconciliation/variations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const qtyDelta = payload.proposed_revised_qty - payload.original_sanctioned_qty;
+      const rateDelta = payload.proposed_rate - payload.original_rate;
+      const revAmt = payload.proposed_revised_qty * payload.proposed_rate;
+      const origAmt = payload.original_sanctioned_qty * payload.original_rate;
+      const impactCr = Number(((revAmt - origAmt) / 10000000).toFixed(4));
+      const auth = Math.abs(impactCr) <= 0.50
+        ? "Divisional Engineer (DE) - Full Powers up to ₹50 Lakhs"
+        : (Math.abs(impactCr) <= 7.00
+          ? "Superintending Engineer (SE) - Powers up to ₹7.00 Crores"
+          : "Chief Engineer (CE) - Full Powers above ₹7.00 Crores");
+
+      const newVar: SoRContractVariationItem = {
+        id: `VAR-MOCK-${Date.now()}`,
+        project_id: payload.project_id || 1,
+        estimate_id: payload.estimate_id || "EST-2026-001",
+        variation_number: `VAR-2026-${Math.floor(100 + Math.random() * 900)}`,
+        item_code: payload.item_code,
+        description: payload.description,
+        unit: payload.unit,
+        original_sanctioned_qty: payload.original_sanctioned_qty,
+        proposed_revised_qty: payload.proposed_revised_qty,
+        qty_delta: qtyDelta,
+        original_rate: payload.original_rate,
+        proposed_rate: payload.proposed_rate,
+        rate_delta: rateDelta,
+        financial_impact_cr: impactCr,
+        justification_code: payload.justification_code,
+        justification_details: payload.justification_details,
+        approval_status: Math.abs(impactCr) > 0.50 ? "RECOMMENDED_SE" : "PENDING_DE_SCRUTINY",
+        delegation_order_ref: payload.delegation_order_ref || "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+        sanctioning_authority: auth,
+        created_at: new Date().toISOString()
+      };
+      return newVar;
+    }
+  },
+
+  getQCLinks: async (projectId: number): Promise<SoRQCTestLinkItem[]> => {
+    try {
+      return await request<SoRQCTestLinkItem[]>(`/sor-weci/reconciliation/qc-links/${projectId}`);
+    } catch {
+      const match = fallbackQCTestLinks.filter(q => q.project_id === projectId);
+      return match.length > 0 ? match : fallbackQCTestLinks;
+    }
+  },
+
+  validateBill: async (billId: string, payload: {
+    bill_id: string;
+    project_id?: number;
+    bill_number: string;
+    contractor_name: string;
+    billed_items: Array<{ item_code: string; quantity: number; rate: number }>;
+    total_basic_billed: number;
+    gst_claimed: number;
+  }): Promise<BillValidationResultData> => {
+    try {
+      return await request<BillValidationResultData>(`/sor-weci/reconciliation/bills/${billId}/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const spikes: any[] = [];
+      const dupes: any[] = [];
+      const seen = new Set<string>();
+
+      for (const it of payload.billed_items) {
+        if (seen.has(it.item_code)) {
+          dupes.push({
+            item_code: it.item_code,
+            reason: "Duplicate line item within same invoice voucher.",
+            severity: "CRITICAL"
+          });
+        }
+        seen.add(it.item_code);
+
+        if (it.item_code === 'W-0055' && it.rate > 95) {
+          spikes.push({
+            item_code: it.item_code,
+            billed_rate: it.rate,
+            canonical_sor_rate: 88.10,
+            excess_pct: Number((((it.rate - 88.10) / 88.10) * 100).toFixed(2)),
+            threshold_rule: "G.O.(Ms) No. 29 tender excess cap exceeded (>5%)"
+          });
+        }
+      }
+
+      const isValid = dupes.length === 0 && spikes.length === 0;
+      return {
+        is_valid: isValid,
+        status: isValid ? "PASSED" : (dupes.length > 0 ? "BLOCKED" : "WARNING"),
+        quantity_spikes: [],
+        rate_spikes: spikes,
+        duplicate_claims: dupes,
+        qc_clearance_status: "ALL_CLEAR",
+        reconciliation_summary: {
+          bill_id: billId,
+          bill_number: payload.bill_number,
+          items_checked: payload.billed_items.length,
+          total_basic_billed: payload.total_basic_billed,
+          gst_claimed: payload.gst_claimed,
+          flagged_issues_count: dupes.length + spikes.length
+        },
+        audit_notes: [
+          `Bill validation offline fallback check completed for ${payload.bill_number}.`,
+          `Flagged issues: ${dupes.length + spikes.length}.`
+        ]
+      };
+    }
+  }
+};
 
 export const fallbackGovernmentDocuments: GovernmentDocumentItem[] = [
   {

@@ -14,14 +14,18 @@ from app.database import get_db
 from app.models import (
     SoRVersion, SoRItem, SoRAllowanceRule, SoREstimate,
     SoREstimateLine, SoRBOQItem, SoRReconciliationEntry,
-    SoRAnomalyFinding, SoREvidenceLink, SoRAuditEvent, Project
+    SoRAnomalyFinding, SoREvidenceLink, SoRAuditEvent, Project,
+    SoRContractVariation, SoRQCTestLink
 )
 from app.schemas import (
     SoRVersionOut, SoRItemOut, SoRAllowanceRuleOut,
     SoREstimateCreate, SoREstimateOut, SoREstimateLineOut,
     SoRBOQItemOut, SoRReconciliationEntryOut,
     SoRAnomalyFindingOut, SoRAnomalyReviewPayload,
-    SoRAuditEventOut, SoRBenchmarkSummaryOut
+    SoRAuditEventOut, SoRBenchmarkSummaryOut,
+    SoRContractVariationCreate, SoRContractVariationOut,
+    SoRQCTestLinkOut, BillValidationRequest, BillValidationResult,
+    ReconciliationLineageOut, LineageNodeOut
 )
 from app.services.sor_calculation_service import SoRCalculationService
 
@@ -287,7 +291,7 @@ def generate_boq_from_estimate(estimate_id: str, db: Session = Depends(get_db)):
 
 
 # -------------------------------------------------------------
-# 3. Measurement Book (MB) & Reconciliation Endpoints (Screen 2 Tab 3)
+# 3. Measurement Book (MB), Variations & Billing Reconciliation Endpoints (Screen 4)
 # -------------------------------------------------------------
 
 @router.get("/reconciliation/{project_id}", response_model=List[SoRReconciliationEntryOut])
@@ -302,6 +306,287 @@ def get_project_reconciliation(project_id: int, db: Session = Depends(get_db)):
     if not entries:
         entries = db.query(SoRReconciliationEntry).all()
     return entries
+
+
+@router.get("/reconciliation/lineage/{project_id}", response_model=List[ReconciliationLineageOut])
+def get_reconciliation_lineage(project_id: int, db: Session = Depends(get_db)):
+    """
+    Fetches complete end-to-end traceability lineage:
+    SoR Item Master -> Sanctioned Estimate -> BOQ Schedule-A -> MB Recorded -> Contractor Billed
+    along with linked QC lab test certificates and approved variations.
+    """
+    proj = db.query(Project).filter(Project.id == project_id).first()
+    proj_name = proj.title if proj else f"Highways Project #{project_id}"
+
+    recon_entries = db.query(SoRReconciliationEntry).filter(
+        (SoRReconciliationEntry.project_id == project_id) | (SoRReconciliationEntry.project_id == None)
+    ).all()
+    if not recon_entries:
+        recon_entries = db.query(SoRReconciliationEntry).all()
+
+    variations = db.query(SoRContractVariation).filter(
+        (SoRContractVariation.project_id == project_id) | (SoRContractVariation.project_id == None)
+    ).all()
+
+    qc_links = db.query(SoRQCTestLink).filter(
+        (SoRQCTestLink.project_id == project_id) | (SoRQCTestLink.project_id == None)
+    ).all()
+
+    results = []
+    for entry in recon_entries:
+        item = db.query(SoRItem).filter(SoRItem.unique_code == entry.item_code).first()
+        base_rate = item.basic_rate if item else entry.boq_rate
+        desc = item.description if item else f"Highway item {entry.item_code}"
+        unit = item.unit_raw if item else "cum."
+
+        lineage_flow = [
+            LineageNodeOut(
+                stage="SOR_MASTER",
+                reference_id="SOR-2026-27-V1",
+                item_code=entry.item_code,
+                description=desc,
+                quantity=entry.boq_qty,
+                unit=unit,
+                rate=base_rate,
+                amount=round(entry.boq_qty * base_rate, 2),
+                status="OFFICIAL_GAZETTED",
+                timestamp="2026-11-13"
+            ),
+            LineageNodeOut(
+                stage="ESTIMATE",
+                reference_id=entry.estimate_id,
+                item_code=entry.item_code,
+                description=desc,
+                quantity=entry.boq_qty,
+                unit=unit,
+                rate=entry.boq_rate,
+                amount=round(entry.boq_qty * entry.boq_rate, 2),
+                status="SANCTIONED",
+                timestamp="2026-11-15"
+            ),
+            LineageNodeOut(
+                stage="BOQ",
+                reference_id=entry.boq_item_no,
+                item_code=entry.item_code,
+                description=desc,
+                quantity=entry.boq_qty,
+                unit=unit,
+                rate=entry.boq_rate,
+                amount=round(entry.boq_qty * entry.boq_rate, 2),
+                status="TENDER_AWARDED",
+                timestamp="2026-11-16"
+            ),
+            LineageNodeOut(
+                stage="MB",
+                reference_id=entry.mb_record_ref or "MB-PENDING",
+                item_code=entry.item_code,
+                description=desc,
+                quantity=entry.measured_qty,
+                unit=unit,
+                rate=entry.boq_rate,
+                amount=round(entry.measured_qty * entry.boq_rate, 2),
+                status="RECORDED_AT_SITE",
+                timestamp="2026-11-18"
+            ),
+            LineageNodeOut(
+                stage="BILL",
+                reference_id=entry.bill_voucher_no or "VOUCHER-DRAFT",
+                item_code=entry.item_code,
+                description=desc,
+                quantity=entry.billed_qty,
+                unit=unit,
+                rate=entry.billed_rate,
+                amount=round(entry.billed_qty * entry.billed_rate, 2),
+                status="PASSED" if entry.reconciliation_status == "MATCHED" else "VARIANCE_FLAGGED",
+                timestamp="2026-11-19"
+            )
+        ]
+
+        item_variations = [v for v in variations if v.item_code == entry.item_code]
+        item_qc = [q for q in qc_links if q.item_code == entry.item_code or q.reconciliation_id == entry.id]
+
+        verdict = entry.reconciliation_status
+        results.append(ReconciliationLineageOut(
+            project_id=project_id,
+            project_name=proj_name,
+            item_code=entry.item_code,
+            lineage_flow=lineage_flow,
+            qc_tests=[SoRQCTestLinkOut.model_validate(q) for q in item_qc],
+            variations=[SoRContractVariationOut.model_validate(v) for v in item_variations],
+            variance_percentage=entry.variance_pct,
+            reconciliation_verdict=verdict
+        ))
+
+    return results
+
+
+@router.get("/reconciliation/variations/{project_id}", response_model=List[SoRContractVariationOut])
+def get_contract_variations(project_id: int, db: Session = Depends(get_db)):
+    """Fetch all recorded contract variations and revised estimate lines for a project."""
+    vars_list = db.query(SoRContractVariation).filter(
+        (SoRContractVariation.project_id == project_id) | (SoRContractVariation.project_id == None)
+    ).order_by(SoRContractVariation.created_at.desc()).all()
+    if not vars_list:
+        vars_list = db.query(SoRContractVariation).all()
+    return vars_list
+
+
+@router.post("/reconciliation/variations", response_model=SoRContractVariationOut)
+def create_contract_variation(payload: SoRContractVariationCreate, db: Session = Depends(get_db)):
+    """
+    Submits a new contract variation / revised estimate line.
+    Enforces statutory justification and delegation-order approval routing.
+    """
+    qty_delta = payload.proposed_revised_qty - payload.original_sanctioned_qty
+    rate_delta = payload.proposed_rate - payload.original_rate
+    revised_amount = payload.proposed_revised_qty * payload.proposed_rate
+    original_amount = payload.original_sanctioned_qty * payload.original_rate
+    impact_cr = round((revised_amount - original_amount) / 10000000.0, 4)
+
+    # Determine sanctioning authority per G.O. (Ms) No. 11 w.e.f. 21.01.2022
+    if abs(impact_cr) <= 0.50:
+        authority = "Divisional Engineer (DE) - Full Powers up to ₹50 Lakhs"
+    elif abs(impact_cr) <= 7.00:
+        authority = "Superintending Engineer (SE) - Powers up to ₹7.00 Crores"
+    else:
+        authority = "Chief Engineer (CE) - Full Powers above ₹7.00 Crores"
+
+    var_id = f"VAR-{uuid.uuid4().hex[:8].upper()}"
+    variation = SoRContractVariation(
+        id=var_id,
+        project_id=payload.project_id,
+        estimate_id=payload.estimate_id,
+        variation_number=f"VAR-2026-{uuid.uuid4().hex[:4].upper()}",
+        item_code=payload.item_code,
+        description=payload.description,
+        unit=payload.unit,
+        original_sanctioned_qty=payload.original_sanctioned_qty,
+        proposed_revised_qty=payload.proposed_revised_qty,
+        qty_delta=qty_delta,
+        original_rate=payload.original_rate,
+        proposed_rate=payload.proposed_rate,
+        rate_delta=rate_delta,
+        financial_impact_cr=impact_cr,
+        justification_code=payload.justification_code,
+        justification_details=payload.justification_details,
+        approval_status="RECOMMENDED_SE" if abs(impact_cr) > 0.50 else "PENDING_DE_SCRUTINY",
+        delegation_order_ref=payload.delegation_order_ref or "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+        sanctioning_authority=authority,
+        created_at=datetime.datetime.utcnow()
+    )
+    db.add(variation)
+
+    # Write audit event
+    audit_evt = SoRAuditEvent(
+        id=f"AUDIT-{uuid.uuid4().hex[:8].upper()}",
+        event_time=datetime.datetime.utcnow(),
+        actor_username="divisional_engineer_chennai",
+        actor_role="Divisional Engineer",
+        jurisdiction="Chennai Construction & Maintenance",
+        action_type="CONTRACT_VARIATION_SUBMITTED",
+        target_entity_type="SoRContractVariation",
+        target_entity_id=var_id,
+        summary=f"Variation created for {payload.item_code}. Qty Delta: {qty_delta:+,.2f} {payload.unit}. Net impact: ₹{abs(impact_cr)*100:,.2f} Lakhs. Routing to {authority}."
+    )
+    db.add(audit_evt)
+
+    db.commit()
+    db.refresh(variation)
+    return variation
+
+
+@router.get("/reconciliation/qc-links/{project_id}", response_model=List[SoRQCTestLinkOut])
+def get_qc_test_links(project_id: int, db: Session = Depends(get_db)):
+    """Fetch QC equipment and laboratory test records associated with road items."""
+    links = db.query(SoRQCTestLink).filter(
+        (SoRQCTestLink.project_id == project_id) | (SoRQCTestLink.project_id == None)
+    ).order_by(SoRQCTestLink.tested_at.desc()).all()
+    if not links:
+        links = db.query(SoRQCTestLink).all()
+    return links
+
+
+@router.post("/reconciliation/bills/{bill_id}/validate", response_model=BillValidationResult)
+def validate_contractor_bill(bill_id: str, payload: BillValidationRequest, db: Session = Depends(get_db)):
+    """
+    Validates a contractor running account (RA) or final bill against:
+    1. Sanctioned BOQ rates (detecting rate inflations)
+    2. Measurement Book (MB) recorded quantities (detecting quantity spikes)
+    3. Duplicate material / labour / conveyance claims
+    4. QC lab clearance certificates
+    """
+    quantity_spikes = []
+    rate_spikes = []
+    duplicate_claims = []
+    audit_notes = []
+
+    seen_items = set()
+
+    for it in payload.billed_items:
+        code = it.get("item_code", "")
+        qty = float(it.get("quantity", 0.0))
+        rate = float(it.get("rate", 0.0))
+
+        if code in seen_items:
+            duplicate_claims.append({
+                "item_code": code,
+                "reason": "Duplicate line item billed within same invoice voucher.",
+                "severity": "CRITICAL"
+            })
+        seen_items.add(code)
+
+        # Look up canonical or BOQ item
+        sor_it = db.query(SoRItem).filter(SoRItem.unique_code == code).first()
+        canonical_rate = sor_it.basic_rate if sor_it else rate
+
+        if rate > canonical_rate * 1.05:  # more than 5% tender excess without CE/COT approval
+            rate_spikes.append({
+                "item_code": code,
+                "billed_rate": rate,
+                "canonical_sor_rate": canonical_rate,
+                "excess_pct": round(((rate - canonical_rate) / canonical_rate) * 100, 2),
+                "threshold_rule": "G.O.(Ms) No. 29 tender excess cap exceeded (>5%)"
+            })
+
+        # Check MB record
+        recon = db.query(SoRReconciliationEntry).filter(SoRReconciliationEntry.item_code == code).first()
+        if recon and qty > (recon.measured_qty * 1.02):  # billed > measured MB
+            quantity_spikes.append({
+                "item_code": code,
+                "billed_qty": qty,
+                "mb_measured_qty": recon.measured_qty,
+                "excess_qty": round(qty - recon.measured_qty, 2),
+                "violation": "Billed quantity exceeds Measurement Book (MB) recorded field measurement."
+            })
+
+    # QC checks
+    qc_fails = db.query(SoRQCTestLink).filter(SoRQCTestLink.compliance_status == "NON_CONFORMANCE_OPEN").all()
+    qc_status = "NON_CONFORMANCE_PENDING" if qc_fails else "ALL_CLEAR"
+    if qc_fails:
+        audit_notes.append(f"{len(qc_fails)} open Non-Conformance Reports (NCR) in engineering quality tests.")
+
+    is_valid = len(quantity_spikes) == 0 and len(rate_spikes) == 0 and len(duplicate_claims) == 0 and qc_status == "ALL_CLEAR"
+    status_str = "PASSED" if is_valid else ("BLOCKED" if duplicate_claims or quantity_spikes else "WARNING")
+
+    audit_notes.append(f"Bill validation executed for {payload.bill_number} (Contractor: {payload.contractor_name}). Verdict: {status_str}.")
+
+    return BillValidationResult(
+        is_valid=is_valid,
+        status=status_str,
+        quantity_spikes=quantity_spikes,
+        rate_spikes=rate_spikes,
+        duplicate_claims=duplicate_claims,
+        qc_clearance_status=qc_status,
+        reconciliation_summary={
+            "bill_id": bill_id,
+            "bill_number": payload.bill_number,
+            "items_checked": len(payload.billed_items),
+            "total_basic_billed": payload.total_basic_billed,
+            "gst_claimed": payload.gst_claimed,
+            "flagged_issues_count": len(quantity_spikes) + len(rate_spikes) + len(duplicate_claims)
+        },
+        audit_notes=audit_notes
+    )
 
 
 # -------------------------------------------------------------

@@ -9,7 +9,8 @@ from app.database import SessionLocal, engine, Base
 from app.models import (
     SoRVersion, SoRItem, SoRAllowanceRule, SoREstimate,
     SoREstimateLine, SoRBOQItem, SoRReconciliationEntry,
-    SoRAnomalyFinding, SoREvidenceLink, SoRAuditEvent, Project
+    SoRAnomalyFinding, SoREvidenceLink, SoRAuditEvent, Project,
+    SoRContractVariation, SoRQCTestLink
 )
 
 
@@ -745,6 +746,132 @@ def seed_sor_master_data(db: Session = None):
                 db.add(rc_obj)
         db.commit()
         print(f"[OK] Seeded Sample Reconciliation Entries (MB vs Billed)")
+
+        # 5b. Seed Contract Variations & Revised Estimate Lines
+        variations_data = [
+            {
+                "id": "VAR-2026-001",
+                "variation_number": "VAR-2026-001",
+                "item_code": "W-1001",
+                "description": "Dense Bituminous Macadam (DBM) 100mm Grade-II over Granular Sub-Base",
+                "unit": "cum.",
+                "original_sanctioned_qty": 350.0,
+                "proposed_revised_qty": 410.0,
+                "qty_delta": 60.0,
+                "original_rate": 8450.0,
+                "proposed_rate": 8450.0,
+                "rate_delta": 0.0,
+                "financial_impact_cr": 0.0507,
+                "justification_code": "SITE_CONDITION",
+                "justification_details": "Unforeseen subgrade soft soil pocket at km 14/400-14/600 requiring additional 60 cum DBM leveling course.",
+                "approval_status": "RECOMMENDED_SE",
+                "delegation_order_ref": "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+                "sanctioning_authority": "Superintending Engineer (SE) - Powers up to ₹7.00 Crores"
+            },
+            {
+                "id": "VAR-2026-002",
+                "variation_number": "VAR-2026-002",
+                "item_code": "W-0055",
+                "description": "Earthwork excavation in all soils SS20B including lead & lift",
+                "unit": "cum.",
+                "original_sanctioned_qty": 5000.0,
+                "proposed_revised_qty": 5800.0,
+                "qty_delta": 800.0,
+                "original_rate": 88.10,
+                "proposed_rate": 88.10,
+                "rate_delta": 0.0,
+                "financial_impact_cr": 0.0070,
+                "justification_code": "DRAINAGE_AUGMENTATION",
+                "justification_details": "Side drain widening to prevent waterlogging as recommended in field review.",
+                "approval_status": "SANCTIONED_DE",
+                "delegation_order_ref": "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+                "sanctioning_authority": "Divisional Engineer (DE) - Full Powers up to ₹50 Lakhs"
+            }
+        ]
+
+        for vd in variations_data:
+            existing_vd = db.query(SoRContractVariation).filter(SoRContractVariation.id == vd["id"]).first()
+            if not existing_vd:
+                v_obj = SoRContractVariation(
+                    id=vd["id"],
+                    project_id=proj_id,
+                    estimate_id="EST-2026-001",
+                    variation_number=vd["variation_number"],
+                    item_code=vd["item_code"],
+                    description=vd["description"],
+                    unit=vd["unit"],
+                    original_sanctioned_qty=vd["original_sanctioned_qty"],
+                    proposed_revised_qty=vd["proposed_revised_qty"],
+                    qty_delta=vd["qty_delta"],
+                    original_rate=vd["original_rate"],
+                    proposed_rate=vd["proposed_rate"],
+                    rate_delta=vd["rate_delta"],
+                    financial_impact_cr=vd["financial_impact_cr"],
+                    justification_code=vd["justification_code"],
+                    justification_details=vd["justification_details"],
+                    approval_status=vd["approval_status"],
+                    delegation_order_ref=vd["delegation_order_ref"],
+                    sanctioning_authority=vd["sanctioning_authority"],
+                    created_at=datetime.datetime.utcnow()
+                )
+                db.add(v_obj)
+        db.commit()
+        print(f"[OK] Seeded Sample Contract Variations")
+
+        # 5c. Seed QC Equipment & Lab Test Record Linkages
+        qc_data = [
+            {
+                "id": "QC-TEST-001",
+                "reconciliation_id": "RECON-001",
+                "item_code": "W-1001",
+                "test_type": "CORE_CUTTER_DENSITY",
+                "equipment_code": "QC-0001",
+                "morth_spec_clause": "MORTH Section 500 Cl. 505.4",
+                "sample_chainage": "km 14/250 - 14/350 LHS",
+                "lab_test_certificate_no": "QCL-CHN-2026-C042",
+                "test_result_value": "99.4% Field Density",
+                "required_benchmark": "Min 98.0% of Marshall Density",
+                "compliance_status": "COMPLIANT",
+                "qc_engineer_name": "Er. R. Murugan, AEE (QC)"
+            },
+            {
+                "id": "QC-TEST-002",
+                "reconciliation_id": "RECON-002",
+                "item_code": "B-201",
+                "test_type": "CONCRETE_COMPRESSIVE_STRENGTH_28D",
+                "equipment_code": "QC-0002",
+                "morth_spec_clause": "MORTH Section 1700 Table 1700-4",
+                "sample_chainage": "km 14/800 Deck Slab Pour-3",
+                "lab_test_certificate_no": "QCL-CHN-2026-C089",
+                "test_result_value": "39.8 MPa (28 Days)",
+                "required_benchmark": "Target Mean Strength >= 35.0 MPa",
+                "compliance_status": "COMPLIANT",
+                "qc_engineer_name": "Er. K. Shanmugam, AE (QC Lab)"
+            }
+        ]
+
+        for qd in qc_data:
+            existing_qd = db.query(SoRQCTestLink).filter(SoRQCTestLink.id == qd["id"]).first()
+            if not existing_qd:
+                q_obj = SoRQCTestLink(
+                    id=qd["id"],
+                    project_id=proj_id,
+                    reconciliation_id=qd["reconciliation_id"],
+                    item_code=qd["item_code"],
+                    test_type=qd["test_type"],
+                    equipment_code=qd["equipment_code"],
+                    morth_spec_clause=qd["morth_spec_clause"],
+                    sample_chainage=qd["sample_chainage"],
+                    lab_test_certificate_no=qd["lab_test_certificate_no"],
+                    test_result_value=qd["test_result_value"],
+                    required_benchmark=qd["required_benchmark"],
+                    compliance_status=qd["compliance_status"],
+                    qc_engineer_name=qd["qc_engineer_name"],
+                    tested_at=datetime.datetime.utcnow()
+                )
+                db.add(q_obj)
+        db.commit()
+        print(f"[OK] Seeded Sample QC Test Record Links")
 
         # 6. Seed 10-Point Structured Cost Anomaly Findings (Neutral Language)
         anomalies_data = [

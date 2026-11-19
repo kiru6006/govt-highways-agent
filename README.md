@@ -451,6 +451,16 @@ TOP HEADER UTILITY BAR
   * **Step-by-Step Calculation Breakdown**: 18-point transparent breakdown drawer detailing statutory citations, intermediate multipliers, and subtotal steps.
 * **Endpoints**: `GET /api/v1/sor/publications`, `GET /api/v1/sor/items`, `GET /api/v1/sor/items/{itemCode}`, `GET /api/v1/sor/rules`, `POST /api/v1/sor/calculate`, `POST /api/v1/sor/calculate-batch`, `POST /api/v1/sor/validate`, `POST /api/v1/sor/export`.
 
+#### 18e. MB, Variations & Billing Reconciliation (`#/reconciliation` & `#/sor-weci/reconciliation`)
+* **Target Audience**: Divisional Engineers, Assistant Executive Engineers, Accounts Officers, Quality Control Officers, Statutory Financial Auditors.
+* **Governing Statutory Framework**:
+  * **5-Stage Full Lineage Verification**: Trace every highway item through `SOR_MASTER` $\rightarrow$ `ESTIMATE` $\rightarrow$ `BOQ` $\rightarrow$ `MB` $\rightarrow$ `BILL` with real-time delta tracking.
+  * **G.O.(Ms) No. 11 Financial Delegation**: Automatic statutory routing of contract variations ($DE \le \text{₹}50\text{ Lakhs}$, $SE \le \text{₹}7.00\text{ Crores}$, $CE > \text{₹}7.00\text{ Crores}$).
+  * **MORTH Quality Gate Check**: Direct link to Annexure-IV QC equipment (`QC-0001` core cutter, `QC-0002` compression machine) and lab test certificates (MORTH Section 500, 1700).
+  * **G.O. 84 5-Year Renewal Guard**: Enforces statutory 5-year lock-in preventing duplicate or premature surface renewals.
+  * **Contractor RA Bill Pre-Audit Sandbox**: Live pre-check detecting duplicate line claims, rate spikes (>5% tender cap under G.O. 29), and unrecorded MB quantities prior to treasury voucher sign-off.
+* **Endpoints**: `GET /api/v1/sor-weci/reconciliation/{project_id}`, `GET /api/v1/sor-weci/reconciliation/lineage/{project_id}`, `GET /api/v1/sor-weci/reconciliation/variations/{project_id}`, `POST /api/v1/sor-weci/reconciliation/variations`, `GET /api/v1/sor-weci/reconciliation/qc-links/{project_id}`, `POST /api/v1/sor-weci/reconciliation/bills/{bill_id}/validate`.
+
 #### 19. Finance & Procurement (`#/finance`)
 * **Target Audience**: Accounts Officers, Financial Advisers, Tender Scrutiny Committees.
 * **Key Capabilities & How to Use**: Track Administrative Sanctions (AS), Technical Sanctions (TS), contractor running account (RA) bills, retention money, and Bank Guarantee (BG) expiry alerts.

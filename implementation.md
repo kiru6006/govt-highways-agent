@@ -17,6 +17,7 @@
 | **Phase 4** | Frontend UI: 3 Screens (`/sor-catalogue`, `/work-estimator`, `/cost-audit`) | **COMPLETED** | `SoRCataloguePage.tsx`, `WorkEstimatorPage.tsx`, `CostAuditPage.tsx`, `fallbackSoR.ts`, `Sidebar.tsx`, `App.tsx` |
 | **Phase 5** | Regression Verification, Documentation, Git Commit & Push | **COMPLETED** | `pytest` 100%, `tsc && vite build` (45s, 0 errors), `README.md`, Git commit & push |
 | **Phase 6** | Rate Calculator (`/rate-calculator`): 10 Modes, Pure Decimal Math, 25 Statutory Tests, Drawer Breakdown & Sheet | **COMPLETED** | `RateCalculatorPage.tsx`, `sor_calculation_service.py`, `rate_calculator.py`, `test_rate_calculator.py` (25/25 passing) |
+| **Phase 7** | PRICE2.md Phase 1: Dedicated Reconciliation & Variations Screen (`/reconciliation`): 5-Stage Lineage, G.O. 11 Variations Ledger, MORTH QC & G.O. 84 Gate | **COMPLETED** | `ReconciliationPage.tsx`, `SoRContractVariation`, `SoRQCTestLink`, `test_sor_weci.py` (19/19 passing) |
 
 ---
 
@@ -138,3 +139,35 @@
   - Mounted `/rate-calculator` in `frontend/src/App.tsx`.
   - Added Rate Calculator under Domain 4 in `frontend/src/components/Sidebar.tsx`.
   - Frontend production build verified (`tsc && vite build`: built in 18.38s with 0 errors).
+
+---
+
+## 6. Phase 7 PRICE2.md Phase 1: Dedicated Reconciliation & Variations Screen 4 (`/reconciliation`)
+- [x] **Database & Models (`backend/app/models.py`)**:
+  - `SoRContractVariation`: Project ID, Estimate ID, variation number, item code, original vs proposed revised qty, qty delta, original vs proposed rate, financial impact (₹ Cr), justification category, G.O. 11 delegation routing authority (`DE <= ₹50L`, `SE <= ₹7Cr`, `CE > ₹7Cr`).
+  - `SoRQCTestLink`: MORTH specification clauses, equipment codes (`QC-0001` core cutter, `QC-0002` compression machine), chainage location, lab test certificate number, test result vs benchmark, and compliance status.
+- [x] **Pydantic Schemas (`backend/app/schemas.py`)**:
+  - `SoRContractVariationCreate`, `SoRContractVariationOut`, `SoRQCTestLinkOut`, `BillValidationRequest`, `BillValidationResult`, `LineageNodeOut`, `ReconciliationLineageOut`.
+- [x] **FastAPI Router Endpoints (`backend/app/routers/sor_weci.py`)**:
+  - `GET /api/v1/sor-weci/reconciliation/{project_id}`
+  - `GET /api/v1/sor-weci/reconciliation/lineage/{project_id}`: Full 5-stage lineage flow (`SOR_MASTER` $\rightarrow$ `ESTIMATE` $\rightarrow$ `BOQ` $\rightarrow$ `MB` $\rightarrow$ `BILL`).
+  - `GET /api/v1/sor-weci/reconciliation/variations/{project_id}`
+  - `POST /api/v1/sor-weci/reconciliation/variations`: Submits contract variation with financial delegation routing under G.O. 11.
+  - `GET /api/v1/sor-weci/reconciliation/qc-links/{project_id}`
+  - `POST /api/v1/sor-weci/reconciliation/bills/{bill_id}/validate`: Checks duplicate line claims, rate spikes (>5% excess), and unrecorded MB quantities.
+- [x] **Seeded Test Data (`backend/app/seed_sor_2026_data.py`)**:
+  - Seeded contract variations `VAR-2026-001` (DBM leveling course, +60 cum, SE routing) and `VAR-2026-002` (Earthwork side drain, +800 cum, DE routing).
+  - Seeded QC lab test records `QC-TEST-001` (MORTH Section 500 Cl. 505.4, 99.4% density) and `QC-TEST-002` (MORTH Section 1700 Table 1700-4, 39.8 MPa strength).
+- [x] **Automated Tests (`backend/tests/test_sor_weci.py`)**:
+  - `test_16_reconciliation_lineage_traceability` (passes 100%)
+  - `test_17_contract_variation_delegation_routing` (passes 100%)
+  - `test_18_bill_validation_duplicate_and_spike_detection` (passes 100%)
+  - `test_19_qc_test_links_compliance` (passes 100%)
+- [x] **Frontend Screen (`frontend/src/pages/ReconciliationPage.tsx`)**:
+  - Tab 1: Estimate-to-Bill Lineage Explorer with interactive 5-stage progression card, lifecycle table, and live RA bill validation sandbox.
+  - Tab 2: Revised Estimates & Variations Ledger with "Propose Contract Variation" modal dialog and live G.O. 11 threshold calculator.
+  - Tab 3: Maintenance & QC Gate Check with MORTH equipment/lab records and G.O. 84 5-Year Surface Renewal Policy compliance badge.
+- [x] **Navigation & Production Build**:
+  - Mounted `/reconciliation` and `/sor-weci/reconciliation` in `frontend/src/App.tsx`.
+  - Added "MB & Bill Reconciliation" under Domain 4 in `frontend/src/components/Sidebar.tsx`.
+  - Verified frontend production build (`tsc && vite build`: built in 22.81s with 0 errors).

@@ -4752,4 +4752,103 @@ export interface RateExportResponse {
   generated_at: string;
 }
 
+export interface LineageNode {
+  stage: 'SOR_MASTER' | 'ESTIMATE' | 'BOQ' | 'MB' | 'BILL';
+  reference_id: string;
+  item_code: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  rate: number;
+  amount: number;
+  status: string;
+  timestamp?: string;
+}
+
+export interface SoRContractVariationItem {
+  id: string;
+  project_id?: number;
+  estimate_id?: string;
+  variation_number: string;
+  item_code: string;
+  description: string;
+  unit: string;
+  original_sanctioned_qty: number;
+  proposed_revised_qty: number;
+  qty_delta: number;
+  original_rate: number;
+  proposed_rate: number;
+  rate_delta: number;
+  financial_impact_cr: number;
+  justification_code: string;
+  justification_details: string;
+  approval_status: string;
+  delegation_order_ref: string;
+  sanctioning_authority?: string;
+  created_at: string;
+}
+
+export interface SoRQCTestLinkItem {
+  id: string;
+  project_id?: number;
+  reconciliation_id?: string;
+  item_code: string;
+  test_type: string;
+  equipment_code: string;
+  morth_spec_clause: string;
+  sample_chainage: string;
+  lab_test_certificate_no: string;
+  test_result_value: string;
+  required_benchmark: string;
+  compliance_status: string;
+  qc_engineer_name: string;
+  tested_at: string;
+}
+
+export interface ReconciliationLineageItem {
+  project_id: number;
+  project_name: string;
+  item_code: string;
+  lineage_flow: LineageNode[];
+  qc_tests: SoRQCTestLinkItem[];
+  variations: SoRContractVariationItem[];
+  variance_percentage: number;
+  reconciliation_verdict: string;
+}
+
+export interface BillValidationResultData {
+  is_valid: boolean;
+  status: string;
+  quantity_spikes: Array<{
+    item_code: string;
+    billed_qty: number;
+    mb_measured_qty: number;
+    excess_qty: number;
+    violation: string;
+  }>;
+  rate_spikes: Array<{
+    item_code: string;
+    billed_rate: number;
+    canonical_sor_rate: number;
+    excess_pct: number;
+    threshold_rule: string;
+  }>;
+  duplicate_claims: Array<{
+    item_code: string;
+    reason: string;
+    severity: string;
+  }>;
+  qc_clearance_status: string;
+  reconciliation_summary: {
+    bill_id: string;
+    bill_number: string;
+    items_checked: number;
+    total_basic_billed: number;
+    gst_claimed: number;
+    flagged_issues_count: number;
+  };
+  audit_notes: string[];
+}
+
+
 

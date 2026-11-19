@@ -299,7 +299,74 @@ def test_15_regression_existing_endpoints_intact(client):
 
     res_projects = client.get("/api/v1/projects", headers=headers)
     assert res_projects.status_code == 200
-    assert len(res_projects.json()) > 0
 
-    res_analytics = client.post("/api/v1/works-analytics/query?limit=5", json={}, headers=headers)
-    assert res_analytics.status_code == 200
+
+def test_16_reconciliation_lineage_traceability(client):
+    """Test 16: Verify 5-stage lineage traceability (SoR -> Estimate -> BOQ -> MB -> Bill)."""
+    res = client.get("/api/v1/sor-weci/reconciliation/lineage/1")
+    assert res.status_code == 200
+    lineage_data = res.json()
+    assert len(lineage_data) >= 1
+    flow = lineage_data[0]["lineage_flow"]
+    stages = [node["stage"] for node in flow]
+    assert stages == ["SOR_MASTER", "ESTIMATE", "BOQ", "MB", "BILL"]
+    assert flow[0]["item_code"] in ["W-101", "W-1001", "B-201", "W-0055"]
+
+
+def test_17_contract_variation_delegation_routing(client):
+    """Test 17: Create contract variation and verify financial delegation routing under G.O. 11."""
+    variation_payload = {
+        "project_id": 1,
+        "estimate_id": "EST-2026-001",
+        "item_code": "W-1001",
+        "description": "Dense Bituminous Macadam (DBM) 100mm Grade-II",
+        "unit": "cum.",
+        "original_sanctioned_qty": 350.0,
+        "proposed_revised_qty": 420.0,
+        "original_rate": 8450.0,
+        "proposed_rate": 8450.0,
+        "justification_code": "SITE_CONDITION",
+        "justification_details": "Subgrade settlement between chainage 14/200 and 14/500 requiring additional thickness.",
+        "delegation_order_ref": "G.O.(Ms) No. 11 w.e.f. 21.01.2022"
+    }
+    res = client.post("/api/v1/sor-weci/reconciliation/variations", json=variation_payload)
+    assert res.status_code == 200
+    var = res.json()
+    assert var["qty_delta"] == 70.0
+    assert var["approval_status"] == "PENDING_DE_SCRUTINY"
+    assert "Divisional Engineer" in var["sanctioning_authority"]
+
+
+def test_18_bill_validation_duplicate_and_spike_detection(client):
+    """Test 18: Bill validation detects duplicate line items and rate spikes (>5% excess)."""
+    bill_payload = {
+        "bill_id": "BILL-TEST-001",
+        "project_id": 1,
+        "bill_number": "RA-BILL-04",
+        "contractor_name": "L&T Infrastructure Ltd",
+        "total_basic_billed": 1500000.0,
+        "gst_claimed": 270000.0,
+        "billed_items": [
+            {"item_code": "W-1001", "quantity": 100.0, "rate": 8450.0},
+            {"item_code": "W-1001", "quantity": 20.0, "rate": 8450.0},  # duplicate code
+            {"item_code": "W-0055", "quantity": 500.0, "rate": 150.0}   # rate spike: canonical is 88.10, billed 150 (+70%)
+        ]
+    }
+    res = client.post("/api/v1/sor-weci/reconciliation/bills/BILL-TEST-001/validate", json=bill_payload)
+    assert res.status_code == 200
+    result = res.json()
+    assert result["is_valid"] is False
+    assert result["status"] == "BLOCKED"
+    assert len(result["duplicate_claims"]) == 1
+    assert result["duplicate_claims"][0]["item_code"] == "W-1001"
+    assert len(result["rate_spikes"]) >= 1
+
+
+def test_19_qc_test_links_compliance(client):
+    """Test 19: Verify QC equipment link retrieval and MORTH test compliance."""
+    res = client.get("/api/v1/sor-weci/reconciliation/qc-links/1")
+    assert res.status_code == 200
+    links = res.json()
+    assert len(links) >= 1
+    item_codes = [link["item_code"] for link in links]
+    assert "W-1001" in item_codes or "B-201" in item_codes

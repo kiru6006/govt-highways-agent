@@ -31,6 +31,7 @@ import { OrganisationIntelligencePage } from './pages/OrganisationIntelligencePa
 import { SoRCataloguePage } from './pages/SoRCataloguePage';
 import { RateCalculatorPage } from './pages/RateCalculatorPage';
 import { WorkEstimatorPage } from './pages/WorkEstimatorPage';
+import { ReconciliationPage } from './pages/ReconciliationPage';
 import { CostAuditPage } from './pages/CostAuditPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { CalendarPage } from './pages/CalendarPage';
@@ -100,6 +101,8 @@ const AppLayout: React.FC = () => {
             <Route path="/sor-catalogue" element={<SoRCataloguePage />} />
             <Route path="/rate-calculator" element={<RateCalculatorPage />} />
             <Route path="/work-estimator" element={<WorkEstimatorPage />} />
+            <Route path="/reconciliation" element={<ReconciliationPage />} />
+            <Route path="/sor-weci/reconciliation" element={<ReconciliationPage />} />
             <Route path="/cost-audit" element={<CostAuditPage />} />
             <Route path="/cridp-risk-intelligence" element={<CRIDPRiskIntelligencePage />} />
             <Route path="/cridp-verification" element={<CRIDPRiskIntelligencePage />} />

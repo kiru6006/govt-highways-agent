@@ -3399,3 +3399,50 @@ class CalculationAudit(Base):
     result_summary = Column(Text, nullable=False)
     validation_status = Column(String(50), nullable=False)
     ip_address = Column(String(50), nullable=True)
+
+
+class SoRContractVariation(Base):
+    """Contract Variation & Revised Estimate Record."""
+    __tablename__ = "sor_contract_variations"
+
+    id = Column(String(100), primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    estimate_id = Column(String(100), ForeignKey("sor_estimates.id"), nullable=True, index=True)
+    variation_number = Column(String(50), unique=True, index=True, nullable=False)  # VAR-2026-001
+    item_code = Column(String(50), nullable=False)
+    description = Column(Text, nullable=False)
+    unit = Column(String(50), nullable=False)
+    original_sanctioned_qty = Column(Float, default=0.0)
+    proposed_revised_qty = Column(Float, default=0.0)
+    qty_delta = Column(Float, default=0.0)
+    original_rate = Column(Float, default=0.0)
+    proposed_rate = Column(Float, default=0.0)
+    rate_delta = Column(Float, default=0.0)
+    financial_impact_cr = Column(Float, default=0.0)
+    justification_code = Column(String(50), nullable=False)  # SITE_CONDITION, GEOTECHNICAL_REVISION, MORTH_SPEC_UPGRADE, DRAINAGE_AUGMENTATION
+    justification_details = Column(Text, nullable=False)
+    approval_status = Column(String(50), default="PENDING_DE_SCRUTINY", index=True)  # PENDING_DE_SCRUTINY, RECOMMENDED_SE, SANCTIONED_CE, REJECTED
+    delegation_order_ref = Column(String(100), default="G.O.(Ms) No. 11 w.e.f. 21.01.2022")
+    sanctioning_authority = Column(String(100), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SoRQCTestLink(Base):
+    """QC Equipment & Material Laboratory Test Record Linkage."""
+    __tablename__ = "sor_qc_test_links"
+
+    id = Column(String(100), primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    reconciliation_id = Column(String(100), ForeignKey("sor_reconciliation_entries.id"), nullable=True, index=True)
+    item_code = Column(String(50), nullable=False)
+    test_type = Column(String(100), nullable=False)  # CONCRETE_COMPRESSIVE_STRENGTH_28D, CORE_CUTTER_DENSITY, BITUMEN_EXTRACTION_GRADATION
+    equipment_code = Column(String(50), nullable=False)  # QC-0001, QC-0002
+    morth_spec_clause = Column(String(100), nullable=False)  # MORTH Section 1700 / 1800 / 900
+    sample_chainage = Column(String(100), nullable=False)  # km 14/200 - 14/800
+    lab_test_certificate_no = Column(String(100), nullable=False)
+    test_result_value = Column(String(100), nullable=False)
+    required_benchmark = Column(String(100), nullable=False)
+    compliance_status = Column(String(50), default="COMPLIANT", index=True)  # COMPLIANT, NON_CONFORMANCE_OPEN, PASSED_WITH_OBSERVATION
+    qc_engineer_name = Column(String(150), nullable=False)
+    tested_at = Column(DateTime, default=datetime.datetime.utcnow)
+

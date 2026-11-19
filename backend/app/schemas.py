@@ -3977,3 +3977,110 @@ class RateExportResponse(BaseModel):
     content: str
     generated_at: str
 
+
+class SoRContractVariationCreate(BaseModel):
+    project_id: Optional[int] = None
+    estimate_id: Optional[str] = None
+    item_code: str
+    description: str
+    unit: str
+    original_sanctioned_qty: float
+    proposed_revised_qty: float
+    original_rate: float
+    proposed_rate: float
+    justification_code: str
+    justification_details: str
+    delegation_order_ref: Optional[str] = "G.O.(Ms) No. 11 w.e.f. 21.01.2022"
+
+
+class SoRContractVariationOut(BaseModel):
+    id: str
+    project_id: Optional[int] = None
+    estimate_id: Optional[str] = None
+    variation_number: str
+    item_code: str
+    description: str
+    unit: str
+    original_sanctioned_qty: float
+    proposed_revised_qty: float
+    qty_delta: float
+    original_rate: float
+    proposed_rate: float
+    rate_delta: float
+    financial_impact_cr: float
+    justification_code: str
+    justification_details: str
+    approval_status: str
+    delegation_order_ref: str
+    sanctioning_authority: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SoRQCTestLinkOut(BaseModel):
+    id: str
+    project_id: Optional[int] = None
+    reconciliation_id: Optional[str] = None
+    item_code: str
+    test_type: str
+    equipment_code: str
+    morth_spec_clause: str
+    sample_chainage: str
+    lab_test_certificate_no: str
+    test_result_value: str
+    required_benchmark: str
+    compliance_status: str
+    qc_engineer_name: str
+    tested_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class BillValidationRequest(BaseModel):
+    bill_id: str
+    project_id: Optional[int] = None
+    bill_number: str
+    contractor_name: str
+    billed_items: List[Dict[str, Any]]
+    total_basic_billed: float
+    gst_claimed: float
+
+
+class BillValidationResult(BaseModel):
+    is_valid: bool
+    status: str  # PASSED, WARNING, BLOCKED
+    quantity_spikes: List[Dict[str, Any]] = []
+    rate_spikes: List[Dict[str, Any]] = []
+    duplicate_claims: List[Dict[str, Any]] = []
+    qc_clearance_status: str = "ALL_CLEAR"
+    reconciliation_summary: Dict[str, Any]
+    audit_notes: List[str] = []
+
+
+class LineageNodeOut(BaseModel):
+    stage: str  # SOR_MASTER, ESTIMATE, BOQ, MB, BILL
+    reference_id: str
+    item_code: str
+    description: str
+    quantity: float
+    unit: str
+    rate: float
+    amount: float
+    status: str
+    timestamp: Optional[str] = None
+
+
+class ReconciliationLineageOut(BaseModel):
+    project_id: int
+    project_name: str
+    item_code: str
+    lineage_flow: List[LineageNodeOut]
+    qc_tests: List[SoRQCTestLinkOut] = []
+    variations: List[SoRContractVariationOut] = []
+    variance_percentage: float
+    reconciliation_verdict: str  # NORMAL, RATE_SPIKE, QUANTITY_SPIKE, UNAPPROVED_VARIATION
+
+
