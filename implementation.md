@@ -18,6 +18,10 @@
 | **Phase 5** | Regression Verification, Documentation, Git Commit & Push | **COMPLETED** | `pytest` 100%, `tsc && vite build` (45s, 0 errors), `README.md`, Git commit & push |
 | **Phase 6** | Rate Calculator (`/rate-calculator`): 10 Modes, Pure Decimal Math, 25 Statutory Tests, Drawer Breakdown & Sheet | **COMPLETED** | `RateCalculatorPage.tsx`, `sor_calculation_service.py`, `rate_calculator.py`, `test_rate_calculator.py` (25/25 passing) |
 | **Phase 7** | PRICE2.md Phase 1: Dedicated Reconciliation & Variations Screen (`/reconciliation`): 5-Stage Lineage, G.O. 11 Variations Ledger, MORTH QC & G.O. 84 Gate | **COMPLETED** | `ReconciliationPage.tsx`, `SoRContractVariation`, `SoRQCTestLink`, `test_sor_weci.py` (19/19 passing) |
+| **Phase 8** | PRICE2.md Phase 2: Approvals Queue & Statutory Delegation Matrix Screen 5 (`/approvals-audit`): G.O. 11 & G.O. 29 | **COMPLETED** | `ApprovalsAuditPage.tsx`, `SoRApprovalTask`, `SoRDelegationRule`, `test_20`, `test_21` passing |
+| **Phase 9** | PRICE2.md Phase 3: Bounded AI Investigation Assist (`FR-09`, `UC-32`): Cited PDF page, non-binding advice & disclaimer | **COMPLETED** | `/ai/investigate-finding`, `test_22` passing, drawer integrated in Approvals and Cost Audit screens |
+| **Phase 10** | PRICE2.md Phase 4: SoR Ingestion & Document Parser Workbench Screen 6 (`/sor-ingestion`): PDF page range, OCR scrutiny, side-by-side editor & publish gate | **COMPLETED** | `SoRIngestionPage.tsx`, `SoRIngestionJob`, `SoRStagedItem`, `SoRIngestionDiscrepancy`, `test_23` passing |
+| **Phase 11** | PRICE2.md Phase 5: Navigation, Transfer CTA from Rate Calculator to Work Estimator, 23/23 tests passing, production build verified | **COMPLETED** | Full suite regression pass (23/23 in `test_sor_weci.py`, 25/25 in `test_rate_calculator.py`), `tsc && vite build` (11.32s, 0 errors) |
 
 ---
 
@@ -171,3 +175,50 @@
   - Mounted `/reconciliation` and `/sor-weci/reconciliation` in `frontend/src/App.tsx`.
   - Added "MB & Bill Reconciliation" under Domain 4 in `frontend/src/components/Sidebar.tsx`.
   - Verified frontend production build (`tsc && vite build`: built in 22.81s with 0 errors).
+
+---
+
+## 7. PRICE2.md Phases 2, 3, 4 & 5 Implementation Details
+
+### A. Screen 5: Approvals Queue & Statutory Delegation Matrix (`/approvals-audit`)
+- **Database Models (`backend/app/models.py`)**:
+  - `SoRApprovalTask`: Stores tasks for technical sanction, contract variations, rate exceptions, and bill payment clearances with statutory tier tagging (`DE`, `SE`, `CE`, `COT_FINANCE`).
+  - `SoRDelegationRule`: Codifies statutory delegation rules under G.O. (Ms) No. 11 dt 21.01.2022 (Technical Sanction: DE $\le \text{₹}50\text{L}$, SE $\le \text{₹}7.00\text{Cr}$, CE $> \text{₹}7.00\text{Cr}$) and G.O. (Ms) No. 29 dt 03.03.2022 (Tender Excess: DE 0% up to ₹50L, SE 5% up to ₹1.00 Cr, CE 0% up to ₹6.00 Cr, COT 10% up to ₹100.00 Cr).
+- **FastAPI Endpoints (`backend/app/routers/sor_weci.py`)**:
+  - `GET /api/v1/sor-weci/approvals`: Filterable approval tasks queue.
+  - `POST /api/v1/sor-weci/approvals/{task_id}/decision`: Executes statutory approval, return for correction, or escalation, creating an append-only WORM audit record.
+  - `GET /api/v1/sor-weci/delegation-matrix`: Codified statutory delegation rules table.
+- **Frontend Screen (`frontend/src/pages/ApprovalsAuditPage.tsx`)**:
+  - Tab 1: Pending Approvals Queue with authority tier filters and "Execute Decision" modal.
+  - Tab 2: Statutory Delegation Matrix table showing official limits and mandatory conditions.
+  - Tab 3: Immutable Append-Only WORM Audit Trail displaying officer cadres and change summaries.
+
+### B. Bounded AI Investigation Assist (FR-09, UC-32)
+- **FastAPI Endpoint (`backend/app/routers/sor_weci.py`)**:
+  - `POST /api/v1/sor-weci/ai/investigate-finding`: Grounded strictly in Tamil Nadu SoR 2026–2027 Volume I and G.O. 11/29. Returns `notice_badge: "AI-Assisted (Verify Before Approval)"`, exact source PDF page and printed page citations, and statutory disclaimer. Pure calculations and authoritative decisions remain 100% deterministic and non-delegable to AI.
+- **Frontend Slide-Over Drawer**:
+  - Embedded in both `ApprovalsAuditPage.tsx` and `CostAuditPage.tsx` with one-click trigger.
+
+### C. Screen 6: SoR Ingestion & Document Parser Workbench (`/sor-ingestion`)
+- **Database Models (`backend/app/models.py`)**:
+  - `SoRIngestionJob`: Ingestion jobs for official SoR schedules with page ranges (`311-352`), extraction progress, and publication status.
+  - `SoRStagedItem`: Extracted items staged for human scrutiny, rate confirmation, and canonical unit verification.
+  - `SoRIngestionDiscrepancy`: Flags G.O.-referenced items (`M-0127`, `M-0128`, `M-2853`) and OCR ambiguities that must be resolved prior to publication.
+- **FastAPI Endpoints (`backend/app/routers/sor_weci.py`)**:
+  - `GET /api/v1/sor-weci/ingestion/jobs`, `POST /api/v1/sor-weci/ingestion/jobs`
+  - `GET /api/v1/sor-weci/ingestion/jobs/{id}/staged-items`
+  - `PATCH /api/v1/sor-weci/ingestion/staged-items/{item_id}`
+  - `GET /api/v1/sor-weci/ingestion/jobs/{id}/discrepancies`
+  - `POST /api/v1/sor-weci/ingestion/jobs/{id}/publish`: Hard gate blocking publication if open discrepancies exist.
+- **Frontend Screen (`frontend/src/pages/SoRIngestionPage.tsx`)**:
+  - Source PDF schedule viewer with printed pages 311–352 reference.
+  - Parser extraction confidence score cards and open discrepancies alert.
+  - Side-by-side row editor with modal scrutiny for rates and units.
+  - Statutory publication gate modal with data steward authorization.
+
+### D. Phase 5 Navigation & Transfer Integration
+- Connected "Transfer to Estimate / BOQ" in `RateCalculatorPage.tsx` to automatically package active calculation sheet items and navigate to `/work-estimator`.
+- Registered routes `/approvals-audit` and `/sor-ingestion` in `App.tsx` and sidebar navigation links in `Sidebar.tsx`.
+- Automated tests expanded to 23 comprehensive tests in `test_sor_weci.py` (all passing).
+- Verified production frontend build (`npm run build`: 0 errors).
+

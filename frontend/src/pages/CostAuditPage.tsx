@@ -14,13 +14,15 @@ import {
   Check,
   X,
   History,
-  Lock
+  Lock,
+  Bot
 } from 'lucide-react';
-import { sorAPI } from '../services/api';
+import { sorAPI, approvalsAPI } from '../services/api';
 import {
   SoRBenchmarkItem,
   SoRAnomalyFinding,
-  SoRAuditEvent
+  SoRAuditEvent,
+  AIInvestigateFindingResponse
 } from '../types';
 
 export const CostAuditPage: React.FC = () => {
@@ -35,6 +37,29 @@ export const CostAuditPage: React.FC = () => {
   const [reviewDisposition, setReviewDisposition] = useState<string>('JUSTIFIED');
   const [reviewNotes, setReviewNotes] = useState<string>('');
   const [isSubmittingReview, setIsSubmittingReview] = useState<boolean>(false);
+
+  // AI Investigation Assist Drawer State (Phase 3 FR-09)
+  const [aiDrawerOpen, setAiDrawerOpen] = useState<boolean>(false);
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [aiResponse, setAiResponse] = useState<AIInvestigateFindingResponse | null>(null);
+
+  const handleTriggerAIAssist = async (finding: SoRAnomalyFinding) => {
+    setAiDrawerOpen(true);
+    setAiLoading(true);
+    try {
+      const res = await approvalsAPI.aiInvestigate({
+        finding_id: String(finding.id),
+        item_code: finding.item_code,
+        context_type: finding.finding_type,
+        query: `Investigate ${finding.title} for item ${finding.item_code || 'N/A'}`
+      });
+      setAiResponse(res);
+    } catch (err) {
+      console.error('AI investigation failed:', err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   useEffect(() => {
     loadData();
@@ -291,6 +316,13 @@ export const CostAuditPage: React.FC = () => {
                       Status: {f.current_status}
                     </span>
                     <button
+                      onClick={() => handleTriggerAIAssist(f)}
+                      className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
+                    >
+                      <Bot className="w-3.5 h-3.5" />
+                      AI Assist
+                    </button>
+                    <button
                       onClick={() => handleOpenReview(f)}
                       className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                     >
@@ -468,6 +500,93 @@ export const CostAuditPage: React.FC = () => {
               >
                 <Check className="w-4 h-4" />
                 {isSubmittingReview ? 'Recording Audit...' : 'Confirm Disposition'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Investigation Assist Slide-over Drawer (Phase 3 FR-09) */}
+      {aiDrawerOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/40 flex justify-end">
+          <div className="bg-white w-full max-w-md h-full shadow-2xl p-6 overflow-y-auto flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-sm">AI Investigation Assist</h3>
+                    <p className="text-[11px] text-gray-500">Tamil Nadu SoR 2026–2027 Volume I Grounded</p>
+                  </div>
+                </div>
+                <button onClick={() => setAiDrawerOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Strict Notice Badge */}
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-2.5 flex items-center gap-2 text-xs font-bold text-purple-800">
+                <AlertTriangle className="w-4 h-4 text-purple-600 shrink-0" />
+                AI-Assisted (Verify Before Approval)
+              </div>
+
+              {aiLoading ? (
+                <div className="py-12 text-center space-y-3">
+                  <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                  <p className="text-xs text-gray-500 font-medium">
+                    Querying codified clauses from SoR Volume I & G.O. 11/29...
+                  </p>
+                </div>
+              ) : aiResponse ? (
+                <div className="space-y-4 text-xs">
+                  <div>
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Investigation Summary</span>
+                    <p className="text-gray-800 mt-1 leading-relaxed bg-gray-50 p-2.5 rounded border border-gray-200">
+                      {aiResponse.investigation_summary}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Probable Root Cause</span>
+                    <p className="text-amber-800 mt-1 leading-relaxed bg-amber-50/50 p-2.5 rounded border border-amber-200">
+                      {aiResponse.probable_root_cause}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Exact Document Citation</span>
+                    <div className="mt-1 bg-indigo-50/70 p-2.5 rounded border border-indigo-200 text-indigo-900 space-y-1">
+                      <div className="font-bold">{aiResponse.applicable_statute_citation}</div>
+                      <div className="text-[11px] text-indigo-700 flex items-center gap-3">
+                        <span>Printed Page: <strong>{aiResponse.printed_page}</strong></span>
+                        <span>Source PDF Page: <strong>{aiResponse.source_pdf_page}</strong></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Recommended Remedial Action</span>
+                    <p className="text-emerald-800 mt-1 leading-relaxed bg-emerald-50/50 p-2.5 rounded border border-emerald-200 font-medium">
+                      {aiResponse.recommended_remedial_action}
+                    </p>
+                  </div>
+
+                  {/* Mandatory Statutory Disclaimer */}
+                  <div className="bg-gray-100 p-3 rounded text-[10px] text-gray-500 leading-normal border border-gray-200">
+                    <strong>Statutory Disclaimer:</strong> {aiResponse.statutory_disclaimer}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="pt-4 border-t">
+              <button
+                onClick={() => setAiDrawerOpen(false)}
+                className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg"
+              >
+                Close Investigation Assist
               </button>
             </div>
           </div>

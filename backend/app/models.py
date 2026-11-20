@@ -3446,3 +3446,99 @@ class SoRQCTestLink(Base):
     qc_engineer_name = Column(String(150), nullable=False)
     tested_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+
+class SoRApprovalTask(Base):
+    """Approval Tasks & Workflow Exception Queue."""
+    __tablename__ = "sor_approval_tasks"
+
+    id = Column(String(100), primary_key=True, index=True)
+    task_code = Column(String(50), unique=True, index=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    entity_type = Column(String(50), index=True, nullable=False)  # ESTIMATE, VARIATION, RATE_EXCEPTION, BILL_VOUCHER
+    entity_id = Column(String(100), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    amount_involved_cr = Column(Float, default=0.0)
+    delegation_tier = Column(String(100), nullable=False)  # AEE, DE, SE, CE, COT_FINANCE
+    delegation_statute = Column(String(150), nullable=False)  # G.O.(Ms) No. 11 or G.O.(Ms) No. 29
+    required_role = Column(String(100), nullable=False)
+    submitted_by = Column(String(150), nullable=False)
+    status = Column(String(50), default="PENDING", index=True)  # PENDING, APPROVED, RETURNED_FOR_CORRECTION, ESCALATED
+    decision_notes = Column(Text, nullable=True)
+    decided_by = Column(String(150), nullable=True)
+    decided_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SoRDelegationRule(Base):
+    """Statutory Delegation of Powers Master Matrix."""
+    __tablename__ = "sor_delegation_rules"
+
+    id = Column(String(100), primary_key=True, index=True)
+    rule_code = Column(String(50), unique=True, index=True, nullable=False)
+    statute_reference = Column(String(150), nullable=False)  # G.O.(Ms) No. 11 dt 21.01.2022
+    delegation_category = Column(String(100), index=True, nullable=False)  # TECHNICAL_SANCTION, TENDER_ACCEPTANCE, VARIATION_SANCTION, TANSHA_CORRIDOR
+    officer_cadre = Column(String(100), nullable=False)
+    monetary_limit_cr = Column(Float, nullable=False)  # 0.50, 7.00, 100.00
+    percentage_excess_limit = Column(Float, default=0.0)  # 0.0, 5.0, 10.0
+    jurisdiction_scope = Column(String(100), default="Statewide Highways")
+    mandatory_conditions = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=True)
+
+
+class SoRIngestionJob(Base):
+    """Document Ingestion & Parser Jobs for Official SoR Schedules."""
+    __tablename__ = "sor_ingestion_jobs"
+
+    id = Column(String(100), primary_key=True, index=True)
+    job_code = Column(String(50), unique=True, index=True, nullable=False)
+    sor_version_id = Column(String(50), ForeignKey("sor_versions.id"), nullable=True)
+    file_name = Column(String(255), nullable=False)
+    source_url_or_path = Column(String(500), nullable=False)
+    page_range = Column(String(100), default="311-352")
+    status = Column(String(50), default="STAGED", index=True)  # PROCESSING, STAGED, PUBLISHED, FAILED
+    total_pages = Column(Integer, default=42)
+    total_items_extracted = Column(Integer, default=0)
+    confidence_score_pct = Column(Float, default=94.5)
+    effective_date = Column(DateTime, nullable=True)
+    published_at = Column(DateTime, nullable=True)
+    published_by = Column(String(150), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class SoRStagedItem(Base):
+    """Extracted SoR Items Staged for Scrutiny and Discrepancy Resolution."""
+    __tablename__ = "sor_staged_items"
+
+    id = Column(String(100), primary_key=True, index=True)
+    job_id = Column(String(100), ForeignKey("sor_ingestion_jobs.id"), nullable=False, index=True)
+    unique_code = Column(String(50), index=True, nullable=False)
+    category = Column(String(100), nullable=False)
+    item_description = Column(Text, nullable=False)
+    unit_raw = Column(String(50), nullable=False)
+    basic_rate = Column(Float, nullable=False)
+    printed_page = Column(Integer, nullable=False)
+    pdf_page = Column(Integer, nullable=False)
+    extraction_confidence_pct = Column(Float, default=98.0)
+    has_discrepancy = Column(Boolean, default=False)
+    discrepancy_notes = Column(Text, nullable=True)
+    is_verified = Column(Boolean, default=False)
+    verified_by = Column(String(150), nullable=True)
+
+
+class SoRIngestionDiscrepancy(Base):
+    """Low-confidence or G.O.-dependent items requiring explicit steward sign-off."""
+    __tablename__ = "sor_ingestion_discrepancies"
+
+    id = Column(String(100), primary_key=True, index=True)
+    job_id = Column(String(100), ForeignKey("sor_ingestion_jobs.id"), nullable=False, index=True)
+    staged_item_id = Column(String(100), ForeignKey("sor_staged_items.id"), nullable=False, index=True)
+    discrepancy_type = Column(String(100), nullable=False)  # GO_REFERENCE_REQUIRED, OCR_AMBIGUITY, UNIT_ANOMALY
+    field_name = Column(String(100), nullable=False)
+    extracted_value = Column(String(255), nullable=True)
+    flagged_issue = Column(Text, nullable=False)
+    resolution_status = Column(String(50), default="OPEN", index=True)  # OPEN, RESOLVED, WAIVED
+    resolved_value = Column(String(255), nullable=True)
+    resolved_by = Column(String(150), nullable=True)
+
+

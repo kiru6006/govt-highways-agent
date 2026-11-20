@@ -4084,3 +4084,140 @@ class ReconciliationLineageOut(BaseModel):
     reconciliation_verdict: str  # NORMAL, RATE_SPIKE, QUANTITY_SPIKE, UNAPPROVED_VARIATION
 
 
+class SoRApprovalTaskOut(BaseModel):
+    id: str
+    task_code: str
+    project_id: Optional[int] = None
+    entity_type: str
+    entity_id: str
+    title: str
+    description: str
+    amount_involved_cr: float
+    delegation_tier: str
+    delegation_statute: str
+    required_role: str
+    submitted_by: str
+    status: str
+    decision_notes: Optional[str] = None
+    decided_by: Optional[str] = None
+    decided_at: Optional[datetime.datetime] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SoRApprovalDecisionPayload(BaseModel):
+    decision: str  # APPROVED, RETURNED_FOR_CORRECTION, ESCALATED
+    decision_notes: str
+    officer_name: str
+    officer_role: str
+
+
+class SoRDelegationRuleOut(BaseModel):
+    id: str
+    rule_code: str
+    statute_reference: str
+    delegation_category: str
+    officer_cadre: str
+    monetary_limit_cr: float
+    percentage_excess_limit: float
+    jurisdiction_scope: str
+    mandatory_conditions: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class AIInvestigateRequest(BaseModel):
+    finding_id: Optional[str] = None
+    item_code: Optional[str] = None
+    context_type: str = "COST_ANOMALY"  # COST_ANOMALY, RATE_VARIANCE, STATUTORY_ALLOWANCE
+    query: Optional[str] = None
+
+
+class AIInvestigateResponse(BaseModel):
+    is_ai_assisted: bool = True
+    notice_badge: str = "AI-Assisted (Verify Before Approval)"
+    investigation_summary: str
+    probable_root_cause: str
+    applicable_statute_citation: str
+    source_pdf_page: int
+    printed_page: int
+    recommended_remedial_action: str
+    statutory_disclaimer: str = "This analysis is advisory and based on Tamil Nadu SoR 2026-2027 Volume I. Authoritative financial decisions remain governed by statutory delegation orders."
+    timestamp: str
+
+
+class SoRIngestionJobOut(BaseModel):
+    id: str
+    job_code: str
+    sor_version_id: Optional[str] = None
+    file_name: str
+    source_url_or_path: str
+    page_range: str
+    status: str
+    total_pages: int
+    total_items_extracted: int
+    confidence_score_pct: float
+    effective_date: Optional[datetime.datetime] = None
+    published_at: Optional[datetime.datetime] = None
+    published_by: Optional[str] = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SoRStagedItemOut(BaseModel):
+    id: str
+    job_id: str
+    unique_code: str
+    category: str
+    item_description: str
+    unit_raw: str
+    basic_rate: float
+    printed_page: int
+    pdf_page: int
+    extraction_confidence_pct: float
+    has_discrepancy: bool
+    discrepancy_notes: Optional[str] = None
+    is_verified: bool
+    verified_by: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SoRStagedItemUpdate(BaseModel):
+    basic_rate: Optional[float] = None
+    unit_raw: Optional[str] = None
+    item_description: Optional[str] = None
+    is_verified: Optional[bool] = None
+    verified_by: Optional[str] = None
+
+
+class SoRIngestionDiscrepancyOut(BaseModel):
+    id: str
+    job_id: str
+    staged_item_id: str
+    discrepancy_type: str
+    field_name: str
+    extracted_value: Optional[str] = None
+    flagged_issue: str
+    resolution_status: str
+    resolved_value: Optional[str] = None
+    resolved_by: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SoRPublishPayload(BaseModel):
+    published_by: str
+    notes: Optional[str] = None
+
+
+
+

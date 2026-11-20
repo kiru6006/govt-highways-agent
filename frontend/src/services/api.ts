@@ -190,8 +190,24 @@ import {
   ReconciliationLineageItem,
   SoRContractVariationItem,
   SoRQCTestLinkItem,
-  BillValidationResultData
+  BillValidationResultData,
+  SoRApprovalTaskItem,
+  SoRDelegationRuleItem,
+  AIInvestigateFindingResponse,
+  SoRIngestionJobItem,
+  SoRStagedItemData,
+  SoRIngestionDiscrepancyItem
 } from '../types';
+import {
+  FALLBACK_APPROVAL_TASKS,
+  FALLBACK_DELEGATION_RULES,
+  FALLBACK_AI_INVESTIGATION_SAMPLE
+} from '../data/fallbackApprovals';
+import {
+  FALLBACK_INGESTION_JOBS,
+  FALLBACK_STAGED_ITEMS,
+  FALLBACK_INGESTION_DISCREPANCIES
+} from '../data/fallbackIngestion';
 import {
   fallbackLineageData,
   fallbackContractVariations,
@@ -6748,6 +6764,165 @@ export const reconciliationAPI = {
     }
   }
 };
+
+export const approvalsAPI = {
+  getTasks: async (status?: string): Promise<SoRApprovalTaskItem[]> => {
+    try {
+      const q = status ? `?status=${encodeURIComponent(status)}` : '';
+      return await request<SoRApprovalTaskItem[]>(`/sor-weci/approvals${q}`);
+    } catch {
+      return status ? FALLBACK_APPROVAL_TASKS.filter(t => t.status === status) : FALLBACK_APPROVAL_TASKS;
+    }
+  },
+
+  recordDecision: async (taskId: string, payload: {
+    decision: 'APPROVED' | 'RETURNED_FOR_CORRECTION' | 'ESCALATED';
+    decision_notes: string;
+    officer_name: string;
+    officer_role: string;
+  }): Promise<SoRApprovalTaskItem> => {
+    try {
+      return await request<SoRApprovalTaskItem>(`/sor-weci/approvals/${taskId}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const existing = FALLBACK_APPROVAL_TASKS.find(t => t.id === taskId);
+      return {
+        ...(existing || FALLBACK_APPROVAL_TASKS[0]),
+        status: payload.decision,
+        decision_notes: payload.decision_notes,
+        decided_by: `${payload.officer_name} (${payload.officer_role})`,
+        decided_at: new Date().toISOString()
+      };
+    }
+  },
+
+  getDelegationMatrix: async (category?: string): Promise<SoRDelegationRuleItem[]> => {
+    try {
+      const q = category ? `?category=${encodeURIComponent(category)}` : '';
+      return await request<SoRDelegationRuleItem[]>(`/sor-weci/delegation-matrix${q}`);
+    } catch {
+      return category && category !== 'ALL'
+        ? FALLBACK_DELEGATION_RULES.filter(r => r.delegation_category === category)
+        : FALLBACK_DELEGATION_RULES;
+    }
+  },
+
+  aiInvestigate: async (payload: {
+    finding_id?: string;
+    item_code?: string;
+    context_type?: string;
+    query?: string;
+  }): Promise<AIInvestigateFindingResponse> => {
+    try {
+      return await request<AIInvestigateFindingResponse>('/sor-weci/ai/investigate-finding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      return {
+        ...FALLBACK_AI_INVESTIGATION_SAMPLE,
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+};
+
+export const ingestionAPI = {
+  getJobs: async (): Promise<SoRIngestionJobItem[]> => {
+    try {
+      return await request<SoRIngestionJobItem[]>('/sor-weci/ingestion/jobs');
+    } catch {
+      return FALLBACK_INGESTION_JOBS;
+    }
+  },
+
+  createJob: async (fileName: string, pageRange: string = "311-352"): Promise<SoRIngestionJobItem> => {
+    try {
+      return await request<SoRIngestionJobItem>(`/sor-weci/ingestion/jobs?file_name=${encodeURIComponent(fileName)}&page_range=${encodeURIComponent(pageRange)}`, {
+        method: 'POST'
+      });
+    } catch {
+      const newJob: SoRIngestionJobItem = {
+        id: `JOB-${Date.now()}`,
+        job_code: `ING-2026-${Math.floor(100 + Math.random() * 900)}`,
+        file_name: fileName,
+        source_url_or_path: `/uploads/sor/${fileName}`,
+        page_range: pageRange,
+        status: "STAGED",
+        total_pages: 42,
+        total_items_extracted: 18,
+        confidence_score_pct: 96.2,
+        effective_date: "2026-11-13T00:00:00Z",
+        created_at: new Date().toISOString()
+      };
+      return newJob;
+    }
+  },
+
+  getStagedItems: async (jobId: string): Promise<SoRStagedItemData[]> => {
+    try {
+      return await request<SoRStagedItemData[]>(`/sor-weci/ingestion/jobs/${jobId}/staged-items`);
+    } catch {
+      return FALLBACK_STAGED_ITEMS.filter(s => s.job_id === jobId || jobId === 'JOB-2026-SOR-VOL1');
+    }
+  },
+
+  updateStagedItem: async (itemId: string, payload: {
+    basic_rate?: number;
+    unit_raw?: string;
+    item_description?: string;
+    is_verified?: boolean;
+    verified_by?: string;
+  }): Promise<SoRStagedItemData> => {
+    try {
+      return await request<SoRStagedItemData>(`/sor-weci/ingestion/staged-items/${itemId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const existing = FALLBACK_STAGED_ITEMS.find(s => s.id === itemId) || FALLBACK_STAGED_ITEMS[0];
+      return {
+        ...existing,
+        ...payload
+      };
+    }
+  },
+
+  getDiscrepancies: async (jobId: string): Promise<SoRIngestionDiscrepancyItem[]> => {
+    try {
+      return await request<SoRIngestionDiscrepancyItem[]>(`/sor-weci/ingestion/jobs/${jobId}/discrepancies`);
+    } catch {
+      return FALLBACK_INGESTION_DISCREPANCIES;
+    }
+  },
+
+  publishJob: async (jobId: string, payload: {
+    published_by: string;
+    notes?: string;
+  }): Promise<SoRIngestionJobItem> => {
+    try {
+      return await request<SoRIngestionJobItem>(`/sor-weci/ingestion/jobs/${jobId}/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      const existing = FALLBACK_INGESTION_JOBS.find(j => j.id === jobId) || FALLBACK_INGESTION_JOBS[0];
+      return {
+        ...existing,
+        status: "PUBLISHED",
+        published_at: new Date().toISOString(),
+        published_by: payload.published_by
+      };
+    }
+  }
+};
+
 
 export const fallbackGovernmentDocuments: GovernmentDocumentItem[] = [
   {

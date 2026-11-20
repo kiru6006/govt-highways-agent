@@ -10,7 +10,8 @@ from app.models import (
     SoRVersion, SoRItem, SoRAllowanceRule, SoREstimate,
     SoREstimateLine, SoRBOQItem, SoRReconciliationEntry,
     SoRAnomalyFinding, SoREvidenceLink, SoRAuditEvent, Project,
-    SoRContractVariation, SoRQCTestLink
+    SoRContractVariation, SoRQCTestLink, SoRApprovalTask, SoRDelegationRule,
+    SoRIngestionJob, SoRStagedItem, SoRIngestionDiscrepancy
 )
 
 
@@ -1016,6 +1017,306 @@ def seed_sor_master_data(db: Session = None):
                 db.add(ae_obj)
         db.commit()
         print(f"[OK] Seeded Initial SoR Audit Events")
+
+        # 8. Seed Statutory Approval Tasks & Workflow Queue
+        approval_tasks_data = [
+            {
+                "id": "TASK-2026-001",
+                "task_code": "TASK-2026-001",
+                "entity_type": "ESTIMATE",
+                "entity_id": "EST-2026-001",
+                "title": "Technical Sanction Scrutiny: SH-112 Expressway Widening (Chainage 12/000 - 18/500)",
+                "description": "Technical estimate scrutiny for DBM, BC, and cross drainage structures under SoR 2026-2027 Volume I.",
+                "amount_involved_cr": 4.20,
+                "delegation_tier": "SE",
+                "delegation_statute": "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+                "required_role": "Superintending Engineer",
+                "submitted_by": "Er. P. Sivakumar, DE (H), C&M Chengalpattu",
+                "status": "PENDING"
+            },
+            {
+                "id": "TASK-2026-002",
+                "task_code": "TASK-2026-002",
+                "entity_type": "VARIATION",
+                "entity_id": "VAR-2026-001",
+                "title": "Contract Variation: Additional 60 cum DBM Subgrade Settlement",
+                "description": "Leveling course augmentation between km 14/400-14/600 due to unforeseen soft subgrade.",
+                "amount_involved_cr": 0.0507,
+                "delegation_tier": "DE",
+                "delegation_statute": "G.O.(Ms) No. 11 w.e.f. 21.01.2022",
+                "required_role": "Divisional Engineer",
+                "submitted_by": "Er. R. Murugan, AEE (H), Sriperumbudur",
+                "status": "APPROVED",
+                "decision_notes": "Sanctioned under DE delegated powers (<= ₹50 Lakhs) following site inspection on 17/11/2026.",
+                "decided_by": "Er. P. Sivakumar (Divisional Engineer)"
+            },
+            {
+                "id": "TASK-2026-003",
+                "task_code": "TASK-2026-003",
+                "entity_type": "TENDER_SCHEDULE",
+                "entity_id": "TENDER-2026-042",
+                "title": "Tender Excess Acceptance: Palar Bridge High-Level Reconstruction (+4.2% Excess)",
+                "description": "Lowest tender bid received at +4.2% excess over technical estimate within the statutory 5% SE limit.",
+                "amount_involved_cr": 0.98,
+                "delegation_tier": "SE",
+                "delegation_statute": "G.O.(Ms) No. 29 w.e.f. 03.03.2022",
+                "required_role": "Superintending Engineer",
+                "submitted_by": "Er. M. Rajendran, DE (H), Projects Division-II",
+                "status": "PENDING"
+            },
+            {
+                "id": "TASK-2026-004",
+                "task_code": "TASK-2026-004",
+                "entity_type": "RATE_EXCEPTION",
+                "entity_id": "FINDING-2026-002",
+                "title": "Rate Exception Review: Night Work Lighting Claim Verification",
+                "description": "Verification of contractor claim for night work illumination allowance without approved tender condition.",
+                "amount_involved_cr": 0.0125,
+                "delegation_tier": "AEE",
+                "delegation_statute": "General Note 8(vii) SoR 2026-2027",
+                "required_role": "Assistant Executive Engineer",
+                "submitted_by": "Er. S. Annamalai, AE (H), Quality Control",
+                "status": "RETURNED_FOR_CORRECTION",
+                "decision_notes": "Returned. Clause 14.2 of contract document does not mandate night operations; restrict claim to daylight work items.",
+                "decided_by": "Er. R. Murugan (Assistant Executive Engineer)"
+            }
+        ]
+
+        for at in approval_tasks_data:
+            existing_at = db.query(SoRApprovalTask).filter(SoRApprovalTask.id == at["id"]).first()
+            if not existing_at:
+                at_obj = SoRApprovalTask(
+                    id=at["id"],
+                    task_code=at["task_code"],
+                    project_id=proj_id,
+                    entity_type=at["entity_type"],
+                    entity_id=at["entity_id"],
+                    title=at["title"],
+                    description=at["description"],
+                    amount_involved_cr=at["amount_involved_cr"],
+                    delegation_tier=at["delegation_tier"],
+                    delegation_statute=at["delegation_statute"],
+                    required_role=at["required_role"],
+                    submitted_by=at["submitted_by"],
+                    status=at["status"],
+                    decision_notes=at.get("decision_notes"),
+                    decided_by=at.get("decided_by"),
+                    decided_at=datetime.datetime.utcnow() if at.get("decided_by") else None,
+                    created_at=datetime.datetime.utcnow()
+                )
+                db.add(at_obj)
+        db.commit()
+        print(f"[OK] Seeded Statutory Approval Tasks")
+
+        # 9. Seed Statutory Delegation of Powers Rules Matrix (G.O. 11 & G.O. 29)
+        delegation_rules_data = [
+            {
+                "id": "DEL-TS-DE",
+                "rule_code": "DEL-TS-DE",
+                "statute_reference": "G.O.(Ms) No. 11, Highways (HN.2), dt 21.01.2022",
+                "delegation_category": "TECHNICAL_SANCTION",
+                "officer_cadre": "Divisional Engineer (DE)",
+                "monetary_limit_cr": 0.50,
+                "percentage_excess_limit": 0.0,
+                "jurisdiction_scope": "Division Jurisdiction",
+                "mandatory_conditions": "Full powers up to ₹50.00 Lakhs for road and bridge works strictly based on approved Schedule of Rates without excess."
+            },
+            {
+                "id": "DEL-TS-SE",
+                "rule_code": "DEL-TS-SE",
+                "statute_reference": "G.O.(Ms) No. 11, Highways (HN.2), dt 21.01.2022",
+                "delegation_category": "TECHNICAL_SANCTION",
+                "officer_cadre": "Superintending Engineer (SE)",
+                "monetary_limit_cr": 7.00,
+                "percentage_excess_limit": 0.0,
+                "jurisdiction_scope": "Circle Jurisdiction",
+                "mandatory_conditions": "Full powers up to ₹7.00 Crores for original and revised estimates with proper AEE quarry lead investigation certificates."
+            },
+            {
+                "id": "DEL-TS-CE",
+                "rule_code": "DEL-TS-CE",
+                "statute_reference": "G.O.(Ms) No. 11, Highways (HN.2), dt 21.01.2022",
+                "delegation_category": "TECHNICAL_SANCTION",
+                "officer_cadre": "Chief Engineer (CE)",
+                "monetary_limit_cr": 100.00,
+                "percentage_excess_limit": 0.0,
+                "jurisdiction_scope": "Zonal / Wing Statewide",
+                "mandatory_conditions": "Full powers above ₹7.00 Crores for all capital and maintenance works across State Highways and Major District Roads."
+            },
+            {
+                "id": "DEL-TA-DE",
+                "rule_code": "DEL-TA-DE",
+                "statute_reference": "G.O.(Ms) No. 29 dt 03.03.2022 restoring G.O.(Ms) No. 163 dt 01.10.2012",
+                "delegation_category": "TENDER_ACCEPTANCE",
+                "officer_cadre": "Divisional Engineer (DE)",
+                "monetary_limit_cr": 0.50,
+                "percentage_excess_limit": 0.0,
+                "jurisdiction_scope": "Division Jurisdiction",
+                "mandatory_conditions": "Tender acceptance up to ₹50.00 Lakhs at 0% tender excess over sanctioned technical estimate."
+            },
+            {
+                "id": "DEL-TA-SE",
+                "rule_code": "DEL-TA-SE",
+                "statute_reference": "G.O.(Ms) No. 29 dt 03.03.2022 restoring G.O.(Ms) No. 163 dt 01.10.2012",
+                "delegation_category": "TENDER_ACCEPTANCE",
+                "officer_cadre": "Superintending Engineer (SE)",
+                "monetary_limit_cr": 1.00,
+                "percentage_excess_limit": 5.0,
+                "jurisdiction_scope": "Circle Jurisdiction",
+                "mandatory_conditions": "Tender acceptance up to ₹1.00 Crore with tender excess not exceeding 5% over technical estimate."
+            },
+            {
+                "id": "DEL-TA-CE",
+                "rule_code": "DEL-TA-CE",
+                "statute_reference": "G.O.(Ms) No. 29 dt 03.03.2022 restoring G.O.(Ms) No. 163 dt 01.10.2012",
+                "delegation_category": "TENDER_ACCEPTANCE",
+                "officer_cadre": "Chief Engineer (CE)",
+                "monetary_limit_cr": 6.00,
+                "percentage_excess_limit": 0.0,
+                "jurisdiction_scope": "Zonal Command",
+                "mandatory_conditions": "Tender acceptance up to ₹6.00 Crores at 0% tender excess over technical estimate."
+            },
+            {
+                "id": "DEL-TA-COT",
+                "rule_code": "DEL-TA-COT",
+                "statute_reference": "G.O.(Ms) No. 29 dt 03.03.2022 restoring G.O.(Ms) No. 163 dt 01.10.2012",
+                "delegation_category": "TENDER_ACCEPTANCE",
+                "officer_cadre": "Committee of Chief Engineers (COT)",
+                "monetary_limit_cr": 100.00,
+                "percentage_excess_limit": 10.0,
+                "jurisdiction_scope": "Statewide Highways Department",
+                "mandatory_conditions": "Full powers up to ₹100.00 Crores with tender excess not exceeding 10% over estimate following market justification."
+            }
+        ]
+
+        for dr in delegation_rules_data:
+            existing_dr = db.query(SoRDelegationRule).filter(SoRDelegationRule.id == dr["id"]).first()
+            if not existing_dr:
+                dr_obj = SoRDelegationRule(
+                    id=dr["id"],
+                    rule_code=dr["rule_code"],
+                    statute_reference=dr["statute_reference"],
+                    delegation_category=dr["delegation_category"],
+                    officer_cadre=dr["officer_cadre"],
+                    monetary_limit_cr=dr["monetary_limit_cr"],
+                    percentage_excess_limit=dr["percentage_excess_limit"],
+                    jurisdiction_scope=dr["jurisdiction_scope"],
+                    mandatory_conditions=dr["mandatory_conditions"],
+                    is_active=True
+                )
+                db.add(dr_obj)
+        db.commit()
+        print(f"[OK] Seeded Statutory Delegation Matrix Rules")
+
+        # 10. Seed SoR Document Ingestion Jobs & Staged Items (Phase 4 / Screen 6)
+        job_id = "JOB-2026-SOR-VOL1"
+        existing_job = db.query(SoRIngestionJob).filter(SoRIngestionJob.id == job_id).first()
+        if not existing_job:
+            ing_job = SoRIngestionJob(
+                id=job_id,
+                job_code="ING-2026-001",
+                sor_version_id="SOR-2026-27-V1",
+                file_name="TN_Schedule_of_Rates_2026_2027_Volume_I.pdf",
+                source_url_or_path="/documents/sor/TN_Schedule_of_Rates_2026_2027_Volume_I.pdf",
+                page_range="311-352",
+                status="STAGED",
+                total_pages=42,
+                total_items_extracted=24,
+                confidence_score_pct=96.8,
+                effective_date=datetime.datetime(2026, 11, 13),
+                created_at=datetime.datetime.utcnow()
+            )
+            db.add(ing_job)
+            db.commit()
+
+            staged_items = [
+                {
+                    "id": "STAGE-001",
+                    "job_id": job_id,
+                    "unique_code": "W-1001",
+                    "category": "Highways Works",
+                    "item_description": "Bituminous Concrete (BC) 40mm thick compacted with sensor paver to specified camber",
+                    "unit_raw": "Cum",
+                    "basic_rate": 8450.0,
+                    "printed_page": 316,
+                    "pdf_page": 323,
+                    "extraction_confidence_pct": 99.2,
+                    "has_discrepancy": False,
+                    "discrepancy_notes": None,
+                    "is_verified": True,
+                    "verified_by": "SE Technical Cell"
+                },
+                {
+                    "id": "STAGE-002",
+                    "job_id": job_id,
+                    "unique_code": "M-0127",
+                    "category": "Materials",
+                    "item_description": "Supply of Paving Bitumen Grade VG-30 conforming to IS:73 at designated refinery",
+                    "unit_raw": "MT",
+                    "basic_rate": 48200.0,
+                    "printed_page": 314,
+                    "pdf_page": 321,
+                    "extraction_confidence_pct": 82.5,
+                    "has_discrepancy": True,
+                    "discrepancy_notes": "Requires linking to CPCL monthly price notification circular per G.O. (Ms) No. 42",
+                    "is_verified": False,
+                    "verified_by": None
+                },
+                {
+                    "id": "STAGE-003",
+                    "job_id": job_id,
+                    "unique_code": "M-2853",
+                    "category": "Materials",
+                    "item_description": "High Tensile Prestressing Low-Relaxation Steel Strands 12.7mm dia conforming to IS:14268",
+                    "unit_raw": "MT",
+                    "basic_rate": 78500.0,
+                    "printed_page": 315,
+                    "pdf_page": 322,
+                    "extraction_confidence_pct": 79.0,
+                    "has_discrepancy": True,
+                    "discrepancy_notes": "Unit conversion check required (metric tonnes vs quintal in table header footnote)",
+                    "is_verified": False,
+                    "verified_by": None
+                }
+            ]
+            for si in staged_items:
+                si_obj = SoRStagedItem(**si)
+                db.add(si_obj)
+            db.commit()
+
+            discrepancies = [
+                {
+                    "id": "DISC-001",
+                    "job_id": job_id,
+                    "staged_item_id": "STAGE-002",
+                    "discrepancy_type": "GO_REFERENCE_REQUIRED",
+                    "field_name": "basic_rate",
+                    "extracted_value": "48200.00",
+                    "flagged_issue": "Bitumen base price requires attachment of approved monthly refinery index notification.",
+                    "resolution_status": "OPEN",
+                    "resolved_value": None,
+                    "resolved_by": None
+                },
+                {
+                    "id": "DISC-002",
+                    "job_id": job_id,
+                    "staged_item_id": "STAGE-003",
+                    "discrepancy_type": "OCR_AMBIGUITY",
+                    "field_name": "unit_raw",
+                    "extracted_value": "MT",
+                    "flagged_issue": "OCR detected symbol 'qtl' in footnote; row unit is 'MT'. Human confirmation required.",
+                    "resolution_status": "OPEN",
+                    "resolved_value": None,
+                    "resolved_by": None
+                }
+            ]
+            for d in discrepancies:
+                d_obj = SoRIngestionDiscrepancy(**d)
+                db.add(d_obj)
+            db.commit()
+            print(f"[OK] Seeded SoR Ingestion Job & Staged Items")
+
+
 
     except Exception as e:
         db.rollback()

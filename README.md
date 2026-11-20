@@ -461,6 +461,26 @@ TOP HEADER UTILITY BAR
   * **Contractor RA Bill Pre-Audit Sandbox**: Live pre-check detecting duplicate line claims, rate spikes (>5% tender cap under G.O. 29), and unrecorded MB quantities prior to treasury voucher sign-off.
 * **Endpoints**: `GET /api/v1/sor-weci/reconciliation/{project_id}`, `GET /api/v1/sor-weci/reconciliation/lineage/{project_id}`, `GET /api/v1/sor-weci/reconciliation/variations/{project_id}`, `POST /api/v1/sor-weci/reconciliation/variations`, `GET /api/v1/sor-weci/reconciliation/qc-links/{project_id}`, `POST /api/v1/sor-weci/reconciliation/bills/{bill_id}/validate`.
 
+#### 18f. Approvals Queue & Statutory Delegation Matrix (`#/approvals-audit`)
+* **Target Audience**: Chief Engineers, Superintending Engineers, Divisional Engineers, Financial Advisors, Audit Officers.
+* **Governing Statutes**: G.O. (Ms) No. 11 Highways (HN.2) dt 21.01.2022 (Technical Sanction Limits) and G.O. (Ms) No. 29 dt 03.03.2022 (Tender Excess Limits).
+* **Key Capabilities**:
+  * **Pending Scrutiny Queue**: Authority-aware approval cards for estimates, variations, rate exceptions, and bill vouchers.
+  * **Statutory Delegation Matrix**: Codified reference table showing monetary limits (DE $\le \text{₹}50\text{L}$, SE $\le \text{₹}7.00\text{Cr}$, CE $> \text{₹}7.00\text{Cr}$) and tender excess caps (DE 0%, SE 5%, CE 0%, COT 10%).
+  * **WORM Audit Trail**: Append-only event ledger capturing officer names, designations, and before/after states.
+  * **Bounded AI Investigation Assist (`FR-09`, `UC-32`)**: Grounded in SoR Volume I; generates non-binding citations and remedial advice with strict advisory badge and disclaimer.
+* **Endpoints**: `GET /api/v1/sor-weci/approvals`, `POST /api/v1/sor-weci/approvals/{task_id}/decision`, `GET /api/v1/sor-weci/delegation-matrix`, `POST /api/v1/sor-weci/ai/investigate-finding`.
+
+#### 18g. SoR Document Ingestion & Parser Workbench (`#/sor-ingestion`)
+* **Target Audience**: SoR Data Stewards, CE Technical Cell, System Administrators.
+* **Key Capabilities**:
+  * **Schedule Ingestion & OCR Scrutiny**: Ingestion workbench for official SoR schedules with page ranges (printed pp. 311–352).
+  * **Side-by-Side Verification**: PDF reference against extracted staged item table with rate and unit editing.
+  * **Discrepancy Resolution Panel**: Flags G.O.-dependent items (`M-0127`, `M-0128`, `M-2853`) and OCR ambiguities requiring human sign-off.
+  * **Statutory Publishing Gate**: Enforces full discrepancy resolution before promoting staged items into the active master catalogue w.e.f. 13/11/2026.
+* **Endpoints**: `GET /api/v1/sor-weci/ingestion/jobs`, `POST /api/v1/sor-weci/ingestion/jobs`, `GET /api/v1/sor-weci/ingestion/jobs/{id}/staged-items`, `PATCH /api/v1/sor-weci/ingestion/staged-items/{item_id}`, `GET /api/v1/sor-weci/ingestion/jobs/{id}/discrepancies`, `POST /api/v1/sor-weci/ingestion/jobs/{id}/publish`.
+
+
 #### 19. Finance & Procurement (`#/finance`)
 * **Target Audience**: Accounts Officers, Financial Advisers, Tender Scrutiny Committees.
 * **Key Capabilities & How to Use**: Track Administrative Sanctions (AS), Technical Sanctions (TS), contractor running account (RA) bills, retention money, and Bank Guarantee (BG) expiry alerts.

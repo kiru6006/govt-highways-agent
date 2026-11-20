@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Calculator,
   Search,
@@ -35,6 +36,7 @@ import {
 } from '../types';
 
 export const RateCalculatorPage: React.FC = () => {
+  const navigate = useNavigate();
   // Mode Selection
   const [activeMode, setActiveMode] = useState<CalculatorMode>('MATERIAL');
   const [items, setItems] = useState<any[]>([]);
@@ -806,7 +808,12 @@ export const RateCalculatorPage: React.FC = () => {
             </button>
             <button
               onClick={() => {
-                alert('Calculation lines transferred successfully to Domain B: Project Estimate & BOQ Builder.');
+                try {
+                  sessionStorage.setItem('transferred_calculation_sheet', JSON.stringify(calculationSheet));
+                } catch (e) {
+                  console.error(e);
+                }
+                navigate('/work-estimator');
               }}
               disabled={calculationSheet.length === 0}
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors"

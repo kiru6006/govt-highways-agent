@@ -4850,5 +4850,99 @@ export interface BillValidationResultData {
   audit_notes: string[];
 }
 
+export interface SoRApprovalTaskItem {
+  id: string;
+  task_code: string;
+  project_id?: number;
+  entity_type: string; // ESTIMATE, VARIATION, RATE_EXCEPTION, BILL_VOUCHER
+  entity_id: string;
+  title: string;
+  description: string;
+  amount_involved_cr: number;
+  delegation_tier: string;
+  delegation_statute: string;
+  required_role: string;
+  submitted_by: string;
+  status: 'PENDING' | 'APPROVED' | 'RETURNED_FOR_CORRECTION' | 'ESCALATED';
+  decision_notes?: string;
+  decided_by?: string;
+  decided_at?: string;
+  created_at: string;
+}
+
+export interface SoRDelegationRuleItem {
+  id: string;
+  rule_code: string;
+  statute_reference: string;
+  delegation_category: string;
+  officer_cadre: string;
+  monetary_limit_cr: number;
+  percentage_excess_limit: number;
+  jurisdiction_scope: string;
+  mandatory_conditions: string;
+  is_active: boolean;
+}
+
+export interface AIInvestigateFindingResponse {
+  is_ai_assisted: boolean;
+  notice_badge: string;
+  investigation_summary: string;
+  probable_root_cause: string;
+  applicable_statute_citation: string;
+  source_pdf_page: number;
+  printed_page: number;
+  recommended_remedial_action: string;
+  statutory_disclaimer: string;
+  timestamp: string;
+}
+
+export interface SoRIngestionJobItem {
+  id: string;
+  job_code: string;
+  sor_version_id?: string;
+  file_name: string;
+  source_url_or_path: string;
+  page_range: string;
+  status: 'PROCESSING' | 'STAGED' | 'PUBLISHED' | 'FAILED';
+  total_pages: number;
+  total_items_extracted: number;
+  confidence_score_pct: number;
+  effective_date?: string;
+  published_at?: string;
+  published_by?: string;
+  created_at: string;
+}
+
+export interface SoRStagedItemData {
+  id: string;
+  job_id: string;
+  unique_code: string;
+  category: string;
+  item_description: string;
+  unit_raw: string;
+  basic_rate: number;
+  printed_page: number;
+  pdf_page: number;
+  extraction_confidence_pct: number;
+  has_discrepancy: boolean;
+  discrepancy_notes?: string;
+  is_verified: boolean;
+  verified_by?: string;
+}
+
+export interface SoRIngestionDiscrepancyItem {
+  id: string;
+  job_id: string;
+  staged_item_id: string;
+  discrepancy_type: string;
+  field_name: string;
+  extracted_value?: string;
+  flagged_issue: string;
+  resolution_status: 'OPEN' | 'RESOLVED' | 'WAIVED';
+  resolved_value?: string;
+  resolved_by?: string;
+}
+
+
 
 

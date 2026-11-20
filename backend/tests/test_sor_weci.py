@@ -370,3 +370,104 @@ def test_19_qc_test_links_compliance(client):
     assert len(links) >= 1
     item_codes = [link["item_code"] for link in links]
     assert "W-1001" in item_codes or "B-201" in item_codes
+
+
+def test_20_approval_tasks_retrieval_and_decision(client):
+    """Test 20: Fetch pending approval queue and execute statutory approval decision."""
+    res = client.get("/api/v1/sor-weci/approvals")
+    assert res.status_code == 200
+    tasks = res.json()
+    assert len(tasks) >= 3
+    pending_tasks = [t for t in tasks if t["status"] == "PENDING"]
+    assert len(pending_tasks) >= 2
+
+    # Choose a pending task, e.g., TASK-2026-001
+    task_id = "TASK-2026-001"
+    decision_payload = {
+        "decision": "APPROVED",
+        "officer_name": "SE K. Sundaram",
+        "officer_role": "Superintending Engineer",
+        "decision_notes": "Verified within G.O. 11 delegation and G.O. 29 5% tender excess cap. Approved."
+    }
+    dec_res = client.post(f"/api/v1/sor-weci/approvals/{task_id}/decision", json=decision_payload)
+    assert dec_res.status_code == 200
+    updated_task = dec_res.json()
+    assert updated_task["status"] == "APPROVED"
+    assert "SE K. Sundaram" in updated_task["decided_by"]
+
+
+def test_21_statutory_delegation_matrix_rules(client):
+    """Test 21: Verify statutory delegation matrix under G.O. 11 and G.O. 29."""
+    res = client.get("/api/v1/sor-weci/delegation-matrix")
+    assert res.status_code == 200
+    rules = res.json()
+    assert len(rules) >= 6
+
+    # Verify G.O. 11 Technical Sanction limits (in Crores: DE = 0.50 Cr, SE = 7.00 Cr)
+    ts_de = next((r for r in rules if "Divisional Engineer" in r["officer_cadre"] and r["delegation_category"] == "TECHNICAL_SANCTION"), None)
+    assert ts_de is not None
+    assert ts_de["monetary_limit_cr"] == 0.50  # 50 Lakhs = 0.50 Cr
+
+    ts_se = next((r for r in rules if "Superintending Engineer" in r["officer_cadre"] and r["delegation_category"] == "TECHNICAL_SANCTION"), None)
+    assert ts_se is not None
+    assert ts_se["monetary_limit_cr"] == 7.00  # 7.00 Crores
+
+    # Verify G.O. 29 Tender Excess limit
+    ta_se = next((r for r in rules if "Superintending Engineer" in r["officer_cadre"] and r["delegation_category"] == "TENDER_ACCEPTANCE"), None)
+    assert ta_se is not None
+    assert ta_se["percentage_excess_limit"] == 5.0  # 5% max
+
+
+def test_22_bounded_ai_investigate_finding(client):
+    """Test 22: Verify bounded AI investigation assist with strict citation and disclaimer."""
+    payload = {
+        "finding_id": "FIND-2026-001",
+        "item_code": "W-1001",
+        "context_type": "COST_ANOMALY",
+        "query": "Investigate rate spike on item W-1001."
+    }
+    res = client.post("/api/v1/sor-weci/ai/investigate-finding", json=payload)
+    assert res.status_code == 200
+    ai_resp = res.json()
+    assert ai_resp["is_ai_assisted"] is True
+    assert "AI-Assisted" in ai_resp["notice_badge"]
+    assert ai_resp["source_pdf_page"] > 0
+    assert ai_resp["printed_page"] > 0
+    assert "Tamil Nadu SoR 2026-2027 Volume I" in ai_resp["statutory_disclaimer"]
+
+
+def test_23_sor_ingestion_workbench(client):
+    """Test 23: SoR document ingestion, staged items review, and publishing gate."""
+    res = client.get("/api/v1/sor-weci/ingestion/jobs")
+    assert res.status_code == 200
+    jobs = res.json()
+    assert len(jobs) >= 1
+    target_job = jobs[0]
+    job_id = target_job["id"]
+
+    # Verify staged items extraction
+    items_res = client.get(f"/api/v1/sor-weci/ingestion/jobs/{job_id}/staged-items")
+    assert items_res.status_code == 200
+    staged = items_res.json()
+    assert len(staged) >= 3
+
+    # Attempt to publish while discrepancies are OPEN -> MUST return 400
+    pub_res = client.post(f"/api/v1/sor-weci/ingestion/jobs/{job_id}/publish", json={
+        "published_by": "SE Technical Cell",
+        "notes": "Attempting premature publish before resolving open discrepancies"
+    })
+    assert pub_res.status_code == 400
+    assert "unresolved G.O. or OCR discrepancies" in pub_res.json()["detail"]
+
+    # Patch staged item verification
+    staged_001 = staged[0]
+    patch_res = client.patch(f"/api/v1/sor-weci/ingestion/staged-items/{staged_001['id']}", json={
+        "basic_rate": 8450.0,
+        "is_verified": True,
+        "verified_by": "CE Planning"
+    })
+    assert patch_res.status_code == 200
+    assert patch_res.json()["is_verified"] is True
+
+
+

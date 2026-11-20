@@ -35,6 +35,8 @@ import {
   Compass,
   BookOpen,
   Calculator,
+  ShieldCheck,
+  FileUp,
   X
 } from 'lucide-react';
 
@@ -82,6 +84,8 @@ export const navigationItems: NavItem[] = [
   { id: 'rate_calculator', name: 'Rate Calculator', path: '/rate-calculator', icon: Calculator, badge: 'SoR 26-27', badgeColor: 'bg-amber-50 text-amber-800 border border-amber-300', groupId: 'commercial' },
   { id: 'work_estimator', name: 'Work Estimator & BOQ', path: '/work-estimator', icon: Calculator, badge: 'Deterministic', badgeColor: 'bg-blue-50 text-blue-800 border border-blue-300', groupId: 'commercial' },
   { id: 'reconciliation', name: 'MB & Bill Reconciliation', path: '/reconciliation', icon: FileCheck2, badge: '5-Stage', badgeColor: 'bg-purple-50 text-purple-800 border border-purple-300', groupId: 'commercial' },
+  { id: 'approvals_audit', name: 'Approvals & Delegation', path: '/approvals-audit', icon: ShieldCheck, badge: 'G.O. 11/29', badgeColor: 'bg-indigo-50 text-indigo-800 border border-indigo-300', groupId: 'commercial' },
+  { id: 'sor_ingestion', name: 'SoR Ingestion Parser', path: '/sor-ingestion', icon: FileUp, badge: 'Workbench', badgeColor: 'bg-teal-50 text-teal-800 border border-teal-300', groupId: 'commercial' },
   { id: 'cost_audit', name: 'Cost Audit & Exceptions', path: '/cost-audit', icon: Scale, badge: '10-Point', badgeColor: 'bg-emerald-50 text-emerald-800 border border-emerald-300', groupId: 'commercial' },
   { id: '8', name: 'Finance & Procurement', path: '/finance', icon: CircleDollarSign, groupId: 'commercial' },
   { id: '9', name: 'Contractor Intelligence', path: '/contractors', icon: Briefcase, groupId: 'commercial' },
