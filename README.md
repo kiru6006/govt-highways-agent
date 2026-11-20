@@ -5,8 +5,9 @@
 [![Government of Tamil Nadu](https://img.shields.io/badge/Government%20of-Tamil%20Nadu-006A4E?style=for-the-badge)](https://www.tn.gov.in)
 [![Department](https://img.shields.io/badge/Department-Highways%20%26%20Minor%20Ports-004B87?style=for-the-badge)](https://www.tnhighways.gov.in)
 [![Live Interactive Deployment](https://img.shields.io/badge/Live%20Console-GitHub%20Pages-FFCC00?style=for-the-badge&logo=github&labelColor=006A4E)](https://kiru6006.github.io/govt-highways-agent/)
-[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-261%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/TESTING_AND_VERIFICATION.md)
-[![Phase 17 Audit](https://img.shields.io/badge/Phase%2017%20Audit-Certified%20Production%20Ready-D1197E?style=for-the-badge)](docs/PHASE_17_AUDIT_REPORT.md)
+[![Automated Tests](https://img.shields.io/badge/Pytest%20Suite-261%20Passed%20(100%25)-006A4E?style=for-the-badge)](docs/audits/TESTING_AND_VERIFICATION.md)
+[![Phase 17 Audit](https://img.shields.io/badge/Phase%2017%20Audit-Certified%20Production%20Ready-D1197E?style=for-the-badge)](docs/audits/PHASE_17_AUDIT_REPORT.md)
+[![Documentation Map](https://img.shields.io/badge/Documentation-Modular%20Architecture-004B87?style=for-the-badge)](docs/README.md)
 
 ### An Integrated Enterprise Operating Platform for Statewide Infrastructure Governance, Project Intelligence, Inter-Agency Coordination & Decision Support
 
@@ -77,9 +78,13 @@ SIDEBAR NAVIGATION (6 FUNCTIONAL DOMAINS)
 │   ├── Field Operations                      → /field-ops
 │   ├── Engineering Quality                   → /quality
 │   └── Road & Bridge Assets                  → /assets
-├── 💰 Domain 4: Commercial & Resource Mgmt (Support Layer - 6 items)
+├── 💰 Domain 4: Commercial & Resource Mgmt (Support Layer - 10 items)
 │   ├── Schedule of Rates (SoR) [2026-27]     → /sor-catalogue
+│   ├── Rate Calculator [10 Modes]            → /rate-calculator
 │   ├── Work Estimator & BOQ [Deterministic]  → /work-estimator
+│   ├── MB & Bill Reconciliation [5-Stage]    → /reconciliation
+│   ├── Approvals & Delegation [G.O. 11/29]   → /approvals-audit
+│   ├── SoR Ingestion Parser [Workbench]      → /sor-ingestion
 │   ├── Cost Audit & Exceptions [10-Point]    → /cost-audit
 │   ├── Finance & Procurement                 → /finance
 │   ├── Contractor Intelligence               → /contractors
@@ -569,7 +574,7 @@ Verified UI screenshots captured from the live application and archived in [`doc
 ## 📊 Implementation Roadmap Status (Phases 0 to 17)
 
 For the full 45,000-word itemized technical compliance verification across all 17 phases and 8 CKICP integration stages, consult:  
-👉 [**`docs/ROADMAP_COMPLIANCE_AUDIT.md`**](docs/ROADMAP_COMPLIANCE_AUDIT.md)
+👉 [**`docs/audits/ROADMAP_COMPLIANCE_AUDIT.md`**](docs/audits/ROADMAP_COMPLIANCE_AUDIT.md)
 
 | Phase | Departmental Module | Implementation Scope | Operational Status |
 | :---: | :--- | :--- | :---: |
@@ -590,9 +595,10 @@ For the full 45,000-word itemized technical compliance verification across all 1
 | **Phase 12**| Governance, Legal & Statutory Audit | High Court writ petitions, stay orders, statutory committees, audit trail. | ✅ **Fully Completed** |
 | **Phase 17**| Independent Evidence & Readiness Audit| 7 audit registers, 116 automated tests, zero-division guards, security verification.| ✅ **Fully Completed** |
 | **CRIDP & TANSHA** | Statewide CRIDP Work Verification & TANSHA | 5-Year Renewal Engine, Chainage Duplication, G.O. 11 & G.O. 29 delegations, TN Act 12 of 2024 (`#/cridp-verification`). | ✅ **Fully Completed** |
+| **SoR-WECI** | Schedule of Rates & Cost Intelligence | 6 Screens, 10-Mode Rate Calculator, Pure Decimal Engine, 48 Tests (`#/sor-catalogue`, `#/rate-calculator`, `#/work-estimator`, `#/reconciliation`, `#/approvals-audit`, `#/sor-ingestion`). | ✅ **Fully Completed** |
 | **Phases 8, 11, 14, 15** | Remaining Future Extensions | Detailed Finance, Citizen Grievance Portal. | 🗓️ **Phase 18 Roadmap** |
 
-*(Detailed sprint plans for promoting remaining modules are specified in [`docs/PHASE_18_REMEDIATION_PLAN.md`](docs/PHASE_18_REMEDIATION_PLAN.md) and [`docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md`](docs/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md)).*
+*(Detailed sprint plans for promoting remaining modules are specified in [`docs/audits/PHASE_18_REMEDIATION_PLAN.md`](docs/audits/PHASE_18_REMEDIATION_PLAN.md) and [`docs/modules/05-governance-digital-office/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md`](docs/modules/05-governance-digital-office/PROMPT_05_DEPARTMENT_LAND_UTILITY_COMPLIANCE.md)).*
 
 ---
 
@@ -600,11 +606,11 @@ For the full 45,000-word itemized technical compliance verification across all 1
 
 The platform maintains an automated test suite executed against live API endpoints, ORM models, and security layers.
 
-👉 **Complete Test Catalog & Execution Guide**: [**`docs/TESTING_AND_VERIFICATION.md`**](docs/TESTING_AND_VERIFICATION.md)
+👉 **Complete Test Catalog & Execution Guide**: [**`docs/audits/TESTING_AND_VERIFICATION.md`**](docs/audits/TESTING_AND_VERIFICATION.md)
 
 ### Test Execution Summary:
-* **Total Automated Tests**: **192 Tests**
-* **Pass Rate**: **100% (192 Passed, 0 Failed)**
+* **Total Automated Tests**: **261 Tests** (192 Core Platform + 25 Rate Calculator + 23 SoR-WECI + 21 Integration)
+* **Pass Rate**: **100% (261 Passed, 0 Failed)**
 * **Execution Duration**: **~42.5 seconds**
 
 ```bash
@@ -615,7 +621,7 @@ cd backend
 
 ## 🎨 Highways Department Design System
 
-The application strictly adheres to the official Tamil Nadu Highways Department color palette specified in [`docs/DESIGN.md`](docs/DESIGN.md):
+The application strictly adheres to the official Tamil Nadu Highways Department color palette specified in [`docs/architecture/DESIGN.md`](docs/architecture/DESIGN.md):
 
 * **State Highways (SH)**: Forest Green (`#006A4E`) — Primary departmental identity.
 * **National Highways (Entrusted)**: Royal Highway Navy (`#004B87`) — High-speed corridors.
@@ -627,28 +633,35 @@ The application strictly adheres to the official Tamil Nadu Highways Department 
 
 ## 📚 Departmental Documentation Index (`docs/`)
 
-All engineering blueprints, architectural decisions, and audit registers are available in [`docs/`](docs/):
+All engineering blueprints, architectural decisions, and audit registers are structured modularly under [`docs/`](docs/) with a central navigation hub at [**`docs/README.md`**](docs/README.md):
 
-### Core Audits & Compliance Registers
-* [**`docs/ROADMAP_COMPLIANCE_AUDIT.md`**](docs/ROADMAP_COMPLIANCE_AUDIT.md) — Exhaustive 17-Phase and 8-Stage CKICP implementation audit checklist and verification register.
-* [**`docs/TESTING_AND_VERIFICATION.md`**](docs/TESTING_AND_VERIFICATION.md) — Comprehensive automated testing catalog, fixtures, execution commands, and QA register.
-* [**`docs/PHASE_17_AUDIT_REPORT.md`**](docs/PHASE_17_AUDIT_REPORT.md) — Master Phase 17 Independent Evidence & Production Readiness Audit report.
-* [**`docs/GOVERNMENT_DATA_VERIFICATION_REGISTER.md`**](docs/GOVERNMENT_DATA_VERIFICATION_REGISTER.md) — Item-by-item verification register classifying records into `[OV]`, `[EXT]`, `[DR]`, and `[SD]` tiers.
-* [**`docs/API_AND_ROUTE_AUDIT.md`**](docs/API_AND_ROUTE_AUDIT.md) — Catalog of 19 frontend routes and 16 backend API routers with RBAC permissions and payloads.
-* [**`docs/SECURITY_AND_RBAC_AUDIT.md`**](docs/SECURITY_AND_RBAC_AUDIT.md) — Security posture audit: JWT tokens, 12 hierarchical roles, and multi-tenant contractor isolation.
-* [**`docs/AI_GROUNDING_AND_EVIDENCE_AUDIT.md`**](docs/AI_GROUNDING_AND_EVIDENCE_AUDIT.md) — AI findings audit verifying neutral language and statutory grounding (TT Act, RFCTLARR).
-* [**`docs/PRODUCTION_READINESS_CHECKLIST.md`**](docs/PRODUCTION_READINESS_CHECKLIST.md) — Operational Go / No-Go scorecard confirming pilot deployment readiness at 100%.
-* [**`docs/PHASE_18_REMEDIATION_PLAN.md`**](docs/PHASE_18_REMEDIATION_PLAN.md) — Strategic promotion roadmap detailing sprint plans for remaining modules.
+### 1. Functional Modules & Implementation Blueprints
+* [**`docs/modules/01-executive-command/`**](docs/modules/01-executive-command/) — CM Dashboard & Universal Connectivity (`CM_DASHBOARD_AND_UNIVERSAL_CONNECTIVITY.md`).
+* [**`docs/modules/02-works-management/`**](docs/modules/02-works-management/) — Major Works & Blockers, CKICP/TNRSP Corridors, Land Acquisition & NH Inventories.
+* [**`docs/modules/03-cridp-risk/`**](docs/modules/03-cridp-risk/) — CRIDP Baseline Audit, Historical Risk Engine & Execution Reports.
+* [**`docs/modules/04-sor-cost-intelligence/`**](docs/modules/04-sor-cost-intelligence/) — Complete SoR-WECI PRD ([`PRICE.md`](docs/modules/04-sor-cost-intelligence/PRICE.md)), Advanced Architecture ([`PRICE2.md`](docs/modules/04-sor-cost-intelligence/PRICE2.md)), and Progress Register ([`IMPLEMENTATION_PROGRESS.md`](docs/modules/04-sor-cost-intelligence/IMPLEMENTATION_PROGRESS.md)).
+* [**`docs/modules/05-governance-digital-office/`**](docs/modules/05-governance-digital-office/) — E-Files, Delegation Registers (G.O. 11/29), Inter-Agency Utility NOCs.
+* [**`docs/modules/06-organisation-master/`**](docs/modules/06-organisation-master/) — 4-Zone Command Blueprint (G.O. 43), Circles, Divisions, Cadres & Directories.
 
-### Departmental Knowledge & Cadre Registers
-* [**`docs/ORGANISATION_AND_RBAC_VERIFICATION.md`**](docs/ORGANISATION_AND_RBAC_VERIFICATION.md) — Authoritative verification of departmental leadership, TN-HES cadre rules, and statutory committees.
-* [**`docs/PHASE2.md`**](docs/PHASE2.md) — Executive Command Centre specification (Minister & Secretary workspaces, 16 KPIs).
-* [**`docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md`**](docs/CKICP_TNRSP_INTEGRATION_ASSESSMENT.md) — Multilateral corridor intelligence blueprint (CKICP & TNRSP-II).
-* [**`docs/TNRSP_LAND_ACQUISITION_DATA.md`**](docs/TNRSP_LAND_ACQUISITION_DATA.md) — Verified 206.29 Hectares land acquisition register across 16 EPC packages.
-* [**`docs/DESIGN.md`**](docs/DESIGN.md) — Official Tamil Nadu Highways color tokens and typography specifications.
-* [**`docs/ARCHITECTURE.md`**](docs/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite/PostgreSQL layers.
-* [**`docs/ADR.md`**](docs/ADR.md) — Architecture Decision Records (HashRouter for GitHub Pages, RBAC isolation).
-* [**`docs/PHASE_0_ASSESSMENT.md`**](docs/PHASE_0_ASSESSMENT.md) — Pre-implementation audit and backward compatibility assessment.
+### 2. Architecture & Technical Design
+* [**`docs/architecture/ARCHITECTURE.md`**](docs/architecture/ARCHITECTURE.md) — System topology, FastAPI backend, Vite/React client, SQLite/PostgreSQL layers.
+* [**`docs/architecture/DATA_MODEL_AND_ERD.md`**](docs/architecture/DATA_MODEL_AND_ERD.md) — Unified entity-relationship data model across all 6 domains.
+* [**`docs/architecture/DESIGN.md`**](docs/architecture/DESIGN.md) — Official Tamil Nadu Highways color tokens and typography specifications.
+* [**`docs/architecture/ADR.md`**](docs/architecture/ADR.md) — Architecture Decision Records (HashRouter for GitHub Pages, RBAC isolation).
+* [**`docs/architecture/API_AND_ROUTE_AUDIT.md`**](docs/architecture/API_AND_ROUTE_AUDIT.md) — Catalog of frontend routes and backend FastAPI routers with RBAC scopes.
+
+### 3. Audits, Security & Evidence Registers
+* [**`docs/audits/AUDIT.md`**](docs/audits/AUDIT.md) & [**`docs/audits/AUDIT_VERIFY.md`**](docs/audits/AUDIT_VERIFY.md) — Master codebase and verification audits.
+* [**`docs/audits/CLAUDE_VERDICT.md`**](docs/audits/CLAUDE_VERDICT.md) — Independent code quality and statutory compliance evaluation.
+* [**`docs/audits/ROADMAP_COMPLIANCE_AUDIT.md`**](docs/audits/ROADMAP_COMPLIANCE_AUDIT.md) — Exhaustive 17-Phase implementation audit checklist.
+* [**`docs/audits/SECURITY_AND_RBAC_AUDIT.md`**](docs/audits/SECURITY_AND_RBAC_AUDIT.md) & [**`docs/audits/RBAC_ABAC_MATRIX.md`**](docs/audits/RBAC_ABAC_MATRIX.md) — Security posture, JWT auth, and hierarchical permissions.
+* [**`docs/audits/TESTING_AND_VERIFICATION.md`**](docs/audits/TESTING_AND_VERIFICATION.md) — Automated testing catalog and QA execution records.
+* [**`docs/audits/GOVERNMENT_DATA_VERIFICATION_REGISTER.md`**](docs/audits/GOVERNMENT_DATA_VERIFICATION_REGISTER.md) — Item-by-item verification tier classification.
+* [**`docs/audits/PRODUCTION_READINESS_CHECKLIST.md`**](docs/audits/PRODUCTION_READINESS_CHECKLIST.md) — Go / No-Go scorecard confirming pilot deployment readiness.
+
+### 4. Communications & Prompts
+* [**`docs/messaging/`**](docs/messaging/) & [**`docs/notifications/`**](docs/notifications/) — Project-linked messaging, AI governance, and priority alert workflows.
+* [**`docs/prompts/PROMPTS.md`**](docs/prompts/PROMPTS.md) — Master implementation prompts and requirements specifications.
 
 ---
 
